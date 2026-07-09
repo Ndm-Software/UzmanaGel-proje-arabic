@@ -1,0 +1,146 @@
+/* FavoritesPage.css */
+
+.favorites-page {
+  min-height: 100vh;
+  background: var(--bg-main);
+}
+
+.favorites-content {
+  max-width: 960px;
+  margin: 0 auto 40px;
+  padding: 0 20px;
+}
+
+.favorites-list.experts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.favorites-list .expert-card {
+  width: 100%;
+  max-width: 100%;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.favorites-list .expert-info-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.favorites-list .expert-avatar {
+  width: 96px;
+  height: 96px;
+  min-width: 96px;
+  min-height: 96px;
+}
+
+.favorites-list .expert-price-action {
+  min-width: 160px;
+  justify-content: flex-start;
+  align-self: center;
+  gap: 10px;
+}
+
+.favorites-list .expert-card-actions-top {
+  margin-bottom: 2px;
+}
+
+.favorites-list .no-results {
+  text-align: center;
+  padding: 80px 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+}
+
+.favorites-list .no-results i {
+  font-size: 64px;
+  color: #ef4444;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.favorites-list .no-results p {
+  color: var(--text-muted);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .favorites-content {
+    max-width: 100%;
+  }
+
+  .favorites-list .expert-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    align-items: center;
+  }
+
+  .favorites-list .expert-info-wrapper {
+    text-align: center;
+    width: 100%;
+  }
+
+  .favorites-list .expert-category {
+    justify-content: center;
+  }
+
+  .favorites-list .expert-stats {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .favorites-list .expert-price-action {
+    align-items: center;
+    width: 100%;
+    min-width: auto;
+  }
+
+  .favorites-list .expert-card-actions-top {
+    justify-content: center;
+  }
+
+  .favorites-list .price {
+    text-align: center;
+  }
+
+  .favorites-list .no-results {
+    padding: 60px 20px;
+  }
+
+  .favorites-list .no-results i {
+    font-size: 48px;
+  }
+
+  .favorites-list .no-results p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .favorites-content {
+    padding: 0 15px;
+  }
+
+  .favorites-list .expert-avatar {
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    min-height: 80px;
+  }
+
+  .favorites-list .no-results {
+    padding: 40px 15px;
+  }
+
+  .favorites-list .no-results i {
+    font-size: 40px;
+  }
+}

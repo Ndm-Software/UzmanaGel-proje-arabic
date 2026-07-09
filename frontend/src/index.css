@@ -1,0 +1,126 @@
+/* =========================
+   THEME TOKENS (DEFAULT = DARK)
+========================= */
+:root {
+  /* Base */
+  --bg-main: #0b1020;
+  --bg-auth: #0d0d15;
+  --text-main: #eaf0ff;
+  --text-muted: rgba(234, 240, 255, 0.75);
+  --text-soft: rgba(234, 240, 255, 0.85);
+  --font-main: Arial, sans-serif;
+
+  /* Brand Colors */
+  --primary: #d6b25e;
+  --primary-dark: #c19b3c;
+  --primary-light: #f0e1c0;
+  --brand-navy: #0b2a55;
+  --brand-navy-2: #061a33;
+  --brand-gold: #d6b25e;
+  --brand-gold-2: #b8902d;
+  --usta-orange: #f59e0b;
+  --usta-orange-2: #fb923c;
+
+  /* System primary mapping */
+  --primary-color: var(--brand-navy);
+  --primary-hover: #0e3770;
+
+  /* UI surfaces */
+  --nav-bg: rgba(10, 15, 30, 0.55);
+  --nav-border: rgba(255, 255, 255, 0.12);
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --card-bg-hover: rgba(255, 255, 255, 0.08);
+  --card-border: rgba(255, 255, 255, 0.10);
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-border: rgba(255, 255, 255, 0.12);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 8px 24px rgba(214, 178, 94, 0.2);
+  --shadow-strong: rgba(0, 0, 0, 0.25);
+
+  /* Links */
+  --link-color: rgba(234, 240, 255, 0.8);
+  --link-hover: #ffffff;
+
+  /* Gradients */
+  --grad-navy: rgba(11, 42, 85, 0.45);
+  --grad-gold: rgba(214, 178, 94, 0.18);
+  --band-top: rgba(10, 15, 30, 0.55);
+  --band-bottom: rgba(10, 15, 30, 0.25);
+  --band-glass: rgba(255, 255, 255, 0.02);
+}
+
+/* =========================
+   LIGHT THEME OVERRIDES
+========================= */
+:root[data-theme="light"] {
+  --bg-main: #f5f7fa;
+  --bg-auth: #f6f7fb;
+
+  --text-main: #1a2634;
+  --text-muted: #4a5568;
+  --text-soft: #2d3748;
+
+  --nav-bg: rgba(255, 255, 255, 0.72);
+  --nav-border: rgba(11, 16, 32, 0.12);
+
+  --card-bg: #ffffff;
+  --card-bg-hover: #f8fafc;
+  --card-border: rgba(0, 0, 0, 0.08);
+
+  --input-bg: #ffffff;
+  --input-border: rgba(0, 0, 0, 0.15);
+
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-hover: 0 8px 24px rgba(214, 178, 94, 0.12);
+  --shadow-strong: rgba(0, 0, 0, 0.12);
+
+  --link-color: rgba(11, 16, 32, 0.78);
+  --link-hover: #0b1020;
+
+  --grad-navy: rgba(11, 42, 85, 0.10);
+  --grad-gold: rgba(214, 178, 94, 0.10);
+  --band-top: rgba(255, 255, 255, 0.85);
+  --band-bottom: rgba(255, 255, 255, 0.55);
+  --band-glass: rgba(0, 0, 0, 0.02);
+}
+
+/* =========================
+   GLOBAL RESET
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --font-main: "Sora", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+html, body, #root {
+  font-family: var(--font-main);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg-main);
+  color: var(--text-main);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+#root { min-height: 100vh; }
+
+.route-shell {
+  position: relative;
+  min-height: 100vh;
+  overflow: visible;
+}

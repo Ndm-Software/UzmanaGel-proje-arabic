@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#0b2540" />
+  <g fill="#7ed957" font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="50%" y="54%" text-anchor="middle" font-size="40">Tesisat</text>
+  </g>
+</svg>

@@ -1,0 +1,270 @@
+{
+  "categories": [
+    {
+      "id": "temizlik",
+      "name": "Temizlik",
+      "expertise": [
+        "Ev Temizliği",
+        "Ofis Temizliği",
+        "Halı Yıkama",
+        "Cam Temizliği",
+        "İnşaat Sonrası Temizlik",
+        "Koltuk Yıkama",
+        "Perde Yıkama",
+        "Fabrika Temizliği"
+      ]
+    },
+    {
+      "id": "boya-badana",
+      "name": "Boya & Badana",
+      "expertise": [
+        "İç Cephe Boya",
+        "Dış Cephe Boya",
+        "Alçı Sıva İşleri",
+        "Duvar Kağıdı Uygulaması",
+        "Dekoratif Boya",
+        "Rulo ile Boya",
+        "Fırça ile Boya",
+        "Tavan Boyama"
+      ]
+    },
+    {
+      "id": "elektrikci",
+      "name": "Elektrikçi",
+      "expertise": [
+        "Tesisat Çekimi",
+        "Arıza Tespiti",
+        "Sigorta Değişimi",
+        "Aydınlatma Montajı",
+        "Kombi Bağlantısı",
+        "Elektrik Panosu",
+        "Topraklama",
+        "Kaçak Akım Rölesi"
+      ]
+    },
+    {
+      "id": "bahce-bakim",
+      "name": "Bahçe Bakım",
+      "expertise": [
+        "Çim Biçme",
+        "Bitki Budama",
+        "Ağaç Bakımı",
+        "Peyzaj Düzenleme",
+        "Sulama Sistemi",
+        "Çiçek Dikimi",
+        "Yabani Ot Temizliği",
+        "Gübreleme"
+      ]
+    },
+    {
+      "id": "marangoz",
+      "name": "Marangoz",
+      "expertise": [
+        "Mobilya Tamiri",
+        "Kapı Tamiri",
+        "Dolap Montajı",
+        "Parke Döşeme",
+        "Ahşap Mobilya Yapımı",
+        "Mutfak Dolabı",
+        "Gömme Dolap",
+        "Ahşap Kapı"
+      ]
+    },
+    {
+      "id": "guzellik-bakim",
+      "name": "Güzellik & Bakım",
+      "expertise": [
+        "Saç Kesimi",
+        "Makyaj",
+        "Cilt Bakımı",
+        "Manikür-Pedikür",
+        "Epilasyon",
+        "Kaş Tasarımı",
+        "Masaj",
+        "Saç Boyama"
+      ]
+    },
+    {
+      "id": "fotograf-video",
+      "name": "Fotoğraf & Video",
+      "expertise": [
+        "Düğün Fotoğrafçılığı",
+        "Portre Çekimi",
+        "Ürün Çekimi",
+        "Kamera ile Çekim",
+        "Video Kurgu",
+        "Drone ile Çekim",
+        "Konser Fotoğrafçılığı",
+        "Event Fotoğrafçılığı"
+      ]
+    },
+    {
+      "id": "saglik-terapi",
+      "name": "Sağlık & Terapi",
+      "expertise": [
+        "Fizyoterapi",
+        "Psikolojik Danışmanlık",
+        "Diyetisyen",
+        "Masaj Terapi",
+        "Nefes Terapisi",
+        "Yaşam Koçluğu",
+        "Aile Danışmanlığı",
+        "Ergoterapi"
+      ]
+    },
+    {
+      "id": "oto-bakim-tamir",
+      "name": "Oto Bakım & Tamir",
+      "expertise": [
+        "Periyodik Bakım",
+        "Motor Tamiri",
+        "Kaporta Boya",
+        "Lastik Değişimi",
+        "Fren Bakımı",
+        "Elektrik-Arıza",
+        "Klima Bakımı",
+        "Egzoz Tamiri"
+      ]
+    },
+    {
+      "id": "organizasyon",
+      "name": "Organizasyon",
+      "expertise": [
+        "Düğün Organizasyonu",
+        "Toplantı Organizasyonu",
+        "Konser Organizasyonu",
+        "Etkinlik Planlama",
+        "Kokteyl Organizasyonu",
+        "Parti Organizasyonu",
+        "Açılış Organizasyonu",
+        "Mekan Dekorasyonu"
+      ]
+    },
+    {
+      "id": "tadilat-renovasyon",
+      "name": "Tadilat & Renovasyon",
+      "expertise": [
+        "Banyo Tadilatı",
+        "Mutfak Tadilatı",
+        "Alçıpan İşleri",
+        "Seramik Döşeme",
+        "Parke Yenileme",
+        "Duvar Örme",
+        "Çatı Tamiri",
+        "İzolasyon"
+      ]
+    },
+    {
+      "id": "tesisatci",
+      "name": "Tesisatçı",
+      "expertise": [
+        "Su Kaçağı Tespiti",
+        "Musluk Tamiri",
+        "Klozet Montajı",
+        "Petek Temizliği",
+        "Batarya Değişimi",
+        "Kombi Bakımı",
+        "Doğalgaz Tesisatı",
+        "Şofben Tamiri"
+      ]
+    },
+    {
+      "id": "nakliyat",
+      "name": "Nakliyat",
+      "expertise": [
+        "Evden Eve Nakliyat",
+        "Ofis Taşıma",
+        "Parça Eşya Taşıma",
+        "Asansörlü Taşıma",
+        "Paketleme Hizmeti",
+        "Şehirlerarası Nakliyat",
+        "Sigortalı Taşıma",
+        "Mobilya Montajı"
+      ]
+    },
+    {
+      "id": "klima-kombi",
+      "name": "Klima & Kombi",
+      "expertise": [
+        "Klima Montajı",
+        "Klima Bakımı",
+        "Kombi Montajı",
+        "Kombi Bakımı",
+        "Gaz Dolumu",
+        "Arıza Tespiti",
+        "Kanal Açma",
+        "Isıtma Sistemi"
+      ]
+    },
+    {
+      "id": "cilingir",
+      "name": "Çilingir",
+      "expertise": [
+        "Kapı Açma",
+        "Kilit Değişimi",
+        "Çelik Kapı Kilidi",
+        "Kasa Açma",
+        "Oto Kapı Açma",
+        "Şifreli Kilit",
+        "Kopuk Kilit",
+        "Elektronik Kilit"
+      ]
+    },
+    {
+      "id": "egitim-ozel-ders",
+      "name": "Eğitim & Özel Ders",
+      "expertise": [
+        "Matematik Dersi",
+        "Türkçe Dersi",
+        "Fen Bilgisi Dersi",
+        "Yabancı Dil Dersi",
+        "Müzik Dersi",
+        "Resim Dersi",
+        "Sınav Hazırlık",
+        "LGS-YKS Hazırlık"
+      ]
+    },
+    {
+      "id": "yazilim-teknoloji",
+      "name": "Yazılım & Teknoloji",
+      "expertise": [
+        "Web Tasarımı",
+        "Mobil Uygulama",
+        "Yazılım Geliştirme",
+        "Veri Tabanı Yönetimi",
+        "Sistem Kurulumu",
+        "Network Kurulumu",
+        "Teknik Destek",
+        "Virüs Temizleme"
+      ]
+    },
+    {
+      "id": "hukuk-danismanlik",
+      "name": "Hukuk & Danışmanlık",
+      "expertise": [
+        "Avukatlık",
+        "Hukuki Danışmanlık",
+        "Sözleşme Hazırlama",
+        "İcra Takibi",
+        "Boşanma Davası",
+        "İş Hukuku",
+        "Gayrimenkul Hukuku",
+        "Ticaret Hukuku"
+      ]
+    },
+    {
+      "id": "veteriner",
+      "name": "Veteriner",
+      "expertise": [
+        "Evcil Hayvan Muayenesi",
+        "Aşılama",
+        "Ameliyat",
+        "Diş Tedavisi",
+        "Acil Müdahale",
+        "Hayvan Bakımı",
+        "Parazit Tedavisi",
+        "Röntgen"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+# --- Bağımlılıklar (Dependencies) ---
+node_modules/
+jspm_packages/
+web_modules/
+.pnp.*
+.yarn/
+!.yarn/releases/
+!.yarn/plugins/
+
+# --- Güvenlik ve Sırlar (En Kritik Kısım - Recursive) ---
+# Başına / koymadık; böylece hem root, hem frontend, hem backend klasörlerini korur.
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+# .env.example dosyasını bilerek eklemiyoruz (takım arkadaşların görsün diye).
+
+# --- Build ve Çıktı Klasörleri (Build & Dist) ---
+dist/
+dist-ssr/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+*.tsbuildinfo
+
+# --- Log Dosyaları ve Geçici Dosyalar ---
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+report.[0-9].[0-9].[0-9].[0-9].json
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# --- Test ve Kapsam (Testing) ---
+lib-cov
+coverage
+*.lcov
+.nyc_output
+
+# --- Editör ve Sistem Dosyaları ---
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- Önbellek ve Araçlar (Cache & Tools) ---
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.node_repl_history
+*.tgz
+
+# --- Firebase Özel (Staj projen için önemli) ---
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+backend/models/
+
+# Frontend build output
+frontend/dist
+dist
+
+frontend/src/pages/FirebasePhoneSmsTest.jsx

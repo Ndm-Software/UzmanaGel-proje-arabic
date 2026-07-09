@@ -1,0 +1,1043 @@
+/* RequestDetailPage.css file code */
+
+/* ── Animasyonlar ── */
+@keyframes pulsePurpleBlue {
+    0%   { background: rgba(99, 102, 241, 0.4); box-shadow: 0 0 5px #6366f1; }
+    50%  { background: rgba(168, 85, 247, 0.6); box-shadow: 0 0 20px #a855f7; }
+    100% { background: rgba(99, 102, 241, 0.4); box-shadow: 0 0 5px #6366f1; }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+.pulse-preview {
+    animation: pulsePurpleBlue 2s infinite;
+    border: 2px solid #a855f7 !important;
+}
+
+
+/* ── Ana ── */
+.rd-main { padding: 30px; }
+
+.rd-loading-text { color: var(--text-main); padding: 20px; }
+
+.profile-card-section {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow);
+}
+
+.hours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+}
+
+.hour-card {
+    border-radius: 12px;
+    padding: 15px;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    background: var(--input-bg);
+    border: 1px solid var(--card-border);
+}
+
+.hour-card.non-working {
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.2);
+}
+
+.hour-card.has-appo {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+}
+
+/* ── Üst Bar ── */
+.rd-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.rd-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rd-date-title {
+    color: var(--text-main);
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.rd-topbar-spacer { width: 150px; }
+
+/* ── Takvim Rehberi ── */
+.rd-calendar-section { padding: 25px; margin-bottom: 25px; }
+
+.rd-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.rd-calendar-title {
+    color: #fbbf24;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+}
+
+.rd-legend-badge {
+    font-size: 12px;
+    background: rgba(168, 85, 247, 0.2);
+    color: #a855f7;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid #a855f7;
+    font-weight: bold;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.rd-blink-icon {
+    font-size: 8px;
+    animation: blink 1s infinite;
+}
+
+/* Saat Kartları */
+.rd-hour-card {
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.rd-hour-card.non-working { opacity: 0.6; }
+
+.rd-hour-time {
+    font-weight: 900;
+    color: var(--text-main);
+    font-size: 15px;
+}
+
+.rd-hour-closed {
+    color: #ef4444;
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+.rd-target-block { border: 2px solid #a855f7; }
+
+.rd-block-time {
+    color: var(--text-main);
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.rd-block-label {
+    font-weight: bold;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.rd-block-label--target { color: #e9d5ff; }
+.rd-block-label--appo   { color: #fbbf24; }
+.rd-block-label--free   { color: #10b981; }
+
+.rd-target-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ── Detay Bölümü ── */
+.rd-detail-section { padding: 30px; }
+
+.rd-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+/* Sol: Müşteri Bilgileri */
+.rd-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rd-info-row {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.rd-info-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.rd-field-label {
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.rd-field-value {
+    color: var(--text-main);
+    font-size: 16px;
+}
+
+.rd-field-value--large {
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.rd-note-box {
+    background: var(--input-bg);
+    padding: 15px;
+    border-radius: 12px;
+    color: var(--text-soft);
+    font-style: italic;
+    border-left: 4px solid var(--primary);
+    line-height: 1.5;
+}
+
+/* Sağ: Karar Butonları */
+.rd-action-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+    padding-left: 40px;
+    border-left: 1px solid var(--card-border);
+}
+
+/* ── Butonlar ── */
+.rd-btn {
+    border: none;
+    border-radius: 15px;
+    padding: 15px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.rd-btn--approve {
+    background: #10b981;
+    color: white;
+    font-size: 18px;
+}
+
+.rd-btn--approve:hover { background: #059669; }
+
+.rd-btn--reject {
+    background: transparent;
+    color: #f87171;
+    border: 1px solid #f87171;
+}
+
+.rd-btn--reject:hover { background: rgba(248, 113, 113, 0.1); }
+
+.rd-btn--confirm {
+    background: #10b981;
+    color: white;
+    border-radius: 10px;
+    padding: 12px 20px;
+}
+
+.rd-btn--cancel {
+    background: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--card-border);
+}
+
+.rd-btn--modal { flex: 1; }
+
+.rd-btn-text {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 0;
+    text-align: left;
+}
+
+.rd-btn-text:hover { color: var(--primary); }
+
+/* Süre Input */
+.rd-duration-box {
+    background: rgba(16, 185, 129, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #10b981;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rd-duration-label {
+    color: var(--text-main);
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.rd-duration-row {
+    display: flex;
+    gap: 10px;
+}
+
+.rd-duration-input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--input-bg);
+    border: 1px solid #10b981;
+    color: var(--text-main);
+    font-size: 14px;
+    outline: none;
+}
+
+/* Red Alanı */
+.rd-reject-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rd-reject-textarea {
+    background: var(--input-bg);
+    border: 1px solid #f87171;
+    border-radius: 10px;
+    padding: 10px;
+    color: var(--text-main);
+    min-height: 80px;
+    font-size: 14px;
+    outline: none;
+    resize: vertical;
+}
+
+.rd-reject-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.rd-btn--reject-confirm {
+    flex: 1;
+    background: #f87171;
+    color: white;
+    border-radius: 8px;
+    padding: 10px;
+    border: none;
+}
+
+/* ── Onay Modali ── */
+.rd-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.rd-modal {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 24px;
+    border: 1px solid #10b981;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+}
+
+.rd-modal-icon {
+    color: #10b981;
+    font-size: 50px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.rd-modal-title {
+    color: var(--text-main);
+    margin: 0 0 10px 0;
+    font-size: 20px;
+}
+
+.rd-modal-text {
+    color: var(--text-soft);
+    margin-bottom: 30px;
+}
+
+.rd-modal-actions {
+    display: flex;
+    gap: 15px;
+}
+
+/* ── Light Tema ── */
+[data-theme="light"] .rd-modal {
+    background: #ffffff;
+}
+
+[data-theme="light"] .rd-note-box {
+    color: #334155;
+}
+
+[data-theme="light"] .rd-duration-box {
+    background: rgba(16, 185, 129, 0.06);
+}
+
+[data-theme="light"] .rd-duration-input,
+[data-theme="light"] .rd-reject-textarea {
+    background: #ffffff;
+    border-color: inherit;
+}
+
+/* ── Responsive ── */
+@media (max-width: 992px) {
+    .rd-detail-grid { grid-template-columns: 1fr; }
+    .rd-action-col { padding-left: 0; border-left: none; border-top: 1px solid var(--card-border); padding-top: 20px; }
+    .rd-topbar { flex-direction: column; gap: 16px; text-align: center; }
+    .rd-topbar-spacer { display: none; }
+}
+
+@media (max-width: 768px) {
+    .rd-main { padding: 16px; }
+    .rd-modal-actions { flex-direction: column; }
+    .rd-info-row { flex-direction: column; gap: 16px; }
+}
+/* إضافات لملف RequestDetailPage.css */
+
+/* معلومات المسافة */
+.distance-value {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.distance-value i {
+  margin-right: 8px;
+}
+
+/* حاوية الخريطة */
+.rd-map-container {
+  margin: 20px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* مكان الخريطة البديل */
+.rd-map-placeholder {
+  background: var(--input-bg);
+  border: 1px dashed var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.rd-map-placeholder i {
+  font-size: 32px;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.rd-map-placeholder p {
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+
+.rd-map-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--primary);
+  color: #0b0f1e;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.rd-map-link:hover {
+  background: #c4a14c;
+  transform: translateY(-2px);
+}
+
+/* رأس قسم الرفض */
+.rd-reject-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.rd-reject-label {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.rd-quick-reasons-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.rd-quick-reasons-toggle:hover {
+  border-color: var(--primary);
+  background: rgba(214, 178, 94, 0.05);
+}
+
+.rd-quick-reasons-toggle i {
+  color: var(--primary);
+}
+
+/* شبكة الأسباب السريعة */
+.rd-quick-reasons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 15px 0;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.rd-quick-reason {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.rd-quick-reason:hover {
+  border-color: var(--primary);
+  background: rgba(214, 178, 94, 0.05);
+  transform: translateY(-2px);
+}
+
+.rd-quick-reason.selected {
+  background: rgba(214, 178, 94, 0.15);
+  border-color: var(--primary);
+}
+
+.reason-icon {
+  font-size: 18px;
+  min-width: 24px;
+}
+
+.reason-content {
+  flex: 1;
+}
+
+.reason-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.reason-description {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* تحسينات للصفحة */
+.rd-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.rd-field-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.rd-field-value {
+  font-size: 14px;
+  color: var(--text-main);
+  font-weight: 500;
+  padding: 8px 12px;
+  background: var(--input-bg);
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+}
+
+.rd-field-value--large {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.rd-field-value i {
+  margin-right: 6px;
+  color: var(--primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rd-quick-reasons {
+    grid-template-columns: 1fr;
+  }
+  
+  .rd-info-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .rd-map-container {
+    height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rd-reject-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .rd-quick-reasons-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* --- SENİN ŞIK BUTONUN (HER EKRANDA ÇALIŞMASI İÇİN !IMPORTANT EKLEDİK) --- */
+.rd-back-to-decision-btn {
+    width: 100% !important;
+    padding: 8px !important;
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    color: #d6b25e !important; /* Tema rengin mor */
+    background-color: transparent !important;
+    border: 2px solid #a855f7 !important;
+    border-radius: 12px !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px !important;
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+}
+
+.rd-back-to-decision-btn:hover {
+    background-color: #a855f7 !important;
+    color: white !important;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+}
+
+/* Kıyaslama paneli yüksekliğini sağ sütuna göre sabitliyoruz */
+.rd-action-col {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+}
+
+/* --- ONAYLA/REDDET BUTONLARINI MERKEZE AL VE UZAT --- */
+
+/* Butonların içinde bulunduğu ana kutuyu genişlet ve merkeze al */
+.rd-decision-mode {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important; /* Dikeyde ortala */
+    align-items: center !important;    /* Yatayda ortala */
+    gap: 20px !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 400px; /* Butonların rahatça ortalanması için alan tanıyoruz */
+}
+
+/* Onayla ve Reddet butonlarını tekil olarak uzat */
+.rd-btn--approve, 
+.rd-btn--reject {
+    width: 100% !important; /* Kutuyu tamamen kapla */
+    max-width: 450px !important; /* Çok aşırı yayılmasın, usta işi dursun */
+    padding: 18px !important; /* Daha dolgun görünüm */
+    font-size: 18px !important;
+    border-radius: 15px !important;
+}
+
+/* Süre giriş kutusunun da (Onayla'ya basınca çıkan) butonlarla aynı genişlikte olması için */
+.rd-duration-box {
+    width: 100% !important;
+    max-width: 450px !important;
+}
+
+/* --- RED ALANI GÖRÜNÜMÜNÜ SABİTLE --- */
+
+/* Red kutusunun kendisini her zaman geniş tutuyoruz */
+.rd-reject-box {
+    width: 100% !important;
+    max-width: 450px !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+}
+
+/* Başlık ve Hızlı Sebepler butonu arasını aç */
+.rd-reject-header {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+/* Textarea (Yazı alanı) boyutunu sabitleyelim ki sayfa zıplamasın */
+.rd-reject-textarea {
+    width: 100% !important;
+    min-height: 120px !important; /* 2. fotoğraftaki o küçüklüğü bu satır çözer */
+    padding: 12px !important;
+    border-radius: 12px !important;
+    font-size: 15px !important;
+}
+
+/* Alttaki butonların (Reddi Gönder ve İptal) dizilimi */
+.rd-reject-actions {
+    width: 100% !important;
+    display: flex !important;
+    gap: 10px !important;
+}
+
+.rd-btn--reject-confirm {
+    flex: 2 !important; /* Reddi Gönder butonu daha baskın olsun */
+    padding: 15px !important;
+}
+
+.rd-btn--cancel {
+    flex: 1 !important; /* İptal butonu daha kibar durur */
+    padding: 15px !important;
+}
+
+/* --- YENİ SOL PANEL TASARIMI --- */
+
+.rd-left-main-title-box {
+    text-align: center;
+    border-bottom: 2px dashed #3e4451;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+.rd-left-main-title {
+    color: #fbbf24; /* Altın rengi başlık */
+    font-size: 16px;
+    font-weight: 800;
+    margin: 0;
+}
+
+/* Metrik Kartları Yan Yana */
+.rd-metric-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.rd-metric-card {
+    background: rgba(168, 85, 247, 0.1);
+    border-radius: 12px;
+    padding: 10px;
+    border-left: 3px solid #a855f7;
+}
+
+.rd-metric-card--distance {
+    background: rgba(16, 185, 129, 0.1);
+    border-left: 3px solid #10b981;
+}
+
+.rd-metric-val {
+    font-size: 13px !important;
+    font-weight: bold;
+    color: var(--text-main);
+}
+
+/* 🌍 Küçük Maps Butonu */
+.rd-mini-map-btn {
+    font-size: 12px;
+    background: #4ddae7d5;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.1s;
+}
+
+.rd-mini-map-btn:hover {
+    background: #d51313d5;
+    transform: scale(1.05);
+}
+
+/* 💣 Uygunluk Testi Butonu */
+.rd-suitability-test-btn {
+    width: 100%;
+    margin-top: 13px;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(  #4ddae7d5);
+    color: #111827;
+    font-weight: 900;
+    cursor: pointer;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
+}
+
+.rd-suitability-test-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+/* --- MESAJ ALTI TATLI METRİK KARTLARI --- */
+
+.rd-vertical-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 10px 10px 0px 0px;
+}
+
+.rd-sweet-frame {
+    background: var(--input-bg);
+    border-radius: 16px;
+    padding: 7px;
+    border: 1px solid var(--card-border);
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+/* Bekleme Süresi Kartı (Mor Vurgulu) */
+.rd-sweet-frame--time {
+    border-left: 5px solid #a855f7;
+    background: linear-gradient(to right, rgba(168, 85, 247, 0.05), transparent);
+}
+
+/* Uzaklık Kartı (Yeşil Vurgulu) */
+.rd-sweet-frame--distance {
+    border-left: 5px solid #10b981;
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.05), transparent);
+}
+
+.rd-sweet-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--text-main);
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.rd-sweet-icon {
+    font-size: 24px;
+    min-width: 30px;
+    text-align: center;
+}
+
+.rd-sweet-frame--time .rd-sweet-icon { color: #a855f7; }
+.rd-sweet-frame--distance .rd-sweet-icon { color: #10b981; }
+
+.rd-sweet-content strong {
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.rd-sweet-content small {
+    display: block;
+    margin-top: 4px;
+    color: var(--text-soft);
+    font-weight: 600;
+    font-style: italic;
+}
+
+.rd-field-label--inside {
+    display: block;
+    font-size: 11px;
+    font-weight: 900;
+    color: #10b981;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+/* --- İKİ MÜŞTERİ ARASI MESAFE KARTI (TURUNCU/AMBER) --- */
+
+.rd-sweet-frame--compare {
+    border-left: 5px solid #f59e0b !important; /* Kehribar Turuncusu */
+    background: linear-gradient(to right, rgba(245, 158, 11, 0.08), transparent) !important;
+    margin-top: 1px;
+}
+
+.rd-sweet-frame--compare .rd-sweet-icon {
+    color: #f59e0b; /* İkon rengi başlıkla uyumlu */
+}
+
+.rd-sweet-frame--compare strong {
+    color: #f59e0b; /* İsimleri vurgulayalım */
+}
+
+/* 🗺️ HARİTA MODALI - MODERN & NEON TASARIM */
+.rd-map-modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 7, 20, 0.8); /* Derin lacivert şeffaflık */
+  display: flex; justify-content: center; align-items: center;
+  z-index: 10000; backdrop-filter: blur(10px); /* Arkayı buzla */
+}
+
+.rd-map-modal-window {
+  background: #0d1425; width: 95%; max-width: 1300px; height: 90vh;
+  border-radius: 20px; border: 1px solid rgba(0, 242, 254, 0.3);
+  box-shadow: 0 0 40px rgba(0, 242, 254, 0.2);
+  display: flex; flex-direction: column; overflow: hidden; position: relative;
+}
+
+/* Harita Üstündeki Bilgi Paneli (Glassmorphism) */
+.rd-map-info-glass {
+  /*position: absolute; top: 80px; right: 20px; z-index: 1001;*/
+  background: rgba(13, 20, 37, 0.7); backdrop-filter: blur(15px);
+  padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white; width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.rd-map-info-glass h3 { color: #ffca28; margin-bottom: 15px; font-size: 1.1rem; }
+.rd-map-step { margin-bottom: 12px; font-size: 0.9rem; display: flex; align-items: flex-start; gap: 20px; }
+.rd-map-step i { margin-top: 3px; }
+
+/* =========================================================
+   8 May 2026 - Fix long text overflow in Request Detail Page
+   ========================================================= */
+
+.rd-detail-section,
+.rd-detail-grid,
+.rd-info-col,
+.rd-action-col,
+.rd-info-row,
+.rd-info-field,
+.rd-field-value,
+.rd-note-box,
+.hour-card {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.rd-detail-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  overflow: hidden;
+}
+
+.rd-info-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.rd-field-value,
+.rd-note-box,
+.rd-block-time,
+.rd-block-label,
+.rd-target-label,
+.rd-sweet-content {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+.rd-field-value {
+  overflow-x: hidden !important;
+  line-height: 1.5;
+}
+
+.rd-note-box {
+  max-height: 180px;
+  overflow-y: auto;
+  overflow-x: hidden !important;
+  line-height: 1.6;
+}
+
+.rd-info-field > div[style] {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.hours-grid {
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+}
+
+.hour-card {
+  overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .rd-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .rd-info-row {
+    grid-template-columns: 1fr !important;
+  }
+}

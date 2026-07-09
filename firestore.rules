@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- REVIEW KURALLARI ---
+    // 1 randevu = 1 review (doc id = appointmentId)
+    // Sadece randevu sahibi (clientId) ve randevu completed ise yazabilir.
+    // Update/Delete kapalı (moderasyon gerekiyorsa sonra açarız).
+    match /reviews/{appointmentId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.clientId == request.auth.uid
+        && request.resource.data.appointmentId == appointmentId
+        // Firestore sayıları çoğu zaman double olarak tutar; number kabul ediyoruz.
+        && request.resource.data.rating is number
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        // comment opsiyonel (yoksa izin ver), varsa string ve 1000 karakter sınırı
+        && (!('comment' in request.resource.data) || request.resource.data.comment is string)
+        && (!('comment' in request.resource.data) || request.resource.data.comment.size() <= 1000)
+        && exists(/databases/$(database)/documents/appointments/$(appointmentId))
+        && get(/databases/$(database)/documents/appointments/$(appointmentId)).data.clientId == request.auth.uid
+        && get(/databases/$(database)/documents/appointments/$(appointmentId)).data.status == 'completed';
+      allow update, delete: if false;
+    }
+
+    // --- DİĞER KOLEKSİYONLAR ---
+    // Not: Projede mevcutta rules dosyası yoktu; uygulamanın çalışmasını bozmamak için
+    // şimdilik "açık" bırakıldı. İstersen bunları tek tek sıkılaştırırız.
+    match /appointments/{docId} { allow read, write: if true; }
+    match /chat_moderation_logs/{docId} { allow read, write: if true; }
+    match /contact_replies/{docId} { allow read, write: if true; }
+    match /contacts/{docId} { allow read, write: if true; }
+    match /conversations/{docId} { allow read, write: if true; }
+    match /deleted_conversations/{docId} { allow read, write: if true; }
+    match /notifications/{docId} { allow read, write: if true; }
+    match /rejected_experts/{docId} { allow read, write: if true; }
+    match /service_providers/{docId} { allow read, write: if true; }
+    match /services/{docId} { allow read, write: if true; }
+    // İlan bildirimleri yalnızca backend (Admin SDK) ile yazılır; istemci doğrudan erişemez.
+    match /listing_reports/{docId} { allow read, write: if false; }
+    match /user_favorites/{docId} { allow read, write: if true; }
+    match /users/{docId} { allow read, write: if true; }
+    match /wallet_history/{docId} { allow read, write: if true; }
+  }
+}
+

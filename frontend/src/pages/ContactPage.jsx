@@ -1,0 +1,386 @@
+import React, { useState, useEffect } from 'react';
+import { db, auth } from '../firebase/firebaseClient';
+import { 
+  collection, 
+  addDoc, 
+  serverTimestamp, 
+  doc,
+  getDoc
+} from 'firebase/firestore';
+import Navbar from '../components/Navbar';
+import PageTransition from "../components/PageTransition";
+import LoadingSpinner from '../components/LoadingSpinner';
+import DOMPurify from 'dompurify';
+import { useNavigate } from 'react-router-dom';
+import { showAppToast } from '../utils/showAppToast';
+import '../styles/ContactPage.css';
+
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+const sanitizeText = (text) => {
+  if (!text) return '';
+  return DOMPurify.sanitize(String(text));
+};
+
+const ContactPage = () => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  }, []);
+
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [isSent, setIsSent] = useState(false);
+  const [initializing, setInitializing] = useState(true);
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      setInitializing(true);
+      
+      const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          setIsLoggedIn(true);
+          
+          try {
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            
+            let displayName = user.displayName || '';
+            let email = user.email || '';
+            let phoneNumber = user.phoneNumber || '';
+            let role = null;
+            
+            if (userDocSnap.exists()) {
+              const userData = userDocSnap.data();
+              displayName = userData.displayName || displayName;
+              email = userData.email || email;
+              phoneNumber = userData.phoneNumber || phoneNumber;
+              role = userData.userType || null;
+            }
+            
+            setUserRole(role);
+            setFormData(prev => ({
+              ...prev,
+              fullName: displayName,
+              email: email,
+              phone: phoneNumber
+            }));
+            
+          } catch (error) {
+            if (isDevelopment) console.error(error.message);
+            setFormData(prev => ({
+              ...prev,
+              fullName: user.displayName || '',
+              email: user.email || '',
+              phone: user.phoneNumber || ''
+            }));
+          }
+        } else {
+          setIsLoggedIn(false);
+          setUserRole(null);
+          setFormData(prev => ({
+            ...prev,
+            fullName: '',
+            email: '',
+            phone: ''
+          }));
+        }
+        
+        setInitializing(false);
+      });
+      
+      return () => unsubscribe();
+    };
+    
+    loadUserData();
+  }, []);
+
+  const handlePhoneChange = (e) => {
+    if (!isLoggedIn) {
+      let value = e.target.value;
+      value = value.replace(/[^0-9+\-]/g, '');
+      if (value.length > 20) value = value.slice(0, 20);
+      setFormData(prev => ({ ...prev, phone: value }));
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    if (!isLoggedIn) {
+      let value = e.target.value;
+      value = value.replace(/\s/g, '');
+      if (value.length > 100) value = value.slice(0, 100);
+      setFormData(prev => ({ ...prev, email: value }));
+    }
+  };
+
+  const handleNameChange = (e) => {
+    if (!isLoggedIn) {
+      let value = e.target.value;
+      if (value.length > 100) value = value.slice(0, 100);
+      setFormData(prev => ({ ...prev, fullName: value }));
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (isLoggedIn) {
+      if (name === 'message') {
+        setFormData(prev => ({ ...prev, [name]: value }));
+      }
+    } else {
+      if (name === 'phone') {
+        handlePhoneChange(e);
+      } else if (name === 'email') {
+        handleEmailChange(e);
+      } else if (name === 'fullName') {
+        handleNameChange(e);
+      } else {
+        setFormData(prev => ({ ...prev, [name]: value }));
+      }
+    }
+  };
+
+  const validatePhone = (phone) => {
+    const phoneRegex = /^[0-9+\-]{10,15}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!isLoggedIn) {
+      showAppToast('Mesaj göndermek için lütfen giriş yapın.', 'info');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+      return;
+    }
+    
+    setLoading(true);
+    setError('');
+
+    if (!formData.fullName.trim()) {
+      setError("Lütfen ad soyad giriniz.");
+      setLoading(false);
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setError("Lütfen geçerli bir e-posta adresi girin.");
+      setLoading(false);
+      return;
+    }
+
+    if (!validatePhone(formData.phone)) {
+      setError("Lütfen geçerli bir telefon numarası girin. (Sadece rakam, + ve - karakterleri kullanabilirsiniz)");
+      setLoading(false);
+      return;
+    }
+
+    if (formData.message.trim().length < 10) {
+      setError("Mesajınız çok kısa, lütfen en az 10 karakter yazın.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const now = Date.now();
+      const fortyEightHoursAgo = now - (2 * 24 * 60 * 60 * 1000);
+      let localSentTimes = [];
+      
+      try {
+        const stored = localStorage.getItem('contact_sent_timestamps');
+        if (stored) {
+          localSentTimes = JSON.parse(stored).filter(t => t >= fortyEightHoursAgo);
+        }
+      } catch (e) {
+        localSentTimes = [];
+      }
+
+      if (localSentTimes.length >= 2) {
+        setError("Maksimum mesaj gönderme sınırına ulaştınız. Lütfen 2 gün sonra tekrar deneyiniz.");
+        setLoading(false);
+        return;
+      }
+
+      let userType = 'REGISTERED_USER';
+      let userId = null;
+      let finalUserRole = null;
+
+      if (isLoggedIn && auth.currentUser) {
+        userId = auth.currentUser.uid;
+        finalUserRole = userRole;
+      }
+
+      await addDoc(collection(db, "contacts"), {
+        fullName: sanitizeText(formData.fullName.trim()),
+        email: formData.email.toLowerCase().trim(),
+        phone: sanitizeText(formData.phone.trim()),
+        message: sanitizeText(formData.message.trim()),
+        createdAt: serverTimestamp(),
+        status: "unread",
+        userId: userId,
+        userType: userType,
+        userRole: finalUserRole,
+        source: 'registered'
+      });
+
+      localSentTimes.push(now);
+      localStorage.setItem('contact_sent_timestamps', JSON.stringify(localSentTimes));
+
+      setIsSent(true);
+      setFormData(prev => ({ ...prev, message: '' }));
+
+    } catch (err) {
+      if (isDevelopment) console.error(err.message);
+      setError("Mesaj gönderilemedi. Lütfen tekrar deneyin.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (initializing) {
+    return (
+      <PageTransition>
+        <div className="contact-page">
+          <Navbar />
+          <LoadingSpinner text="Sayfa yükleniyor..." />
+        </div>
+      </PageTransition>
+    );
+  }
+
+  return (
+    <PageTransition>
+      <div className="contact-page">
+        <Navbar />
+        <main className="contact-container">
+          <div className="contact-card">
+            {isSent ? (
+              <div className="success-content animation-fadeIn">
+                <div className="popup-icon"><i className="fas fa-check-circle"></i></div>
+                <h3>Mesajınız Alındı!</h3>
+                <p>Bizimle iletişime geçtiğiniz için teşekkürler. En kısa sürede geri döneceğiz.</p>
+                <button className="submit-button" onClick={() => setIsSent(false)}>Yeni Mesaj Gönder</button>
+              </div>
+            ) : (
+              <>
+                <div className="contact-icon-wrapper"><i className="fas fa-envelope"></i></div>
+                <h2>Bize Ulaşın</h2>
+
+                <form className="contact-form" onSubmit={handleSubmit}>
+                  <div className="input-group">
+                    <input 
+                      type="text" 
+                      name="fullName" 
+                      placeholder="Ad Soyad" 
+                      className={`contact-input ${isLoggedIn ? 'disabled-field' : ''}`}
+                      required 
+                      value={formData.fullName} 
+                      onChange={handleChange}
+                      disabled={isLoggedIn || loading}
+                      readOnly={isLoggedIn}
+                      maxLength="100"
+                    />
+                    {isLoggedIn && (
+                      <div className="field-lock-icon">
+                        <i className="fas fa-lock"></i>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="input-group">
+                    <input 
+                      type="email" 
+                      name="email" 
+                      placeholder="E-posta" 
+                      className={`contact-input ${isLoggedIn ? 'disabled-field' : ''}`}
+                      required 
+                      value={formData.email} 
+                      onChange={handleChange}
+                      disabled={isLoggedIn || loading}
+                      readOnly={isLoggedIn}
+                      maxLength="100"
+                    />
+                    {isLoggedIn && (
+                      <div className="field-lock-icon">
+                        <i className="fas fa-lock"></i>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="input-group">
+                    <input 
+                      type="tel" 
+                      name="phone" 
+                      placeholder="Telefon" 
+                      className={`contact-input ${isLoggedIn ? 'disabled-field' : ''}`}
+                      required 
+                      value={formData.phone} 
+                      onChange={handleChange}
+                      disabled={isLoggedIn || loading}
+                      readOnly={isLoggedIn}
+                      maxLength="20"
+                    />
+                    {isLoggedIn && (
+                      <div className="field-lock-icon">
+                        <i className="fas fa-lock"></i>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <textarea 
+                    name="message" 
+                    placeholder="Mesajınız" 
+                    className="contact-input" 
+                    required 
+                    value={formData.message} 
+                    onChange={handleChange}
+                    disabled={loading}
+                    rows="5"
+                    maxLength="2000"
+                  ></textarea>
+
+                  {error && <p className="error-message">{sanitizeText(error)}</p>}
+                  
+                  <button type="submit" className="submit-button" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin"></i>
+                        Gönderiliyor...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-paper-plane"></i>
+                        Mesajı Gönder
+                      </>
+                    )}
+                  </button>
+                </form>
+              </>
+            )}
+          </div>
+        </main>
+      </div>
+    </PageTransition>
+  );
+};
+
+export default ContactPage;

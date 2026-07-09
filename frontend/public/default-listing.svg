@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#1e293b"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#g)" />
+  <g fill="#d6b25e" font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="50%" y="46%" text-anchor="middle" font-size="36">Fotoğraf yok</text>
+    <text x="50%" y="62%" text-anchor="middle" font-size="20" fill="#ffffff99">Varsayılan ilan görseli</text>
+  </g>
+</svg>

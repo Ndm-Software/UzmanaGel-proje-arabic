@@ -1,0 +1,70 @@
+﻿.lp-recaptcha-wrap {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+
+
+
+.lp-login-error {
+  margin-top: 10px;
+  color: tomato;
+  font-weight: 700;
+}
+
+
+.lp-login-btn-secondary {
+  margin-top: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .lp-login-btn-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+
+.lp-login-btn-secondary {
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(214, 178, 94, 0.1); 
+  border: 1px solid rgba(214, 178, 94, 0.4); 
+  color: #d6b25e; 
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; 
+  transition: all 0.3s ease;
+}
+
+.lp-login-btn-secondary i {
+  font-size: 12px;
+}
+
+.lp-login-btn-secondary:hover:not(:disabled) {
+  background: rgba(214, 178, 94, 0.2);
+  transform: translateY(-1px);
+}
+
+.lp-login-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-theme="dark"] .lp-login-btn-secondary {
+  background: rgba(214, 178, 94, 0.05);
+  border: 1px solid rgba(214, 178, 94, 0.3);
+  color: #d6b25e;
+}

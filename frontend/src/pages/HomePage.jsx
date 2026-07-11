@@ -211,7 +211,7 @@ export default function HomePage() {
   }, []);
 
   const handleUzmanBulClick = () => {
-    navigate("/register");
+    navigate("/ilanlar");
   };
 
   const handleUzmanOlClick = () => {

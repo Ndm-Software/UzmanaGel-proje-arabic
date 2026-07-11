@@ -2067,10 +2067,6 @@ const ExpertProfilePage = () => {
           onSuccess={(phoneNumber) => setUserData((prev) => ({ ...(prev || {}), phoneNumber }))}
         />
       )}
-      {activeModal === 'workingHours' && (
-        <WorkingHoursModal uid={user.uid} currentHours={expertData?.workingHours || {}} onClose={() => setActiveModal(null)}
-          onSuccess={(v) => setExpertData(p => ({ ...p, workingHours: v }))} />
-      )}
       {activeModal === 'deleteAccount' && (
         <DeleteAccountModal
           hasPasswordProvider={hasPasswordProvider}
@@ -2168,10 +2164,9 @@ const ExpertProfilePage = () => {
         </div>
 
         <div className="expert-tabs">
-          {['user', 'working-hours', 'portfolio', 'security', 'address'].map((tab) => (
+          {['user', 'portfolio', 'security', 'address'].map((tab) => (
             <button key={tab} className={`tab-btn ${activeSetting === tab ? 'active' : ''}`} onClick={() => setActiveSetting(tab)}>
               {tab === 'user' && <><i className="fas fa-user-circle"></i> معلومات المستخدم</>}
-              {tab === 'working-hours' && <><i className="fas fa-clock"></i> ساعات العمل</>}
               {tab === 'portfolio' && <><i className="fas fa-images"></i> معرض الأعمال والشهادات</>}
               {tab === 'security' && <><i className="fas fa-shield-alt"></i> الأمان</>}
               {tab === 'address' && <><i className="fas fa-map-marker-alt"></i> عنوان العمل</>}
@@ -2268,37 +2263,6 @@ const ExpertProfilePage = () => {
               ) : (
                 <span className="specialties-empty">غير محدد</span>
               )}
-            </div>
-          )}
-
-          {activeSetting === 'working-hours' && (
-            <div className="settings-working-hours">
-              <h4 className="settings-section-title">برنامج العمل الأسبوعي</h4>
-              <p className="settings-helper-text">يمكنك عرض ساعات عملك الأسبوعية أدناه.</p>
-              {expertData?.workingHours && Object.values(expertData.workingHours).some(d => d.enabled) ? (
-                <div className="working-hours-container">
-                  {DAYS.map(day => {
-                    const h = expertData.workingHours[day];
-                    if (!h?.enabled) return null;
-                    return (
-                      <div key={day} className="working-hours-row">
-                        <div className="working-hours-day"><i className="fas fa-calendar-day"></i>{getTurkishDayName(day)}</div>
-                        <div className="working-hours-time"><span>{h.start} - {h.end}</span></div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="working-hours-empty-state">
-                  <i className="fas fa-clock working-hours-empty-icon"></i>
-                  <p>لم يتم تحديد ساعات عمل</p>
-                </div>
-              )}
-              <div className="settings-save-row">
-                <button className="settings-primary-button" onClick={() => setActiveModal('workingHours')}>
-                  <i className="fas fa-edit"></i> تعديل ساعات العمل
-                </button>
-              </div>
             </div>
           )}
 

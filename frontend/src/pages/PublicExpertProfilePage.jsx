@@ -196,7 +196,6 @@ const PublicExpertProfilePage = () => {
     if (!tab) return;
     if (tab === 'reviews') setActiveTab('reviews');
     else if (tab === 'portfolio') setActiveTab('portfolio');
-    else if (tab === 'hours') setActiveTab('hours');
     else setActiveTab('info');
   }, [searchParams]);
 
@@ -361,11 +360,6 @@ const PublicExpertProfilePage = () => {
           <button className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>
             <i className="fas fa-star"></i> التعليقات
           </button>
-          {expertData?.workingHours && Object.values(expertData.workingHours).some(d => d.enabled) && (
-            <button className={`tab-btn ${activeTab === 'hours' ? 'active' : ''}`} onClick={() => setActiveTab('hours')}>
-              <i className="fas fa-clock"></i> ساعات العمل
-            </button>
-          )}
         </div>
 
         {/* GERİ KALAN KISIM (info, portfolio, reviews, hours) - AYNI KALIR */}
@@ -532,29 +526,6 @@ const PublicExpertProfilePage = () => {
             </div>
           )}
 
-          {/* ÇALIŞMA SAATLERİ */}
-          {activeTab === 'hours' && (
-            <div className="settings-working-hours">
-              <h4 className="settings-section-title">برنامج العمل الأسبوعي</h4>
-              <div className="working-hours-container">
-                {DAYS.map(day => {
-                  const h = expertData?.workingHours?.[day];
-                  if (!h?.enabled) return null;
-                  return (
-                    <div key={day} className="working-hours-row">
-                      <div className="working-hours-day">
-                        <i className="fas fa-calendar-day"></i>
-                        {getTurkishDayName(day)}
-                      </div>
-                      <div className="working-hours-time">
-                        <span>{h.start} - {h.end}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </section>
 
         {/* GERİ DÖN BUTONU */}

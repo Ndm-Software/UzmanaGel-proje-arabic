@@ -136,7 +136,7 @@ const ExpertRegisterPage = () => {
 
   // Bakım modu kontrolü
   if (settingsLoading) {
-    return <LoadingSpinner text="Sistem ayarları kontrol ediliyor..." />;
+    return <LoadingSpinner text="يتم التحقق من إعدادات النظام..." />;
   }
 
   // Bakım modu aktifse sayfayı gösterme
@@ -145,11 +145,11 @@ const ExpertRegisterPage = () => {
       <div className="maintenance-page">
         <div className="maintenance-content">
           <i className="fas fa-tools fa-4x"></i>
-          <h1>Bakım Modu</h1>
-          <p>Sitemizde bakım çalışması yapılmaktadır.</p>
-          <p>Lütfen daha sonra tekrar deneyin.</p>
+          <h1>وضع الصيانة</h1>
+          <p>يتم حالياً إجراء أعمال صيانة على المنصة.</p>
+          <p>يرجى المحاولة لاحقاً.</p>
           <Link to="/" className="maintenance-home-btn">
-            Ana Sayfaya Dön
+            العودة إلى الرئيسية
           </Link>
         </div>
       </div>
@@ -162,14 +162,14 @@ const ExpertRegisterPage = () => {
       <div className="registrations-closed-page">
         <div className="registrations-closed-content">
           <i className="fas fa-door-closed fa-4x"></i>
-          <h1>Yeni Kayıtlar Durduruldu</h1>
-          <p>Şu anda yeni kayıtlar geçici olarak durdurulmuştur.</p>
-          <p>Uzman başvuruları da şu anda alınmamaktadır.</p>
+          <h1>تم إيقاف التسجيلات الجديدة</h1>
+          <p>التسجيلات الجديدة متوقفة مؤقتاً في الوقت الحالي.</p>
+          <p>طلبات الخبراء غير متاحة حالياً.</p>
           <Link to="/" className="registrations-home-btn">
-            Ana Sayfaya Dön
+            العودة إلى الرئيسية
           </Link>
           <Link to="/login" className="registrations-login-btn">
-            Giriş Yap
+            تسجيل الدخول
           </Link>
         </div>
       </div>
@@ -181,18 +181,18 @@ const ExpertRegisterPage = () => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!normalizedValue) {
-      setEmailError("E-posta zorunludur.");
+      setEmailError("البريد الإلكتروني مطلوب.");
       return false;
     }
 
     if (!emailRegex.test(normalizedValue)) {
-      setEmailError("Lütfen geçerli bir e-posta adresi girin.");
+      setEmailError("يرجى إدخال بريد إلكتروني صالح.");
       return false;
     }
 
     const domain = normalizedValue.split("@")[1]?.toLowerCase();
     if (!validEmailDomains.includes(domain)) {
-      setEmailError("Geçersiz e-posta domaini.");
+      setEmailError("نطاق البريد الإلكتروني غير مدعوم.");
       return false;
     }
 
@@ -204,22 +204,22 @@ const ExpertRegisterPage = () => {
     const cleaned = String(phoneStr || "").replace(/[\s()-]/g, "");
 
     if (!cleaned) {
-      setPhoneError("Telefon numarası zorunludur.");
+      setPhoneError("رقم الهاتف مطلوب.");
       return false;
     }
 
     if (!/^\d+$/.test(cleaned)) {
-      setPhoneError("Telefon numarası sadece rakamlardan oluşmalıdır.");
+      setPhoneError("رقم الهاتف يجب أن يحتوي على أرقام فقط.");
       return false;
     }
 
     if (cleaned.length !== 10) {
-      setPhoneError("Telefon numarası 10 haneli olmalıdır (5xx xxx xx xx).");
+      setPhoneError("رقم الهاتف يجب أن يتكون من 10 أرقام.");
       return false;
     }
 
     if (!cleaned.startsWith("5")) {
-      setPhoneError("Telefon numarası 5 ile başlamalıdır.");
+      setPhoneError("رقم الهاتف يجب أن يبدأ بالرقم 5.");
       return false;
     }
 
@@ -229,16 +229,16 @@ const ExpertRegisterPage = () => {
 
   const validatePassword = (pass) => {
     const errors = [];
-    if (pass.length < 6) errors.push("En az 6 karakter olmalıdır");
-    if (!/[A-Z]/.test(pass)) errors.push("En az 1 büyük harf içermelidir");
-    if (!/[a-z]/.test(pass)) errors.push("En az 1 küçük harf içermelidir");
-    if (!/[0-9]/.test(pass)) errors.push("En az 1 rakam içermelidir");
-    if (!hasSpecialChar(pass)) errors.push("En az 1 özel karakter içermelidir");
+    if (pass.length < 6) errors.push("يجب أن تكون 6 أحرف على الأقل");
+    if (!/[A-Z]/.test(pass)) errors.push("يجب أن تحتوي على حرف كبير واحد على الأقل");
+    if (!/[a-z]/.test(pass)) errors.push("يجب أن تحتوي على حرف صغير واحد على الأقل");
+    if (!/[0-9]/.test(pass)) errors.push("يجب أن تحتوي على رقم واحد على الأقل");
+    if (!hasSpecialChar(pass)) errors.push("يجب أن تحتوي على رمز خاص واحد على الأقل");
     if (hasConsecutiveChars(pass)) {
-      errors.push("Ardışık karakterler içermemelidir (örn. abc, 123)");
+      errors.push("يجب ألا تحتوي على أحرف أو أرقام متتالية (مثل: abc أو 123)");
     }
     if (hasRepeatedChars(pass)) {
-      errors.push("Aynı karakteri 3 kez tekrarlamamalıdır (örn. aaa)");
+      errors.push("يجب ألا تكرر نفس الحرف 3 مرات متتالية (مثل: aaa)");
     }
     return errors;
   };
@@ -287,12 +287,12 @@ const ExpertRegisterPage = () => {
   };
 
   const getPasswordStrengthText = () => {
-    if (passwordStrength === 0) return "Şifre gücü: Zayıf";
-    if (passwordStrength <= 25) return "Şifre gücü: Çok Zayıf";
-    if (passwordStrength <= 50) return "Şifre gücü: Orta";
-    if (passwordStrength <= 75) return "Şifre gücü: İyi";
-    if (passwordStrength < 100) return "Şifre gücü: Çok İyi";
-    return "Şifre gücü: Mükemmel ✓";
+    if (passwordStrength === 0) return "قوة كلمة المرور: ضعيفة";
+    if (passwordStrength <= 25) return "قوة كلمة المرور: ضعيفة جداً";
+    if (passwordStrength <= 50) return "قوة كلمة المرور: متوسطة";
+    if (passwordStrength <= 75) return "قوة كلمة المرور: جيدة";
+    if (passwordStrength < 100) return "قوة كلمة المرور: جيدة جداً";
+    return "قوة كلمة المرور: ممتازة ✓";
   };
 
   const formatPhone = (digits) => {
@@ -323,7 +323,7 @@ const ExpertRegisterPage = () => {
   };
 
   const applyEligibilityError = (eligibilityError) => {
-    const message = "Kayıt için uygunluk kontrolü başarısız oldu.";
+    const message = "فشل التحقق من أهلية التسجيل.";
 
     if (eligibilityError?.field === "email") {
       setEmailError(message);
@@ -356,38 +356,38 @@ const ExpertRegisterPage = () => {
     setPhoneError("");
 
     if (!fullName || !email || !phone || !password || !password2) {
-      setError("Lütfen tüm zorunlu alanları doldurun.");
+      setError("يرجى تعبئة جميع الحقول المطلوبة.");
       return;
     }
 
     if (!agree) {
-      setError("Devam etmek için şartları kabul etmelisiniz.");
+      setError("يجب قبول الشروط للمتابعة.");
       return;
     }
 
     if (password !== password2) {
-      setError("Şifreler eşleşmiyor.");
+      setError("كلمتا المرور غير متطابقتين.");
       return;
     }
 
     if (!validateEmail(email)) {
-      setError("Geçerli bir e-posta adresi girin.");
+      setError("يرجى إدخال بريد إلكتروني صالح.");
       return;
     }
 
     if (!validatePhone(phone)) {
-      setError("Telefon numarası 5xx xxx xx xx formatında olmalıdır.");
+      setError("رقم الهاتف يجب أن يكون بصيغة صحيحة.");
       return;
     }
 
     const passwordCheck = validatePassword(password);
     if (passwordCheck.length > 0) {
-      setError("Şifre gereksinimleri karşılanmıyor.");
+      setError("متطلبات كلمة المرور غير مكتملة.");
       return;
     }
 
     if (passwordStrength !== 100) {
-      setError("Şifre yeterince güçlü değil.");
+      setError("كلمة المرور ليست قوية بما يكفي.");
       return;
     }
 
@@ -427,7 +427,7 @@ const ExpertRegisterPage = () => {
       setShowOtpScreen(true);
     } catch (err) {
       if (isDevelopment) console.error("Kayıt hatası:", err.message);
-      setError("Hesap oluşturulurken bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
+      setError("حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة لاحقاً.");
     } finally {
       setLoading(false);
     }
@@ -440,7 +440,7 @@ const ExpertRegisterPage = () => {
 
     try {
       if (!confirmationResult || !pendingUserData) {
-        setError("Doğrulama oturumu bulunamadı. Lütfen tekrar kayıt olun.");
+        setError("لم يتم العثور على جلسة التحقق. يرجى التسجيل مرة أخرى.");
         setLoading(false);
         return;
       }
@@ -475,7 +475,7 @@ const ExpertRegisterPage = () => {
       });
     } catch (err) {
       if (isDevelopment) console.error("OTP doğrulama hatası:", err.message);
-      setError("Kod doğrulanamadı. Lütfen tekrar deneyin.");
+      setError("تعذر التحقق من الرمز. يرجى المحاولة مرة أخرى.");
     } finally {
       setLoading(false);
     }
@@ -498,7 +498,7 @@ const ExpertRegisterPage = () => {
     <PageTransition>
       <div className="expert-register-page">
         <header className="lp-register-topbrand">
-          <Link to="/" className="lp-register-topbrand-link" aria-label="UzmanaGel Home">
+          <Link to="/" className="lp-register-topbrand-link" aria-label="الصفحة الرئيسية">
             <img className="lp-register-topbrand-logo" src={brandImage} alt="UzmanaGel" />
             <span className="lp-register-topbrand-text">
               Uzmana<span className="highlight">Gel</span>
@@ -509,9 +509,9 @@ const ExpertRegisterPage = () => {
         <div className="lp-register-card">
           <section className="lp-register-left">
             <div className="lp-register-header">
-              <h1 className="lp-register-title">Uzman Kaydı</h1>
+              <h1 className="lp-register-title">تسجيل خبير</h1>
               <p className="lp-register-subtitle">
-                Temel bilgilerinizi girerek başvuru sürecini başlatın
+                أدخل معلوماتك الأساسية لبدء طلب الانضمام كخبير
               </p>
             </div>
 
@@ -522,12 +522,12 @@ const ExpertRegisterPage = () => {
                 <div className="lp-register-form-group">
                   <label className="lp-register-label">
                     <i className="fas fa-user lp-register-icon"></i>
-                    Ad Soyad <span className="required">*</span>
+                    الاسم الكامل <span className="required">*</span>
                   </label>
                   <input
                     className="lp-register-input"
                     type="text"
-                    placeholder="Ad Soyad"
+                    placeholder="الاسم الكامل"
                     autoComplete="name"
                     required
                     value={fullName}
@@ -539,12 +539,12 @@ const ExpertRegisterPage = () => {
                 <div className="lp-register-form-group">
                   <label className="lp-register-label">
                     <i className="fas fa-envelope lp-register-icon"></i>
-                    E-Posta <span className="required">*</span>
+                    البريد الإلكتروني <span className="required">*</span>
                   </label>
                   <input
                     className="lp-register-input"
                     type="email"
-                    placeholder="E-posta adresiniz"
+                    placeholder="بريدك الإلكتروني"
                     autoComplete="email"
                     required
                     value={email}
@@ -568,7 +568,7 @@ const ExpertRegisterPage = () => {
                 <div className="lp-register-form-group">
                   <label className="lp-register-label">
                     <i className="fas fa-phone lp-register-icon"></i>
-                    Telefon <span className="required">*</span>
+                    رقم الهاتف <span className="required">*</span>
                   </label>
                   <div
                     className="lp-register-phone-wrapper"
@@ -617,13 +617,13 @@ const ExpertRegisterPage = () => {
                 <div className="lp-register-form-group">
                   <label className="lp-register-label">
                     <i className="fas fa-lock lp-register-icon"></i>
-                    Şifre <span className="required">*</span>
+                    كلمة المرور <span className="required">*</span>
                   </label>
                   <div className="lp-register-pass">
                     <input
                       className="lp-register-input"
                       type={showPass ? "text" : "password"}
-                      placeholder="Şifre"
+                      placeholder="كلمة المرور"
                       autoComplete="new-password"
                       required
                       value={password}
@@ -682,7 +682,7 @@ const ExpertRegisterPage = () => {
                           fontWeight: "600",
                         }}
                       >
-                        Eksik gereksinimler:
+                        المتطلبات الناقصة:
                       </p>
                       {passwordErrors.map((err, index) => (
                         <small
@@ -710,8 +710,7 @@ const ExpertRegisterPage = () => {
                           fontWeight: "600",
                         }}
                       >
-                        <i className="fas fa-check-circle"></i> Şifre tüm gereksinimleri
-                        karşılıyor ✓
+                        <i className="fas fa-check-circle"></i> كلمة المرور تستوفي جميع المتطلبات ✓
                       </small>
                     )}
 
@@ -723,22 +722,22 @@ const ExpertRegisterPage = () => {
                       display: "block",
                     }}
                   >
-                    ✓ Min 6 karakter ✓ Büyük harf (A-Z) ✓ Küçük harf (a-z)
+                    ✓ 6 أحرف على الأقل ✓ حرف كبير (A-Z) ✓ حرف صغير (a-z)
                     <br />
-                    ✓ Rakam (0-9) ✓ Özel karakter (!@#$%^&*) ✓ Ardışık yok
+                    ✓ رقم (0-9) ✓ رمز خاص (!@#$%^&*) ✓ بدون تسلسل
                   </small>
                 </div>
 
                 <div className="lp-register-form-group">
                   <label className="lp-register-label">
                     <i className="fas fa-lock lp-register-icon"></i>
-                    Şifre Tekrar <span className="required">*</span>
+                    تأكيد كلمة المرور <span className="required">*</span>
                   </label>
                   <div className="lp-register-pass">
                     <input
                       className="lp-register-input"
                       type={showPass2 ? "text" : "password"}
-                      placeholder="Şifre Tekrar"
+                      placeholder="تأكيد كلمة المرور"
                       autoComplete="new-password"
                       required
                       value={password2}
@@ -769,8 +768,8 @@ const ExpertRegisterPage = () => {
                         }`}
                       ></i>
                       {password === password2
-                        ? " Şifreler eşleşiyor ✓"
-                        : " Şifreler eşleşmiyor ✗"}
+                        ? " كلمتا المرور متطابقتان ✓"
+                        : " كلمتا المرور غير متطابقتين ✗"}
                     </small>
                   )}
                 </div>
@@ -790,14 +789,13 @@ const ExpertRegisterPage = () => {
                     />
                     <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
                       <a href="#" className="terms-link" onClick={openTerms}>
-                        Kullanım Koşulları
+                        شروط الاستخدام
                       </a>
-                      'nı ve
+                      {" "}و{" "}
                       <a href="#" className="terms-link" onClick={openPrivacy}>
-                        {" "}
-                        Gizlilik Politikası
+                        سياسة الخصوصية
                       </a>
-                      'nı okudum, kabul ediyorum.
+                      {" "}قرأتهما وأوافق عليهما.
                       <span className="required">*</span>
                     </span>
                   </label>
@@ -837,15 +835,15 @@ const ExpertRegisterPage = () => {
                   }}
                 >
                   <i className="fas fa-user-plus"></i>
-                  {loading ? " İşleniyor..." : " Devam Et"}
+                  {loading ? " جارٍ المعالجة..." : " متابعة"}
                 </button>
               </form>
             ) : (
               <form className="lp-register-form" onSubmit={handleVerifyOtp}>
                 <div className="lp-register-header" style={{ marginBottom: "20px" }}>
-                  <h3 className="lp-register-title">SMS Doğrulama</h3>
+                  <h3 className="lp-register-title">التحقق عبر SMS</h3>
                   <p className="lp-register-subtitle">
-                    Telefonunuza gönderilen 6 haneli kodu girin
+                    أدخل الرمز المكون من 6 أرقام المرسل إلى هاتفك
                   </p>
                 </div>
 
@@ -853,7 +851,7 @@ const ExpertRegisterPage = () => {
                   <input
                     className="lp-register-input"
                     type="text"
-                    placeholder="Doğrulama Kodu"
+                    placeholder="رمز التحقق"
                     value={otp}
                     onChange={(e) =>
                       setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
@@ -892,35 +890,34 @@ const ExpertRegisterPage = () => {
                   type="submit"
                   disabled={loading || otp.length < 6}
                 >
-                  {loading ? "Doğrulanıyor..." : "Doğrula ve Kaydol"}
+                  {loading ? "جارٍ التحقق..." : "تحقق وسجّل"}
                 </button>
               </form>
             )}
 
             <p className="lp-register-bottom">
-              Zaten hesabın var mı? <Link to="/login">Giriş Yap</Link>
+              لديك حساب بالفعل؟ <Link to="/login">تسجيل الدخول</Link>
             </p>
             <p className="lp-register-bottom" style={{ marginTop: "10px" }}>
-              Normal kullanıcı mısın? <Link to="/register">Kaydol</Link>
+              هل أنت مستخدم عادي؟ <Link to="/register">أنشئ حساباً</Link>
             </p>
           </section>
 
           <section className="lp-register-right">
             <div className="benefits-list">
-              <h3>Uzman olarak neler kazanacaksın?</h3>
+              <h3>ماذا ستحصل عليه كخبير؟</h3>
               <ul>
                 <li>
-                  <i className="fas fa-check-circle"></i> Yeni müşterilere ulaş
+                  <i className="fas fa-check-circle"></i> الوصول إلى عملاء جدد
                 </li>
                 <li>
-                  <i className="fas fa-check-circle"></i> Profesyonel panel ile iş
-                  takibi
+                  <i className="fas fa-check-circle"></i> متابعة العمل من لوحة احترافية
                 </li>
                 <li>
-                  <i className="fas fa-check-circle"></i> Güvenli ödeme sistemi
+                  <i className="fas fa-check-circle"></i> نظام دفع آمن
                 </li>
                 <li>
-                  <i className="fas fa-check-circle"></i> 7/24 destek
+                  <i className="fas fa-check-circle"></i> دعم على مدار الساعة
                 </li>
               </ul>
             </div>
@@ -929,14 +926,14 @@ const ExpertRegisterPage = () => {
 
         <PolicyModal
           open={policyOpen}
-          title={policyType === "terms" ? "Kullanım Koşulları" : "Gizlilik Politikası"}
+          title={policyType === "terms" ? "شروط الاستخدام" : "سياسة الخصوصية"}
           onClose={() => setPolicyOpen(false)}
         >
           <div className="policy-placeholder">
             <p style={{ color: "var(--text-muted)" }}>
               {policyType === "terms"
-                ? "Kullanım koşulları içeriği burada yer alacak."
-                : "Gizlilik politikası içeriği burada yer alacak."}
+                ? "سيتم عرض محتوى شروط الاستخدام هنا."
+                : "سيتم عرض محتوى سياسة الخصوصية هنا."}
             </p>
           </div>
         </PolicyModal>

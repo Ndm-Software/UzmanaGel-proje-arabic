@@ -16,7 +16,7 @@ function Footer() {
   const [siteSettings, setSiteSettings] = useState({
     contactEmail: 'info@uzmanagel.com',
     phone: '+90 555 123 4567',
-    address: 'İstanbul, Türkiye',
+    address: 'سوريا',
   });
 
   useEffect(() => {
@@ -93,6 +93,10 @@ function Footer() {
     return String(phone).replace(/[<>]/g, '');
   };
 
+  const displayAddress = /türkiye|turkiye|istanbul/i.test(String(siteSettings.address || ''))
+    ? 'سوريا'
+    : siteSettings.address;
+
   return (
     <section className="section-band section-band--gradient" id="footer">
       <footer className="footer">
@@ -108,7 +112,7 @@ function Footer() {
             </div>
 
             <p className="footer-desc">
-              Her işin ustası, her sorunun çözümü burada!
+              خبيرك المناسب لكل خدمة، وحل أسرع لكل مشكلة.
             </p>
 
             <div className="store-buttons" style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', marginTop: '18px' }}>
@@ -135,7 +139,7 @@ function Footer() {
                   <img src={googlePlayLogo} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: 'transparent', border: 'none', boxShadow: 'none' }} />
                 </span>
                 <span className="store-text" style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.12 }}>
-                  <small style={{ color: isLightMode ? '#64748b' : 'rgba(255,255,255,0.68)', fontSize: '11px' }}>Get it on</small>
+                  <small style={{ color: isLightMode ? '#64748b' : 'rgba(255,255,255,0.68)', fontSize: '11px' }}>احصل عليه من</small>
                   <b style={{ color: isLightMode ? '#0f172a' : '#ffffff', fontSize: '15px', fontWeight: 700 }}>Google Play</b>
                 </span>
               </a>
@@ -163,7 +167,7 @@ function Footer() {
                   <img src={appleLogo} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', background: 'transparent', border: 'none', boxShadow: 'none', filter: isLightMode ? 'none' : 'invert(1) brightness(1.15)' }} />
                 </span>
                 <span className="store-text" style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.12 }}>
-                  <small style={{ color: isLightMode ? '#64748b' : 'rgba(255,255,255,0.68)', fontSize: '11px' }}>Download on the</small>
+                  <small style={{ color: isLightMode ? '#64748b' : 'rgba(255,255,255,0.68)', fontSize: '11px' }}>حمّله من</small>
                   <b style={{ color: isLightMode ? '#0f172a' : '#ffffff', fontSize: '15px', fontWeight: 700 }}>App Store</b>
                 </span>
               </a>
@@ -172,29 +176,28 @@ function Footer() {
 
           <div className="footer-columns">
             <div className="footer-column">
-              <h4 className="footer-title">Hızlı Linkler</h4>
-              <Link className="footer-link" to="/">Ana Sayfa</Link>
+              <h4 className="footer-title">روابط سريعة</h4>
+              <Link className="footer-link" to="/">الرئيسية</Link>
               <button
                 className="footer-link"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}
                 onClick={() => scrollToSection('how-it-works')}
               >
-                Nasıl Çalışır?
+                كيف يعمل؟
               </button>
-              <span className="footer-link" style={{ opacity: 0.4, cursor: 'not-allowed' }}>Sıkça Sorulan Sorular</span>
-              <span className="footer-link" style={{ opacity: 0.4, cursor: 'not-allowed' }}>Blog</span>
+              <span className="footer-link" style={{ opacity: 0.4, cursor: 'not-allowed' }}>الأسئلة الشائعة</span>
+              <span className="footer-link" style={{ opacity: 0.4, cursor: 'not-allowed' }}>المدونة</span>
             </div>
 
             <div className="footer-column">
-              <h4 className="footer-title">Yasal</h4>
-              <a className="footer-link" href="#" rel="noopener noreferrer">Kullanım Koşulları</a>
-              <a className="footer-link" href="#" rel="noopener noreferrer">Gizlilik Politikası</a>
-              <a className="footer-link" href="#" rel="noopener noreferrer">Çerez Politikası</a>
-              <Link className="footer-link" to="/kvkk">KVKK</Link>
+              <h4 className="footer-title">القوانين</h4>
+              <a className="footer-link" href="#" rel="noopener noreferrer">شروط الاستخدام</a>
+              <a className="footer-link" href="#" rel="noopener noreferrer">سياسة الخصوصية</a>
+              <a className="footer-link" href="#" rel="noopener noreferrer">سياسة ملفات الارتباط</a>
             </div>
 
             <div className="footer-column">
-              <h4 className="footer-title">İletişim</h4>
+              <h4 className="footer-title">التواصل</h4>
 
               <div className="footer-contact">
                 <div className="footer-contact-row">
@@ -213,7 +216,7 @@ function Footer() {
 
                 <div className="footer-contact-row">
                   <span className="footer-contact-icon" aria-hidden="true">📍</span>
-                  <span className="footer-muted">{siteSettings.address}</span>
+                  <span className="footer-muted">{displayAddress}</span>
                 </div>
               </div>
 
@@ -228,7 +231,7 @@ function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} UzmanaGel. Tüm hakları saklıdır.</span>
+          <span>© {new Date().getFullYear()} UzmanaGel. جميع الحقوق محفوظة.</span>
         </div>
       </footer>
     </section>

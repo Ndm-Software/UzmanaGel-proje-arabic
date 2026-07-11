@@ -449,8 +449,6 @@ const ExpertCompleteProfilePage = () => {
   };
 
   const validateStep2 = () => {
-    const hasWorkingDay = Object.values(formData.workingHours).some(day => day.enabled);
-    if (!hasWorkingDay) { setError('يجب تحديد ساعات العمل ليوم واحد على الأقل'); return false; }
     if (!formData.minPrice || !formData.maxPrice) { setError('نطاق السعر مطلوب'); return false; }
     const minPriceNum = parseInt(formData.minPrice);
     const maxPriceNum = parseInt(formData.maxPrice);
@@ -1071,41 +1069,6 @@ const ExpertCompleteProfilePage = () => {
                           onChange={() => setFormData({...formData, pricingModel: 'Proje Bazlı'})} disabled={loading || analyzing} />
                         <span>مشروع كامل</span>
                       </label>
-                    </div>
-                  </div>
-
-                  <div className="form-group full-width">
-                    <label className="form-label">
-                      <i className="fas fa-clock"></i> أوقات العمل <span className="required">*</span>
-                      <span className="field-hint">يجب اختيار يوم واحد على الأقل</span>
-                    </label>
-                    <div className="working-hours-grid">
-                      {Object.entries(formData.workingHours).map(([day, hours]) => (
-                        <div key={day} className="working-hour-item">
-                          <div className="day-header">
-                            <label className="day-checkbox">
-                              <input type="checkbox" checked={hours.enabled}
-                                onChange={(e) => handleWorkingHourChange(day, 'enabled', e.target.checked)}
-                                disabled={loading || analyzing} />
-                              <span className="day-name">
-                                {day === 'monday' && 'الاثنين'}{day === 'tuesday' && 'الثلاثاء'}
-                                {day === 'wednesday' && 'الأربعاء'}{day === 'thursday' && 'الخميس'}
-                                {day === 'friday' && 'الجمعة'}{day === 'saturday' && 'السبت'}
-                                {day === 'sunday' && 'الأحد'}
-                              </span>
-                            </label>
-                          </div>
-                          {hours.enabled && (
-                            <div className="hour-inputs">
-                              <input type="time" value={hours.start}
-                                onChange={(e) => handleWorkingHourChange(day, 'start', e.target.value)} disabled={loading || analyzing} />
-                              <span>-</span>
-                              <input type="time" value={hours.end}
-                                onChange={(e) => handleWorkingHourChange(day, 'end', e.target.value)} disabled={loading || analyzing} />
-                            </div>
-                          )}
-                        </div>
-                      ))}
                     </div>
                   </div>
                 </div>

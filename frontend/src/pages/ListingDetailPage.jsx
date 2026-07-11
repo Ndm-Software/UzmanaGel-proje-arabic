@@ -10,7 +10,7 @@ import { getOrCreateConversation } from "../services/chatApi";
 import { useAuthGuard } from "../hooks/useAuthGuard";
 import { getProfilePhoto } from "../services/updateService";
 import { getListingImageStyle } from "../utils/listingImagePresentation";
-import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { db, auth } from "../firebase/firebaseClient";
 import DOMPurify from 'dompurify';
 import "../styles/ListingDetailPage.css";
@@ -168,7 +168,7 @@ export default function ListingDetailPage() {
 
   const handleStartChat = async () => {
     if (!isSignedIn) {
-      showToast("Mesaj göndermek için lütfen giriş yapın.", "error");
+      showToast("يرجى تسجيل الدخول أولاً لإرسال رسالة.", "error");
       setTimeout(() => navigate("/login"), 1500);
       return;
     }
@@ -182,7 +182,7 @@ export default function ListingDetailPage() {
         
         if (userType === "PENDING_PROVIDER") {
           showToast(
-            "Uzman başvurunuz henüz değerlendirilme aşamasında. Onaylandıktan sonra mesaj gönderebilirsiniz.",
+            "طلب انضمامك كخبير قيد المراجعة حالياً. ستتمكن من إرسال الرسائل بعد الموافقة.",
             "error"
           );
           return;
@@ -191,7 +191,7 @@ export default function ListingDetailPage() {
     }
   } catch (error) {
     if (isDevelopment) console.error("Kullanıcı tipi kontrol hatası:", error);
-    showToast("Lütfen daha sonra tekrar deneyin.", "error");
+    showToast("يرجى المحاولة مرة أخرى لاحقاً.", "error");
     return;
   }
 
@@ -200,29 +200,283 @@ export default function ListingDetailPage() {
       const serviceId = String(listing?.id || listingId || "").trim();
       const serviceTitle = String(listing?.title || "").trim();
 
-      if (!providerUid) { showToast("Uzman bilgisi bulunamadı."); return; }
-      if (!serviceId) { showToast("Hizmet bilgisi bulunamadı."); return; }
+      if (!providerUid) { showToast("لم يتم العثور على معلومات الخبير."); return; }
+      if (!serviceId) { showToast("لم يتم العثور على معلومات الخدمة."); return; }
 
       setChatLoading(true);
 
-      const approvedAppointmentId = await getApprovedAppointmentIdForListing();
+      let approvedAppointmentId = await getApprovedAppointmentIdForListing();
 
       if (!approvedAppointmentId) {
-        showToast("Bu ilana dair onaylanmış bir randevunuz bulunmalıdır. Randevu oluşturup uzman onayladıktan sonra mesaj gönderebilirsiniz.", "error");
-        setChatLoading(false);
-        return;
+        // Syria Launch: Bypass manual booking by auto-creating an approved appointment document
+        try {
+          const currentUser = auth.currentUser;
+          let clientName = currentUser?.displayName || "Müşteri";
+          try {
+            const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+            if (userDoc.exists()) {
+              clientName = userDoc.data().displayName || clientName;
+            }
+          } catch (err) {
+            if (isDevelopment) console.error("Müşteri ismi alınamadı:", err);
+          }
+
+          const todayStr = new Date().toLocaleDateString('sv-SE');
+          const dummyAppointment = {
+            clientId: currentUser.uid,
+            expertId: providerUid,
+            listingId: serviceId,
+            listingTitle: serviceTitle,
+            expertName: listing?.expertName || "خبير",
+            client: clientName,
+            date: todayStr,
+            start: "12:00",
+            end: "12:15",
+            status: "approved",
+            createdBy: "customer",
+            createdTime: Date.now(),
+            note: "تم بدء التواصل المباشر",
+            fullAddress: "مقابلة عبر الإنترنت",
+            address: "عبر الإنترنت",
+          };
+
+          const docRef = await addDoc(collection(db, "appointments"), dummyAppointment);
+          approvedAppointmentId = docRef.id;
+        } catch (apptErr) {
+          if (isDevelopment) console.error("Otomatik randevu oluşturma hatası:", apptErr);
+          showToast("تعذر بدء التواصل. يرجى المحاولة مرة أخرى لاحقاً.", "error");
+          setChatLoading(false);
+          return;
+        }
       }
 
       const result = await getOrCreateConversation(providerUid, serviceId, serviceTitle, approvedAppointmentId);
       navigate(`/mesajlar?conversation=${result.conversationId}&open=true`);
     } catch (error) {
       if (isDevelopment) console.error("Chat baslatma hatasi:", error.message);
-      showToast(error.message || "Mesajlaşma başlatılırken hata oluştu.");
+      showToast(error.message || "حدث خطأ أثناء بدء المراسلة.");
     } finally {
       setChatLoading(false);
     }
   };
 
+  // handleAppointmentClick removed for Syria Launch (bypassed direct chat)
+
+  const handleExpertProfileClick = () => {
+    navigate(`/uzman/${listing.providerId}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="ld-page">
+        <Navbar />
+        <LoadingSpinner text="جاري تحميل الإعلان..." />
+      </div>
+    );
+  }
+
+  if (!listing) {
+    return (
+      <div className="ld-page">
+        <Navbar />
+        <div className="ld-not-found">
+          <i className="fas fa-file-circle-xmark"></i>
+          <h2>الإعلان غير موجود</h2>
+          <p>الإعلان الذي تبحث عنه غير موجود أو قد يكون تم حذفه.</p>
+          <button onClick={() => navigate("/ilanlar")}>
+            <i className="fas fa-arrow-left"></i> العودة إلى الإعلانات
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const imageSrc = listing.image || categoryImages[listing.category] || "/default-listing.svg";
+  const canOpenProfile = !!listing.providerId;
+  const formatPrice = (p) => new Intl.NumberFormat("tr-TR").format(Number(p) || 0);
+  const reviewSummary = computeRatingSummary(reviews);
+  const effectiveReviewCount = Number(reviewStats?.count || listing?.reviews || reviewSummary.count || 0);
+
+  return (
+    <div className="ld-page">
+      <Navbar />
+
+      <div className="ld-container">
+        <div className="ld-topbar">
+          <button className="ld-back-btn" onClick={() => navigate(-1)}>
+            <i className="fas fa-arrow-left"></i> رجوع
+          </button>
+        </div>
+
+        <div className="ld-profile-header">
+          <div className="ld-avatar-wrap">
+            <img
+              src={imageSrc}
+              alt={sanitizeText(listing.title)}
+              className="ld-avatar"
+              style={getListingImageStyle(listing)}
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/default-listing.svg"; }}
+            />
+          </div>
+
+          <div className="ld-profile-info">
+            <div className="ld-title-row">
+              <h1 className="ld-title">{sanitizeText(listing.title)}</h1>
+              <span className="ld-category-tag">
+                <i className="fas fa-tag"></i> {sanitizeText(listing.category)}
+              </span>
+            </div>
+            <div className="ld-meta">
+              <span><i className="fas fa-user-tie"></i> {sanitizeText(listing.expertName || "خبير")}</span>
+              <span><i className="fas fa-map-marker-alt"></i> {sanitizeText(listing.city || "غير محدد")}</span>
+              <span className="ld-rating">
+                <i className="fas fa-star"></i> {listing.rating ?? 0}
+                <em>({effectiveReviewCount} تقييم)</em>
+              </span>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button
+              className="ld-appointment-btn"
+              onClick={handleStartChat}
+              disabled={chatLoading}
+              style={chatLoading ? { opacity: 0.7, cursor: "not-allowed" } : {}}
+            >
+              <i className="fas fa-comments"></i> تواصل مع الخبير
+            </button>
+          </div>
+        </div>
+
+        <div className="ld-grid">
+          <div className="ld-left">
+            <div className="ld-card">
+              <h2 className="ld-card-title"><i className="fas fa-circle-info"></i> عن الإعلان</h2>
+              <p className="ld-desc">{sanitizeText(listing.description || "لم يتم إضافة وصف لهذا الإعلان بعد.")}</p>
+            </div>
+
+            <div className="ld-card">
+              <h2 className="ld-card-title"><i className="fas fa-list-check"></i> تفاصيل الخدمة</h2>
+              <div className="ld-details">
+                <div className="ld-detail-item">
+                  <span className="ld-detail-label">الفئة</span>
+                  <span className="ld-detail-value">{sanitizeText(listing.category)}</span>
+                </div>
+                {String(listing.serviceSubcategory || "").trim() ? (
+                  <div className="ld-detail-item">
+                    <span className="ld-detail-label">التخصص</span>
+                    <span className="ld-detail-value">{sanitizeText(String(listing.serviceSubcategory).trim())}</span>
+                  </div>
+                ) : null}
+                {String(listing.serviceSubcategoryDetails || "").trim() ? (
+                  <div className="ld-detail-item">
+                    <span className="ld-detail-label">التفاصيل</span>
+                    <span className="ld-detail-value">{sanitizeText(String(listing.serviceSubcategoryDetails).trim())}</span>
+                  </div>
+                ) : null}
+                <div className="ld-detail-item">
+                  <span className="ld-detail-label">المدينة</span>
+                  <span className="ld-detail-value">{sanitizeText(listing.city || "غير محدد")}</span>
+                </div>
+                <div className="ld-detail-item">
+                  <span className="ld-detail-label">السعر</span>
+                  <span className="ld-detail-value ld-price">₺{formatPrice(listing.price)}</span>
+                </div>
+                <div className="ld-detail-item">
+                  <span className="ld-detail-label">نوع الخدمة</span>
+                  <span className="ld-detail-value">{sanitizeText(listing.pricingType || "غير محدد")}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="ld-right">
+            <div className="ld-provider-card">
+              <div className="ld-provider-top">
+                <div className="ld-provider-avatar">
+                  {expertProfilePhoto ? (
+                    <img 
+                      src={expertProfilePhoto} 
+                      alt={sanitizeText(listing.expertName || "Uzman")}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                        e.currentTarget.parentElement.innerText = sanitizeText((listing.expertName || "U").charAt(0).toUpperCase());
+                      }}
+                    />
+                  ) : (
+                    sanitizeText((listing.expertName || "U").charAt(0).toUpperCase())
+                  )}
+                </div>
+                <div>
+                  <h3 className="ld-provider-name">{sanitizeText(listing.expertName || "خبير")}</h3>
+                  <span className="ld-provider-badge">
+                    <i className="fas fa-check-circle"></i> خبير موثق
+                  </span>
+                </div>
+              </div>
+
+              <div className="ld-provider-stats">
+                <div className="ld-stat">
+                  <span className="ld-stat-val"><i className="fas fa-star"></i> {expertRating}</span>
+                  <span className="ld-stat-lbl">التقييم</span>
+                </div>
+                <div className="ld-stat-sep" />
+                <div className="ld-stat">
+                  <span className="ld-stat-val">{expertReviewCount}</span>
+                  <span className="ld-stat-lbl">تعليق</span>
+                </div>
+              </div>
+
+              <button
+                className="ld-profile-btn"
+                onClick={handleStartChat}
+                disabled={chatLoading}
+                style={chatLoading ? { opacity: 0.7, cursor: "not-allowed" } : {}}
+              >
+                <i className="fas fa-message"></i>{" "}
+                {chatLoading ? "جاري فتح الرسالة..." : "أرسل رسالة لهذه الخدمة"}
+              </button>
+
+              <button
+                className="ld-profile-btn"
+                onClick={handleExpertProfileClick}
+              >
+                <i className="fas fa-id-card"></i> عرض الملف الشخصي للخبير
+              </button>
+
+              {!canOpenProfile && (
+                <p className="ld-no-profile">الملف الشخصي غير متوفر لهذا الإعلان.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <ReviewSystem targetId={listingId} targetType="listing" />
+      </div>
+
+      {toast.show && (
+        <div style={{
+          position: "fixed", bottom: "24px", right: "24px",
+          background: toast.type === "error" ? "#ef4444" : "#10b981",
+          color: "white", padding: "14px 20px", borderRadius: "12px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.3)", display: "flex",
+          alignItems: "center", gap: "10px", fontSize: "14px",
+          fontWeight: "500", zIndex: 9999, maxWidth: "360px",
+          animation: "slideInRight 0.3s ease",
+        }}>
+          <i className={`fas ${toast.type === "error" ? "fa-times-circle" : "fa-check-circle"}`}></i>
+          {sanitizeText(toast.message)}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH (TURKISH FRONTEND SIMPLIFICATION):
+
+1. handleAppointmentClick function:
   const handleAppointmentClick = async () => {
     if (!isSignedIn) {
       showToast("Randevu oluşturmak için lütfen giriş yapın.", "error");
@@ -258,211 +512,20 @@ export default function ListingDetailPage() {
     navigate(`/customer-appointment/${listing.providerId}?listingId=${listingId}`);
   };
 
-  const handleExpertProfileClick = () => {
-    navigate(`/uzman/${listing.providerId}`);
-  };
-
-  if (loading) {
-    return (
-      <div className="ld-page">
-        <Navbar />
-        <LoadingSpinner text="İlan yükleniyor..." />
-      </div>
-    );
-  }
-
-  if (!listing) {
-    return (
-      <div className="ld-page">
-        <Navbar />
-        <div className="ld-not-found">
-          <i className="fas fa-file-circle-xmark"></i>
-          <h2>İlan Bulunamadı</h2>
-          <p>Aradığınız ilan mevcut değil veya kaldırılmış olabilir.</p>
-          <button onClick={() => navigate("/ilanlar")}>
-            <i className="fas fa-arrow-left"></i> İlanlara Dön
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const imageSrc = listing.image || categoryImages[listing.category] || "/default-listing.svg";
-  const canOpenProfile = !!listing.providerId;
-  const formatPrice = (p) => new Intl.NumberFormat("tr-TR").format(Number(p) || 0);
-  const reviewSummary = computeRatingSummary(reviews);
-  const effectiveReviewCount = Number(reviewStats?.count || listing?.reviews || reviewSummary.count || 0);
-
-  return (
-    <div className="ld-page">
-      <Navbar />
-
-      <div className="ld-container">
-        <div className="ld-topbar">
-          <button className="ld-back-btn" onClick={() => navigate(-1)}>
-            <i className="fas fa-arrow-left"></i> Geri
-          </button>
-        </div>
-
-        <div className="ld-profile-header">
-          <div className="ld-avatar-wrap">
-            <img
-              src={imageSrc}
-              alt={sanitizeText(listing.title)}
-              className="ld-avatar"
-              style={getListingImageStyle(listing)}
-              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = "/default-listing.svg"; }}
-            />
-          </div>
-
-          <div className="ld-profile-info">
-            <div className="ld-title-row">
-              <h1 className="ld-title">{sanitizeText(listing.title)}</h1>
-              <span className="ld-category-tag">
-                <i className="fas fa-tag"></i> {sanitizeText(listing.category)}
-              </span>
-            </div>
-            <div className="ld-meta">
-              <span><i className="fas fa-user-tie"></i> {sanitizeText(listing.expertName || "Uzman")}</span>
-              <span><i className="fas fa-map-marker-alt"></i> {sanitizeText(listing.city || "Belirtilmemiş")}</span>
-              <span className="ld-rating">
-                <i className="fas fa-star"></i> {listing.rating ?? 0}
-                <em>({effectiveReviewCount} yorum)</em>
-              </span>
-            </div>
-          </div>
-
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+2. Randevu Oluştur button JSX:
             <button
               className="ld-appointment-btn"
               onClick={handleAppointmentClick}
             >
               <i className="fas fa-calendar-plus"></i> Randevu Oluştur
             </button>
-          </div>
-        </div>
 
-        <div className="ld-grid">
-          <div className="ld-left">
-            <div className="ld-card">
-              <h2 className="ld-card-title"><i className="fas fa-circle-info"></i> İlan Hakkında</h2>
-              <p className="ld-desc">{sanitizeText(listing.description || "Bu ilan için henüz açıklama eklenmemiş.")}</p>
-            </div>
+3. old handleStartChat check:
+      const approvedAppointmentId = await getApprovedAppointmentIdForListing();
 
-            <div className="ld-card">
-              <h2 className="ld-card-title"><i className="fas fa-list-check"></i> Hizmet Detayları</h2>
-              <div className="ld-details">
-                <div className="ld-detail-item">
-                  <span className="ld-detail-label">Kategori</span>
-                  <span className="ld-detail-value">{sanitizeText(listing.category)}</span>
-                </div>
-                {String(listing.serviceSubcategory || "").trim() ? (
-                  <div className="ld-detail-item">
-                    <span className="ld-detail-label">Uzmanlık</span>
-                    <span className="ld-detail-value">{sanitizeText(String(listing.serviceSubcategory).trim())}</span>
-                  </div>
-                ) : null}
-                {String(listing.serviceSubcategoryDetails || "").trim() ? (
-                  <div className="ld-detail-item">
-                    <span className="ld-detail-label">Ayrıntılar</span>
-                    <span className="ld-detail-value">{sanitizeText(String(listing.serviceSubcategoryDetails).trim())}</span>
-                  </div>
-                ) : null}
-                <div className="ld-detail-item">
-                  <span className="ld-detail-label">Şehir</span>
-                  <span className="ld-detail-value">{sanitizeText(listing.city || "Belirtilmemiş")}</span>
-                </div>
-                <div className="ld-detail-item">
-                  <span className="ld-detail-label">Ücret</span>
-                  <span className="ld-detail-value ld-price">₺{formatPrice(listing.price)}</span>
-                </div>
-                <div className="ld-detail-item">
-                  <span className="ld-detail-label">Hizmet Tipi</span>
-                  <span className="ld-detail-value">{sanitizeText(listing.pricingType || "Belirtilmemiş")}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="ld-right">
-            <div className="ld-provider-card">
-              <div className="ld-provider-top">
-                <div className="ld-provider-avatar">
-                  {expertProfilePhoto ? (
-                    <img 
-                      src={expertProfilePhoto} 
-                      alt={sanitizeText(listing.expertName || "Uzman")}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                        e.currentTarget.parentElement.innerText = sanitizeText((listing.expertName || "U").charAt(0).toUpperCase());
-                      }}
-                    />
-                  ) : (
-                    sanitizeText((listing.expertName || "U").charAt(0).toUpperCase())
-                  )}
-                </div>
-                <div>
-                  <h3 className="ld-provider-name">{sanitizeText(listing.expertName || "Uzman")}</h3>
-                  <span className="ld-provider-badge">
-                    <i className="fas fa-check-circle"></i> Onaylı Uzman
-                  </span>
-                </div>
-              </div>
-
-              <div className="ld-provider-stats">
-                <div className="ld-stat">
-                  <span className="ld-stat-val"><i className="fas fa-star"></i> {expertRating}</span>
-                  <span className="ld-stat-lbl">Puan</span>
-                </div>
-                <div className="ld-stat-sep" />
-                <div className="ld-stat">
-                  <span className="ld-stat-val">{expertReviewCount}</span>
-                  <span className="ld-stat-lbl">Yorum</span>
-                </div>
-              </div>
-
-              <button
-                className="ld-profile-btn"
-                onClick={handleStartChat}
-                disabled={chatLoading}
-                style={chatLoading ? { opacity: 0.7, cursor: "not-allowed" } : {}}
-              >
-                <i className="fas fa-message"></i>{" "}
-                {chatLoading ? "Mesaj açılıyor..." : "Bu hizmet için mesaj at"}
-              </button>
-
-              <button
-                className="ld-profile-btn"
-                onClick={handleExpertProfileClick}
-              >
-                <i className="fas fa-id-card"></i> Uzman Profilini İncele
-              </button>
-
-              {!canOpenProfile && (
-                <p className="ld-no-profile">Bu ilan için profil mevcut değil.</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <ReviewSystem targetId={listingId} targetType="listing" />
-      </div>
-
-      {toast.show && (
-        <div style={{
-          position: "fixed", bottom: "24px", right: "24px",
-          background: toast.type === "error" ? "#ef4444" : "#10b981",
-          color: "white", padding: "14px 20px", borderRadius: "12px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.3)", display: "flex",
-          alignItems: "center", gap: "10px", fontSize: "14px",
-          fontWeight: "500", zIndex: 9999, maxWidth: "360px",
-          animation: "slideInRight 0.3s ease",
-        }}>
-          <i className={`fas ${toast.type === "error" ? "fa-times-circle" : "fa-check-circle"}`}></i>
-          {sanitizeText(toast.message)}
-        </div>
-      )}
-    </div>
-  );
-}
+      if (!approvedAppointmentId) {
+        showToast("Bu ilana dair onaylanmış bir randevunuz bulunmalıdır. Randevu oluşturup uzman onayladıktan sonra mesaj gönderebilirsiniz.", "error");
+        setChatLoading(false);
+        return;
+      }
+*/

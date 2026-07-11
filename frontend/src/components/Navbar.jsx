@@ -342,14 +342,7 @@ const Navbar = () => {
             </div>
           )}
 
-          <Link to="/bildirimler" className="navbar-icon-link" title="Bildirimler">
-            <i className="fas fa-bell"></i>
-            {unreadNotificationsCount > 0 && (
-              <span className="notification-badge">
-                {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
-              </span>
-            )}
-          </Link>
+          {/* Notification bell removed for Syria Launch */}
 
           <Link to="/mesajlar" className="navbar-icon-link" title="Mesajlar">
             <i className="fas fa-envelope"></i>
@@ -380,56 +373,44 @@ const Navbar = () => {
                 {userType === 'PROVIDER' ? (
                   <>
                     <Link to="/uzman-profil" onClick={() => setDropdownOpen(false)}>
-                      <i className="fa-solid fa-user-tie"></i> Uzman Profilim
+                      <i className="fa-solid fa-user-tie"></i> ملفي الشخصي كخبير
                     </Link>
-                    <Link to="/customer-appointments" onClick={() => setDropdownOpen(false)}>
-                      <i className="fas fa-calendar-check"></i> Randevularım
-                    </Link>
+                    {/* "Randevularım" dropdown link removed for Syria Launch */}
                   </>
                 ) : (
                   <Link to="/profile" onClick={() => setDropdownOpen(false)}>
-                    <i className="fa-regular fa-user"></i> Profilim
+                    <i className="fa-regular fa-user"></i> ملفي الشخصي
                   </Link>
                 )}
 
                 {userType !== 'CLIENT' && (
                   <Link to="/ilanlar" onClick={() => setDropdownOpen(false)}>
-                    <i className="fa-solid fa-rectangle-list"></i> İlanlar
+                    <i className="fa-solid fa-rectangle-list"></i> الإعلانات
                   </Link>
                 )}
 
                 <Link to="/favoriler" onClick={() => setDropdownOpen(false)}>
-                  <i className="fa-solid fa-heart"></i> Favorilerim
+                  <i className="fa-solid fa-heart"></i> مفضلتي
                 </Link>
 
                 <Link to="/hakkımızda" onClick={() => setDropdownOpen(false)}>
-                  <i className="fa-solid fa-circle-info"></i> Hakkımızda
+                  <i className="fa-solid fa-circle-info"></i> من نحن
                 </Link>
 
-                <Link to="/kvkk" onClick={() => setDropdownOpen(false)}>
-                  <i className="fa-solid fa-shield-halved"></i> KVKK
-                </Link>
+                {/* "KVKK" dropdown link removed for Syria Launch */}
 
                 {userType === 'PROVIDER' && (
                   <Link to="/canli-isbasi-merkezi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
-                    <i className="fas fa-satellite-dish" style={{ color: '#4ade80' }}></i> Canlı İşbaşı Merkezi
+                    <i className="fas fa-satellite-dish" style={{ color: '#4ade80' }}></i> مركز العمل المباشر
                   </Link>
                 )}
 
-                {userType === 'CLIENT' ? (
-                  <Link to="/canli-hizmet-takibi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
-                    <i className="fas fa-broadcast-tower" style={{ color: '#60a5fa' }}></i> Canlı Hizmet Takibi
-                  </Link>
-                ) : hasTodayAppointment && (
-                  <Link to="/canli-hizmet-takibi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
-                    <i className="fas fa-broadcast-tower" style={{ color: '#60a5fa' }}></i> Canlı Hizmet Takibi
-                  </Link>
-                )}
+                {/* "Canlı Hizmet Takibi" dropdown links removed for Syria Launch */}
 
                 <hr />
 
                 <button onClick={handleLogout} className="dropdown-logout-btn">
-                  <i className="fa-solid fa-power-off"></i> Çıkış Yap
+                  <i className="fa-solid fa-power-off"></i> تسجيل الخروج
                 </button>
               </div>
             )}
@@ -442,14 +423,14 @@ const Navbar = () => {
       case PAGE_TYPES.AUTH:
         return (
           <Link to="/" className="navbar-link">
-            <i className="fas fa-arrow-left"></i> Ana Sayfaya Dön
+            <i className="fas fa-arrow-left"></i> العودة للرئيسية
           </Link>
         );
       default:
         return (
           <>
-            <Link to="/register" className="nav-button nav-button--signup">Kayıt Ol</Link>
-            <Link to="/login" className="nav-button nav-button--signin">Giriş Yap</Link>
+            <Link to="/register" className="nav-button nav-button--signup">إنشاء حساب</Link>
+            <Link to="/login" className="nav-button nav-button--signin">تسجيل الدخول</Link>
           </>
         );
     }
@@ -481,18 +462,18 @@ const Navbar = () => {
           </button>
 
           <nav className="navbar-links">
-            <Link to="/" className="navbar-link">Ana Sayfa</Link>
-            <Link to="/iletisim" className="navbar-link">İletişim</Link>
+            <Link to="/" className="navbar-link">الرئيسية</Link>
+            <Link to="/iletisim" className="navbar-link">اتصل بنا</Link>
 
             {!user && (
-              <Link to="/ilanlar" className="navbar-link">İlanlar</Link>
+              <Link to="/ilanlar" className="navbar-link">الإعلانات</Link>
             )}
 
             {userType === 'PROVIDER' && (
               <>
-                <Link to="/uzman/ilanlarim" className="navbar-link">İlanlarım</Link>
+                <Link to="/uzman/ilanlarim" className="navbar-link">إعلاناتي</Link>
                 <Link to="/randevu-takvimi" className="navbar-link">
-                  Randevu Takvimi
+                  جدول المواعيد
                   {pendingAppointmentsCount > 0 && (
                     <span className="nav-count-badge" aria-label={`Bekleyen randevu sayısı: ${pendingAppointmentsCount}`}>
                       {pendingAppointmentsCount > 99 ? '99+' : pendingAppointmentsCount}
@@ -504,19 +485,19 @@ const Navbar = () => {
 
             {userType === 'CLIENT' && (
               <>
-                <Link to="/ilanlar" className="navbar-link">İlanlar</Link>
-                <Link to="/customer-appointments" className="navbar-link">Randevularım</Link>
+                <Link to="/ilanlar" className="navbar-link">الإعلانات</Link>
+                {/* "Randevularım" link removed for Syria Launch */}
               </>
             )}
 
             {userType === 'PENDING_PROVIDER' && (
               !profileCompleted ? (
                 <Link to="/expert-complete-profile" className="navbar-badge pending-badge">
-                  <i className="fas fa-hourglass-half"></i> Profili Tamamla
+                  <i className="fas fa-hourglass-half"></i> أكمل الملف الشخصي
                 </Link>
               ) : (
                 <span className="navbar-badge pending-badge" style={{ cursor: 'default', opacity: 0.7 }}>
-                  <i className="fas fa-hourglass-half"></i> Onay Bekliyor
+                  <i className="fas fa-hourglass-half"></i> بانتظار الموافقة
                 </span>
               )
             )}
@@ -526,18 +507,18 @@ const Navbar = () => {
             <>
               <div className="mobile-menu-overlay" onClick={closeMobileMenu}></div>
               <div className="mobile-menu">
-                <Link to="/" onClick={closeMobileMenu}>Ana Sayfa</Link>
-                <Link to="/iletisim" onClick={closeMobileMenu}>İletişim</Link>
+                <Link to="/" onClick={closeMobileMenu}>الرئيسية</Link>
+                <Link to="/iletisim" onClick={closeMobileMenu}>اتصل بنا</Link>
 
                 {!user && (
-                  <Link to="/ilanlar" onClick={closeMobileMenu}>İlanlar</Link>
+                  <Link to="/ilanlar" onClick={closeMobileMenu}>الإعلانات</Link>
                 )}
 
                 {userType === 'PROVIDER' && (
                   <>
-                    <Link to="/uzman/ilanlarim" onClick={closeMobileMenu}>İlanlarım</Link>
+                    <Link to="/uzman/ilanlarim" onClick={closeMobileMenu}>إعلاناتي</Link>
                     <Link to="/randevu-takvimi" onClick={closeMobileMenu} className="mobile-menu-link-with-badge">
-                      <span>Randevu Takvimi</span>
+                      <span>جدول المواعيد</span>
                       {pendingAppointmentsCount > 0 && (
                         <span className="mobile-count-badge" aria-label={`Bekleyen randevu sayısı: ${pendingAppointmentsCount}`}>
                           {pendingAppointmentsCount > 99 ? '99+' : pendingAppointmentsCount}
@@ -549,27 +530,27 @@ const Navbar = () => {
 
                 {userType === 'CLIENT' && (
                   <>
-                    <Link to="/ilanlar" onClick={closeMobileMenu}>İlanlar</Link>
-                    <Link to="/customer-appointments" onClick={closeMobileMenu}>Randevularım</Link>
+                    <Link to="/ilanlar" onClick={closeMobileMenu}>الإعلانات</Link>
+                    {/* "Randevularım" link removed for Syria Launch */}
                   </>
                 )}
 
                 {userType === 'PENDING_PROVIDER' && (
                   !profileCompleted ? (
                     <Link to="/expert-complete-profile" className="mobile-pending-badge" onClick={closeMobileMenu}>
-                      <i className="fas fa-hourglass-half"></i> Profili Tamamla
+                      <i className="fas fa-hourglass-half"></i> أكمل الملف الشخصي
                     </Link>
                   ) : (
                     <span className="mobile-pending-badge" style={{ cursor: 'default', opacity: 0.7 }}>
-                      <i className="fas fa-hourglass-half"></i> Onay Bekliyor
+                      <i className="fas fa-hourglass-half"></i> بانتظار الموافقة
                     </span>
                   )
                 )}
 
                 {!user && (
                   <div className="mobile-menu-auth">
-                    <Link to="/register" className="mobile-register-btn" onClick={closeMobileMenu}>Kayıt Ol</Link>
-                    <Link to="/login" className="mobile-login-btn" onClick={closeMobileMenu}>Giriş Yap</Link>
+                    <Link to="/register" className="mobile-register-btn" onClick={closeMobileMenu}>إنشاء حساب</Link>
+                    <Link to="/login" className="mobile-login-btn" onClick={closeMobileMenu}>تسجيل الدخول</Link>
                   </div>
                 )}
               </div>
@@ -595,5 +576,46 @@ const Navbar = () => {
     </>
   );
 };
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH (TURKISH FRONTEND SIMPLIFICATION):
+
+1. Notification Bell:
+          <Link to="/bildirimler" className="navbar-icon-link" title="Bildirimler">
+            <i className="fas fa-bell"></i>
+            {unreadNotificationsCount > 0 && (
+              <span className="notification-badge">
+                {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+              </span>
+            )}
+          </Link>
+
+2. "Randevularım" in Dropdown:
+                    <Link to="/customer-appointments" onClick={() => setDropdownOpen(false)}>
+                      <i className="fas fa-calendar-check"></i> Randevularım
+                    </Link>
+
+3. "KVKK" in Dropdown:
+                <Link to="/kvkk" onClick={() => setDropdownOpen(false)}>
+                  <i className="fa-solid fa-shield-halved"></i> KVKK
+                </Link>
+
+4. "Canlı Hizmet Takibi" in Dropdown:
+                {userType === 'CLIENT' ? (
+                  <Link to="/canli-hizmet-takibi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
+                    <i className="fas fa-broadcast-tower" style={{ color: '#60a5fa' }}></i> Canlı Hizmet Takibi
+                  </Link>
+                ) : hasTodayAppointment && (
+                  <Link to="/canli-hizmet-takibi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
+                    <i className="fas fa-broadcast-tower" style={{ color: '#60a5fa' }}></i> Canlı Hizmet Takibi
+                  </Link>
+                )}
+
+5. "Randevularım" Desktop Navbar Link:
+                <Link to="/customer-appointments" className="navbar-link">Randevularım</Link>
+
+6. "Randevularım" Mobile Navbar Link:
+                    <Link to="/customer-appointments" onClick={closeMobileMenu}>Randevularım</Link>
+*/
 
 export default Navbar;

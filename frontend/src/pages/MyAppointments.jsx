@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/MyAppointments.css';
-import { 
-  collection, onSnapshot, query, where, deleteDoc, doc, 
-  getDocs, getDoc, limit, runTransaction, serverTimestamp, 
+import {
+  collection, onSnapshot, query, where, deleteDoc, doc,
+  getDocs, getDoc, limit, runTransaction, serverTimestamp,
   increment, updateDoc, addDoc
 } from 'firebase/firestore';
 import { db, auth } from '../firebase/firebaseClient';
@@ -28,14 +28,14 @@ const sanitizeText = (text) => {
 };
 
 const statusConfig = {
-  pending:    { color: '#fbbf24', bg: 'rgba(251,191,36,0.1)',   border: '#fbbf24', icon: 'fa-clock',           label: 'Onay Bekliyor' },
-  approved:   { color: '#10b981', bg: 'rgba(16,185,129,0.1)',   border: '#10b981', icon: 'fa-check',           label: 'Onaylandı' },
-  expired:    { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)',  border: '#94a3b8', icon: 'fa-history',         label: 'Geçmiş Randevu' },
-  completed:  { color: '#3b82f6', bg: 'rgba(59,130,246,0.1)',   border: '#3b82f6', icon: 'fa-flag-checkered',  label: 'Tamamlandı' },
-  rejected:   { color: '#f87171', bg: 'rgba(248,113,113,0.1)',   border: '#f87171', icon: 'fa-times',           label: 'Reddedildi' },
+  pending: { color: '#fbbf24', bg: 'rgba(251,191,36,0.1)', border: '#fbbf24', icon: 'fa-clock', label: 'Onay Bekliyor' },
+  approved: { color: '#10b981', bg: 'rgba(16,185,129,0.1)', border: '#10b981', icon: 'fa-check', label: 'Onaylandı' },
+  expired: { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: '#94a3b8', icon: 'fa-history', label: 'Geçmiş Randevu' },
+  completed: { color: '#3b82f6', bg: 'rgba(59,130,246,0.1)', border: '#3b82f6', icon: 'fa-flag-checkered', label: 'Tamamlandı' },
+  rejected: { color: '#f87171', bg: 'rgba(248,113,113,0.1)', border: '#f87171', icon: 'fa-times', label: 'Reddedildi' },
   cancelled_by_customer: { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)', border: '#94a3b8', icon: 'fa-user-slash', label: 'İptal Ettiklerim' },
-  cancelled_by_expert:   { color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: '#ef4444', icon: 'fa-exclamation-circle', label: 'Uzman İptali' },
-  reschedule_pending:    { color: '#6366f1', bg: 'rgba(99,102,241,0.1)',  border: '#6366f1', icon: 'fa-business-time',      label: 'Vakit Değişikliği' },
+  cancelled_by_expert: { color: '#ef4444', bg: 'rgba(239,68,68,0.1)', border: '#ef4444', icon: 'fa-exclamation-circle', label: 'Uzman İptali' },
+  reschedule_pending: { color: '#6366f1', bg: 'rgba(99,102,241,0.1)', border: '#6366f1', icon: 'fa-business-time', label: 'Vakit Değişikliği' },
   reschedule_rejected_by_customer: { color: '#f87171', bg: 'rgba(248,113,113,0.1)', border: '#f87171', icon: 'fa-user-times', label: 'Ertelemeyi Reddettiklerim' }
 };
 
@@ -46,7 +46,7 @@ const MyAppointments = () => {
   const [activeTab, setActiveTab] = useState('pending');
   const [loading, setLoading] = useState(true);
 
-  const [selectedDate, setSelectedDate] = useState(null); 
+  const [selectedDate, setSelectedDate] = useState(null);
   const [rescheduleTime, setRescheduleTime] = useState('');
 
   const [expertWorkingHours, setExpertWorkingHours] = useState(null);
@@ -54,11 +54,11 @@ const MyAppointments = () => {
   const [loadingSchedule, setLoadingSchedule] = useState(false);
 
   const [expandedId, setExpandedId] = useState(null);
-  
+
   const [sortOrder, setSortOrder] = useState('newest');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
-  
+
   const [withdrawingId, setWithdrawingId] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState(null);
@@ -92,21 +92,21 @@ const MyAppointments = () => {
 
   useEffect(() => {
     let unsubscribeAppos = null;
-    
+
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
       if (unsubscribeAppos) {
         unsubscribeAppos();
         unsubscribeAppos = null;
       }
-      
+
       if (user) {
         const clientId = user.uid;
-        
+
         const q = query(
           collection(db, 'appointments'),
           where('clientId', '==', clientId)
         );
-        
+
         unsubscribeAppos = onSnapshot(q, (snapshot) => {
           const extracted = [];
           snapshot.forEach((docSnap) => {
@@ -117,7 +117,7 @@ const MyAppointments = () => {
               appointmentDate: data.date
             });
           });
-          
+
           extracted.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
 
           const now = new Date();
@@ -128,7 +128,7 @@ const MyAppointments = () => {
             return now >= endTime;
           });
           toExpire.forEach(r => {
-            updateDoc(doc(db, 'appointments', r.id), { status: 'expired' }).catch(() => {});
+            updateDoc(doc(db, 'appointments', r.id), { status: 'expired' }).catch(() => { });
           });
 
           setMyRequests(extracted);
@@ -148,7 +148,7 @@ const MyAppointments = () => {
         setLoading(false);
       }
     });
-    
+
     return () => {
       if (unsubscribeAppos) {
         unsubscribeAppos();
@@ -160,7 +160,7 @@ const MyAppointments = () => {
   useEffect(() => {
     if (!expandedId) return;
     const req = myRequests.find((r) => r.id === expandedId);
-    if (req?.status === 'completed') {
+    if (req?.status === 'completed' || req?.status === 'approved' || req?.status === 'expired') {
       ensureReviewLoaded(expandedId);
     }
   }, [expandedId, myRequests]);
@@ -180,34 +180,34 @@ const MyAppointments = () => {
       setLoadingSchedule(true);
       const req = myRequests.find(r => r.id === selectedRequestId);
       if (!req || !req.expertId) {
-         setLoadingSchedule(false);
-         return;
+        setLoadingSchedule(false);
+        return;
       }
 
       try {
         const expertRef = doc(db, 'service_providers', req.expertId);
-        const expertSnap = await getDoc(expertRef); 
+        const expertSnap = await getDoc(expertRef);
         if (expertSnap.exists()) {
           setExpertWorkingHours(expertSnap.data().workingHours || null);
         }
 
         const dateKey = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-        
+
         const apptsQuery = query(
           collection(db, 'appointments'),
           where('expertId', '==', req.expertId),
           where('status', '==', 'approved')
         );
-        
+
         const apptSnap = await getDocs(apptsQuery);
         const appts = [];
         apptSnap.forEach(d => {
-           const data = d.data();
-           if(data.date === dateKey) {
-              appts.push({ id: d.id, ...data });
-           }
+          const data = d.data();
+          if (data.date === dateKey) {
+            appts.push({ id: d.id, ...data });
+          }
         });
-        
+
         setDayAppointments(appts);
 
       } catch (error) {
@@ -264,7 +264,7 @@ const MyAppointments = () => {
 
     if (next) {
       const req = myRequests.find((r) => r.id === next);
-      if (req?.status === 'completed') {
+      if (req?.status === 'completed' || req?.status === 'approved' || req?.status === 'expired') {
         ensureReviewLoaded(next);
       }
     }
@@ -277,10 +277,10 @@ const MyAppointments = () => {
 
   const handleWithdrawRequest = async () => {
     if (!withdrawRequestId) return;
-    
+
     setWithdrawingId(withdrawRequestId);
     setShowWithdrawModal(false);
-    
+
     try {
       await deleteDoc(doc(db, 'appointments', withdrawRequestId));
       showAppToast('Randevu talebiniz başarıyla geri çekildi.', 'success');
@@ -300,7 +300,7 @@ const MyAppointments = () => {
 
   const confirmDeleteRecord = async () => {
     if (!deleteRequestId) return;
-    
+
     try {
       await deleteDoc(doc(db, 'appointments', deleteRequestId));
       setShowConfirmModal(false);
@@ -313,189 +313,189 @@ const MyAppointments = () => {
   };
 
   const resetChatTermsModal = () => {
-  setChatTermsModal({
-    open: false,
-    accepted: false,
-    loading: false,
-    request: null,
-    chatData: null,
-  });
-};
-
-const closeChatTermsModal = () => {
-  if (chatTermsModal.loading) return;
-
-  resetChatTermsModal();
-  document.body.classList.remove('modal-open');
-};
-
-const getRequestChatData = async (req) => {
-  const providerUid = String(
-    req.providerUid ||
-    req.expertUid ||
-    req.expertId ||
-    req.providerId ||
-    ''
-  ).trim();
-
-  let serviceId = String(
-    req.serviceId ||
-    req.listingId ||
-    req.ilanId ||
-    req.adId ||
-    ''
-  ).trim();
-
-  let serviceTitle = String(
-    req.serviceTitle ||
-    req.serviceName ||
-    req.listingTitle ||
-    req.listingName ||
-    req.title ||
-    req.note ||
-    'Hizmet'
-  ).trim();
-
-  const appointmentId = String(req.id || '').trim();
-
-  if (!providerUid) {
-    throw new Error('Bu randevuda uzman bilgisi eksik. Lütfen yeni bir test randevusu oluşturun.');
-  }
-
-  if (!appointmentId) {
-    throw new Error('Bu randevuda appointmentId eksik. Lütfen yeni bir test randevusu oluşturun.');
-  }
-
-  if (!serviceId) {
-    const possibleProviderFields = ['providerUid', 'providerId', 'expertId', 'uid'];
-
-    for (const fieldName of possibleProviderFields) {
-      const servicesSnap = await getDocs(
-        query(
-          collection(db, 'services'),
-          where(fieldName, '==', providerUid),
-          limit(1)
-        )
-      );
-
-      if (!servicesSnap.empty) {
-        const serviceDoc = servicesSnap.docs[0];
-        const serviceData = serviceDoc.data();
-
-        serviceId = serviceDoc.id;
-        serviceTitle = String(
-          serviceData.title ||
-          serviceData.serviceName ||
-          serviceData.listingTitle ||
-          serviceTitle ||
-          'Hizmet'
-        ).trim();
-
-        break;
-      }
-    }
-  }
-
-  if (!serviceId) {
-    throw new Error(
-      'Bu randevuda hizmet/ilan bilgisi eksik. Randevu oluşturulurken serviceId veya listingId kaydedilmelidir.'
-    );
-  }
-
-  return {
-    providerUid,
-    serviceId,
-    serviceTitle,
-    appointmentId,
-  };
-};
-
-  const handleMessage = async (req) => {
-  try {
-    const chatData = await getRequestChatData(req);
-    const { providerUid, serviceId, appointmentId } = chatData;
-
-    const acceptedBefore = hasAcceptedChatTerms({
-      currentUid: auth.currentUser?.uid,
-      providerUid,
-      serviceId,
-      appointmentId,
-    });
-
-    if (acceptedBefore) {
-      await continueToChatFromRequest(req, chatData);
-      return;
-    }
-
     setChatTermsModal({
-      open: true,
+      open: false,
       accepted: false,
       loading: false,
-      request: req,
-      chatData,
+      request: null,
+      chatData: null,
     });
+  };
 
-    document.body.classList.add('modal-open');
-  } catch (error) {
-    showAppToast(error?.message || 'Uzmanla sohbet açılamadı.', 'error');
-  }
-};
+  const closeChatTermsModal = () => {
+    if (chatTermsModal.loading) return;
 
-const continueToChatFromRequest = async (
-  directReq = null,
-  directChatData = null
-) => {
-  const req = directReq || chatTermsModal.request;
-  const chatData = directChatData || chatTermsModal.chatData;
+    resetChatTermsModal();
+    document.body.classList.remove('modal-open');
+  };
 
-  if (!req || !chatData) return;
+  const getRequestChatData = async (req) => {
+    const providerUid = String(
+      req.providerUid ||
+      req.expertUid ||
+      req.expertId ||
+      req.providerId ||
+      ''
+    ).trim();
 
-  const requestId = req?.id;
-  setMessagingId(requestId);
+    let serviceId = String(
+      req.serviceId ||
+      req.listingId ||
+      req.ilanId ||
+      req.adId ||
+      ''
+    ).trim();
 
-  try {
-    setChatTermsModal((prev) => ({
-      ...prev,
-      loading: true,
-    }));
+    let serviceTitle = String(
+      req.serviceTitle ||
+      req.serviceName ||
+      req.listingTitle ||
+      req.listingName ||
+      req.title ||
+      req.note ||
+      'Hizmet'
+    ).trim();
 
-    const { providerUid, serviceId, serviceTitle, appointmentId } = chatData;
+    const appointmentId = String(req.id || '').trim();
 
-    const result = await getOrCreateConversation(
-      providerUid,
-      serviceId,
-      serviceTitle || 'Hizmet',
-      appointmentId
-    );
-
-    if (!result?.conversationId) {
-      throw new Error('Sohbet ID alınamadı.');
+    if (!providerUid) {
+      throw new Error('Bu randevuda uzman bilgisi eksik. Lütfen yeni bir test randevusu oluşturun.');
     }
 
-    saveChatTermsAccepted({
-      currentUid: auth.currentUser?.uid,
+    if (!appointmentId) {
+      throw new Error('Bu randevuda appointmentId eksik. Lütfen yeni bir test randevusu oluşturun.');
+    }
+
+    if (!serviceId) {
+      const possibleProviderFields = ['providerUid', 'providerId', 'expertId', 'uid'];
+
+      for (const fieldName of possibleProviderFields) {
+        const servicesSnap = await getDocs(
+          query(
+            collection(db, 'services'),
+            where(fieldName, '==', providerUid),
+            limit(1)
+          )
+        );
+
+        if (!servicesSnap.empty) {
+          const serviceDoc = servicesSnap.docs[0];
+          const serviceData = serviceDoc.data();
+
+          serviceId = serviceDoc.id;
+          serviceTitle = String(
+            serviceData.title ||
+            serviceData.serviceName ||
+            serviceData.listingTitle ||
+            serviceTitle ||
+            'Hizmet'
+          ).trim();
+
+          break;
+        }
+      }
+    }
+
+    if (!serviceId) {
+      throw new Error(
+        'Bu randevuda hizmet/ilan bilgisi eksik. Randevu oluşturulurken serviceId veya listingId kaydedilmelidir.'
+      );
+    }
+
+    return {
       providerUid,
       serviceId,
+      serviceTitle,
       appointmentId,
-    });
+    };
+  };
 
-    resetChatTermsModal();
-    document.body.classList.remove('modal-open');
+  const handleMessage = async (req) => {
+    try {
+      const chatData = await getRequestChatData(req);
+      const { providerUid, serviceId, appointmentId } = chatData;
 
-    navigate(`/mesajlar?conversation=${encodeURIComponent(result.conversationId)}&open=true`);
-  } catch (error) {
-    if (isDevelopment) {
-      console.error('Randevudan sohbet açma hatası:', error);
+      const acceptedBefore = hasAcceptedChatTerms({
+        currentUid: auth.currentUser?.uid,
+        providerUid,
+        serviceId,
+        appointmentId,
+      });
+
+      if (acceptedBefore) {
+        await continueToChatFromRequest(req, chatData);
+        return;
+      }
+
+      setChatTermsModal({
+        open: true,
+        accepted: false,
+        loading: false,
+        request: req,
+        chatData,
+      });
+
+      document.body.classList.add('modal-open');
+    } catch (error) {
+      showAppToast(error?.message || 'Uzmanla sohbet açılamadı.', 'error');
     }
+  };
 
-    resetChatTermsModal();
-    document.body.classList.remove('modal-open');
+  const continueToChatFromRequest = async (
+    directReq = null,
+    directChatData = null
+  ) => {
+    const req = directReq || chatTermsModal.request;
+    const chatData = directChatData || chatTermsModal.chatData;
 
-    showAppToast(error?.message || 'Uzmanla sohbet açılamadı.', 'error');
-  } finally {
-    setMessagingId(null);
-  }
-};
+    if (!req || !chatData) return;
+
+    const requestId = req?.id;
+    setMessagingId(requestId);
+
+    try {
+      setChatTermsModal((prev) => ({
+        ...prev,
+        loading: true,
+      }));
+
+      const { providerUid, serviceId, serviceTitle, appointmentId } = chatData;
+
+      const result = await getOrCreateConversation(
+        providerUid,
+        serviceId,
+        serviceTitle || 'Hizmet',
+        appointmentId
+      );
+
+      if (!result?.conversationId) {
+        throw new Error('Sohbet ID alınamadı.');
+      }
+
+      saveChatTermsAccepted({
+        currentUid: auth.currentUser?.uid,
+        providerUid,
+        serviceId,
+        appointmentId,
+      });
+
+      resetChatTermsModal();
+      document.body.classList.remove('modal-open');
+
+      navigate(`/mesajlar?conversation=${encodeURIComponent(result.conversationId)}&open=true`);
+    } catch (error) {
+      if (isDevelopment) {
+        console.error('Randevudan sohbet açma hatası:', error);
+      }
+
+      resetChatTermsModal();
+      document.body.classList.remove('modal-open');
+
+      showAppToast(error?.message || 'Uzmanla sohbet açılamadı.', 'error');
+    } finally {
+      setMessagingId(null);
+    }
+  };
 
   const closeConfirmModal = () => {
     setShowConfirmModal(false);
@@ -617,7 +617,8 @@ const continueToChatFromRequest = async (
 
         if (!apptSnap.exists()) throw new Error('Randevu bulunamadı.');
         const appt = apptSnap.data() || {};
-        if (appt.status !== 'completed') throw new Error('Sadece tamamlanmış randevular değerlendirilebilir.');
+        const allowedStatuses = ['completed', 'approved', 'expired'];
+        if (!allowedStatuses.includes(appt.status)) throw new Error('Sadece onaylanmış, tamamlanmış veya geçmiş randevular değerlendirilebilir.');
         if (appt.clientId !== auth.currentUser.uid) throw new Error('Bu randevuyu sadece sahibi değerlendirebilir.');
 
         const expertId = appt.expertId || req.expertId || null;
@@ -668,16 +669,16 @@ const continueToChatFromRequest = async (
         }
       });
 
-      setReviewsByAppointmentId((prev) => ({ 
-        ...prev, 
-        [req.id]: { 
-          id: req.id, 
+      setReviewsByAppointmentId((prev) => ({
+        ...prev,
+        [req.id]: {
+          id: req.id,
           appointmentId: req.id,
           rating: clampRating(reviewRating),
           comment: sanitizeText(reviewComment || '').trim().slice(0, 1000)
-        } 
+        }
       }));
-      
+
       showAppToast('Değerlendirmeniz alındı. Teşekkürler!', 'success');
       closeReviewModal();
     } catch (e) {
@@ -710,9 +711,9 @@ const continueToChatFromRequest = async (
       const nowMs = Date.now();
 
       if (penaltyType === 'DAILY_PENALTY') {
-        penaltyDate = new Date(nowMs + 24 * 60 * 60 * 1000); 
+        penaltyDate = new Date(nowMs + 24 * 60 * 60 * 1000);
       } else if (penaltyType === 'CRITICAL_PENALTY') {
-        penaltyDate = new Date(nowMs + 72 * 60 * 60 * 1000); 
+        penaltyDate = new Date(nowMs + 72 * 60 * 60 * 1000);
       }
 
       await runTransaction(db, async (transaction) => {
@@ -723,17 +724,17 @@ const continueToChatFromRequest = async (
 
         const expertSnap = await transaction.get(expertRef);
         if (!expertSnap.exists()) throw "Uzman bulunamadı!";
-        
+
         const expertData = expertSnap.data();
         const prevTokens = expertData.currentTokenCount || 0;
 
-        transaction.update(apptRef, { 
-          status: 'cancelled_by_customer', 
-          cancelledAt: serverTimestamp() 
+        transaction.update(apptRef, {
+          status: 'cancelled_by_customer',
+          cancelledAt: serverTimestamp()
         });
 
-        transaction.update(expertRef, { 
-          currentTokenCount: prevTokens + 1 
+        transaction.update(expertRef, {
+          currentTokenCount: prevTokens + 1
         });
 
         transaction.update(customerRef, {
@@ -794,7 +795,7 @@ const continueToChatFromRequest = async (
 
     try {
       const appRef = doc(db, 'appointments', req.id);
-      
+
       await updateDoc(appRef, {
         status: 'cancelled_by_expert',
         isCancelledByRescheduleRejection: true,
@@ -807,7 +808,7 @@ const continueToChatFromRequest = async (
         message: `Müşteriniz ${sanitizeText(req.client)}, vakit değişikliği talebinizi reddetti. "${sanitizeText(req.note) || 'Genel Hizmet'}" konulu randevunuz ${req.appointmentDate} tarihinde saat ${req.start} itibarıyla başlayacaktı. Saat ve tarih değişikliği talebini siz attığınız için jetonunuz geri iade edilmedi. Lütfen Müşterileri onaylarken sizin konum, saat vb şartlarınıza uygun olduğunu çok iyi kontrol edin. İleride müşteriyi iptal etmek veya ertelemek zorunda kalmayın.`,
         appointmentId: req.id,
         type: "reschedule_rejected",
-        link: "/expert-appointments", 
+        link: "/expert-appointments",
         createdAt: serverTimestamp(),
         read: false
       });
@@ -875,7 +876,7 @@ const continueToChatFromRequest = async (
     if (isDayClosed) {
       return (
         <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', padding: '20px', textAlign: 'center', marginTop: '20px' }}>
-           <span style={{ color: '#ef4444', fontWeight: 'bold' }}>Uzman bu gün hizmet vermemektedir (Mesai Dışı)</span>
+          <span style={{ color: '#ef4444', fontWeight: 'bold' }}>Uzman bu gün hizmet vermemektedir (Mesai Dışı)</span>
         </div>
       );
     }
@@ -933,26 +934,26 @@ const continueToChatFromRequest = async (
         {blocks.map((block, idx) => {
           const isApp = block.type === 'appointment';
           return (
-            <div key={idx} style={{ 
-              background: isApp ? 'rgba(251, 191, 36, 0.1)' : 'rgba(16, 185, 129, 0.05)', 
-              border: `1.5px solid ${isApp ? 'rgba(251, 191, 36, 0.4)' : 'rgba(16, 185, 129, 0.3)'}`, 
-              borderRadius: '10px', 
-              padding: '12px', 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: '6px' 
+            <div key={idx} style={{
+              background: isApp ? 'rgba(251, 191, 36, 0.1)' : 'rgba(16, 185, 129, 0.05)',
+              border: `1.5px solid ${isApp ? 'rgba(251, 191, 36, 0.4)' : 'rgba(16, 185, 129, 0.3)'}`,
+              borderRadius: '10px',
+              padding: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
             }}>
-               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#94a3b8' }}>
-                 <span>Başlangıç:</span>
-                 <span style={{ color: isApp ? '#fbbf24' : '#10b981', fontWeight: 'bold' }}>{block.startStr}</span>
-               </div>
-               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#94a3b8' }}>
-                 <span>Bitiş:</span>
-                 <span style={{ color: isApp ? '#fbbf24' : '#10b981', fontWeight: 'bold' }}>{block.endStr}</span>
-               </div>
-               <div style={{ textAlign: 'center', marginTop: '6px', fontSize: '13px', fontWeight: 'bold', color: isApp ? '#fbbf24' : '#10b981' }}>
-                 {isApp ? 'DOLU' : 'Müsait'}
-               </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#94a3b8' }}>
+                <span>Başlangıç:</span>
+                <span style={{ color: isApp ? '#fbbf24' : '#10b981', fontWeight: 'bold' }}>{block.startStr}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: '#94a3b8' }}>
+                <span>Bitiş:</span>
+                <span style={{ color: isApp ? '#fbbf24' : '#10b981', fontWeight: 'bold' }}>{block.endStr}</span>
+              </div>
+              <div style={{ textAlign: 'center', marginTop: '6px', fontSize: '13px', fontWeight: 'bold', color: isApp ? '#fbbf24' : '#10b981' }}>
+                {isApp ? 'DOLU' : 'Müsait'}
+              </div>
             </div>
           );
         })}
@@ -984,13 +985,13 @@ const continueToChatFromRequest = async (
             <i className="fas fa-sort-amount-down"></i> Sırala:
           </div>
           <div className="ma-sort-buttons">
-            <button 
+            <button
               className={`ma-sort-btn ${sortOrder === 'newest' ? 'active' : ''}`}
               onClick={() => handleSortChange('newest')}
             >
               🕒 En Yeni
             </button>
-            <button 
+            <button
               className={`ma-sort-btn ${sortOrder === 'oldest' ? 'active' : ''}`}
               onClick={() => handleSortChange('oldest')}
             >
@@ -1026,10 +1027,10 @@ const continueToChatFromRequest = async (
             const isRejected = req.status === 'rejected';
             const isApproved = req.status === 'approved';
             const isCompleted = req.status === 'completed';
-            
+
             return (
               <div key={req.id} className={`ma-card ${isExpanded ? 'expanded' : ''}`}>
-                
+
                 <div className="ma-card-summary" onClick={() => toggleExpand(req.id)}>
                   <div className="ma-summary-left">
                     <div className="ma-expert-info">
@@ -1041,7 +1042,7 @@ const continueToChatFromRequest = async (
                       <span className="ma-time">{sanitizeText(req.start)}</span>
                     </div>
                   </div>
-                  
+
                   <div className="ma-summary-right">
                     <div
                       className="ma-status-badge"
@@ -1057,7 +1058,7 @@ const continueToChatFromRequest = async (
 
                 {isExpanded && (
                   <div className="ma-card-detail">
-                    
+
                     <div className="ma-detail-section">
                       <div className="ma-detail-title">
                         <i className="fas fa-map-marker-alt"></i> Adres Bilgileri
@@ -1098,7 +1099,7 @@ const continueToChatFromRequest = async (
 
                     {req.status === 'reschedule_pending' && (
                       <div className="ma-reschedule-panel" style={{ marginTop: '20px', padding: '20px', background: 'rgba(99, 102, 241, 0.05)', borderRadius: '12px', border: '1px solid #334155' }}>
-                        
+
                         <div style={{ marginBottom: '20px' }}>
                           <h4 style={{ color: '#6366f1', fontSize: '14px', marginBottom: '8px' }}>
                             <i className="fas fa-comment-dots"></i> UZMANIN MAZERETİ VE TALEBİ:
@@ -1109,23 +1110,23 @@ const continueToChatFromRequest = async (
                         </div>
 
                         <div style={{ display: 'flex', gap: '15px' }}>
-                          <button 
-                            className="ma-btn" 
+                          <button
+                            className="ma-btn"
                             style={{ flex: 1, background: '#334155', border: '1px solid #ef4444', color: '#ef4444' }}
                             onClick={() => openRejectRescheduleConfirm(req)}
                           >
                             <i className="fas fa-times-circle"></i> Talebi Reddet
                           </button>
 
-                          <button 
-                            className="ma-btn" 
+                          <button
+                            className="ma-btn"
                             style={{ flex: 2, background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4)' }}
                             onClick={() => {
-                              setSelectedRequestId(req.id); 
+                              setSelectedRequestId(req.id);
                               if (req.rescheduleAllowedDates && req.rescheduleAllowedDates.length > 0) {
                                 setSelectedDate(new Date(req.rescheduleAllowedDates[0]));
                               }
-                              setShowConfirmModal(true); 
+                              setShowConfirmModal(true);
                             }}
                           >
                             <i className="fas fa-calendar-check"></i> Uzmanın Önerdiği Tarihlerden Seç <i className="fas fa-arrow-right" style={{ marginLeft: '10px' }}></i>
@@ -1147,7 +1148,7 @@ const continueToChatFromRequest = async (
 
                     <div className="ma-detail-actions">
                       {req.status === 'pending' ? (
-                        <button 
+                        <button
                           className="ma-btn ma-btn--withdraw"
                           onClick={() => openWithdrawModal(req.id)}
                           disabled={isWithdrawing}
@@ -1160,7 +1161,7 @@ const continueToChatFromRequest = async (
                         </button>
                       ) : req.status === 'rejected' ? (
                         <>
-                          <button 
+                          <button
                             className="ma-btn ma-btn--delete"
                             onClick={() => openDeleteConfirmModal(req.id)}
                           >
@@ -1191,7 +1192,7 @@ const continueToChatFromRequest = async (
                             )}
                           </button>
 
-                          <button 
+                          <button
                             className="ma-btn ma-btn--delete"
                             onClick={() => handleCancelClick(req)}
                           >
@@ -1221,14 +1222,14 @@ const continueToChatFromRequest = async (
                                 </div>
 
                                 <div style={{ marginBottom: '15px', textAlign: 'left' }}>
-                                  <div 
+                                  <div
                                     onClick={() => setShowPolicyInfo(!showPolicyInfo)}
                                     style={{ cursor: 'pointer', color: '#60a5fa', fontSize: '13px', fontWeight: '600', textDecoration: 'underline' }}
                                   >
                                     <i className={`fas fa-chevron-${showPolicyInfo ? 'down' : 'right'}`} style={{ marginRight: '5px' }}></i>
                                     İptal etme ve Cezai İşlemler Hakkında
                                   </div>
-                                  
+
                                   {showPolicyInfo && (
                                     <div style={{ background: '#0f172a', padding: '16px', borderRadius: '8px', marginTop: '10px', color: '#cbd5e1', border: '1px solid #334155' }}>
                                       <div style={{ textAlign: 'center', marginBottom: '15px' }}>
@@ -1248,7 +1249,7 @@ const continueToChatFromRequest = async (
                                     </div>
                                   )}
                                 </div>
-                                
+
                                 <p style={{ fontSize: '14.5px', lineHeight: '1.5' }}>
                                   {cancelModal.penaltyType === 'NO_PENALTY' && "Bu randevuyu cezasız iptal edebilirsiniz."}
                                   {cancelModal.penaltyType === 'DAILY_PENALTY' && <span><strong>⚠️ DİKKAT!</strong> İptal ederseniz <strong>24 saat</strong> yeni randevu alamazsınız.</span>}
@@ -1266,14 +1267,14 @@ const continueToChatFromRequest = async (
                           )}
                         </>
                       ) : (
-                        <div className="ma-info-message" style={{ 
-                          color: statusConfig[req.status]?.color, 
+                        <div className="ma-info-message" style={{
+                          color: statusConfig[req.status]?.color,
                           background: statusConfig[req.status]?.bg,
-                          padding: '12px', borderRadius: '8px', 
+                          padding: '12px', borderRadius: '8px',
                           border: `1.5px solid ${statusConfig[req.status]?.border}`,
                           marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px'
                         }}>
-                          <i className={`fas ${statusConfig[req.status]?.icon}`}></i> 
+                          <i className={`fas ${statusConfig[req.status]?.icon}`}></i>
                           <strong>
                             {req.status === 'completed' && "Bu randevu başarıyla tamamlandı."}
                             {req.status === 'cancelled_by_customer' && "Bu randevuyu siz iptal ettiniz."}
@@ -1282,10 +1283,10 @@ const continueToChatFromRequest = async (
                         </div>
                       )}
 
-                      {isCompleted && (
+                      {(isCompleted || isApproved || req.status === 'expired') && (
                         <div style={{ marginTop: '12px' }}>
                           {reviewsByAppointmentId?.[req.id] ? (
-                            <div style={{ 
+                            <div style={{
                               background: 'rgba(16, 185, 129, 0.06)',
                               border: '1px solid rgba(16, 185, 129, 0.25)',
                               borderRadius: '10px',
@@ -1401,7 +1402,7 @@ const continueToChatFromRequest = async (
             </div>
             <h3>Talebi Geri Çek</h3>
             <p>
-              Bu randevu talebini geri çekmek istediğinize emin misiniz?<br/>
+              Bu randevu talebini geri çekmek istediğinize emin misiniz?<br />
               Uzman henüz onaylamadığı için herhangi bir ceza yansımaz.
             </p>
             <div className="confirm-modal-actions">
@@ -1447,7 +1448,7 @@ const continueToChatFromRequest = async (
       {showConfirmModal && selectedRequestId && (
         <div className="detail-overlay" onClick={() => { setShowConfirmModal(false); setSelectedRequestId(null); }}>
           <div className="appointment-modal-form" onClick={e => e.stopPropagation()} style={{ width: '95vw', height: '95vh', maxWidth: '1800px', display: 'flex', flexDirection: 'column', padding: '30px' }}>
-            
+
             <div className="appo-form-header" style={{ flexShrink: 0 }}>
               <h3 className="appo-form-title">Yeni Randevu Vaktinizi Belirleyin</h3>
               <div className="appo-form-title-line"></div>
@@ -1455,9 +1456,9 @@ const continueToChatFromRequest = async (
             </div>
 
             <div style={{ display: 'flex', gap: '30px', flex: 1, overflow: 'hidden', marginTop: '20px' }}>
-              
+
               <div style={{ flex: '1.3', background: 'rgba(15, 23, 42, 0.5)', padding: '20px', borderRadius: '16px', border: '1px dashed #334155', overflowY: 'auto' }}>
-                <SharedCalendar 
+                <SharedCalendar
                   mode="CUSTOMER"
                   selectedDate={selectedDate}
                   onDateSelect={setSelectedDate}
@@ -1466,156 +1467,156 @@ const continueToChatFromRequest = async (
               </div>
 
               <div style={{ flex: '1', display: 'flex', flexDirection: 'column', gap: '20px', overflowY: 'auto' }}>
-                
+
                 <div style={{ background: '#1e293b', borderRadius: '16px', padding: '25px', flex: 1, border: '1px solid #334155', display: 'flex', flexDirection: 'column' }}>
                   <label className="appointment-input-label" style={{ color: '#ffcc00', fontSize: '14px', marginBottom: '15px' }}>
                     <i className="fas fa-clock"></i> {selectedDate?.toLocaleDateString('tr-TR')} GÜNÜ UZMAN PROGRAMI
                   </label>
-                  
+
                   <div style={{ padding: '15px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '10px', border: '1px solid #3b82f6', fontSize: '13px', lineHeight: '1.6', color: '#cbd5e1' }}>
-                     💡 <strong>Nasıl Seçerim?</strong> Lütfen uzmanın boş saatlerini dikkate alarak uygun bir başlangıç saati belirleyin ve aşağıdaki kutuya yazın.
+                    💡 <strong>Nasıl Seçerim?</strong> Lütfen uzmanın boş saatlerini dikkate alarak uygun bir başlangıç saati belirleyin ve aşağıdaki kutuya yazın.
                   </div>
 
                   {renderScheduleGrid()}
                 </div>
 
                 <div style={{ background: '#0f172a', padding: '25px', borderRadius: '16px', border: '2px solid #6366f1', flexShrink: 0 }}>
-                   {(() => {
-                       const req = myRequests.find(r => r.id === selectedRequestId);
-                       const duration = req?.appointmentDuration || 30;
-                       let calculatedEndTimeStr = "--:--";
-                       
-                       if (rescheduleTime) {
-                           const [h, m] = rescheduleTime.split(':').map(Number);
-                           const endMin = (h * 60) + m + duration;
-                           calculatedEndTimeStr = `${String(Math.floor(endMin/60)).padStart(2,'0')}:${String(endMin%60).padStart(2,'0')}`;
-                       }
+                  {(() => {
+                    const req = myRequests.find(r => r.id === selectedRequestId);
+                    const duration = req?.appointmentDuration || 30;
+                    let calculatedEndTimeStr = "--:--";
 
-                       return (
-                           <>
-                               <label className="appointment-input-label" style={{ color: '#fff', fontSize: '13px' }}>
-                                   YENİ SAATİNİZİ BELİRLEYİN: <span style={{color:'#f59e0b'}}>(İşlem Süresi: {duration} Dk)</span>
-                               </label>
-                               
-                               <div style={{ display: 'flex', gap: '15px', marginTop: '10px', alignItems: 'flex-end' }}>
-                                  
-                                  <div style={{ flex: 1 }}>
-                                     <span style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '5px' }}>Başlangıç Saati</span>
-                                     <input 
-                                       type="time" 
-                                       className="appointment-input-field" 
-                                       style={{ width: '100%', fontSize: '20px', fontWeight: 'bold', textAlign: 'center', height: '55px', margin: 0, border: '1px solid #6366f1' }}
-                                       onChange={(e) => setRescheduleTime(e.target.value)}
-                                     />
-                                  </div>
-                                  
-                                  <div style={{ color: '#64748b', display: 'flex', alignItems: 'center', height: '55px' }}>
-                                     <i className="fas fa-arrow-right"></i>
-                                  </div>
-                                  
-                                  <div style={{ flex: 1 }}>
-                                     <span style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '5px' }}>Bitiş (Otomatik)</span>
-                                     <input 
-                                       type="text" 
-                                       disabled
-                                       value={calculatedEndTimeStr}
-                                       className="appointment-input-field" 
-                                       style={{ width: '100%', fontSize: '20px', fontWeight: 'bold', textAlign: 'center', height: '55px', margin: 0, background: '#1e293b', color: '#64748b', cursor: 'not-allowed', border: '1px solid #334155' }}
-                                     />
-                                  </div>
-                                  
-                                  <button 
-                                    className="btn-form-submit" 
-                                    style={{ flex: 1.5, height: '55px', margin: 0, background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '15px' }}
-                                    onClick={async () => {
-                                    if(!rescheduleTime) { showAppToast("Lütfen bir başlangıç saati giriniz!", "error"); return; }
-                                    
-                                    const req = myRequests.find(r => r.id === selectedRequestId);
-                                    const duration = req?.appointmentDuration || 30;
-                                    const toMinutes = (t) => t.split(':').reduce((h, m) => h * 60 + (+m));
-                                    
-                                    const reqStartMin = toMinutes(rescheduleTime);
-                                    const reqEndMin = reqStartMin + duration;
-                                    
-                                    const newEndStr = `${Math.floor(reqEndMin/60).toString().padStart(2,'0')}:${(reqEndMin%60).toString().padStart(2,'0')}`;
+                    if (rescheduleTime) {
+                      const [h, m] = rescheduleTime.split(':').map(Number);
+                      const endMin = (h * 60) + m + duration;
+                      calculatedEndTimeStr = `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`;
+                    }
 
-                                    const currentDayEn = selectedDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-                                    const todaySchedule = expertWorkingHours ? expertWorkingHours[currentDayEn] : null;
-                                    
-                                    if (!todaySchedule || !todaySchedule.enabled) {
-                                        showAppToast("Seçtiğiniz gün uzman mesai dışındadır.", "error"); return;
-                                    }
-                                    
-                                    const workStartMin = toMinutes(todaySchedule.start);
-                                    const workEndMin = toMinutes(todaySchedule.end);
-                                    
-                                    if (reqStartMin < workStartMin || reqEndMin > workEndMin) {
-                                        showAppToast(`HATA: Seçtiğiniz saat aralığı, uzmanın mesai saatleri (${todaySchedule.start} - ${todaySchedule.end}) dışına taşıyor.`, "error"); return;
-                                    }
+                    return (
+                      <>
+                        <label className="appointment-input-label" style={{ color: '#fff', fontSize: '13px' }}>
+                          YENİ SAATİNİZİ BELİRLEYİN: <span style={{ color: '#f59e0b' }}>(İşlem Süresi: {duration} Dk)</span>
+                        </label>
 
-                                    const approvedApps = dayAppointments.filter(app => (app.status === 'approved' || app.createdBy === 'expert') && app.id !== req.id);
-                                    
-                                    for (let app of approvedApps) {
-                                        const existStartMin = toMinutes(app.start);
-                                        const existEndMin = toMinutes(app.end);
-                                        
-                                        if (reqStartMin < existEndMin + 10 && reqEndMin > existStartMin - 10) {
-                                            showAppToast(`UYARI: Seçtiğiniz saat, uzmanın başka bir randevusu ile çakışıyor veya çok yakın.\n\nHizmetin aksamaması için lütfen diğer randevularla aranızda en az 10 dakika "Tampon Süre" bırakın.`, "error");
-                                            return;
-                                        }
-                                    }
+                        <div style={{ display: 'flex', gap: '15px', marginTop: '10px', alignItems: 'flex-end' }}>
 
-                                    try {
-                                      const year = selectedDate.getFullYear();
-                                      const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-                                      const day = String(selectedDate.getDate()).padStart(2, '0');
-                                      const correctDateStr = `${year}-${month}-${day}`;
+                          <div style={{ flex: 1 }}>
+                            <span style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '5px' }}>Başlangıç Saati</span>
+                            <input
+                              type="time"
+                              className="appointment-input-field"
+                              style={{ width: '100%', fontSize: '20px', fontWeight: 'bold', textAlign: 'center', height: '55px', margin: 0, border: '1px solid #6366f1' }}
+                              onChange={(e) => setRescheduleTime(e.target.value)}
+                            />
+                          </div>
 
-                                      await updateDoc(doc(db, 'appointments', req.id), {
-                                        status: 'approved',
-                                        date: correctDateStr,
-                                        start: rescheduleTime,
-                                        end: newEndStr,
-                                        startHour: Math.floor(reqStartMin / 60),
-                                        endHour: Math.floor(reqEndMin / 60),
-                                        approvedTime: Date.now()
-                                      });
+                          <div style={{ color: '#64748b', display: 'flex', alignItems: 'center', height: '55px' }}>
+                            <i className="fas fa-arrow-right"></i>
+                          </div>
 
-                                      await addDoc(collection(db, "notifications"), {
-                                        userId: req.expertId,
-                                        title: "Vakit Değişikliği Onaylandı ✅",
-                                        message: `Müşteriniz ${sanitizeText(req.client)}, vakit değişikliği talebinizi kabul etti. "${sanitizeText(req.note) || 'Genel Hizmet'}" konulu randevunuz ${correctDateStr} tarihinde saat ${rescheduleTime} itibarıyla başlayacak şekilde güncellenmiştir. (Konum: ${sanitizeText(req.district)} / ${sanitizeText(req.city)})`,
-                                        appointmentId: req.id,
-                                        appointmentDate: correctDateStr,
-                                        type: "reschedule_approved",
-                                        link: "/expert-appointments", 
-                                        createdAt: serverTimestamp(),
-                                        read: false
-                                      });
+                          <div style={{ flex: 1 }}>
+                            <span style={{ color: '#94a3b8', fontSize: '12px', display: 'block', marginBottom: '5px' }}>Bitiş (Otomatik)</span>
+                            <input
+                              type="text"
+                              disabled
+                              value={calculatedEndTimeStr}
+                              className="appointment-input-field"
+                              style={{ width: '100%', fontSize: '20px', fontWeight: 'bold', textAlign: 'center', height: '55px', margin: 0, background: '#1e293b', color: '#64748b', cursor: 'not-allowed', border: '1px solid #334155' }}
+                            />
+                          </div>
 
-                                      setShowConfirmModal(false);
-                                      showAppToast("İşlem Başarılı! Randevunuz güncellendi ve uzmana bildirim gönderildi. ✅", "success");
-                                    } catch (err) { 
-                                      if (isDevelopment) console.error("Firebase Hatası:", err.message); 
-                                      showAppToast("Bildirim gönderilirken bir hata oluştu.", "error");
-                                    }
-                                  }}
-                                  >
-                                    Vakti Onayla <i className="fas fa-check-double"></i>
-                                  </button>
-                               </div>
-                           </>
-                       );
-                   })()}
+                          <button
+                            className="btn-form-submit"
+                            style={{ flex: 1.5, height: '55px', margin: 0, background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', fontSize: '15px' }}
+                            onClick={async () => {
+                              if (!rescheduleTime) { showAppToast("Lütfen bir başlangıç saati giriniz!", "error"); return; }
+
+                              const req = myRequests.find(r => r.id === selectedRequestId);
+                              const duration = req?.appointmentDuration || 30;
+                              const toMinutes = (t) => t.split(':').reduce((h, m) => h * 60 + (+m));
+
+                              const reqStartMin = toMinutes(rescheduleTime);
+                              const reqEndMin = reqStartMin + duration;
+
+                              const newEndStr = `${Math.floor(reqEndMin / 60).toString().padStart(2, '0')}:${(reqEndMin % 60).toString().padStart(2, '0')}`;
+
+                              const currentDayEn = selectedDate.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+                              const todaySchedule = expertWorkingHours ? expertWorkingHours[currentDayEn] : null;
+
+                              if (!todaySchedule || !todaySchedule.enabled) {
+                                showAppToast("Seçtiğiniz gün uzman mesai dışındadır.", "error"); return;
+                              }
+
+                              const workStartMin = toMinutes(todaySchedule.start);
+                              const workEndMin = toMinutes(todaySchedule.end);
+
+                              if (reqStartMin < workStartMin || reqEndMin > workEndMin) {
+                                showAppToast(`HATA: Seçtiğiniz saat aralığı, uzmanın mesai saatleri (${todaySchedule.start} - ${todaySchedule.end}) dışına taşıyor.`, "error"); return;
+                              }
+
+                              const approvedApps = dayAppointments.filter(app => (app.status === 'approved' || app.createdBy === 'expert') && app.id !== req.id);
+
+                              for (let app of approvedApps) {
+                                const existStartMin = toMinutes(app.start);
+                                const existEndMin = toMinutes(app.end);
+
+                                if (reqStartMin < existEndMin + 10 && reqEndMin > existStartMin - 10) {
+                                  showAppToast(`UYARI: Seçtiğiniz saat, uzmanın başka bir randevusu ile çakışıyor veya çok yakın.\n\nHizmetin aksamaması için lütfen diğer randevularla aranızda en az 10 dakika "Tampon Süre" bırakın.`, "error");
+                                  return;
+                                }
+                              }
+
+                              try {
+                                const year = selectedDate.getFullYear();
+                                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                                const day = String(selectedDate.getDate()).padStart(2, '0');
+                                const correctDateStr = `${year}-${month}-${day}`;
+
+                                await updateDoc(doc(db, 'appointments', req.id), {
+                                  status: 'approved',
+                                  date: correctDateStr,
+                                  start: rescheduleTime,
+                                  end: newEndStr,
+                                  startHour: Math.floor(reqStartMin / 60),
+                                  endHour: Math.floor(reqEndMin / 60),
+                                  approvedTime: Date.now()
+                                });
+
+                                await addDoc(collection(db, "notifications"), {
+                                  userId: req.expertId,
+                                  title: "Vakit Değişikliği Onaylandı ✅",
+                                  message: `Müşteriniz ${sanitizeText(req.client)}, vakit değişikliği talebinizi kabul etti. "${sanitizeText(req.note) || 'Genel Hizmet'}" konulu randevunuz ${correctDateStr} tarihinde saat ${rescheduleTime} itibarıyla başlayacak şekilde güncellenmiştir. (Konum: ${sanitizeText(req.district)} / ${sanitizeText(req.city)})`,
+                                  appointmentId: req.id,
+                                  appointmentDate: correctDateStr,
+                                  type: "reschedule_approved",
+                                  link: "/expert-appointments",
+                                  createdAt: serverTimestamp(),
+                                  read: false
+                                });
+
+                                setShowConfirmModal(false);
+                                showAppToast("İşlem Başarılı! Randevunuz güncellendi ve uzmana bildirim gönderildi. ✅", "success");
+                              } catch (err) {
+                                if (isDevelopment) console.error("Firebase Hatası:", err.message);
+                                showAppToast("Bildirim gönderilirken bir hata oluştu.", "error");
+                              }
+                            }}
+                          >
+                            Vakti Onayla <i className="fas fa-check-double"></i>
+                          </button>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '25px', flexShrink: 0 }}>
-              <button 
+              <button
                 type="button"
-                className="btn-form-cancel" 
-                style={{ margin: 0, padding: '12px 30px', width: 'auto' }} 
+                className="btn-form-cancel"
+                style={{ margin: 0, padding: '12px 30px', width: 'auto' }}
                 onClick={() => setShowConfirmModal(false)}
               >
                 Vazgeç ve Kapat
@@ -1727,5 +1728,25 @@ const continueToChatFromRequest = async (
     </div>
   );
 };
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH (TURKISH FRONTEND SIMPLIFICATION):
+
+1. expandedId check in useEffect:
+    if (req?.status === 'completed') {
+      ensureReviewLoaded(expandedId);
+    }
+
+2. next check in toggleExpand:
+      if (req?.status === 'completed') {
+        ensureReviewLoaded(next);
+      }
+
+3. appt.status check in submitReview transaction:
+        if (appt.status !== 'completed') throw new Error('Sadece tamamlanmış randevular değerlendirilebilir.');
+
+4. isCompleted check in UI:
+                      {isCompleted && (
+*/
 
 export default MyAppointments;

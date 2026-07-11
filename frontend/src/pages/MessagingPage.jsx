@@ -40,17 +40,17 @@ const sanitizeText = (text) => {
 const QUICK_MESSAGES_CUSTOMER = [
   {
     id: 1,
-    text: "Merhaba, onaylanan randevu için teşekkürler. Hizmet saatini netleştirebilir miyiz?",
+    text: "مرحباً، شكراً لك على تأكيد الموعد. هل يمكننا تحديد وقت الخدمة؟",
     type: "saat",
   },
   {
     id: 2,
-    text: "Hizmet adresi ve ulaşım bilgisi doğru mu, birlikte teyit edelim mi?",
+    text: "هل عنوان الخدمة ومعلومات الوصول صحيحة، هل يمكننا التحقق معاً؟",
     type: "adres",
   },
   {
     id: 3,
-    text: "Hizmet öncesinde hazırlamam gereken bir şey var mı?",
+    text: "هل هناك أي شيء يجب علي تحضيره قبل الخدمة؟",
     type: "hazirlik",
   },
 ];
@@ -58,17 +58,17 @@ const QUICK_MESSAGES_CUSTOMER = [
 const QUICK_MESSAGES_EXPERT = [
   {
     id: 1,
-    text: "Merhaba, randevunuz onaylandı. Belirlenen saatte hizmet için orada olacağım.",
+    text: "مرحباً، تم تأكيد موعدك. سأكون هناك في الوقت المحدد للخدمة.",
     type: "onay",
   },
   {
     id: 2,
-    text: "Hizmet adresini teyit etmek için son bilgileri paylaşır mısınız?",
+    text: "هل يمكنك مشاركة التفاصيل الأخيرة لتأكيد عنوان الخدمة؟",
     type: "adres",
   },
   {
     id: 3,
-    text: "Randevu öncesinde sormak istediğiniz bir konu varsa yazabilirsiniz.",
+    text: "إذا كان لديك أي سؤال قبل الموعد، يمكنك كتابته هنا.",
     type: "soru",
   },
 ];
@@ -218,9 +218,9 @@ const MessageComposer = memo(function MessageComposer({
     const matchedLoveWords = findMatchedLoveWords(noEmojiValue);
 
     if (removedEmoji) {
-      setComposerWarning("Emoji kullanımı kapatıldı. Emojiler silindi.");
+      setComposerWarning("تم إيقاف استخدام الرموز التعبيرية. تم مسح الرموز التعبيرية.");
     } else if (matchedLoveWords.length > 0) {
-      setComposerWarning("Aşk / romantik ifadeler kullanılamaz.");
+      setComposerWarning("لا يمكن استخدام عبارات الحب أو الرومانسية.");
     } else {
       setComposerWarning("");
     }
@@ -233,13 +233,13 @@ const MessageComposer = memo(function MessageComposer({
     const finalText = noEmojiText.trim();
 
     if (!finalText) {
-      setComposerWarning("Boş mesaj gönderemezsiniz.");
+      setComposerWarning("لا يمكنك إرسال رسالة فارغة.");
       return;
     }
 
     const matchedLoveWords = findMatchedLoveWords(finalText);
     if (matchedLoveWords.length > 0) {
-      setComposerWarning("Aşk / romantik ifadeler kullanılamaz.");
+      setComposerWarning("لا يمكن استخدام عبارات الحب أو الرومانسية.");
       return;
     }
 
@@ -262,13 +262,13 @@ const MessageComposer = memo(function MessageComposer({
       const finalText = noEmojiText.trim();
 
       if (!finalText) {
-        setComposerWarning("Boş mesaj gönderemezsiniz.");
+        setComposerWarning("لا يمكنك إرسال رسالة فارغة.");
         return;
       }
 
       const matchedLoveWords = findMatchedLoveWords(finalText);
       if (matchedLoveWords.length > 0) {
-        setComposerWarning("Aşk / romantik ifadeler kullanılamaz.");
+        setComposerWarning("لا يمكن استخدام عبارات الحب أو الرومانسية.");
         return;
       }
 
@@ -289,17 +289,17 @@ const MessageComposer = memo(function MessageComposer({
 
   const handlePaste = useCallback((e) => {
     e.preventDefault();
-    setComposerWarning("Yapıştırma kapatıldı. Ctrl+V / Cmd+V kullanılamaz.");
+    setComposerWarning("تم إيقاف اللصق. لا يمكن استخدام اختصار اللصق.");
   }, []);
 
   const handleCopy = useCallback((e) => {
     e.preventDefault();
-    setComposerWarning("Kopyalama kapatıldı. Ctrl+C / Cmd+C kullanılamaz.");
+    setComposerWarning("تم إيقاف النسخ. لا يمكن استخدام اختصار النسخ.");
   }, []);
 
   const handleCut = useCallback((e) => {
     e.preventDefault();
-    setComposerWarning("Kesme kapatıldı. Ctrl+X / Cmd+X kullanılamaz.");
+    setComposerWarning("تم إيقاف القص. لا يمكن استخدام اختصار القص.");
   }, []);
 
   const handleKeyDown = useCallback(
@@ -310,11 +310,11 @@ const MessageComposer = memo(function MessageComposer({
         e.preventDefault();
 
         if (key === "v") {
-          setComposerWarning("Yapıştırma kapatıldı. Ctrl+V / Cmd+V kullanılamaz.");
+          setComposerWarning("تم إيقاف اللصق. لا يمكن استخدام اختصار اللصق.");
         } else if (key === "c") {
-          setComposerWarning("Kopyalama kapatıldı. Ctrl+C / Cmd+C kullanılamaz.");
+          setComposerWarning("تم إيقاف النسخ. لا يمكن استخدام اختصار النسخ.");
         } else if (key === "x") {
-          setComposerWarning("Kesme kapatıldı. Ctrl+X / Cmd+X kullanılamaz.");
+          setComposerWarning("تم إيقاف القص. لا يمكن استخدام اختصار القص.");
         }
         return;
       }
@@ -336,7 +336,7 @@ const MessageComposer = memo(function MessageComposer({
             className={`message-input ${
               isTextareaScrollable ? "message-input-scrollable" : ""
             }`}
-            placeholder="Mesaj yaz..."
+            placeholder="اكتب رسالة..."
             value={draft}
             onChange={handleDraftChange}
             onKeyDown={handleKeyDown}
@@ -357,7 +357,7 @@ const MessageComposer = memo(function MessageComposer({
             className="send-message-btn"
             onClick={handleSubmit}
             disabled={!draft.trim()}
-            title="Mesaj gönder"
+            title="إرسال الرسالة"
           >
             <i className="fas fa-paper-plane"></i>
           </button>
@@ -372,7 +372,7 @@ const MessageComposer = memo(function MessageComposer({
           <div className="composer-helper-text">
             <i className="fas fa-info-circle"></i>
             <span>
-              Emoji, aşk kelimeleri ve kopyala/yapıştır kısayolları engellendi.
+              تم حظر الرموز التعبيرية، كلمات الحب، واختصارات النسخ/اللصق.
             </span>
           </div>
         )}
@@ -380,7 +380,7 @@ const MessageComposer = memo(function MessageComposer({
 
       <div className="options-header">
         <i className="fas fa-bolt"></i>
-        <span>Hızlı Mesajlar</span>
+        <span>رسائل سريعة</span>
       </div>
 
       <div className="options-grid">
@@ -1301,7 +1301,7 @@ const MessagingPage = () => {
       <div className="messaging-page">
         <Navbar />
         <div className="loading-container">
-          <LoadingSpinner text="Mesajlar yükleniyor..." />
+          <LoadingSpinner text="جاري تحميل الرسائل..." />
         </div>
       </div>
     );
@@ -1315,11 +1315,11 @@ const MessagingPage = () => {
           <div className="chats-panel">
             <div className="chats-header">
               <div className="chats-title-wrap">
-                <h2>Mesajlar</h2>
+                <h2>الرسائل</h2>
                 <span className="chats-subtitle">
                   {conversationCount > 0
-                    ? `${conversationCount} aktif sohbet`
-                    : "Henüz aktif sohbet yok"}
+                    ? `${conversationCount} محادثة نشطة`
+                    : "لا توجد محادثات نشطة بعد"}
                 </span>
               </div>
               <span className="chats-counter">{conversationCount}</span>
@@ -1330,7 +1330,7 @@ const MessagingPage = () => {
                 <i className="fas fa-search msg-search-icon" aria-hidden="true"></i>
                 <input
                   type="text"
-                  placeholder="İsim veya hizmet ara..."
+                  placeholder="ابحث عن اسم أو خدمة..."
                   className="msg-search-input"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -1407,7 +1407,7 @@ const MessagingPage = () => {
                         <div className="chat-preview">
                           <p className="last-message">
                             {sanitizeText(
-                              conversation.lastMessage || "Mesajlaşma başlatın"
+                              conversation.lastMessage || "ابدأ المحادثة"
                             )}
                           </p>
 
@@ -1426,8 +1426,8 @@ const MessagingPage = () => {
                   <i className="fas fa-search"></i>
                   <p>
                     {searchTerm
-                      ? `"${sanitizeText(searchTerm)}" ile eslesen sohbet bulunamadi.`
-                      : "Henuz sohbet bulunamadi."}
+                      ? `لم يتم العثور على محادثة تطابق "${sanitizeText(searchTerm)}".`
+                      : "لم يتم العثور على محادثات بعد."}
                   </p>
                 </div>
               )}
@@ -1467,19 +1467,19 @@ const MessagingPage = () => {
 
                           <span className="header-chip header-chip-active">
                             <i className="fas fa-comments"></i>
-                            <span>Aktif Sohbet</span>
+                            <span>محادثة نشطة</span>
                           </span>
 
                           {chatDeadline && (
                             <span className="header-chip header-chip-deadline">
                               <i className="fas fa-clock"></i>
                               <span>
-                                Son mesaj:{" "}
-                                {chatDeadline.toLocaleDateString("tr-TR", {
+                                آخر رسالة:{" "}
+                                {chatDeadline.toLocaleDateString("ar-SY", {
                                   day: "numeric",
                                   month: "long",
                                 })}{" "}
-                                {chatDeadline.toLocaleTimeString("tr-TR", {
+                                {chatDeadline.toLocaleTimeString("ar-SY", {
                                   hour: "2-digit",
                                   minute: "2-digit",
                                 })}
@@ -1511,11 +1511,11 @@ const MessagingPage = () => {
                               className="chat-header-dropdown-item"
                               onClick={() => {
                                 setHeaderMenuOpen(false);
-                                showAppToast("Detaylar bölümü daha sonra bağlanabilir.", "info");
+                                showAppToast("سيتم تفعيل قسم التفاصيل لاحقاً.", "info");
                               }}
                             >
                               <i className="fas fa-circle-info"></i>
-                              <span>Detaylar</span>
+                              <span>التفاصيل</span>
                             </button>
 
                             {selectedServiceTitle && (
@@ -1525,13 +1525,13 @@ const MessagingPage = () => {
                                 onClick={() => {
                                   setHeaderMenuOpen(false);
                                   showAppToast(
-                                    `Hizmet: ${sanitizeText(selectedServiceTitle)}`,
+                                    `الخدمة: ${sanitizeText(selectedServiceTitle)}`,
                                     "info"
                                   );
                                 }}
                               >
                                 <i className="fas fa-briefcase"></i>
-                                <span>Hizmeti Gör</span>
+                                <span>عرض الخدمة</span>
                               </button>
                             )}
 
@@ -1544,7 +1544,7 @@ const MessagingPage = () => {
                               }}
                             >
                               <i className="fas fa-ban"></i>
-                              <span>Sohbeti Kapat</span>
+                              <span>إغلاق المحادثة</span>
                             </button>
                           </div>
                         )}
@@ -1638,9 +1638,9 @@ const MessagingPage = () => {
                     <div className="no-chat-selected">
                       <div className="no-chat-content">
                         <i className="fas fa-comments"></i>
-                        <h3>Henüz mesaj yok</h3>
+                        <h3>لا توجد رسائل بعد</h3>
                         <p>
-                          Aşağıdaki hızlı mesajlardan biriyle konuşmayı başlatabilirsiniz.
+                          يمكنك بدء المحادثة باستخدام أحد الرسائل السريعة أدناه.
                         </p>
                       </div>
                     </div>
@@ -1673,7 +1673,7 @@ const MessagingPage = () => {
                     <div className="reply-preview">
                       <div className="reply-preview-left">
                         <span className="reply-preview-title">
-                          <i className="fas fa-reply"></i> Yanit veriliyor
+                          <i className="fas fa-reply"></i> جاري الرد
                         </span>
                         <strong className="reply-preview-name">
                           {sanitizeText(getReplySenderLabel(replyingTo))}
@@ -1687,7 +1687,7 @@ const MessagingPage = () => {
                         type="button"
                         className="reply-preview-close"
                         onClick={() => setReplyingTo(null)}
-                        title="Iptal et"
+                        title="إلغاء"
                       >
                         <i className="fas fa-times"></i>
                       </button>
@@ -1707,12 +1707,12 @@ const MessagingPage = () => {
               <div className="no-chat-selected">
                 <div className="no-chat-content">
                   <i className="fas fa-comments"></i>
-                  <h3>Mesajlaşmaya hoş geldiniz</h3>
+                  <h3>مرحباً بك في المحادثات</h3>
                   <p>
-                    Soldaki listeden bir sohbet seçerek mesajlaşmaya başlayabilirsiniz.
+                    يمكنك بدء المحادثة باختيار محادثة من القائمة على اليسار.
                   </p>
                   <small>
-                    Yeni mesajlarınız ve aktif konuşmalarınız burada görüntülenecektir.
+                    ستظهر رسائلك الجديدة ومحادثاتك النشطة هنا.
                   </small>
                 </div>
               </div>
@@ -1756,10 +1756,10 @@ const MessagingPage = () => {
           setMessageToDelete(null);
         }}
         onConfirm={confirmDeleteMessage}
-        title="Mesajı Sil"
-        message="Bu mesajı silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
-        confirmText="Evet, Sil"
-        cancelText="Vazgeç"
+        title="حذف الرسالة"
+        message="هل أنت متأكد من رغبتك في حذف هذه الرسالة؟ لا يمكن التراجع عن هذا الإجراء."
+        confirmText="نعم، حذف"
+        cancelText="إلغاء"
         type="danger"
       />
 
@@ -1767,10 +1767,10 @@ const MessagingPage = () => {
         isOpen={showCloseConversationConfirm}
         onClose={() => setShowCloseConversationConfirm(false)}
         onConfirm={confirmCloseConversation}
-        title="Sohbeti Kapat"
-        message="Sohbeti kapatmak istediğinize emin misiniz? Bu sohbet pasif hale gelir ve listeden kalkar."
-        confirmText="Evet, Kapat"
-        cancelText="Vazgeç"
+        title="إإغلاق المحادثة"
+        message="هل أنت متأكد من رغبتك في إغلاق هذه المحادثة؟ ستصبح غير نشطة وتختفي من القائمة."
+        confirmText="نعم، إغلاق"
+        cancelText="إلغاء"
         type="warning"
       />
     </div>

@@ -1342,14 +1342,14 @@ const ProfilePage = () => {
     const district = String(primary?.district || '').trim();
     if (city && district) return `${sanitizeText(city)}, ${sanitizeText(district)}`;
     if (city) return sanitizeText(city);
-    return 'Adres eklenmedi';
+    return 'لم يتم إضافة عنوان';
   }, [addresses]);
 
   if (loading) {
     return (
       <div className="profile-page">
         <Navbar />
-        <LoadingSpinner text="Profil yükleniyor..." />
+        <LoadingSpinner text="جاري تحميل الملف الشخصي..." />
       </div>
     );
   }
@@ -1474,16 +1474,16 @@ const ProfilePage = () => {
           <div className="profile-header-right">
             <div className="header-stat-item">
               <span className="header-stat-value">{completedOrderCount}</span>
-              <span className="header-stat-label">Tamamlanan Sipariş</span>
+              <span className="header-stat-label">الطلبات المكتملة</span>
             </div>
           </div>
         </div>
 
         <div className="expert-tabs">
           {[
-            { key: 'user', icon: 'fa-user-circle', label: 'Kullanıcı Bilgileri' },
-            { key: 'addresses', icon: 'fa-map-marker-alt', label: 'Kayıtlı Adreslerim' },
-            { key: 'security', icon: 'fa-shield-alt', label: 'Güvenlik' },
+            { key: 'user', icon: 'fa-user-circle', label: 'معلومات المستخدم' },
+            { key: 'addresses', icon: 'fa-map-marker-alt', label: 'عناويني المسجلة' },
+            { key: 'security', icon: 'fa-shield-alt', label: 'الأمان' },
           ].map(({ key, icon, label }) => (
             <button
               key={key}
@@ -1498,37 +1498,37 @@ const ProfilePage = () => {
         <section className="profile-card-section profile-settings-detail">
           {activeSetting === 'user' && (
             <div className="settings-combined-container">
-              <h4 className="settings-section-title">Kişisel Bilgiler</h4>
+              <h4 className="settings-section-title">المعلومات الشخصية</h4>
               <div className="settings-detail-grid">
                 <div className="settings-field-group">
-                  <span className="settings-field-label">AD SOYAD</span>
+                  <span className="settings-field-label">الاسم الكامل</span>
                   <span className="settings-field-value">{getUserDisplayName()}</span>
                 </div>
                 <div className="settings-field-group">
                   <div className="settings-field-label-row">
-                    <span className="settings-field-label">E-POSTA</span>
+                    <span className="settings-field-label">البريد الإلكتروني</span>
 
                     {emailVerified ? (
-                      <span className="settings-email-status-inline verified" title="E-posta doğrulandı">
+                      <span className="settings-email-status-inline verified" title="تم توثيق البريد الإلكتروني">
                         <span className="settings-email-status-dot verified"></span>
-                        <span className="settings-email-status-text verified">Doğrulandı</span>
+                        <span className="settings-email-status-text verified">موثق</span>
                       </span>
                     ) : (
-                      <span className="settings-email-status-inline unverified" title="E-posta doğrulanmadı">
+                      <span className="settings-email-status-inline unverified" title="لم يتم توثيق البريد الإلكتروني">
                         <span className="settings-email-status-dot unverified"></span>
-                        <span className="settings-email-status-text unverified">Doğrulanmadı</span>
+                        <span className="settings-email-status-text unverified">غير موثق</span>
                       </span>
                     )}
                   </div>
 
-                  <span className="settings-field-value">{sanitizeText(user.email || 'Belirtilmemiş')}</span>
+                  <span className="settings-field-value">{sanitizeText(user.email || 'غير محدد')}</span>
                 </div>
                 <div className="settings-field-group">
-                  <span className="settings-field-label">TELEFON</span>
-                  <span className="settings-field-value">{sanitizeText(profilePhoneNumber || 'Belirtilmemiş')}</span>
+                  <span className="settings-field-label">الهاتف</span>
+                  <span className="settings-field-value">{sanitizeText(profilePhoneNumber || 'غير محدد')}</span>
                 </div>
                 <div className="settings-field-group">
-                  <span className="settings-field-label">KONUM</span>
+                  <span className="settings-field-label">الموقع</span>
                   <span className="settings-field-value">{locationLabel}</span>
                 </div>
               </div>
@@ -1539,9 +1539,9 @@ const ProfilePage = () => {
             <div className="settings-combined-container saved-addresses-section">
               <div className="saved-addresses-section__head">
                 <div>
-                  <h4 className="settings-section-title saved-addresses-section__title">Kayıtlı Adresler</h4>
+                  <h4 className="settings-section-title saved-addresses-section__title">العناوين المسجلة</h4>
                   <p className="settings-helper-text saved-addresses-section__hint">
-                    En fazla iki adres kaydedebilirsiniz.
+                    يمكنك تسجيل عنوانين كحد أقصى.
                   </p>
                 </div>
                 {addresses.length < 2 && (
@@ -1553,7 +1553,7 @@ const ProfilePage = () => {
                       setShowAddAddressModal(true);
                     }}
                   >
-                    <i className="fas fa-plus" aria-hidden="true"></i> Yeni Adres Ekle
+                    <i className="fas fa-plus" aria-hidden="true"></i> إضافة عنوان جديد
                   </button>
                 )}
               </div>
@@ -1561,7 +1561,7 @@ const ProfilePage = () => {
               {addresses.length === 0 ? (
                 <div className="saved-addresses-empty">
                   <i className="fas fa-map-marker-alt" aria-hidden="true"></i>
-                  <p>Henüz kayıtlı adresiniz yok.</p>
+                  <p>ليس لديك أي عناوين مسجلة بعد.</p>
                   <button
                     type="button"
                     className="settings-primary-button"
@@ -1570,7 +1570,7 @@ const ProfilePage = () => {
                       setShowAddAddressModal(true);
                     }}
                   >
-                    <i className="fas fa-plus" aria-hidden="true"></i> İlk Adresini Ekle
+                    <i className="fas fa-plus" aria-hidden="true"></i> أضف عنوانك الأول
                   </button>
                 </div>
               ) : (
@@ -1586,7 +1586,7 @@ const ProfilePage = () => {
                               <i className="fas fa-map-marker-alt"></i>
                             </span>
                             <h5 className="saved-address-card__name">
-                              {sanitizeText(address.addressName || 'Adres')}
+                              {sanitizeText(address.addressName || 'عنوان')}
                             </h5>
                           </div>
                           <div className="saved-address-card__actions">
@@ -1594,19 +1594,19 @@ const ProfilePage = () => {
                               type="button"
                               className="settings-secondary-button saved-address-update-btn"
                               onClick={() => handleEditClick(address)}
-                              title="Adresi güncelle"
+                              title="تعديل العنوان"
                             >
                               <i className="fas fa-pen" aria-hidden="true"></i>
-                              <span className="saved-address-btn-text">Güncelle</span>
+                              <span className="saved-address-btn-text">تعديل</span>
                             </button>
                             <button
                               type="button"
                               className="settings-danger-button saved-address-delete-btn"
                               onClick={() => handleDeleteAddress(address.id)}
-                              title="Adresi sil"
+                              title="حذف العنوان"
                             >
                               <i className="fas fa-trash" aria-hidden="true"></i>
-                              <span className="saved-address-btn-text">Sil</span>
+                              <span className="saved-address-btn-text">حذف</span>
                             </button>
                           </div>
                         </div>
@@ -1641,7 +1641,7 @@ const ProfilePage = () => {
                         {address.coordSource !== 'API_Center' && address.coordSource !== 'API_District' && address.coordSource !== 'GoogleMap' && address.coordSource !== 'Unknown' && (
                           <div className="saved-address-coord-warn" role="status">
                             <i className="fas fa-exclamation-triangle" aria-hidden="true"></i>
-                            <span>Konum doğruluğu düşük — <strong>Güncelle</strong> ile adresinizi düzenleyin.</span>
+                            <span>دقة الموقع منخفضة — يرجى تعديل عنوانك بالنقر على <strong>تعديل</strong>.</span>
                           </div>
                         )}
                       </article>
@@ -1681,43 +1681,43 @@ const ProfilePage = () => {
               )}
 
               <p className="settings-helper-text">
-                Hesabınızın güvenliğini artırmak için aşağıdaki ayarları kullanabilirsiniz.
+                يمكنك استخدام الإعدادات أدناه لزيادة أمان حسابك.
               </p>
 
               <div className="settings-security-list">
                 <div className="settings-security-item">
                   <div>
-                    <div className="settings-security-title">Ad Soyad Güncelle</div>
-                    <div className="settings-security-subtitle">Profilinizde görünen adı güncelleyin.</div>
+                    <div className="settings-security-title">تعديل الاسم الكامل</div>
+                    <div className="settings-security-subtitle">تعديل اسمك المعروض على الملف الشخصي.</div>
                   </div>
                   <button className="settings-primary-button" onClick={() => setActiveModal('name')}>
-                    Düzenle
+                    تعديل
                   </button>
                 </div>
 
                 <div className="settings-security-item">
                   <div>
-                    <div className="settings-security-title">Telefon Numarası Güncelle</div>
+                    <div className="settings-security-title">تعديل رقم الهاتف</div>
                     <div className="settings-security-subtitle">
-                      Yeni numaranızı SMS kodu ile doğrulayarak hesabınıza bağlayın.
+                      ربط رقمك الجديد بحسابك عبر التحقق من رمز SMS.
                     </div>
                   </div>
                   <button className="settings-secondary-button" onClick={() => setActiveModal('phone')}>
-                    Telefonu Düzenle
+                    تعديل الهاتف
                   </button>
                 </div>
 
                 <div className="settings-security-item">
                   <div>
-                    <div className="settings-security-title">Google Hesabı</div>
+                    <div className="settings-security-title">حساب Google</div>
                     <div className="settings-security-subtitle">
-                      Google hesabınızı mevcut hesabınıza bağlayarak daha hızlı giriş yapabilirsiniz.
+                      ربط حساب Google بحسابك الحالي لتسجيل الدخول بشكل أسرع.
                     </div>
                   </div>
 
                   {googleLinked ? (
                     <span className="settings-status-badge">
-                      <i className="fab fa-google"></i> Google bağlı
+                      <i className="fab fa-google"></i> Google متصل
                     </span>
                   ) : canLinkGoogle ? (
                     <button
@@ -1725,22 +1725,22 @@ const ProfilePage = () => {
                       onClick={handleLinkGoogle}
                       disabled={googleLinkLoading}
                     >
-                      {googleLinkLoading ? 'Bağlanıyor...' : 'Google Hesabını Bağla'}
+                      {googleLinkLoading ? 'جاري الربط...' : 'ربط حساب Google'}
                     </button>
                   ) : (
                     <span className="settings-disabled-badge">
-                      Sadece Gmail kullanıcıları bağlayabilir
+                      متاح لمستخدمي Gmail فقط
                     </span>
                   )}
                 </div>
 
                 <div className="settings-security-item">
                   <div>
-                    <div className="settings-security-title">Şifre Değiştir</div>
+                    <div className="settings-security-title">تغيير كلمة المرور</div>
                     <div className="settings-security-subtitle">
                       {hasPasswordProvider
-                        ? 'Hesap şifrenizi düzenli aralıklarla güncelleyin.'
-                        : 'Bu hesap Google ile giriş yapıyor ve kullanılabilir bir şifreye sahip değil.'}
+                        ? 'حدث كلمة مرور حسابك بشكل دوري.'
+                        : 'يسجل هذا الحساب الدخول عبر Google وليس لديه كلمة مرور مفعلة.'}
                     </div>
                   </div>
 
@@ -1748,7 +1748,7 @@ const ProfilePage = () => {
                     title={
                       hasPasswordProvider
                         ? ''
-                        : 'Bu hesap Google ile bağlıdır ve şifreye sahip değildir.'
+                        : 'هذا الحساب مرتبط بجوجل ولا يمتلك كلمة مرور.'
                     }
                     style={{ display: 'inline-flex' }}
                   >
@@ -1765,21 +1765,20 @@ const ProfilePage = () => {
                           : {}
                       }
                     >
-                      Şifreyi Değiştir
+                      تغيير كلمة المرور
                     </button>
                   </span>
                 </div>
 
                 <div className="settings-security-item security-danger-row">
                   <div>
-                    <div className="security-danger-title">Hesabımı Devre Dışı Bırak</div>
+                    <div className="security-danger-title">تعطيل حسابي</div>
                     <div className="settings-security-subtitle">
-                      Hesabınız devre dışı bırakılır ve 60 gün boyunca geri açılabilir.
-                      60 gün sonunda kalıcı olarak silinir.
+                      سيتم تعطيل حسابك ويمكنك استعادته خلال 60 يوماً. بعد 60 يوماً سيتم حذفه نهائياً.
                     </div>
                   </div>
                   <button className="settings-danger-button" onClick={() => setActiveModal('deleteAccount')}>
-                    Hesabı Devre Dışı Bırak
+                    تعطيل حسابي
                   </button>
                 </div>
               </div>
@@ -1789,9 +1788,9 @@ const ProfilePage = () => {
 
         <section className="profile-card-section">
           <div className="section-header">
-            <h3><i className="fas fa-box"></i> Son Siparişlerim</h3>
+            <h3><i className="fas fa-box"></i> طلباتي الأخيرة</h3>
             <button className="view-all" onClick={() => openCompletedAppointments()}>
-              Tümü <i className="fas fa-arrow-right"></i>
+              الكل <i className="fas fa-arrow-right"></i>
             </button>
           </div>
 
@@ -1799,8 +1798,8 @@ const ProfilePage = () => {
             {orders.length === 0 ? (
               <div className="ma-empty" style={{ padding: '18px', textAlign: 'center' }}>
                 <i className="fas fa-box-open ma-empty-icon"></i>
-                <h3 className="ma-empty-title">Henüz tamamlanan işlem yok</h3>
-                <p className="ma-empty-text">Bir randevunuz tamamlandığında burada görünecek.</p>
+                <h3 className="ma-empty-title">لا توجد معاملات مكتملة بعد</h3>
+                <p className="ma-empty-text">ستظهر المواعيد المكتملة هنا.</p>
               </div>
             ) : orders.map((order) => (
               <div
@@ -1840,7 +1839,7 @@ const ProfilePage = () => {
                       <i className="fas fa-user"></i> {sanitizeText(order.provider)}
                     </span>
                     <span className="order-badge order-badge--done">
-                      <i className="fas fa-flag-checkered"></i> Tamamlandı
+                      <i className="fas fa-flag-checkered"></i> مكتمل
                     </span>
                   </div>
                 </div>
@@ -1855,9 +1854,9 @@ const ProfilePage = () => {
 
         <section className="profile-card-section">
           <div className="section-header">
-            <h3><i className="fas fa-users"></i> Son Kullanılan Uzmanlar</h3>
+            <h3><i className="fas fa-users"></i> الخبراء الذين تم التعامل معهم مؤخراً</h3>
             <button className="view-all" onClick={() => openCompletedAppointments()}>
-              Tümü <i className="fas fa-arrow-right"></i>
+              الكل <i className="fas fa-arrow-right"></i>
             </button>
           </div>
 
@@ -1865,8 +1864,8 @@ const ProfilePage = () => {
             {experts.length === 0 ? (
               <div className="ma-empty" style={{ padding: '18px', textAlign: 'center' }}>
                 <i className="fas fa-user-clock ma-empty-icon"></i>
-                <h3 className="ma-empty-title">Henüz uzman geçmişi yok</h3>
-                <p className="ma-empty-text">Tamamlanan randevularınızdan uzmanlar burada listelenecek.</p>
+                <h3 className="ma-empty-title">لا يوجد سجل خبراء بعد</h3>
+                <p className="ma-empty-text">سيتم عرض الخبراء الذين أتممت معهم مواعيد هنا.</p>
               </div>
             ) : experts.map((expert) => (
               <div
@@ -1882,7 +1881,7 @@ const ProfilePage = () => {
                 <img src={expert.avatar} alt={sanitizeText(expert.name)} />
                 <div className="expert-horizontal-info">
                   <h4>{sanitizeText(expert.name)}</h4>
-                  <p className="expert-profession">{sanitizeText(expert.profession || 'Uzman')}</p>
+                  <p className="expert-profession">{sanitizeText(expert.profession || 'خبير')}</p>
                   <p className="expert-lastservice">
                     <i className="fas fa-wrench"></i> {sanitizeText(expert.lastService)}
                   </p>
@@ -1894,7 +1893,7 @@ const ProfilePage = () => {
                     navigate(`/uzman/${expert.expertId}`);
                   }}
                 >
-                  İncele
+                  عرض
                 </button>
               </div>
             ))}
@@ -1920,10 +1919,10 @@ const ProfilePage = () => {
           setAddressToDelete(null);
         }}
         onConfirm={confirmDeleteAddress}
-        title="Adres Sil"
-        message="Bu adresi silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
-        confirmText="Evet, Sil"
-        cancelText="Vazgeç"
+        title="حذف العنوان"
+        message="هل أنت متأكد من رغبتك في حذف هذا العنوان؟ لا يمكن التراجع عن هذا الإجراء."
+        confirmText="نعم، حذف"
+        cancelText="إلغاء"
         type="danger"
       />
     </div>

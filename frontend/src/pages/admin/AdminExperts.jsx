@@ -89,7 +89,7 @@ export default function AdminExperts({ type }) {
       setExperts(Array.isArray(data) ? data : []);
     } catch (error) {
       if (isDevelopment) console.error("Uzmanlar yüklenirken hata:", error.message);
-      showErrorModalFunc("Uzmanlar yüklenirken hata oluştu.");
+      showErrorModalFunc("حدث خطأ أثناء تحميل الخبراء.");
     } finally {
       setLoading(false);
     }
@@ -97,17 +97,17 @@ export default function AdminExperts({ type }) {
 
   const handleApprove = async (expert) => {
     if (!expert?.id) {
-      showErrorModalFunc("Geçersiz uzman bilgisi");
+      showErrorModalFunc("معلومات خبير غير صالحة");
       return;
     }
     
     try {
       await approveExpert(expert.id);
       setExperts((prev) => prev.filter((e) => e.id !== expert.id));
-      showSuccessModalFunc(`${sanitizeText(expert.displayName, 50)} başarıyla onaylandı!`);
+      showSuccessModalFunc(`تمت الموافقة على ${sanitizeText(expert.displayName, 50)} بنجاح!`);
     } catch (error) {
       if (isDevelopment) console.error("Onaylanırken hata:", error.message);
-      showErrorModalFunc("Uzman onaylanırken hata oluştu.");
+      showErrorModalFunc("حدث خطأ أثناء الموافقة على الخبير.");
     }
   };
 
@@ -122,19 +122,19 @@ export default function AdminExperts({ type }) {
     const cleanReason = rejectReason.trim();
     
     if (!cleanReason) {
-      setRejectReasonError("Lütfen reddetme nedeninizi yazın");
+      setRejectReasonError("يرجى كتابة سبب الرفض");
       return;
     }
     if (cleanReason.length < 3) {
-      setRejectReasonError("Reddetme nedeni en az 3 karakter olmalıdır");
+      setRejectReasonError("يجب أن يكون سبب الرفض 3 أحرف على الأقل");
       return;
     }
     if (cleanReason.length > 500) {
-      setRejectReasonError("Reddetme nedeni en fazla 500 karakter olabilir");
+      setRejectReasonError("يمكن أن يكون سبب الرفض 500 حرف كحد أقصى");
       return;
     }
     if (!selectedExpert?.id) {
-      showErrorModalFunc("Geçersiz uzman seçildi");
+      showErrorModalFunc("تم اختيار خبير غير صالح");
       setShowRejectModal(false);
       return;
     }
@@ -147,10 +147,10 @@ export default function AdminExperts({ type }) {
       setShowRejectModal(false);
       setSelectedExpert(null);
       setRejectReason("");
-      showSuccessModalFunc(`${sanitizeText(selectedExpert.displayName, 50)} başvurusu reddedildi!`);
+      showSuccessModalFunc(`تم رفض طلب ${sanitizeText(selectedExpert.displayName, 50)}!`);
     } catch (error) {
       if (isDevelopment) console.error("Reddedilirken hata:", error.message);
-      showErrorModalFunc("Başvuru reddedilirken hata oluştu.");
+      showErrorModalFunc("حدث خطأ أثناء رفض الطلب.");
     } finally {
       setIsRejecting(false);
     }
@@ -165,19 +165,19 @@ export default function AdminExperts({ type }) {
 
   const handleDeleteExpert = async (expert) => {
     if (!expert?.id) {
-      showErrorModalFunc("Geçersiz uzman bilgisi");
+      showErrorModalFunc("معلومات خبير غير صالحة");
       return;
     }
     
     const expertName = sanitizeText(expert.displayName, 50);
-    if (window.confirm(`${expertName} adlı uzmanı silmek istediğinize emin misiniz?`)) {
+    if (window.confirm(`هل أنت متأكد من رغبتك في حذف الخبير ${expertName}؟`)) {
       try {
         await deleteExpert(expert.id);
         setExperts((prev) => prev.filter((e) => e.id !== expert.id));
-        showSuccessModalFunc(`${expertName} başarıyla silindi!`);
+        showSuccessModalFunc(`تم حذف ${expertName} بنجاح!`);
       } catch (error) {
         if (isDevelopment) console.error("Uzman silinirken hata:", error.message);
-        showErrorModalFunc("Uzman silinirken hata oluştu.");
+        showErrorModalFunc("حدث خطأ أثناء حذف الخبير.");
       }
     }
   };
@@ -209,13 +209,13 @@ export default function AdminExperts({ type }) {
     return data;
   };
 
-  if (authLoading) return <LoadingSpinner text="Yetki kontrol ediliyor..." />;
+  if (authLoading) return <LoadingSpinner text="جاري التحقق من الصلاحيات..." />;
   
   if (!authorized) {
     return (
       <div className="no-data">
         <i className="fas fa-shield-alt fa-3x"></i>
-        <p>Bu sayfaya erişim yetkiniz yok. Sadece adminler erişebilir.</p>
+        <p>ليس لديك صلاحية للوصول إلى هذه الصفحة. يمكن للمسؤولين فقط الوصول.</p>
       </div>
     );
   }
@@ -241,7 +241,7 @@ export default function AdminExperts({ type }) {
     setCurrentPage(1);
   };
 
-  if (loading) return <LoadingSpinner text="Yükleniyor..." />;
+  if (loading) return <LoadingSpinner text="جاري التحميل..." />;
 
   const isPending = type === "pending";
   const isRejected = type === "rejected";
@@ -254,11 +254,11 @@ export default function AdminExperts({ type }) {
             type="text"
             placeholder={`${
               isPending
-                ? "Onay bekleyen uzmanlarda ara"
+                ? "ابحث في الخبراء بانتظار الموافقة"
                 : isRejected
-                ? "Reddedilen uzmanlarda ara"
-                : "Uzmanlarda ara"
-            } (isim, email, işletme, şehir)...`}
+                ? "ابحث في الخبراء المرفوضين"
+                : "ابحث في الخبراء"
+            } (الاسم، البريد الإلكتروني، العمل، المدينة)...`}
             value={searchTerm}
             onChange={handleSearchChange}
             className="search-input"
@@ -270,33 +270,33 @@ export default function AdminExperts({ type }) {
             </button>
           )}
         </div>
-
+ 
         <div className="filter-group">
           <span className="filter-label">
-            <i className="fas fa-sort-amount-down"></i> Sırala:
+            <i className="fas fa-sort-amount-down"></i> فرز:
           </span>
           <button
             className={`filter-btn ${sortOrder === "newest" ? "active" : ""}`}
             onClick={() => setSortOrder("newest")}
           >
-            🕒 En Yeni
+            🕒 الأحدث
           </button>
           <button
             className={`filter-btn ${sortOrder === "oldest" ? "active" : ""}`}
             onClick={() => setSortOrder("oldest")}
           >
-            📅 En Eski
+            📅 الأقدم
           </button>
         </div>
       </div>
-
+ 
       {paginatedData.length === 0 ? (
         <div className="no-data">
           <i className="fas fa-inbox fa-3x"></i>
-          <p>{searchTerm ? "Aramanıza uygun sonuç bulunamadı." : "Kayıt bulunmuyor."}</p>
+          <p>{searchTerm ? "لم يتم العثور على نتائج تطابق بحثك." : "لا توجد سجلات."}</p>
           {searchTerm && (
             <button className="clear-filter-btn" onClick={clearSearch}>
-              Aramayı Temizle
+              مسح البحث
             </button>
           )}
         </div>
@@ -336,7 +336,7 @@ export default function AdminExperts({ type }) {
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
               >
-                ← Önceki
+                ← السابق
               </button>
               <span className="page-info">
                 {currentPage} / {totalPages}
@@ -346,18 +346,18 @@ export default function AdminExperts({ type }) {
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
-                Sonraki →
+                التالي →
               </button>
             </div>
           )}
         </>
       )}
-
+ 
       {showRejectModal && selectedExpert && (
         <div className="modal-overlay" onClick={closeRejectModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Başvuruyu Reddet</h2>
+              <h2>رفض الطلب</h2>
               <button className="modal-close" onClick={closeRejectModal}>
                 <i className="fas fa-times"></i>
               </button>
@@ -375,7 +375,7 @@ export default function AdminExperts({ type }) {
               </div>
               <div className="form-group">
                 <label htmlFor="rejectReason">
-                  Reddetme Nedeni <span style={{ color: "red" }}>*</span>
+                  سبب الرفض <span style={{ color: "red" }}>*</span>
                 </label>
                 <textarea
                   id="rejectReason"
@@ -384,7 +384,7 @@ export default function AdminExperts({ type }) {
                     setRejectReason(e.target.value.slice(0, 500));
                     if (rejectReasonError) setRejectReasonError("");
                   }}
-                  placeholder="Başvurunun neden reddedildiğini yazın..."
+                  placeholder="اكتب سبب رفض الطلب..."
                   rows="5"
                   maxLength={500}
                 />
@@ -394,10 +394,10 @@ export default function AdminExperts({ type }) {
             </div>
             <div className="modal-footer">
               <button className="btn-secondary" onClick={closeRejectModal}>
-                İptal
+                إلغاء
               </button>
               <button className="btn-reject" onClick={handleRejectWithReason} disabled={isRejecting}>
-                {isRejecting ? <><i className="fas fa-spinner fa-spin"></i> Reddediliyor...</> : "Reddet"}
+                {isRejecting ? <><i className="fas fa-spinner fa-spin"></i> جاري الرفض...</> : "رفض"}
               </button>
             </div>
           </div>

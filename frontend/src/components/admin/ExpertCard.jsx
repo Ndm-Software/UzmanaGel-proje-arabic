@@ -9,20 +9,20 @@ const sanitizeText = (text) => {
 };
 
 const dayNames = {
-  monday: "Pazartesi",
-  tuesday: "Salı",
-  wednesday: "Çarşamba",
-  thursday: "Perşembe",
-  friday: "Cuma",
-  saturday: "Cumartesi",
-  sunday: "Pazar",
+  monday: "الاثنين",
+  tuesday: "الثلاثاء",
+  wednesday: "الأربعاء",
+  thursday: "الخميس",
+  friday: "الجمعة",
+  saturday: "السبت",
+  sunday: "الأحد",
 };
 
 const openDocument = (url) => {
   if (!url) return;
   const safeUrl = String(url || "").trim();
   if (!safeUrl.startsWith("https://") && !safeUrl.startsWith("http://")) {
-    console.error("Güvensiz URL engellendi");
+    console.error("تم حظر رابط غير آمن");
     return;
   }
   try {
@@ -36,7 +36,7 @@ const openDocument = (url) => {
       window.open(safeUrl, "_blank", "noopener,noreferrer");
     }
   } catch (error) {
-    console.error("Belge açılırken hata:", error);
+    console.error("خطأ أثناء فتح المستند:", error);
   }
 };
 
@@ -80,7 +80,7 @@ export default function ExpertCard({
     ? expert.category.map((c) => sanitizeText(c)).join(", ")
     : sanitizeText(expert.category || "-");
   const educationInfo = sanitizeText(expert.educationInfo || "-");
-  const pricingType = sanitizeText(expert.pricingType || "Belirtilmemiş");
+  const pricingType = sanitizeText(expert.pricingType || "غير محدد");
   const minPrice = safeNumber(expert.minPrice);
   const maxPrice = safeNumber(expert.maxPrice);
   const experienceYears = safeNumber(expert.experienceYears);
@@ -101,9 +101,9 @@ export default function ExpertCard({
       <div className="card-header" onClick={handleCardClick}>
         <div className="card-source">
           {isPending ? (
-            <span className="status-badge pending">⏳ Bekliyor</span>
+            <span className="status-badge pending">⏳ معلق</span>
           ) : (
-            <span className="status-badge approved">✅ Onaylı</span>
+            <span className="status-badge approved">✅ معتمد</span>
           )}
         </div>
         <div className="card-summary">
@@ -124,7 +124,7 @@ export default function ExpertCard({
             </span>
             {experienceYears > 0 && (
               <span>
-                <i className="fas fa-briefcase"></i> {experienceYears} yıl
+                <i className="fas fa-briefcase"></i> خبرة {experienceYears} سنوات
               </span>
             )}
           </div>
@@ -144,40 +144,40 @@ export default function ExpertCard({
         <div className="card-details">
           <div className="details-grid">
             <div className="detail-item">
-              <span className="detail-label">Kategori:</span>
+              <span className="detail-label">الفئة:</span>
               <span className="detail-value">{category}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Şehir:</span>
+              <span className="detail-label">المدينة:</span>
               <span className="detail-value">{city}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Eğitim:</span>
+              <span className="detail-label">التعليم:</span>
               <span className="detail-value">{educationInfo}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Fiyat:</span>
-              <span className="detail-value">{minPrice}₺ - {maxPrice}₺</span>
+              <span className="detail-label">السعر:</span>
+              <span className="detail-value">{minPrice} ل.س - {maxPrice} ل.س</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Fiyat Tipi:</span>
+              <span className="detail-label">نوع السعر:</span>
               <span className="detail-value">{pricingType}</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Deneyim:</span>
-              <span className="detail-value">{experienceYears} yıl</span>
+              <span className="detail-label">الخبرة:</span>
+              <span className="detail-value">خبرة {experienceYears} سنوات</span>
             </div>
             <div className="detail-item">
-              <span className="detail-label">Sertifikalı:</span>
+              <span className="detail-label">معتمد:</span>
               <span className="detail-value">
-                {expert.isCertified ? "✅ Evet" : "❌ Hayır"}
+                {expert.isCertified ? "✅ نعم" : "❌ لا"}
               </span>
             </div>
             {isPending && (
               <div className="detail-item">
-                <span className="detail-label">Telefon Doğrulama:</span>
+                <span className="detail-label">التحقق من الهاتف:</span>
                 <span className="detail-value">
-                  {expert.isPhoneVerified ? "✅ Doğrulandı" : "❌ Doğrulanmamış"}
+                  {expert.isPhoneVerified ? "✅ تم التحقق" : "❌ لم يتم التحقق"}
                 </span>
               </div>
             )}
@@ -185,7 +185,7 @@ export default function ExpertCard({
 
           {specialties.length > 0 && (
             <div className="detail-section">
-              <span className="detail-label">⚡ Uzmanlıklar:</span>
+              <span className="detail-label">⚡ التخصصات:</span>
               <div className="tags">
                 {specialties.map((spec, i) => (
                   <span key={i} className="tag">
@@ -198,7 +198,7 @@ export default function ExpertCard({
 
           {Object.keys(workingHours).length > 0 && (
             <div className="detail-section">
-              <span className="detail-label">🕒 Çalışma Saatleri:</span>
+              <span className="detail-label">🕒 ساعات العمل:</span>
               <div className="working-hours-detail">
                 {Object.entries(workingHours).map(([day, hours]) =>
                   hours?.enabled ? (
@@ -216,12 +216,12 @@ export default function ExpertCard({
 
           <div className="documents-section">
             <h4>
-              <i className="fas fa-folder-open"></i> Yüklenen Belgeler
+              <i className="fas fa-folder-open"></i> المستندات المرفوعة
             </h4>
             <div className="documents-grid">
               <div className="document-group">
                 <div className="document-label">
-                  <i className="fas fa-id-card"></i> Kimlik Belgesi:
+                  <i className="fas fa-id-card"></i> وثيقة الهوية:
                 </div>
                 <div className="document-links">
                   {identityDocuments.length > 0 ? (
@@ -235,18 +235,18 @@ export default function ExpertCard({
                         }}
                         className="document-link"
                       >
-                        <i className="fas fa-eye"></i> Kimlik {i + 1}
+                        <i className="fas fa-eye"></i> الهوية {i + 1}
                       </a>
                     ))
                   ) : (
-                    <span className="no-document">Belge yüklenmemiş</span>
+                    <span className="no-document">لم يتم رفع مستند</span>
                   )}
                 </div>
               </div>
 
               <div className="document-group">
                 <div className="document-label">
-                  <i className="fas fa-certificate"></i> Sertifikalar:
+                  <i className="fas fa-certificate"></i> الشهادات:
                 </div>
                 <div className="document-links">
                   {certificateDocuments.length > 0 ? (
@@ -260,18 +260,18 @@ export default function ExpertCard({
                         }}
                         className="document-link"
                       >
-                        <i className="fas fa-eye"></i> Sertifika {i + 1}
+                        <i className="fas fa-eye"></i> الشهادة {i + 1}
                       </a>
                     ))
                   ) : (
-                    <span className="no-document">Belge yüklenmemiş</span>
+                    <span className="no-document">لم يتم رفع مستند</span>
                   )}
                 </div>
               </div>
 
               <div className="document-group">
                 <div className="document-label">
-                  <i className="fas fa-file-invoice"></i> Vergi Levhası:
+                  <i className="fas fa-file-invoice"></i> لوحة الضرائب:
                 </div>
                 <div className="document-links">
                   {taxDocuments.length > 0 ? (
@@ -285,14 +285,14 @@ export default function ExpertCard({
                         }}
                         className="document-link"
                       >
-                        <i className="fas fa-eye"></i> Vergi Levhası
+                        <i className="fas fa-eye"></i> لوحة الضرائب
                       </a>
                     ))
                   ) : (
                     <span className="no-document">
                       {providerType === "Şirket"
-                        ? "Vergi levhası bekleniyor"
-                        : "Şahıs işletmesi"}
+                        ? "بانتظار لوحة الضرائب"
+                        : "عمل فردي"}
                     </span>
                   )}
                 </div>
@@ -310,7 +310,7 @@ export default function ExpertCard({
                     onApprove(expert);
                   }}
                 >
-                  ✅ Onayla
+                  ✅ موافقة
                 </button>
                 <button 
                   className="btn-reject" 
@@ -319,7 +319,7 @@ export default function ExpertCard({
                     onReject(expert);
                   }}
                 >
-                  ❌ Reddet
+                  ❌ رفض
                 </button>
               </>
             )}
@@ -331,7 +331,7 @@ export default function ExpertCard({
                   onDelete(expert);
                 }}
               >
-                <i className="fas fa-trash-alt"></i> Uzmanı Sil
+                <i className="fas fa-trash-alt"></i> حذف الخبير
               </button>
             )}
           </div>

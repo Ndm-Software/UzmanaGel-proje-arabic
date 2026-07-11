@@ -93,7 +93,7 @@ const safeFormatDate = (value) => {
   const date = getDate(value);
   if (!date) return "-";
 
-  const formatted = date.toLocaleDateString("tr-TR", {
+  const formatted = date.toLocaleDateString("ar-SY", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -106,7 +106,7 @@ const safeFormatDateTime = (value) => {
   const date = getDate(value);
   if (!date) return "-";
 
-  const formatted = date.toLocaleString("tr-TR", {
+  const formatted = date.toLocaleString("ar-SY", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -134,7 +134,7 @@ export default function DeletedClientCard({
       client?.displayName,
       client?.uid,
       client?.id,
-      "İsimsiz Kullanıcı"
+      "مستخدم بدون اسم"
     ),
     80
   );
@@ -192,7 +192,7 @@ export default function DeletedClientCard({
     <div className={`data-card ${isExpanded ? "expanded" : ""}`}>
       <div className="card-header" onClick={onToggle}>
         <div className="card-source">
-          <span className="status-badge pending">🗑️ Silinmiş</span>
+          <span className="status-badge pending">🗑️ محذوف</span>
         </div>
 
         <div className="card-summary">
@@ -201,7 +201,7 @@ export default function DeletedClientCard({
           <div className="card-basic-info">
             <h3>{displayName}</h3>
             <p className="card-email">{email}</p>
-            <p className="card-business">Müşteri Hesabı</p>
+            <p className="card-business">حساب عميل</p>
           </div>
 
           <div className="card-quick-stats">
@@ -225,26 +225,26 @@ export default function DeletedClientCard({
         <div className="card-details">
           <div className="details-grid">
             <div className="detail-item">
-              <span className="detail-label">Silinme Tarihi:</span>
+              <span className="detail-label">تاريخ الحذف:</span>
               <span className="detail-value">
                 {safeFormatDateTime(deletedAt)}
               </span>
             </div>
 
             <div className="detail-item">
-              <span className="detail-label">Geri Yükleme Son Tarihi:</span>
+              <span className="detail-label">الموعد النهائي للاستعادة:</span>
               <span className="detail-value">
                 {safeFormatDateTime(restoreUntil)}
               </span>
             </div>
 
             <div className="detail-item detail-item-wide">
-              <span className="detail-label">Telefon:</span>
+              <span className="detail-label">الهاتف:</span>
               <span className="detail-value detail-value-phone">{phoneNumber}</span>
             </div>
 
             <div className="detail-item detail-item-wide">
-              <span className="detail-label">E-posta:</span>
+              <span className="detail-label">البريد الإلكتروني:</span>
               <span className="detail-value detail-value-email">{email}</span>
             </div>
           </div>
@@ -263,7 +263,7 @@ export default function DeletedClientCard({
                   restoring ? "fa-spinner fa-spin" : "fa-trash-restore"
                 }`}
               ></i>
-              {restoring ? " Geri Yükleniyor..." : " Hesabı Geri Yükle"}
+              {restoring ? " جاري الاستعادة..." : " استعادة الحساب"}
             </button>
           </div>
         </div>

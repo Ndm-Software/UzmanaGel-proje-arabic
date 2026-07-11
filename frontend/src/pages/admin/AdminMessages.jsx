@@ -37,7 +37,7 @@ const getUserTypeBadge = (userType, userRole) => {
     if (userRole === 'ADMIN') {
       return {
         icon: '👑',
-        label: 'Admin',
+        label: 'مسؤول',
         className: 'admin-badge',
         bgColor: 'rgba(212, 175, 55, 0.15)',
         color: '#d4af37'
@@ -45,7 +45,7 @@ const getUserTypeBadge = (userType, userRole) => {
     } else if (userRole === 'PROVIDER') {
       return {
         icon: '🔧',
-        label: 'Uzman',
+        label: 'خبير',
         className: 'provider-badge',
         bgColor: 'rgba(59, 130, 246, 0.15)',
         color: '#3b82f6'
@@ -53,7 +53,7 @@ const getUserTypeBadge = (userType, userRole) => {
     } else if (userRole === 'CLIENT') {
       return {
         icon: '👤',
-        label: 'Müşteri',
+        label: 'عميل',
         className: 'client-badge',
         bgColor: 'rgba(16, 185, 129, 0.15)',
         color: '#10b981'
@@ -63,7 +63,7 @@ const getUserTypeBadge = (userType, userRole) => {
   
   return {
     icon: '👤',
-    label: 'Kayıtlı',
+    label: 'مسجل',
     className: 'unknown-badge',
     bgColor: 'rgba(100, 100, 100, 0.15)',
     color: '#64748b'
@@ -90,8 +90,8 @@ const AdminMessages = () => {
   const [modalConfig, setModalConfig] = useState({
     title: '',
     message: '',
-    confirmText: 'Evet',
-    cancelText: 'İptal',
+    confirmText: 'نعم',
+    cancelText: 'إلغاء',
     onConfirm: null,
     type: 'warning'
   });
@@ -155,7 +155,7 @@ const AdminMessages = () => {
       setLoading(false);
     }, (error) => {
       if (isDevelopment) console.error("Mesajlar yüklenirken hata:", error.message);
-      showErrorToastFunc("Mesajlar yüklenirken hata oluştu.");
+      showErrorToastFunc("حدث خطأ أثناء تحميل الرسائل.");
       setLoading(false);
     });
 
@@ -166,7 +166,7 @@ const AdminMessages = () => {
     setCurrentPage(1);
   }, [activeTab, searchTerm, sortOrder]);
 
-  const showConfirmModalFunc = (title, message, onConfirm, confirmText = 'Evet', cancelText = 'İptal', type = 'warning') => {
+  const showConfirmModalFunc = (title, message, onConfirm, confirmText = 'نعم', cancelText = 'إلغاء', type = 'warning') => {
     setModalConfig({
       title: sanitizeText(title, 100),
       message: sanitizeText(message, 500),
@@ -195,13 +195,13 @@ const AdminMessages = () => {
 
   const handleDeleteMessage = async (messageId) => {
     if (!messageId || typeof messageId !== 'string' || messageId.length > 128) {
-      showErrorToastFunc("Geçersiz mesaj ID.");
+      showErrorToastFunc("معرف الرسالة غير صالح.");
       return;
     }
 
     showConfirmModalFunc(
-      'Mesajı Sil',
-      'Bu mesajı silmek istediğinize emin misiniz?\n\nBu işlem geri alınamaz!\n\nNOT: Bu mesaja ait yanıtlar da silinecektir.',
+      'حذف الرسالة',
+      'هل أنت متأكد من رغبتك في حذف هذه الرسالة؟\n\nلا يمكن التراجع عن هذا الإجراء!\n\nملاحظة: سيتم حذف الردود المرتبطة بهذه الرسالة أيضاً.',
       async () => {
         try {
           await deleteDoc(doc(db, "contacts", messageId));
@@ -221,14 +221,14 @@ const AdminMessages = () => {
             setSelectedMessage(null);
           }
           
-          showSuccessToastFunc(`Mesaj ve ${replyDeletions.length} yanıt başarıyla silindi!`);
+          showSuccessToastFunc(`تم حذف الرسالة و ${replyDeletions.length} من الردود بنجاح!`);
         } catch (error) {
           if (isDevelopment) console.error("Hata:", error.message);
-          showErrorToastFunc("Mesaj silinirken hata oluştu.");
+          showErrorToastFunc("حدث خطأ أثناء حذف الرسالة.");
         }
       },
-      'Evet, Sil',
-      'İptal',
+      'نعم، احذف',
+      'إلغاء',
       'danger'
     );
   };
@@ -242,20 +242,20 @@ const AdminMessages = () => {
   const handleSendReply = async () => {
     const cleanReply = replyText.trim();
     if (!cleanReply) {
-      showErrorToastFunc("Lütfen bir yanıt yazın.");
+      showErrorToastFunc("يرجى كتابة رد.");
       return;
     }
     if (cleanReply.length < 3) {
-      showErrorToastFunc("Yanıt en az 3 karakter olmalıdır.");
+      showErrorToastFunc("يجب أن يتكون الرد من 3 أحرف على الأقل.");
       return;
     }
     if (cleanReply.length > 2000) {
-      showErrorToastFunc("Yanıt en fazla 2000 karakter olabilir.");
+      showErrorToastFunc("يمكن أن يكون الرد 2000 حرف كحد أقصى.");
       return;
     }
 
     if (!selectedMessage?.email) {
-      showErrorToastFunc("Geçersiz mesaj bilgisi.");
+      showErrorToastFunc("معلومات رسالة غير صالحة.");
       return;
     }
 
@@ -264,7 +264,7 @@ const AdminMessages = () => {
       const userEmail = selectedMessage.email;
       
       if (!validateEmail(userEmail)) {
-        showErrorToastFunc("Geçersiz e-posta adresi.");
+        showErrorToastFunc("عنوان بريد إلكتروني غير صالح.");
         return;
       }
       
@@ -294,7 +294,7 @@ const AdminMessages = () => {
         const notificationData = {
           userId: targetUserId,
           type: 'admin_reply',
-          title: 'Destek Talebiniz Yanıtlandı ✉️',
+          title: 'تم الرد على طلب الدعم الخاص بك ✉️',
           message: sanitizedReply,
           originalMessage: sanitizedOriginal,
           userEmail: userEmailLowerCase,
@@ -315,11 +315,11 @@ const AdminMessages = () => {
       setSelectedMessage(null);
       setReplyText('');
       
-      showSuccessToastFunc("Yanıt başarıyla gönderildi!");
+      showSuccessToastFunc("تم إرسال الرد بنجاح!");
       
     } catch (error) {
       if (isDevelopment) console.error("Hata:", error.message);
-      showErrorToastFunc("Yanıt gönderilirken hata oluştu.");
+      showErrorToastFunc("حدث خطأ أثناء إرسال الرد.");
     } finally {
       setSendingReply(false);
     }
@@ -379,14 +379,14 @@ const AdminMessages = () => {
     );
   };
 
-  if (authLoading) return <LoadingSpinner text="Yetki kontrol ediliyor..." />;
+  if (authLoading) return <LoadingSpinner text="جاري التحقق من الصلاحيات..." />;
   
   if (!authorized) {
     return (
       <div className="no-messages-new">
         <div className="empty-icon-new">🔒</div>
-        <h3>Erişim Engellendi</h3>
-        <p>Bu sayfaya erişim yetkiniz yok. Sadece adminler erişebilir.</p>
+        <h3>تم رفض الوصول</h3>
+        <p>ليس لديك صلاحية للوصول إلى هذه الصفحة. يمكن للمسؤولين فقط الوصول.</p>
       </div>
     );
   }
@@ -412,7 +412,7 @@ const AdminMessages = () => {
     try {
       const d = new Date(date);
       if (isNaN(d.getTime())) return '-';
-      return d.toLocaleString('tr-TR', {
+      return d.toLocaleString('ar-SY', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
@@ -427,13 +427,13 @@ const AdminMessages = () => {
   const getStatusBadge = (status) => {
     switch(status) {
       case 'replied':
-        return <span className="status-badge replied"> Yanıtlandı</span>;
+        return <span className="status-badge replied"> تم الرد</span>;
       default:
-        return <span className="status-badge pending"> Yanıt Bekliyor</span>;
+        return <span className="status-badge pending"> في انتظار الرد</span>;
     }
   };
 
-  if (loading) return <LoadingSpinner text="Mesajlar yükleniyor..." />;
+  if (loading) return <LoadingSpinner text="جاري تحميل الرسائل..." />;
 
   return (
     <PageTransition>
@@ -446,7 +446,7 @@ const AdminMessages = () => {
               <span className="stat-emoji">📬</span>
               <div className="stat-info">
                 <span className="stat-number">{stats.total}</span>
-                <span className="stat-label">Tümü</span>
+                <span className="stat-label">الكل</span>
               </div>
             </div>
             
@@ -454,7 +454,7 @@ const AdminMessages = () => {
               <span className="stat-emoji">⏳</span>
               <div className="stat-info">
                 <span className="stat-number">{stats.pending}</span>
-                <span className="stat-label">Yanıt Bekleyen</span>
+                <span className="stat-label">في انتظار الرد</span>
               </div>
             </div>
             
@@ -462,7 +462,7 @@ const AdminMessages = () => {
               <span className="stat-emoji">✅</span>
               <div className="stat-info">
                 <span className="stat-number">{stats.replied}</span>
-                <span className="stat-label">Yanıtlanmış</span>
+                <span className="stat-label">تم الرد عليها</span>
               </div>
             </div>
             
@@ -470,7 +470,7 @@ const AdminMessages = () => {
               <span className="stat-emoji">👥</span>
               <div className="stat-info">
                 <span className="stat-number">{stats.clients || 0}</span>
-                <span className="stat-label">Müşteri</span>
+                <span className="stat-label">عميل</span>
               </div>
             </div>
             
@@ -478,7 +478,7 @@ const AdminMessages = () => {
               <span className="stat-emoji">🔧</span>
               <div className="stat-info">
                 <span className="stat-number">{stats.providers || 0}</span>
-                <span className="stat-label">Uzman</span>
+                <span className="stat-label">خبير</span>
               </div>
             </div>
           </div>
@@ -488,7 +488,7 @@ const AdminMessages = () => {
               <span className="search-icon-new">🔍</span>
               <input
                 type="text"
-                placeholder="İsim, email veya mesaj içeriğinde ara..."
+                placeholder="ابحث بالاسم، البريد الإلكتروني أو محتوى الرسالة..."
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value.slice(0, 100));
@@ -506,19 +506,19 @@ const AdminMessages = () => {
 
             <div className="filter-group-messages">
               <span className="filter-label-messages">
-                <i className="fas fa-sort-amount-down"></i> Sırala:
+                <i className="fas fa-sort-amount-down"></i> فرز:
               </span>
               <button 
                 className={`filter-btn-messages ${sortOrder === 'newest' ? 'active' : ''}`}
                 onClick={() => setSortOrder('newest')}
               >
-                🕒 En Yeni
+                🕒 الأحدث
               </button>
               <button 
                 className={`filter-btn-messages ${sortOrder === 'oldest' ? 'active' : ''}`}
                 onClick={() => setSortOrder('oldest')}
               >
-                📅 En Eski
+                📅 الأقدم
               </button>
             </div>
           </div>
@@ -526,11 +526,11 @@ const AdminMessages = () => {
           {currentMessages.length === 0 ? (
             <div className="no-messages-new">
               <div className="empty-icon-new">📭</div>
-              <h3>Mesaj Bulunamadı</h3>
-              <p>{searchTerm ? 'Aramanıza uygun mesaj bulunamadı.' : 'Bu kategoride henüz mesaj yok.'}</p>
+              <h3>لم يتم العثور على رسائل</h3>
+              <p>{searchTerm ? 'لم يتم العثور على رسائل تطابق بحثك.' : 'لا توجد رسائل في هذه الفئة بعد.'}</p>
               {searchTerm && (
                 <button className="clear-filter-btn-new" onClick={() => setSearchTerm('')}>
-                  Aramayı Temizle
+                  مسح البحث
                 </button>
               )}
             </div>
@@ -549,7 +549,7 @@ const AdminMessages = () => {
                         </div>
                         <div className="summary-info">
                           <div className="summary-name">
-                            <strong>{sanitizeText(message.fullName || 'İsimsiz', 50)}</strong>
+                            <strong>{sanitizeText(message.fullName || 'بدون اسم', 50)}</strong>
                             {getStatusBadge(message.status)}
                             {renderUserTypeLabel(message.userType, message.userRole)}
                           </div>
@@ -558,7 +558,7 @@ const AdminMessages = () => {
                             {message.phone && <span>📞 {sanitizeText(message.phone, 20)}</span>}
                             {message.userId && (
                               <span className="user-id-hint" title={`Kullanıcı ID: ${sanitizeText(message.userId, 50)}`}>
-                                🆔 Kayıtlı Kullanıcı
+                                🆔 مستخدم مسجل
                               </span>
                             )}
                           </div>
@@ -578,13 +578,13 @@ const AdminMessages = () => {
                     {selectedMessage?.id === message.id && (
                       <div className="message-detail-new">
                         <div className="detail-card-new">
-                          <h4>📝 Mesaj Detayı</h4>
+                          <h4>📝 تفاصيل الرسالة</h4>
                           <p className="full-message-new">{sanitizeText(message.message, 2000)}</p>
                         </div>
 
                         {message.reply && (
                           <div className="detail-card-new reply-card-new">
-                            <h4>✅ Yanıtınız</h4>
+                            <h4>✅ ردك</h4>
                             <p className="reply-message-new">{sanitizeText(message.reply, 2000)}</p>
                             <small>{message.repliedAt && formatDate(message.repliedAt)}</small>
                           </div>
@@ -595,14 +595,14 @@ const AdminMessages = () => {
                             className="action-btn-new reply-btn-new"
                             onClick={() => setShowReplyModal(true)}
                           >
-                            ✉️ Yanıtla
+                            ✉️ رد
                           </button>
                           
                           <button 
                             className="action-btn-new delete-btn-new"
                             onClick={() => handleDeleteMessage(message.id)}
                           >
-                            🗑️ Sil
+                            🗑️ حذف
                           </button>
                         </div>
                       </div>
@@ -614,7 +614,7 @@ const AdminMessages = () => {
               {totalPages > 1 && (
                 <div className="pagination-new">
                   <button className="page-btn" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
-                    ← Önceki
+                    ← السابق
                   </button>
                   
                   <div className="page-numbers">
@@ -638,7 +638,7 @@ const AdminMessages = () => {
                   </div>
                   
                   <button className="page-btn" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}>
-                    Sonraki →
+                    التالي →
                   </button>
                 </div>
               )}
@@ -650,27 +650,27 @@ const AdminMessages = () => {
           <div className="reply-modal-overlay-new" onClick={() => setShowReplyModal(false)}>
             <div className="reply-modal-new" onClick={(e) => e.stopPropagation()}>
               <div className="reply-modal-header">
-                <h3>✉️ Mesajı Yanıtla</h3>
+                <h3>✉️ الرد على الرسالة</h3>
                 <button className="close-modal-btn" onClick={() => setShowReplyModal(false)}>✕</button>
               </div>
 
               <div className="reply-modal-body">
                 <div className="original-message-new">
-                  <h4>📩 Orijinal Mesaj</h4>
+                  <h4>📩 الرسالة الأصلية</h4>
                   <div className="original-meta-new">
-                    <span><strong>Gönderen:</strong> {sanitizeText(selectedMessage.fullName, 50)}</span>
-                    <span><strong>E-posta:</strong> {sanitizeText(selectedMessage.email, 100)}</span>
-                    <span><strong>Tarih:</strong> {formatDate(selectedMessage.createdAt)}</span>
+                    <span><strong>المرسل:</strong> {sanitizeText(selectedMessage.fullName, 50)}</span>
+                    <span><strong>البريد الإلكتروني:</strong> {sanitizeText(selectedMessage.email, 100)}</span>
+                    <span><strong>التاريخ:</strong> {formatDate(selectedMessage.createdAt)}</span>
                   </div>
                   <div className="original-content-new">{sanitizeText(selectedMessage.message, 2000)}</div>
                 </div>
 
                 <div className="reply-form-new">
-                  <h4>✍️ Yanıtınız</h4>
+                  <h4>✍️ ردك</h4>
                   <textarea
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value.slice(0, 2000))}
-                    placeholder="Yanıtınızı yazın..."
+                    placeholder="اكتب ردك هنا..."
                     rows="6"
                     maxLength="2000"
                     autoFocus
@@ -680,9 +680,9 @@ const AdminMessages = () => {
               </div>
 
               <div className="reply-modal-footer">
-                <button className="cancel-reply-btn" onClick={() => setShowReplyModal(false)}>İptal</button>
+                <button className="cancel-reply-btn" onClick={() => setShowReplyModal(false)}>إلغاء</button>
                 <button className="send-reply-btn" onClick={handleSendReply} disabled={sendingReply || !replyText.trim()}>
-                  {sendingReply ? <>⏳ Gönderiliyor...</> : <>📤 Yanıtı Gönder</>}
+                  {sendingReply ? <>⏳ جاري الإرسال...</> : <>📤 إرسال الرد</>}
                 </button>
               </div>
             </div>

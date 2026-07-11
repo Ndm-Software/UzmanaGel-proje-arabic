@@ -93,7 +93,7 @@ const safeFormatDate = (value) => {
   const date = getDate(value);
   if (!date) return "-";
 
-  const formatted = date.toLocaleDateString("tr-TR", {
+  const formatted = date.toLocaleDateString("ar-SY", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -106,7 +106,7 @@ const safeFormatDateTime = (value) => {
   const date = getDate(value);
   if (!date) return "-";
 
-  const formatted = date.toLocaleString("tr-TR", {
+  const formatted = date.toLocaleString("ar-SY", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -136,7 +136,7 @@ export default function DeletedProviderCard({
       provider?.displayName,
       provider?.uid,
       provider?.id,
-      "İsimsiz Uzman"
+      "خبير بدون اسم"
     ),
     80
   );
@@ -157,7 +157,7 @@ export default function DeletedProviderCard({
       providerData.businessName,
       userData.displayName,
       authSnapshot.displayName,
-      "İşletme adı yok"
+      "لا يوجد اسم عمل"
     ),
     100
   );
@@ -231,7 +231,7 @@ export default function DeletedProviderCard({
     <div className={`data-card ${isExpanded ? "expanded" : ""}`}>
       <div className="card-header" onClick={onToggle}>
         <div className="card-source">
-          <span className="status-badge pending">🗑️ Silinmiş</span>
+          <span className="status-badge pending">🗑️ محذوف</span>
         </div>
 
         <div className="card-summary">
@@ -249,7 +249,7 @@ export default function DeletedProviderCard({
             </span>
 
             <span>
-              <i className="fas fa-bullhorn"></i> {listingsCount} ilan
+              <i className="fas fa-bullhorn"></i> {listingsCount} إعلان
             </span>
 
             <span>
@@ -268,41 +268,41 @@ export default function DeletedProviderCard({
         <div className="card-details">
           <div className="details-grid">
             <div className="detail-item">
-              <span className="detail-label">Silinme Tarihi:</span>
+              <span className="detail-label">تاريخ الحذف:</span>
               <span className="detail-value">
                 {safeFormatDateTime(deletedAt)}
               </span>
             </div>
 
             <div className="detail-item">
-              <span className="detail-label">Geri Yükleme Son Tarihi:</span>
+              <span className="detail-label">الموعد النهائي للاستعادة:</span>
               <span className="detail-value">
                 {safeFormatDateTime(restoreUntil)}
               </span>
             </div>
 
             <div className="detail-item">
-              <span className="detail-label">İlan Sayısı:</span>
+              <span className="detail-label">عدد الإعلانات:</span>
               <span className="detail-value">{listingsCount}</span>
             </div>
 
             <div className="detail-item">
-              <span className="detail-label">Şehir:</span>
+              <span className="detail-label">المدينة:</span>
               <span className="detail-value">{city}</span>
             </div>
 
             <div className="detail-item">
-              <span className="detail-label">Kategori:</span>
+              <span className="detail-label">الفئة:</span>
               <span className="detail-value">{category}</span>
             </div>
 
             <div className="detail-item detail-item-wide">
-              <span className="detail-label">Telefon:</span>
+              <span className="detail-label">الهاتف:</span>
               <span className="detail-value detail-value-phone">{phoneNumber}</span>
             </div>
 
             <div className="detail-item detail-item-wide">
-              <span className="detail-label">E-posta:</span>
+              <span className="detail-label">البريد الإلكتروني:</span>
               <span className="detail-value detail-value-email">{email}</span>
             </div>
           </div>
@@ -321,7 +321,7 @@ export default function DeletedProviderCard({
                   restoring ? "fa-spinner fa-spin" : "fa-trash-restore"
                 }`}
               ></i>
-              {restoring ? " Geri Yükleniyor..." : " Hesabı Geri Yükle"}
+              {restoring ? " جاري الاستعادة..." : " استعادة الحساب"}
             </button>
           </div>
         </div>

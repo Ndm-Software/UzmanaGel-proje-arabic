@@ -134,7 +134,7 @@ export default function AdminSettings() {
       }
     } catch (error) {
       if (isDevelopment) console.error('Ayarlar yüklenirken hata:', error);
-      showToast('Ayarlar yüklenemedi, varsayılan değerler kullanılıyor', 'error');
+      showToast('تعذر تحميل الإعدادات، تم استخدام القيم الافتراضية', 'error');
     } finally {
       setLoading(false);
     }
@@ -159,7 +159,7 @@ export default function AdminSettings() {
       }
     } catch (error) {
       if (isDevelopment) console.error('Fiyat ayarları yüklenirken hata:', error);
-      showToast('Fiyat ayarları yüklenemedi, varsayılan değerler kullanılıyor', 'error');
+      showToast('تعذر تحميل إعدادات الأسعار، تم استخدام القيم الافتراضية', 'error');
     }
   };
 
@@ -183,14 +183,14 @@ export default function AdminSettings() {
     if (name === 'contactEmail') {
       const trimmedValue = value.trim();
       if (trimmedValue && !isValidEmail(trimmedValue)) {
-        showToast('Geçerli bir e-posta adresi girin!', 'error');
+        showToast('يرجى إدخال عنوان بريد إلكتروني صالح!', 'error');
         return;
       }
       setSiteSettings(prev => ({ ...prev, [name]: sanitizeText(trimmedValue, 100) }));
     } else if (name === 'phone') {
       const cleanedValue = value.replace(/\D/g, '');
       if (cleanedValue && !isValidPhone(cleanedValue)) {
-        showToast('Geçerli bir telefon numarası girin!', 'error');
+        showToast('يرجى إدخال رقم هاتف صالح!', 'error');
         return;
       }
       let formattedValue = cleanedValue;
@@ -229,12 +229,12 @@ export default function AdminSettings() {
 
   const saveSiteSettings = async () => {
     if (!isValidEmail(siteSettings.contactEmail)) {
-      showToast('Geçerli bir e-posta adresi girin!', 'error');
+      showToast('يرجى إدخال عنوان بريد إلكتروني صالح!', 'error');
       return;
     }
     
     if (!isValidPhone(siteSettings.phone)) {
-      showToast('Geçerli bir telefon numarası girin!', 'error');
+      showToast('يرجى إدخال رقم هاتف صالح!', 'error');
       return;
     }
     
@@ -249,10 +249,10 @@ export default function AdminSettings() {
         registrationsOpen: siteSettings.registrationsOpen,
         updatedAt: new Date().toISOString(),
       });
-      showToast('Site ayarları kaydedildi!', 'success');
+      showToast('تم حفظ إعدادات الموقع!', 'success');
     } catch (error) {
       if (isDevelopment) console.error('Ayarlar kaydedilirken hata:', error);
-      showToast('Ayarlar kaydedilemedi!', 'error');
+      showToast('تعذر حفظ الإعدادات!', 'error');
     } finally {
       setSaving(false);
     }
@@ -266,10 +266,10 @@ export default function AdminSettings() {
         tokenPrice: priceSettings.tokenPrice,
         updatedAt: new Date().toISOString(),
       });
-      showToast('Jeton ayarları kaydedildi!', 'success');
+      showToast('تم حفظ إعدادات الرصيد!', 'success');
     } catch (error) {
       if (isDevelopment) console.error('Jeton ayarları kaydedilirken hata:', error);
-      showToast('Jeton ayarları kaydedilemedi!', 'error');
+      showToast('تعذر حفظ إعدادات الرصيد!', 'error');
     } finally {
       setSaving(false);
     }
@@ -277,7 +277,7 @@ export default function AdminSettings() {
 
   const updateAdminProfile = async () => {
     if (!adminProfile.displayName.trim()) {
-      showToast('Lütfen ad soyad girin!', 'error');
+      showToast('يرجى إدخال الاسم والكنية!', 'error');
       return;
     }
     
@@ -285,7 +285,7 @@ export default function AdminSettings() {
     try {
       const user = auth.currentUser;
       if (!user) {
-        showToast('Oturum bulunamadı!', 'error');
+        showToast('لم يتم العثور على الجلسة!', 'error');
         return;
       }
       
@@ -299,10 +299,10 @@ export default function AdminSettings() {
         updatedAt: new Date().toISOString()
       });
       
-      showToast('Profil bilgileri güncellendi!', 'success');
+      showToast('تم تحديث معلومات الملف الشخصي!', 'success');
     } catch (error) {
       if (isDevelopment) console.error('Profil güncellenirken hata:', error);
-      showToast('Profil güncellenemedi: ' + error.message, 'error');
+      showToast('تعذر تحديث الملف الشخصي: ' + error.message, 'error');
     } finally {
       setSaving(false);
     }
@@ -310,30 +310,30 @@ export default function AdminSettings() {
 
   const updateAdminPassword = async () => {
     if (isRateLimited()) {
-      setPasswordError('Çok fazla başarısız deneme. Lütfen 1 dakika bekleyin.');
+      setPasswordError('الكثير من المحاولات الفاشلة. يرجى الانتظار دقيقة واحدة.');
       return;
     }
     
     if (!passwordData.currentPassword) {
-      setPasswordError('Lütfen mevcut şifrenizi girin!');
+      setPasswordError('يرجى إدخال كلمة المرور الحالية!');
       recordPasswordAttempt();
       return;
     }
     
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordError('Yeni şifreler eşleşmiyor!');
+      setPasswordError('كلمات المرور الجديدة غير متطابقة!');
       recordPasswordAttempt();
       return;
     }
     
     if (passwordData.newPassword.length < 6) {
-      setPasswordError('Şifre en az 6 karakter olmalıdır!');
+      setPasswordError('يجب أن تتكون كلمة المرور من 6 أحرف على الأقل!');
       recordPasswordAttempt();
       return;
     }
     
     if (passwordData.newPassword.length > 100) {
-      setPasswordError('Şifre çok uzun!');
+      setPasswordError('كلمة المرور طويلة جداً!');
       recordPasswordAttempt();
       return;
     }
@@ -344,7 +344,7 @@ export default function AdminSettings() {
     try {
       const user = auth.currentUser;
       if (!user || !user.email) {
-        setPasswordError('Oturum bilgisi bulunamadı. Lütfen tekrar giriş yapın.');
+        setPasswordError('تعذر العثور على معلومات الجلسة. يرجى تسجيل الدخول مرة أخرى.');
         recordPasswordAttempt();
         return;
       }
@@ -363,7 +363,7 @@ export default function AdminSettings() {
         confirmPassword: '',
       });
       passwordAttempts = 0;
-      showToast('Şifre başarıyla değiştirildi!', 'success');
+      showToast('تم تغيير كلمة المرور بنجاح!', 'success');
       
     } catch (error) {
       if (isDevelopment) console.error('Şifre değiştirme hatası:', error);
@@ -372,13 +372,13 @@ export default function AdminSettings() {
       switch (error.code) {
         case 'auth/wrong-password':
         case 'auth/invalid-credential':
-          setPasswordError('Mevcut şifreniz yanlış!');
+          setPasswordError('كلمة المرور الحالية غير صحيحة!');
           break;
         case 'auth/requires-recent-login':
-          setPasswordError('Güvenlik nedeniyle tekrar giriş yapmanız gerekiyor. Lütfen çıkış yapıp tekrar giriş yapın.');
+          setPasswordError('يتعين عليك تسجيل الدخول مرة أخرى لأسباب أمنية. يرجى تسجيل الخروج ثم الدخول مجدداً.');
           break;
         default:
-          setPasswordError('Şifre değiştirilemedi: ' + (error.message || 'Bilinmeyen hata'));
+          setPasswordError('تعذر تغيير كلمة المرور: ' + (error.message || 'خطأ غير معروف'));
       }
     } finally {
       setUpdatingPassword(false);
@@ -386,14 +386,14 @@ export default function AdminSettings() {
   };
 
   if (authLoading || loading) {
-    return <LoadingSpinner text="Ayarlar yükleniyor..." />;
+    return <LoadingSpinner text="جاري تحميل الإعدادات..." />;
   }
 
   if (!authorized) {
     return (
       <div className="no-data">
         <i className="fas fa-shield-alt fa-3x"></i>
-        <p>Bu sayfaya erişim yetkiniz yok.</p>
+        <p>ليس لديك صلاحية للوصول إلى هذه الصفحة.</p>
       </div>
     );
   }
@@ -405,25 +405,25 @@ export default function AdminSettings() {
           className={`settings-tab-btn ${activeSection === 'site' ? 'active' : ''}`}
           onClick={() => setActiveSection('site')}
         >
-          <i className="fas fa-globe"></i> Site Ayarları
+          <i className="fas fa-globe"></i> إعدادات الموقع
         </button>
         <button 
           className={`settings-tab-btn ${activeSection === 'pricing' ? 'active' : ''}`}
           onClick={() => setActiveSection('pricing')}
         >
-          <i className="fas fa-coins"></i> Jeton Ayarları
+          <i className="fas fa-coins"></i> إعدادات النقاط
         </button>
         <button 
           className={`settings-tab-btn ${activeSection === 'profile' ? 'active' : ''}`}
           onClick={() => setActiveSection('profile')}
         >
-          <i className="fas fa-user-shield"></i> Admin Profil
+          <i className="fas fa-user-shield"></i> ملف المسؤول
         </button>
         <button 
           className={`settings-tab-btn ${activeSection === 'password' ? 'active' : ''}`}
           onClick={() => setActiveSection('password')}
         >
-          <i className="fas fa-key"></i> Şifre Değiştir
+          <i className="fas fa-key"></i> تغيير كلمة المرور
         </button>
       </div>
 
@@ -431,12 +431,12 @@ export default function AdminSettings() {
         {activeSection === 'site' && (
           <div className="settings-card">
             <div className="card-header">
-              <h3><i className="fas fa-globe"></i> Site Ayarları</h3>
+              <h3><i className="fas fa-globe"></i> إعدادات الموقع</h3>
             </div>
             
             <div className="card-body">
               <div className="form-group">
-                <label>İletişim E-posta</label>
+                <label>البريد الإلكتروني للتواصل</label>
                 <input
                   type="email"
                   name="contactEmail"
@@ -445,11 +445,11 @@ export default function AdminSettings() {
                   className="form-input"
                   maxLength={100}
                 />
-                <small className="form-hint">Site iletişim e-posta adresi</small>
+                <small className="form-hint">البريد الإلكتروني للتواصل الخاص بالموقع</small>
               </div>
 
               <div className="form-group">
-                <label>Telefon</label>
+                <label>الهاتف</label>
                 <input
                   type="tel"
                   name="phone"
@@ -458,11 +458,11 @@ export default function AdminSettings() {
                   className="form-input"
                   maxLength={20}
                 />
-                <small className="form-hint">İletişim telefon numarası</small>
+                <small className="form-hint">رقم هاتف التواصل</small>
               </div>
 
               <div className="form-group">
-                <label>Adres</label>
+                <label>العنوان</label>
                 <textarea
                   name="address"
                   value={siteSettings.address}
@@ -471,7 +471,7 @@ export default function AdminSettings() {
                   rows={2}
                   maxLength={500}
                 />
-                <small className="form-hint">Şirket/Ofis adresi</small>
+                <small className="form-hint">عنوان الشركة/المكتب</small>
               </div>
 
               <div className="form-group checkbox-group">
@@ -482,7 +482,7 @@ export default function AdminSettings() {
                     checked={siteSettings.maintenanceMode}
                     onChange={handleSiteSettingChange}
                   />
-                  <span>Bakım Modu (Siteyi geçici olarak kapatır)</span>
+                  <span>وضع الصيانة (يغلق الموقع مؤقتاً)</span>
                 </label>
               </div>
 
@@ -494,7 +494,7 @@ export default function AdminSettings() {
                     checked={siteSettings.registrationsOpen}
                     onChange={handleSiteSettingChange}
                   />
-                  <span>Yeni Kayıtlara Açık</span>
+                  <span>فتح التسجيل الجديد</span>
                 </label>
               </div>
 
@@ -503,7 +503,7 @@ export default function AdminSettings() {
                 onClick={saveSiteSettings} 
                 disabled={saving}
               >
-                {saving ? <><i className="fas fa-spinner fa-spin"></i> Kaydediliyor...</> : 'Ayarları Kaydet'}
+                {saving ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : 'حفظ الإعدادات'}
               </button>
             </div>
           </div>
@@ -512,12 +512,12 @@ export default function AdminSettings() {
         {activeSection === 'pricing' && (
           <div className="settings-card">
             <div className="card-header">
-              <h3><i className="fas fa-coins"></i> Jeton Ayarları</h3>
+              <h3><i className="fas fa-coins"></i> إعدادات النقاط</h3>
             </div>
             
             <div className="card-body">
               <div className="form-group">
-                <label>1 Jeton Fiyatı (₺)</label>
+                <label>سعر النقطة الواحدة (ل.س)</label>
                 <input
                   type="number"
                   name="tokenPrice"
@@ -528,17 +528,17 @@ export default function AdminSettings() {
                   max="10000"
                   step="1"
                 />
-                <small className="form-hint">1 Jeton = {priceSettings.tokenPrice} TL</small>
+                <small className="form-hint">1 نقطة = {priceSettings.tokenPrice} ل.س</small>
                 <small className="form-hint warning-hint">
-                  <i className="fas fa-info-circle"></i> Jeton fiyatı değiştiğinde, yeni satın alımlar bu fiyat üzerinden yapılır. Mevcut jetonlar etkilenmez.
+                  <i className="fas fa-info-circle"></i> عند تغيير سعر النقاط، سيتم إجراء عمليات الشراء الجديدة بهذا السعر. لن تتأثر النقاط الحالية.
                 </small>
               </div>
 
               <div className="info-box">
                 <i className="fas fa-info-circle"></i>
                 <div>
-                  <strong>Bilgi:</strong> Bu ayarlar sistem genelinde geçerlidir. 
-                  Jeton fiyatı değiştiğinde <strong>yeni satın alımlar</strong> bu fiyat üzerinden yapılır.
+                  <strong>معلومات:</strong> هذه الإعدادات تسري على مستوى النظام بالكامل. 
+                  عند تغيير سعر النقاط، سيتم شراء <strong>النقاط الجديدة</strong> بناءً على هذا السعر.
                 </div>
               </div>
 
@@ -547,7 +547,7 @@ export default function AdminSettings() {
                 onClick={savePriceSettings} 
                 disabled={saving}
               >
-                {saving ? <><i className="fas fa-spinner fa-spin"></i> Kaydediliyor...</> : 'Ayarları Kaydet'}
+                {saving ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : 'حفظ الإعدادات'}
               </button>
             </div>
           </div>
@@ -556,12 +556,12 @@ export default function AdminSettings() {
         {activeSection === 'profile' && (
           <div className="settings-card">
             <div className="card-header">
-              <h3><i className="fas fa-user-shield"></i> Admin Profil</h3>
+              <h3><i className="fas fa-user-shield"></i> ملف المسؤول</h3>
             </div>
             
             <div className="card-body">
               <div className="form-group">
-                <label>Ad Soyad</label>
+                <label>الاسم والكنية</label>
                 <input
                   type="text"
                   name="displayName"
@@ -573,7 +573,7 @@ export default function AdminSettings() {
               </div>
 
               <div className="form-group">
-                <label>E-posta Adresi</label>
+                <label>البريد الإلكتروني</label>
                 <input
                   type="email"
                   name="email"
@@ -581,7 +581,7 @@ export default function AdminSettings() {
                   disabled
                   className="form-input disabled"
                 />
-                <small className="form-hint">E-posta adresi değiştirilemez.</small>
+                <small className="form-hint">لا يمكن تغيير عنوان البريد الإلكتروني.</small>
               </div>
 
               <button 
@@ -589,7 +589,7 @@ export default function AdminSettings() {
                 onClick={updateAdminProfile} 
                 disabled={saving}
               >
-                {saving ? <><i className="fas fa-spinner fa-spin"></i> Kaydediliyor...</> : 'Profili Güncelle'}
+                {saving ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : 'تحديث الملف الشخصي'}
               </button>
             </div>
           </div>
@@ -598,7 +598,7 @@ export default function AdminSettings() {
         {activeSection === 'password' && (
           <div className="settings-card">
             <div className="card-header">
-              <h3><i className="fas fa-key"></i> Şifre Değiştir</h3>
+              <h3><i className="fas fa-key"></i> تغيير كلمة المرور</h3>
             </div>
             
             <div className="card-body">
@@ -609,40 +609,40 @@ export default function AdminSettings() {
               )}
 
               <div className="form-group">
-                <label>Mevcut Şifre</label>
+                <label>كلمة المرور الحالية</label>
                 <input
                   type="password"
                   name="currentPassword"
                   value={passwordData.currentPassword}
                   onChange={handlePasswordChange}
                   className="form-input"
-                  placeholder="Mevcut şifrenizi girin"
+                  placeholder="أدخل كلمة المرور الحالية"
                   maxLength={100}
                 />
               </div>
 
               <div className="form-group">
-                <label>Yeni Şifre</label>
+                <label>كلمة المرور الجديدة</label>
                 <input
                   type="password"
                   name="newPassword"
                   value={passwordData.newPassword}
                   onChange={handlePasswordChange}
                   className="form-input"
-                  placeholder="Yeni şifrenizi girin (en az 6 karakter)"
+                  placeholder="أدخل كلمة المرور الجديدة (6 أحرف على الأقل)"
                   maxLength={100}
                 />
               </div>
 
               <div className="form-group">
-                <label>Yeni Şifre (Tekrar)</label>
+                <label>تأكيد كلمة المرور الجديدة</label>
                 <input
                   type="password"
                   name="confirmPassword"
                   value={passwordData.confirmPassword}
                   onChange={handlePasswordChange}
                   className="form-input"
-                  placeholder="Yeni şifrenizi tekrar girin"
+                  placeholder="أعد إدخال كلمة المرور الجديدة"
                   maxLength={100}
                 />
               </div>
@@ -652,7 +652,7 @@ export default function AdminSettings() {
                 onClick={updateAdminPassword} 
                 disabled={updatingPassword}
               >
-                {updatingPassword ? <><i className="fas fa-spinner fa-spin"></i> Değiştiriliyor...</> : 'Şifreyi Değiştir'}
+                {updatingPassword ? <><i className="fas fa-spinner fa-spin"></i> جاري التغيير...</> : 'تغيير كلمة المرور'}
               </button>
             </div>
           </div>

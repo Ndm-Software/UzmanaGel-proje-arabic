@@ -52,7 +52,7 @@ function formatDateTime(value) {
   if (!date) return "-";
 
   try {
-    return date.toLocaleString("tr-TR");
+    return date.toLocaleString("ar-SY");
   } catch {
     return "-";
   }
@@ -81,23 +81,23 @@ function safeNumber(value, defaultValue = 0) {
 const getStatusBadge = (status, isActive = null) => {
   if (isActive !== null) {
     return isActive ? (
-      <span className="status-badge approved">✅ Onaylı</span>
+      <span className="status-badge approved">✅ مقبول</span>
     ) : (
-      <span className="status-badge pending">⏳ Beklemede</span>
+      <span className="status-badge pending">⏳ معلق</span>
     );
   }
 
   switch (status) {
     case "approved":
-      return <span className="status-badge approved">✅ Onaylandı</span>;
+      return <span className="status-badge approved">✅ مقبول</span>;
     case "completed":
-      return <span className="status-badge completed">✔️ Tamamlandı</span>;
+      return <span className="status-badge completed">✔️ مكتمل</span>;
     case "rejected":
-      return <span className="status-badge rejected">❌ Reddedildi</span>;
+      return <span className="status-badge rejected">❌ مرفوض</span>;
     case "pending":
-      return <span className="status-badge pending">⏳ Bekliyor</span>;
+      return <span className="status-badge pending">⏳ ينتظر الموافقة</span>;
     case "cancelled":
-      return <span className="status-badge cancelled">❌ İptal</span>;
+      return <span className="status-badge cancelled">❌ ملغي</span>;
     default:
       return (
         <span className="status-badge">
@@ -126,7 +126,7 @@ export default function AdminExpertDetailPage() {
     if (!authorized || authLoading) return;
 
     if (!expertId) {
-      setError("Geçersiz uzman ID");
+      setError("معرف خبير غير صالح");
       setLoading(false);
       return;
     }
@@ -144,7 +144,7 @@ export default function AdminExpertDetailPage() {
       .catch((err) => {
         if (!cancelled) {
           setError(
-            "Uzman detayı yüklenemedi. Lütfen daha sonra tekrar deneyin."
+            "تعذر تحميل تفاصيل الخبير. يرجى المحاولة مرة أخرى لاحقاً."
           );
           console.error("Uzman detay hatası:", err?.message);
         }
@@ -172,15 +172,15 @@ export default function AdminExpertDetailPage() {
 
       navigate("/admin", {
         state: {
-          successMessage: `${sanitizeText(
-            expert?.displayName || "Uzman"
-          )} başarıyla silindi.`,
+          successMessage: `تم حذف ${sanitizeText(
+            expert?.displayName || "خبير"
+          )} بنجاح.`,
         },
       });
     } catch (err) {
       console.error("Silme hatası:", err);
       setDeleteError(
-        err?.message || "Bir hata oluştu. Lütfen tekrar deneyin."
+        err?.message || "حدث خطأ. يرجى المحاولة مرة أخرى."
       );
     } finally {
       setIsDeleting(false);
@@ -229,7 +229,7 @@ export default function AdminExpertDetailPage() {
     const options = [
       {
         key: "all",
-        label: "Tümü",
+        label: "الكل",
         count: appointments.length,
       },
     ];
@@ -249,7 +249,7 @@ export default function AdminExpertDetailPage() {
     return (
       <div className="admin-expert-detail-page">
         <Navbar />
-        <LoadingSpinner text="Yetki kontrol ediliyor..." />
+        <LoadingSpinner text="جاري التحقق من الصلاحيات..." />
       </div>
     );
   }
@@ -262,12 +262,12 @@ export default function AdminExpertDetailPage() {
         <div className="admin-expert-detail-shell">
           <div className="admin-expert-detail-top">
             <button className="aed-back" onClick={() => navigate("/admin")}>
-              ← Admin Paneli
+              ← لوحة التحكم للأدمن
             </button>
           </div>
 
           <div className="aed-error">
-            Bu sayfaya erişim yetkiniz yok. Sadece adminler erişebilir.
+            ليس لديك صلاحية للوصول إلى هذه الصفحة. يمكن للمسؤولين فقط الوصول.
           </div>
         </div>
       </div>
@@ -278,7 +278,7 @@ export default function AdminExpertDetailPage() {
     return (
       <div className="admin-expert-detail-page">
         <Navbar />
-        <LoadingSpinner text="Uzman detayları yükleniyor..." />
+        <LoadingSpinner text="جاري تحميل تفاصيل الخبير..." />
       </div>
     );
   }
@@ -291,12 +291,12 @@ export default function AdminExpertDetailPage() {
         <div className="admin-expert-detail-shell">
           <div className="admin-expert-detail-top">
             <button className="aed-back" onClick={() => navigate("/admin")}>
-              ← Admin Paneli
+              ← لوحة التحكم للأدمن
             </button>
           </div>
 
           <div className="aed-error">
-            {sanitizeText(error || "Uzman bulunamadı.", 200)}
+            {sanitizeText(error || "الخبير غير موجود.", 200)}
           </div>
         </div>
       </div>
@@ -318,7 +318,7 @@ export default function AdminExpertDetailPage() {
         <div className="admin-expert-detail-top">
           <div className="aed-top-left">
             <button className="aed-back" onClick={() => navigate("/admin")}>
-              ← Admin Paneli
+              ← لوحة التحكم للأدمن
             </button>
 
             <div className="aed-title">
@@ -332,7 +332,7 @@ export default function AdminExpertDetailPage() {
               </div>
 
               <div className="aed-title-text">
-                <h1>{sanitizeText(expert.displayName || "Uzman", 100)}</h1>
+                <h1>{sanitizeText(expert.displayName || "خبير", 100)}</h1>
                 <p>
                   {sanitizeText(
                     expert.businessName || expert.companyName || expert.email,
@@ -350,7 +350,7 @@ export default function AdminExpertDetailPage() {
               setShowDeleteModal(true);
             }}
           >
-            🗑️ Uzmanı Sil
+            🗑️ حذف الخبير
           </button>
         </div>
 
@@ -374,8 +374,8 @@ export default function AdminExpertDetailPage() {
           <div className="stat-card">
             <div className="stat-icon">⭐</div>
             <div className="stat-info">
-              <span className="stat-value">{expert.rating || "Yeni"}</span>
-              <span className="stat-label">Puan</span>
+              <span className="stat-value">{expert.rating || "جديد"}</span>
+              <span className="stat-label">التقييم</span>
             </div>
           </div>
 
@@ -383,9 +383,9 @@ export default function AdminExpertDetailPage() {
             <div className="stat-icon">💰</div>
             <div className="stat-info">
               <span className="stat-value">
-                {minPrice}₺ - {maxPrice}₺
+                {minPrice} ل.س - {maxPrice} ل.س
               </span>
-              <span className="stat-label">Fiyat Aralığı</span>
+              <span className="stat-label">نطاق السعر</span>
             </div>
           </div>
         </div>
@@ -393,26 +393,26 @@ export default function AdminExpertDetailPage() {
         <div className="aed-grid">
           <div className="aed-card">
             <div className="aed-card-title">
-              <span>👤</span> Kişisel Bilgiler
+              <span>👤</span> المعلومات الشخصية
             </div>
 
             <div className="aed-kv">
               <div className="aed-info-row">
-                <span className="aed-label">E-posta</span>
+                <span className="aed-label">البريد الإلكتروني</span>
                 <span className="aed-value">
                   {sanitizeText(expert.email, 100)}
                 </span>
               </div>
 
               <div className="aed-info-row">
-                <span className="aed-label">Telefon</span>
+                <span className="aed-label">الهاتف</span>
                 <span className="aed-value">
                   {sanitizeText(expert.phoneNumber, 20)}
                 </span>
               </div>
 
               <div className="aed-info-row">
-                <span className="aed-label">Konum</span>
+                <span className="aed-label">الموقع</span>
                 <span className="aed-value">
                   {sanitizeText(expert.city, 50)}
                   {expert.district && `, ${sanitizeText(expert.district, 50)}`}
@@ -426,14 +426,14 @@ export default function AdminExpertDetailPage() {
                       rel="noopener noreferrer"
                       className="aed-link"
                     >
-                      📍 Haritada gör
+                      📍 عرض على الخريطة
                     </a>
                   )}
                 </span>
               </div>
 
               <div className="aed-info-row">
-                <span className="aed-label">Kategori</span>
+                <span className="aed-label">الفئة</span>
                 <span className="aed-value">
                   {Array.isArray(expert.category)
                     ? expert.category
@@ -444,14 +444,14 @@ export default function AdminExpertDetailPage() {
               </div>
 
               <div className="aed-info-row">
-                <span className="aed-label">Kayıt Tarihi</span>
+                <span className="aed-label">تاريخ التسجيل</span>
                 <span className="aed-value">
                   {formatDateTime(expert.createdAt)}
                 </span>
               </div>
 
               <div className="aed-info-row">
-                <span className="aed-label">Son Giriş</span>
+                <span className="aed-label">آخر دخول</span>
                 <span className="aed-value">
                   {formatDateTime(
                     expert.lastLoginAt || authMetadata?.lastSignInTime
@@ -460,7 +460,7 @@ export default function AdminExpertDetailPage() {
               </div>
 
               <div className="aed-info-row">
-                <span className="aed-label">Durum</span>
+                <span className="aed-label">الحالة</span>
                 <span className="aed-value">
                   {getStatusBadge(null, expert.isActive)}
                 </span>
@@ -470,12 +470,12 @@ export default function AdminExpertDetailPage() {
 
           <div className="aed-card">
             <div className="aed-card-title">
-              <span>⚡</span> Uzmanlık & Deneyim
+              <span>⚡</span> التخصص والخبرة
             </div>
 
             <div className="aed-kv">
               <div className="aed-info-row">
-                <span className="aed-label">Uzmanlıklar</span>
+                <span className="aed-label">التخصصات</span>
                 <span className="aed-value">
                   {Array.isArray(expert.specialties) &&
                   expert.specialties.length
@@ -492,20 +492,20 @@ export default function AdminExpertDetailPage() {
               </div>
 
               <div className="aed-info-row">
-                <span className="aed-label">Deneyim</span>
-                <span className="aed-value">{experienceYears} yıl</span>
+                <span className="aed-label">الخبرة</span>
+                <span className="aed-value">خبرة {experienceYears} سنوات</span>
               </div>
 
               <div className="aed-info-row">
-                <span className="aed-label">Telefon</span>
+                <span className="aed-label">الهاتف</span>
                 <span className="aed-value">
                   {expert.isPhoneVerified ? (
                     <span className="status-badge approved">
-                      ✓ Doğrulandı
+                      ✓ تم التحقق
                     </span>
                   ) : (
                     <span className="status-badge pending">
-                      ✗ Doğrulanmadı
+                      ✗ لم يتم التحقق
                     </span>
                   )}
                 </span>
@@ -515,15 +515,15 @@ export default function AdminExpertDetailPage() {
 
           <div className="aed-card full-width">
             <div className="aed-card-title">
-              <span>📋</span> İlanlar ({listings.length})
+              <span>📋</span> الإعلانات ({listings.length})
             </div>
 
             {listings.length === 0 ? (
-              <div className="aed-empty">Bu uzmana ait ilan bulunamadı.</div>
+              <div className="aed-empty">لم يتم العثور على إعلانات لهذا الخبير.</div>
             ) : (
               <div className="aed-list">
                 {listings.slice(0, 50).map((item) => {
-                  let dateStr = "Tarih yok";
+                  let dateStr = "لا يوجد تاريخ";
                   let hasDate = false;
                   const createdAt = item.createdAt;
 
@@ -532,24 +532,24 @@ export default function AdminExpertDetailPage() {
                       if (createdAt._seconds !== undefined) {
                         const d = new Date(createdAt._seconds * 1000);
                         if (!isNaN(d.getTime())) {
-                          dateStr = d.toLocaleDateString("tr-TR");
+                          dateStr = d.toLocaleDateString("ar-SY");
                           hasDate = true;
                         }
                       } else if (createdAt.seconds !== undefined) {
                         const d = new Date(createdAt.seconds * 1000);
                         if (!isNaN(d.getTime())) {
-                          dateStr = d.toLocaleDateString("tr-TR");
+                          dateStr = d.toLocaleDateString("ar-SY");
                           hasDate = true;
                         }
                       } else if (createdAt instanceof Date) {
                         if (!isNaN(createdAt.getTime())) {
-                          dateStr = createdAt.toLocaleDateString("tr-TR");
+                          dateStr = createdAt.toLocaleDateString("ar-SY");
                           hasDate = true;
                         }
                       } else if (typeof createdAt === "string") {
                         const d = new Date(createdAt);
                         if (!isNaN(d.getTime())) {
-                          dateStr = d.toLocaleDateString("tr-TR");
+                          dateStr = d.toLocaleDateString("ar-SY");
                           hasDate = true;
                         }
                       }
@@ -564,14 +564,14 @@ export default function AdminExpertDetailPage() {
                     <div key={item.id} className="aed-item">
                       <div className="aed-item-title">
                         <Link to={`/ilan/${encodeForUrl(item.id)}`}>
-                          {sanitizeText(item.title, 100) || "İsimsiz İlan"}
+                          {sanitizeText(item.title, 100) || "إعلان بدون اسم"}
                         </Link>
                       </div>
 
                       <div className="aed-item-details">
                         <span>📂 {sanitizeText(item.category, 50) || "-"}</span>
                         <span>📍 {sanitizeText(item.city, 50) || "-"}</span>
-                        <span>💰 {price}₺</span>
+                        <span>💰 {price} ل.س</span>
                         <span
                           style={{
                             color: hasDate ? "var(--primary)" : "#ef4444",
@@ -586,7 +586,7 @@ export default function AdminExpertDetailPage() {
 
                 {listings.length > 50 && (
                   <div className="aed-hint">
-                    Son 50 ilan gösteriliyor. Toplam: {listings.length}
+                    يتم عرض آخر 50 إعلاناً. الإجمالي: {listings.length}
                   </div>
                 )}
               </div>
@@ -595,7 +595,7 @@ export default function AdminExpertDetailPage() {
 
           <div className="aed-card full-width">
             <div className="aed-card-title">
-              <span>📅</span> Randevular ({appointmentStats.total})
+              <span>📅</span> المواعيد ({appointmentStats.total})
             </div>
 
             <div className="aed-statuses">
@@ -613,13 +613,13 @@ export default function AdminExpertDetailPage() {
             </div>
 
             {visibleAppointments.length === 0 ? (
-              <div className="aed-empty">Randevu kaydı bulunamadı.</div>
+              <div className="aed-empty">لم يتم العثور على سجل مواعيد.</div>
             ) : (
               <div className="aed-list">
                 {visibleAppointments.slice(0, 15).map((app) => (
                   <div key={app.id} className="aed-item">
                     <div className="aed-item-title">
-                      {sanitizeText(app.client, 50) || "Müşteri"} •{" "}
+                      {sanitizeText(app.client, 50) || "العميل"} •{" "}
                       {getStatusBadge(app.status)}
                     </div>
 
@@ -642,7 +642,7 @@ export default function AdminExpertDetailPage() {
 
                 {visibleAppointments.length > 15 && (
                   <div className="aed-hint">
-                    Son 15 kayıt gösteriliyor. Toplam:{" "}
+                    يتم عرض آخر 15 سجلاً. الإجمالي:{" "}
                     {visibleAppointments.length}
                   </div>
                 )}
@@ -660,26 +660,24 @@ export default function AdminExpertDetailPage() {
           <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
             <div className="delete-modal-header">
               <span className="delete-modal-icon">⚠️</span>
-              <h3>Uzmanı Sil</h3>
+              <h3>حذف الخبير</h3>
             </div>
 
             <div className="delete-modal-body">
               <p>
+                أنت على وشك حذف الخبير{" "}
                 <strong>
                   {sanitizeText(expert.displayName || expert.email, 50)}
                 </strong>{" "}
-                adlı uzmanı ve tüm verilerini{" "}
-                <strong style={{ color: "#ef4444" }}>kalıcı olarak</strong>{" "}
-                silmek üzeresiniz.
+                وجميع بياناته <strong style={{ color: "#ef4444" }}>نهائياً</strong>.
               </p>
 
               <p className="delete-modal-warning">
-                Bu uzmanı silmek istediğinizden emin misiniz? Bu hesaba ait tüm 
-                veriler kalıcı olarak silinecektir.
+                هل أنت متأكد من رغبتك في حذف هذا الخبير؟ سيتم حذف جميع البيانات المرتبطة بهذا الحساب نهائياً.
               </p>
 
               <p className="delete-modal-warning">
-                Bu işlem geri alınamaz!
+                هذا الإجراء لا يمكن التراجع عنه!
               </p>
 
               {deleteError && (
@@ -693,7 +691,7 @@ export default function AdminExpertDetailPage() {
                 onClick={() => setShowDeleteModal(false)}
                 disabled={isDeleting}
               >
-                İptal
+                إلغاء
               </button>
 
               <button
@@ -701,7 +699,7 @@ export default function AdminExpertDetailPage() {
                 onClick={handleDeleteExpert}
                 disabled={isDeleting}
               >
-                {isDeleting ? "Siliniyor..." : "Sil"}
+                {isDeleting ? "جاري الحذف..." : "حذف"}
               </button>
             </div>
           </div>

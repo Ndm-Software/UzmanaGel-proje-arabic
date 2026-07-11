@@ -33,20 +33,20 @@ const formatLargeNumber = (num) => {
   const absValue = absNumber;
   
   if (absValue >= 1000000000) {
-    return sign + (absValue / 1000000000).toFixed(1).replace(/\.0$/, '') + ' Milyar';
+    return sign + (absValue / 1000000000).toFixed(1).replace(/\.0$/, '') + ' مليار';
   }
   if (absValue >= 1000000) {
-    return sign + (absValue / 1000000).toFixed(1).replace(/\.0$/, '') + ' Milyon';
+    return sign + (absValue / 1000000).toFixed(1).replace(/\.0$/, '') + ' مليون';
   }
   if (absValue >= 1000) {
-    return sign + (absValue / 1000).toFixed(1).replace(/\.0$/, '') + ' Bin';
+    return sign + (absValue / 1000).toFixed(1).replace(/\.0$/, '') + ' ألف';
   }
-  return sign + absValue.toLocaleString('tr-TR');
+  return sign + absValue.toLocaleString('ar-SY');
 };
 
 const formatFullNumber = (num) => {
   const number = safeNumber(num);
-  return number.toLocaleString('tr-TR');
+  return number.toLocaleString('ar-SY');
 };
 
 // Rate limiting için değişkenler
@@ -197,25 +197,25 @@ const AdminListings = () => {
 
   const handleHide = async () => {
     if (isActionRateLimited()) {
-      setError('Çok fazla işlem. Lütfen 1 dakika bekleyin.');
+      setError('عمليات كثيرة جداً. يرجى الانتظار دقيقة واحدة.');
       return;
     }
     
     if (!selectedListing?.id) return;
     if (!selectedListing?.providerId) {
-      setError('Yayından kaldırma işlemi için uzman bilgisi bulunamadı.');
+      setError('تعذر العثور على معلومات الخبير لإلغاء النشر.');
       closeModal();
       return;
     }
     
     if (!reasonText.trim()) {
-      setError('Lütfen yayından kaldırma sebebini belirtin.');
+      setError('يرجى تحديد سبب إلغاء النشر.');
       recordActionAttempt();
       return;
     }
     
     if (reasonText.trim().length < 3) {
-      setError('Sebep en az 3 karakter olmalıdır.');
+      setError('يجب أن يكون السبب 3 أحرف على الأقل.');
       recordActionAttempt();
       return;
     }
@@ -231,8 +231,8 @@ const AdminListings = () => {
       
       await addDoc(collection(db, 'notifications'), {
         userId: selectedListing.providerId,
-        title: '📢 İlanınız Yayından Kaldırıldı',
-        message: `"${sanitizeText(selectedListing.title, 100)}" adlı ilanınız admin tarafından yayından kaldırıldı.\n\nSebep: ${sanitizeText(reasonText, 200)}\n\nİlanınızı düzenleyip tekrar yayınlayabilirsiniz.`,
+        title: '📢 تم إلغاء نشر إعلانك',
+        message: `تم إلغاء نشر إعلانك المسمى "${sanitizeText(selectedListing.title, 100)}" من قبل المسؤول.\n\nالسبب: ${sanitizeText(reasonText, 200)}\n\nيمكنك تعديل إعلانك ونشره مرة أخرى.`,
         type: 'listing_hidden',
         read: false,
         listingId: selectedListing.id,
@@ -248,7 +248,7 @@ const AdminListings = () => {
       closeModal();
     } catch (err) {
       if (isDevelopment) console.error('Yayından kaldırma hatası:', err);
-      setError('İlan yayından kaldırılırken bir hata oluştu');
+      setError('حدث خطأ أثناء إلغاء نشر الإعلان');
     } finally {
       setIsProcessing(false);
     }
@@ -256,25 +256,25 @@ const AdminListings = () => {
 
   const handleDelete = async () => {
     if (isActionRateLimited()) {
-      setError('Çok fazla işlem. Lütfen 1 dakika bekleyin.');
+      setError('عمليات كثيرة جداً. يرجى الانتظار دقيقة واحدة.');
       return;
     }
     
     if (!selectedListing?.id) return;
     if (!selectedListing?.providerId) {
-      setError('Silme işlemi için uzman bilgisi bulunamadı.');
+      setError('تعذر العثور على معلومات الخبير لعملية الحذف.');
       closeModal();
       return;
     }
     
     if (!reasonText.trim()) {
-      setError('Lütfen silme sebebini belirtin.');
+      setError('يرجى تحديد سبب الحذف.');
       recordActionAttempt();
       return;
     }
     
     if (reasonText.trim().length < 3) {
-      setError('Sebep en az 3 karakter olmalıdır.');
+      setError('يجب أن يكون السبب 3 أحرف على الأقل.');
       recordActionAttempt();
       return;
     }
@@ -290,8 +290,8 @@ const AdminListings = () => {
       
       await addDoc(collection(db, 'notifications'), {
         userId: selectedListing.providerId,
-        title: '🗑️ İlanınız Kalıcı Olarak Silindi',
-        message: `"${sanitizeText(selectedListing.title, 100)}" adlı ilanınız admin tarafından kalıcı olarak silindi.\n\nSebep: ${sanitizeText(reasonText, 200)}\n\nBu işlem geri alınamaz.`,
+        title: '🗑️ تم حذف إعلانك نهائياً',
+        message: `تم حذف إعلانك المسمى "${sanitizeText(selectedListing.title, 100)}" نهائياً من قبل المسؤول.\n\nالسبب: ${sanitizeText(reasonText, 200)}\n\nلا يمكن التراجع عن هذا الإجراء.`,
         type: 'listing_deleted',
         read: false,
         listingId: selectedListing.id,
@@ -307,7 +307,7 @@ const AdminListings = () => {
       closeModal();
     } catch (err) {
       if (isDevelopment) console.error('Silme hatası:', err);
-      setError('İlan silinirken bir hata oluştu');
+      setError('حدث خطأ أثناء حذف الإعلان');
     } finally {
       setIsProcessing(false);
     }
@@ -315,13 +315,13 @@ const AdminListings = () => {
 
   const handleRestore = async () => {
     if (isActionRateLimited()) {
-      setError('Çok fazla işlem. Lütfen 1 dakika bekleyin.');
+      setError('عمليات كثيرة جداً. يرجى الانتظار دقيقة واحدة.');
       return;
     }
     
     if (!selectedListing?.id) return;
     if (!selectedListing?.providerId) {
-      setError('Geri alma işlemi için uzman bilgisi bulunamadı.');
+      setError('تعذر العثور على معلومات الخبير لإعادة النشر.');
       closeModal();
       return;
     }
@@ -337,8 +337,8 @@ const AdminListings = () => {
       
       await addDoc(collection(db, 'notifications'), {
         userId: selectedListing.providerId,
-        title: '✅ İlanınız Tekrar Yayına Alındı',
-        message: `"${sanitizeText(selectedListing.title, 100)}" adlı ilanınız admin tarafından tekrar yayına alındı. İlanınız artık aktif ve görünür durumda.`,
+        title: '✅ تم إعادة نشر إعلانك',
+        message: `تم إعادة نشر إعلانك المسمى "${sanitizeText(selectedListing.title, 100)}" من قبل المسؤول. إعلانك الآن نشط ومرئي للجميع.`,
         type: 'listing_restored',
         read: false,
         listingId: selectedListing.id,
@@ -352,7 +352,7 @@ const AdminListings = () => {
       closeModal();
     } catch (err) {
       if (isDevelopment) console.error('Geri alma hatası:', err);
-      setError('İlan geri alınırken bir hata oluştu');
+      setError('حدث خطأ أثناء استعادة الإعلان');
     } finally {
       setIsProcessing(false);
     }
@@ -375,7 +375,7 @@ const AdminListings = () => {
 
   const formatPrice = (price) => {
     const num = safeNumber(price);
-    return num.toLocaleString('tr-TR') + ' ₺';
+    return num.toLocaleString('ar-SY') + ' ل.س';
   };
   
   const formatDate = (date) => {
@@ -385,10 +385,10 @@ const AdminListings = () => {
       if (isNaN(dateObj.getTime())) return '';
       const diff = new Date() - dateObj;
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      if (days === 0) return 'Bugün';
-      if (days === 1) return 'Dün';
-      if (days < 7) return `${days} gün önce`;
-      return dateObj.toLocaleDateString('tr-TR');
+      if (days === 0) return 'اليوم';
+      if (days === 1) return 'أمس';
+      if (days < 7) return `قبل ${days} أيام`;
+      return dateObj.toLocaleDateString('ar-SY');
     } catch {
       return '';
     }
@@ -406,11 +406,11 @@ const AdminListings = () => {
   const getStatusBadge = (status) => {
     switch(status) {
       case 'ACTIVE':
-        return <span className="status-badge active"><i className="fas fa-check-circle"></i> Aktif</span>;
+        return <span className="status-badge active"><i className="fas fa-check-circle"></i> نشط</span>;
       case 'UNPUBLISHED':
-        return <span className="status-badge unpublished"><i className="fas fa-eye-slash"></i> Yayında Değil</span>;
+        return <span className="status-badge unpublished"><i className="fas fa-eye-slash"></i> غير منشور</span>;
       case 'DELETED':
-        return <span className="status-badge deleted"><i className="fas fa-trash-alt"></i> Silinmiş</span>;
+        return <span className="status-badge deleted"><i className="fas fa-trash-alt"></i> محذوف</span>;
       default:
         return <span className="status-badge">-</span>;
     }
@@ -472,19 +472,19 @@ const AdminListings = () => {
     const cap = String(listingTitle || '').trim();
     setImagePreview({
       src: imageUrl,
-      caption: cap ? sanitizeText(cap, 200) : 'İlan görseli',
+      caption: cap ? sanitizeText(cap, 200) : 'صورة الإعلان',
     });
   };
 
   if (authLoading) {
-    return <LoadingSpinner text="Yetki kontrol ediliyor..." />;
+    return <LoadingSpinner text="جاري التحقق من الصلاحيات..." />;
   }
 
   if (!authorized) {
     return (
       <div className="no-data">
         <i className="fas fa-shield-alt fa-3x"></i>
-        <p>Bu sayfaya erişim yetkiniz yok. Sadece adminler erişebilir.</p>
+        <p>ليس لديك صلاحية للوصول إلى هذه الصفحة. يمكن للمسؤولين فقط الوصول.</p>
       </div>
     );
   }
@@ -515,68 +515,68 @@ const AdminListings = () => {
         <div className="search-wrapper">
           <input 
             type="text" 
-            placeholder="İlan veya uzman adı ile ara..." 
+            placeholder="ابحث باسم الإعلان أو الخبير..." 
             value={searchTerm} 
             onChange={handleSearchChange} 
             onKeyPress={(e) => e.key === 'Enter' && loadListings()}
             maxLength={100}
           />
-          <button className="search-btn" onClick={loadListings}>🔍 Ara</button>
+          <button className="search-btn" onClick={loadListings}>🔍 بحث</button>
         </div>
         <div className="filter-group">
           <select value={selectedCategory} onChange={handleCategoryChange}>
-            <option value="">Tüm Kategoriler</option>
+            <option value="">جميع الفئات</option>
             {categories.map(cat => (
               <option key={cat.id} value={cat.name}>{sanitizeText(cat.name, 50)}</option>
             ))}
           </select>
           
           <select value={selectedCity} onChange={handleCityChange}>
-            <option value="">Tüm Şehirler</option>
+            <option value="">جميع المدن</option>
             {cities.map(city => (
               <option key={city.id} value={city.name}>{sanitizeText(city.name, 50)}</option>
             ))}
           </select>
-
+ 
           <select value={selectedStatus} onChange={handleStatusChange}>
-            <option value="ACTIVE">✅ Aktif İlanlar</option>
-            <option value="UNPUBLISHED">👁️ Yayından Kaldırılanlar</option>
-            <option value="DELETED">🗑️ Silinenler</option>
-            <option value="ALL">📋 Tüm İlanlar</option>
+            <option value="ACTIVE">✅ الإعلانات النشطة</option>
+            <option value="UNPUBLISHED">👁️ الإعلانات الملغى نشرها</option>
+            <option value="DELETED">🗑️ المحذوفة</option>
+            <option value="ALL">📋 جميع الإعلانات</option>
           </select>
           
           <div className="sort-buttons">
-            <button className={sortOrder === 'newest' ? 'active' : ''} onClick={() => setSortOrder('newest')}>🕒 En Yeni</button>
-            <button className={sortOrder === 'oldest' ? 'active' : ''} onClick={() => setSortOrder('oldest')}>📅 En Eski</button>
+            <button className={sortOrder === 'newest' ? 'active' : ''} onClick={() => setSortOrder('newest')}>🕒 الأحدث</button>
+            <button className={sortOrder === 'oldest' ? 'active' : ''} onClick={() => setSortOrder('oldest')}>📅 الأقدم</button>
           </div>
-          <button className="reset-btn" onClick={resetFilters}>Sıfırla</button>
+          <button className="reset-btn" onClick={resetFilters}>إعادة تعيين</button>
         </div>
       </div>
-
+ 
       <div className="stats-info">
-        <div className="stat-item" title={`Tam değer: ${formatFullNumber(activeCount)} aktif ilan`}>
+        <div className="stat-item" title={`العدد الفعلي: ${formatFullNumber(activeCount)} إعلان نشط`}>
           <i className="fas fa-check-circle"></i>
-          <span>Aktif: {formatLargeNumber(activeCount)}</span>
+          <span>نشط: {formatLargeNumber(activeCount)}</span>
         </div>
-        <div className="stat-item" title={`Tam değer: ${formatFullNumber(unpublishedCount)} yayından kaldırılan ilan`}>
+        <div className="stat-item" title={`العدد الفعلي: ${formatFullNumber(unpublishedCount)} إعلان ملغى نشره`}>
           <i className="fas fa-eye-slash"></i>
-          <span>Yayından Kaldırılan: {formatLargeNumber(unpublishedCount)}</span>
+          <span>الملغى نشرها: {formatLargeNumber(unpublishedCount)}</span>
         </div>
-        <div className="stat-item" title={`Tam değer: ${formatFullNumber(deletedCount)} silinen ilan`}>
+        <div className="stat-item" title={`العدد الفعلي: ${formatFullNumber(deletedCount)} إعلان محذوف`}>
           <i className="fas fa-trash-alt"></i>
-          <span>Silinen: {formatLargeNumber(deletedCount)}</span>
+          <span>المحذوفة: {formatLargeNumber(deletedCount)}</span>
         </div>
-        <div className="stat-item" title={`Tam değer: ${formatFullNumber(totalCount)} toplam ilan`}>
+        <div className="stat-item" title={`العدد الفعلي: ${formatFullNumber(totalCount)} إجمالي الإعلانات`}>
           <i className="fas fa-chart-line"></i>
-          <span>Toplam: {formatLargeNumber(totalCount)}</span>
+          <span>الإجمالي: {formatLargeNumber(totalCount)}</span>
         </div>
       </div>
-
+ 
       <div className="cards-list">
         {paginatedListings.length === 0 ? (
           <div className="no-data">
             <i className="fas fa-box-open"></i>
-            <p>Bu kategoride ilan bulunmuyor.</p>
+            <p>لا توجد إعلانات في هذه الفئة.</p>
           </div>
         ) : (
           paginatedListings.map(listing => {
@@ -602,7 +602,7 @@ const AdminListings = () => {
                           className="admin-reported-listing-thumb"
                           tabIndex={0}
                           role="button"
-                          aria-label="Görseli büyüt"
+                          aria-label="تكبير الصورة"
                           onClick={(e) => {
                             e.stopPropagation();
                             openListingImagePreview(imageUrl, listing.title);
@@ -631,8 +631,8 @@ const AdminListings = () => {
                         {getStatusBadge(listing.status)}
                       </div>
                       <div className="card-meta">
-                        <span><i className="fas fa-user"></i> {providerName || 'Bilinmiyor'}</span>
-                        <span><i className="fas fa-tag"></i> {category || 'Diğer'}</span>
+                        <span><i className="fas fa-user"></i> {providerName || 'غير معروف'}</span>
+                        <span><i className="fas fa-tag"></i> {category || 'أخرى'}</span>
                         <span><i className="fas fa-map-marker-alt"></i> {city || '-'}</span>
                         <span className="price">{formatPrice(listing.price)}</span>
                       </div>
@@ -644,7 +644,7 @@ const AdminListings = () => {
                         <button 
                           className="hide" 
                           onClick={(e) => { e.stopPropagation(); openModal(listing, 'hide'); }} 
-                          title="Yayından Kaldır"
+                          title="إلغاء النشر"
                           disabled={isProcessing}
                         >
                           <i className="fas fa-eye-slash"></i>
@@ -652,7 +652,7 @@ const AdminListings = () => {
                         <button 
                           className="delete" 
                           onClick={(e) => { e.stopPropagation(); openModal(listing, 'delete'); }} 
-                          title="Kalıcı Sil"
+                          title="حذف نهائي"
                           disabled={isProcessing}
                         >
                           <i className="fas fa-trash-alt"></i>
@@ -665,7 +665,7 @@ const AdminListings = () => {
                         <button 
                           className="restore" 
                           onClick={(e) => { e.stopPropagation(); openModal(listing, 'restore'); }} 
-                          title="Tekrar Yayına Al"
+                          title="إعادة نشر"
                           disabled={isProcessing}
                         >
                           <i className="fas fa-undo-alt"></i>
@@ -673,7 +673,7 @@ const AdminListings = () => {
                         <button 
                           className="delete" 
                           onClick={(e) => { e.stopPropagation(); openModal(listing, 'delete'); }} 
-                          title="Kalıcı Sil"
+                          title="حذف نهائي"
                           disabled={isProcessing}
                         >
                           <i className="fas fa-trash-alt"></i>
@@ -685,7 +685,7 @@ const AdminListings = () => {
                       <button 
                         className="delete-permanent" 
                         onClick={(e) => { e.stopPropagation(); }} 
-                        title="Kalıcı Olarak Silinmiş"
+                        title="محذوف نهائياً"
                         disabled
                       >
                         <i className="fas fa-ban"></i>
@@ -697,40 +697,40 @@ const AdminListings = () => {
                     </div>
                   </div>
                 </div>
-
+ 
                 {expandedCard === listing.id && (
                   <div className="card-details">
                     <div className="detail-row">
-                      <div className="detail-label">📝 Açıklama:</div>
-                      <div className="detail-value">{description || 'Açıklama yok'}</div>
+                      <div className="detail-label">📝 الوصف:</div>
+                      <div className="detail-value">{description || 'لا يوجد وصف'}</div>
                     </div>
                     <div className="detail-row">
-                      <div className="detail-label">💰 Fiyat Tipi:</div>
-                      <div className="detail-value">{pricingType || 'Belirtilmemiş'}</div>
+                      <div className="detail-label">💰 نوع السعر:</div>
+                      <div className="detail-value">{pricingType || 'غير محدد'}</div>
                     </div>
                     <div className="detail-row">
-                      <div className="detail-label">📂 Alt Kategori:</div>
-                      <div className="detail-value">{serviceSubcategory || 'Belirtilmemiş'}</div>
+                      <div className="detail-label">📂 الفئة الفرعية:</div>
+                      <div className="detail-value">{serviceSubcategory || 'غير محدد'}</div>
                     </div>
                     <div className="detail-row">
-                      <div className="detail-label">⭐ Puan:</div>
+                      <div className="detail-label">⭐ التقييم:</div>
                       <div className="detail-value">{rating} / 5</div>
                     </div>
                     <div className="detail-row">
-                      <div className="detail-label">📅 Oluşturulma:</div>
+                      <div className="detail-label">📅 تاريخ الإنشاء:</div>
                       <div className="detail-value">{formatDate(listing.createdAt)}</div>
                     </div>
                     
                     {listing.status === 'UNPUBLISHED' && listing.hiddenReason && (
                       <div className="detail-row warning">
-                        <div className="detail-label">⚠️ Yayından Kaldırılma Sebebi:</div>
+                        <div className="detail-label">⚠️ سبب إلغاء النشر:</div>
                         <div className="detail-value">{sanitizeText(listing.hiddenReason, 200)}</div>
                       </div>
                     )}
                     
                     {listing.status === 'DELETED' && listing.deletedReason && (
                       <div className="detail-row error">
-                        <div className="detail-label">🗑️ Silinme Sebebi:</div>
+                        <div className="detail-label">🗑️ سبب الحذف:</div>
                         <div className="detail-value">{sanitizeText(listing.deletedReason, 200)}</div>
                       </div>
                     )}
@@ -741,17 +741,17 @@ const AdminListings = () => {
           })
         )}
       </div>
-
+ 
       {totalPages > 1 && (
         <div className="pagination">
           <button onClick={() => setCurrentPage(1)} disabled={currentPage === 1 || isProcessing}>«</button>
           <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1 || isProcessing}>‹</button>
-          <span>Sayfa {currentPage} / {totalPages}</span>
+          <span>الصفحة {currentPage} / {totalPages}</span>
           <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages || isProcessing}>›</button>
           <button onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages || isProcessing}>»</button>
         </div>
       )}
-
+ 
       {showModal && selectedListing && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="confirm-modal" onClick={e => e.stopPropagation()}>
@@ -761,38 +761,38 @@ const AdminListings = () => {
               {modalAction === 'restore' && '✅'}
             </div>
             <h3>
-              {modalAction === 'hide' && 'İlanı Yayından Kaldır'}
-              {modalAction === 'delete' && 'İlanı Kalıcı Sil'}
-              {modalAction === 'restore' && 'İlanı Tekrar Yayına Al'}
+              {modalAction === 'hide' && 'إلغاء نشر الإعلان'}
+              {modalAction === 'delete' && 'حذف الإعلان نهائياً'}
+              {modalAction === 'restore' && 'إعادة نشر الإعلان'}
             </h3>
             
             <p>
-              {modalAction === 'hide' && `"${sanitizeText(selectedListing.title, 100)}" ilanını yayından kaldırmak istediğinize emin misiniz?`}
-              {modalAction === 'delete' && `"${sanitizeText(selectedListing.title, 100)}" ilanını kalıcı olarak silmek istediğinize emin misiniz? Bu işlem geri alınamaz!`}
-              {modalAction === 'restore' && `"${sanitizeText(selectedListing.title, 100)}" ilanını tekrar yayına almak istediğinize emin misiniz?`}
+              {modalAction === 'hide' && `هل أنت متأكد من رغبتك في إلغاء نشر الإعلان "${sanitizeText(selectedListing.title, 100)}"؟`}
+              {modalAction === 'delete' && `هل أنت متأكد من رغبتك في حذف الإعلان "${sanitizeText(selectedListing.title, 100)}" نهائياً؟ هذا الإجراء لا يمكن التراجع عنه!`}
+              {modalAction === 'restore' && `هل أنت متأكد من رغبتك في إعادة نشر الإعلان "${sanitizeText(selectedListing.title, 100)}"؟`}
             </p>
-
+ 
             {(modalAction === 'hide' || modalAction === 'delete') && (
               <div className="reason-input-group">
-                <label htmlFor="reason">İşlem Sebebi <span className="required">*</span></label>
+                <label htmlFor="reason">سبب الإجراء <span className="required">*</span></label>
                 <textarea
                   id="reason"
                   value={reasonText}
                   onChange={(e) => setReasonText(e.target.value.slice(0, 500))}
                   placeholder={modalAction === 'hide' 
-                    ? "Yayından kaldırma sebebini belirtin (örn: uygunsuz içerik, eksik bilgi, vb.)" 
-                    : "Silme sebebini belirtin (örn: kullanıcı şikayeti, sahte içerik, vb.)"
+                    ? "حدد سبب إلغاء النشر (مثال: محتوى غير لائق، معلومات ناقصة، إلخ)" 
+                    : "حدد سبب الحذف (مثال: شكوى مستخدم، محتوى زائف، إلخ)"
                   }
                   rows={4}
                   maxLength={500}
                   autoFocus
                 />
-                <small>{reasonText.length}/500 karakter</small>
+                <small>{reasonText.length}/500 حرف</small>
               </div>
             )}
             
             <div className="confirm-buttons">
-              <button className="cancel" onClick={closeModal} disabled={isProcessing}>İptal</button>
+              <button className="cancel" onClick={closeModal} disabled={isProcessing}>إلغاء</button>
               <button 
                 className={`confirm ${modalAction}`} 
                 onClick={
@@ -803,11 +803,11 @@ const AdminListings = () => {
                 disabled={isProcessing || ((modalAction === 'hide' || modalAction === 'delete') && !reasonText.trim())}
               >
                 {isProcessing ? (
-                  <><i className="fas fa-spinner fa-spin"></i> İşleniyor...</>
+                  <><i className="fas fa-spinner fa-spin"></i> جاري المعالجة...</>
                 ) : (
-                  modalAction === 'hide' ? 'Evet, Yayından Kaldır' :
-                  modalAction === 'delete' ? 'Evet, Kalıcı Sil' :
-                  'Evet, Yayına Al'
+                  modalAction === 'hide' ? 'نعم، إلغاء النشر' :
+                  modalAction === 'delete' ? 'نعم، حذف نهائي' :
+                  'نعم، إعادة النشر'
                 )}
               </button>
             </div>

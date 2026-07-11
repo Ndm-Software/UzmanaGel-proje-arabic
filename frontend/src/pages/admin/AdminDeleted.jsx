@@ -28,17 +28,17 @@ const sanitizeText = (text, maxLength = 200) => {
 const getRestoredLoginMethodText = (method) => {
   switch (method) {
     case "google":
-      return "Google ile giriş";
+      return "تسجيل الدخول باستخدام Google";
     case "password":
-      return "Şifre ile giriş";
+      return "تسجيل الدخول باستخدام كلمة المرور";
     case "phone":
-      return "Telefon ile giriş";
+      return "تسجيل الدخول باستخدام الهاتف";
     case "multiple":
-      return "Mevcut giriş yöntemleri";
+      return "طرق تسجيل الدخول الحالية";
     case "password_recovery_for_google":
-      return "Geçici şifre ile giriş (Google yeniden bağlanmalı)";
+      return "تسجيل الدخول بكلمة مرور مؤقتة (يجب إعادة ربط Google)";
     case "existing_credentials":
-      return "Mevcut giriş bilgileri";
+      return "بيانات تسجيل الدخول الحالية";
     default:
       return "-";
   }
@@ -113,7 +113,7 @@ export default function AdminDeleted({ type }) {
         console.error("Silinen hesaplar yüklenirken hata:", error.message);
       }
 
-      showErrorModalFunc("Silinen hesaplar yüklenirken hata oluştu.");
+      showErrorModalFunc("حدث خطأ أثناء تحميل الحسابات المحذوفة.");
     } finally {
       setLoading(false);
     }
@@ -124,7 +124,7 @@ export default function AdminDeleted({ type }) {
       account?.userData?.displayName ||
         account?.providerData?.businessName ||
         account?.id ||
-        "Hesap",
+        "الحساب",
       80
     );
 
@@ -147,7 +147,7 @@ export default function AdminDeleted({ type }) {
 
   const confirmRestoreDeletedAccount = async () => {
     if (!restoreConfirmModal.account) {
-      showErrorModalFunc("Geçersiz hesap bilgisi");
+      showErrorModalFunc("معلومات حساب غير صالحة");
       return;
     }
 
@@ -164,7 +164,7 @@ export default function AdminDeleted({ type }) {
 
   const handleRestoreDeletedAccount = async (account) => {
     if (!account?.id) {
-      showErrorModalFunc("Geçersiz hesap bilgisi");
+      showErrorModalFunc("معلومات حساب غير صالحة");
       return;
     }
 
@@ -195,15 +195,15 @@ export default function AdminDeleted({ type }) {
         pendingGoogleRelink: result?.pendingGoogleRelink === true,
       });
 
-      showSuccessModalFunc("Hesap başarıyla geri yüklendi.");
+      showSuccessModalFunc("تم استعادة الحساب بنجاح.");
     } catch (error) {
       if (isDevelopment) {
         console.error("Geri yükleme hatası:", error.message);
       }
 
       showErrorModalFunc(
-        "Hesap geri yüklenirken hata oluştu: " +
-          (error.message || "Bilinmeyen hata")
+        "حدث خطأ أثناء استعادة الحساب: " +
+          (error.message || "خطأ غير معروف")
       );
     } finally {
       setRestoreLoadingId(null);
@@ -227,20 +227,20 @@ export default function AdminDeleted({ type }) {
   };
 
   if (authLoading) {
-    return <LoadingSpinner text="Yetki kontrol ediliyor..." />;
+    return <LoadingSpinner text="جاري التحقق من الصلاحيات..." />;
   }
 
   if (!authorized) {
     return (
       <div className="no-data">
         <i className="fas fa-shield-alt fa-3x"></i>
-        <p>{authError || "Bu sayfaya erişim yetkiniz yok."}</p>
+        <p>{authError || "ليس لديك صلاحية للوصول إلى هذه الصفحة."}</p>
       </div>
     );
   }
 
   if (loading) {
-    return <LoadingSpinner text="Yükleniyor..." />;
+    return <LoadingSpinner text="جاري التحميل..." />;
   }
 
   const isProvider = type === "providers";
@@ -250,7 +250,7 @@ export default function AdminDeleted({ type }) {
       {items.length === 0 ? (
         <div className="no-data">
           <i className="fas fa-trash-restore fa-3x"></i>
-          <p>Geri yüklenebilir silinmiş hesap bulunmuyor.</p>
+          <p>لا توجد حسابات محذوفة يمكن استعادتها.</p>
         </div>
       ) : (
         <div className="cards-list">
@@ -286,7 +286,7 @@ export default function AdminDeleted({ type }) {
           >
             <div className="modal-header">
               <h2>
-                <i className="fas fa-trash-restore"></i> Hesabı Geri Yükle
+                <i className="fas fa-trash-restore"></i> استعادة الحساب
               </h2>
 
               <button
@@ -294,7 +294,7 @@ export default function AdminDeleted({ type }) {
                 className="modal-close"
                 onClick={closeRestoreConfirmModal}
                 disabled={!!restoreLoadingId}
-                aria-label="Kapat"
+                aria-label="إغلاق"
               >
                 <i className="fas fa-times"></i>
               </button>
@@ -306,18 +306,16 @@ export default function AdminDeleted({ type }) {
               </div>
 
               <p className="restore-confirm-text">
+                هل أنت متأكد من رغبتك في استعادة حساب{" "}
                 <strong>
                   {sanitizeText(restoreConfirmModal.accountName, 100)}
-                </strong>{" "}
-                hesabını geri yüklemek istediğinize emin misiniz?
+                </strong>؟
               </p>
 
               <div className="restore-confirm-warning">
                 <i className="fas fa-info-circle"></i>
                 <span>
-                  Bu işlem hesabı tekrar aktif hale getirir. Kullanıcı
-                  bilgileri geri yüklenir. Uzman hesabı ise varsa arşivlenen
-                  ilanlarıyla birlikte geri getirilir.
+                  هذا الإجراء سيعيد تفعيل الحساب. سيتم استعادة معلومات المستخدم. وإذا كان الحساب لخبير، فسيتم استعادته مع إعلاناته المؤرشفة إن وجدت.
                 </span>
               </div>
             </div>
@@ -329,7 +327,7 @@ export default function AdminDeleted({ type }) {
                 onClick={closeRestoreConfirmModal}
                 disabled={!!restoreLoadingId}
               >
-                Vazgeç
+                إلغاء
               </button>
 
               <button
@@ -340,12 +338,11 @@ export default function AdminDeleted({ type }) {
               >
                 {restoreLoadingId ? (
                   <>
-                    <i className="fas fa-spinner fa-spin"></i> Geri
-                    yükleniyor...
+                    <i className="fas fa-spinner fa-spin"></i> جاري الاستعادة...
                   </>
                 ) : (
                   <>
-                    <i className="fas fa-check"></i> Evet, Geri Yükle
+                    <i className="fas fa-check"></i> نعم، استعد الحساب
                   </>
                 )}
               </button>
@@ -362,14 +359,14 @@ export default function AdminDeleted({ type }) {
           >
             <div className="modal-header">
               <h2>
-                <i className="fas fa-check-circle"></i> Hesap Geri Yüklendi
+                <i className="fas fa-check-circle"></i> تم استعادة الحساب
               </h2>
 
               <button
                 type="button"
                 className="modal-close"
                 onClick={closeRestoreSuccessModal}
-                aria-label="Kapat"
+                aria-label="إغلاق"
               >
                 <i className="fas fa-times"></i>
               </button>
@@ -378,17 +375,16 @@ export default function AdminDeleted({ type }) {
             <div className="modal-body">
               <div className="restore-success-box">
                 <p className="restore-confirm-text">
-                  <strong>
+                  تم استعادة حساب <strong>
                     {sanitizeText(restoreSuccessModal.accountName, 100)}
-                  </strong>{" "}
-                  hesabı başarıyla geri yüklendi.
+                  </strong> بنجاح.
                 </p>
 
                 <div className="restore-confirm-details">
                   {restoreSuccessModal.type === "provider" && (
                     <div className="restore-confirm-row">
                       <span className="restore-confirm-label">
-                        Geri Yüklenen İlan Sayısı
+                        عدد الإعلانات المستعادة
                       </span>
                       <span className="restore-confirm-value">
                         {restoreSuccessModal.restoredListingsCount}
@@ -399,7 +395,7 @@ export default function AdminDeleted({ type }) {
                   {restoreSuccessModal.restoredLoginMethod && (
                     <div className="restore-confirm-row">
                       <span className="restore-confirm-label">
-                        Giriş Yöntemi
+                        طريقة تسجيل الدخول
                       </span>
                       <span className="restore-confirm-value">
                         {getRestoredLoginMethodText(
@@ -412,7 +408,7 @@ export default function AdminDeleted({ type }) {
                   {restoreSuccessModal.tempPassword && (
                     <div className="restore-confirm-row">
                       <span className="restore-confirm-label">
-                        Geçici Şifre
+                        كلمة المرور المؤقتة
                       </span>
                       <span
                         className="restore-confirm-value"
@@ -430,18 +426,14 @@ export default function AdminDeleted({ type }) {
                 {restoreSuccessModal.tempPassword &&
                   !restoreSuccessModal.pendingGoogleRelink && (
                     <p className="restore-confirm-help">
-                      Lütfen kullanıcıya bu geçici şifreyi iletin ve ilk
-                      girişten sonra şifresini değiştirmesini isteyin.
+                      يرجى تزويد المستخدم بكلمة المرور المؤقتة هذه وطلب تغييرها بعد تسجيل الدخول الأول.
                     </p>
                   )}
 
                 {restoreSuccessModal.pendingGoogleRelink &&
                   restoreSuccessModal.tempPassword && (
                     <p className="restore-confirm-help">
-                      Bu hesap daha önce Google ile kullanılıyordu. Eski auth
-                      kaydı bulunamadığı için geçici şifre oluşturuldu.
-                      Kullanıcı bu şifre ile giriş yaptıktan sonra profil &gt;
-                      güvenlik bölümünden Google hesabını tekrar bağlamalıdır.
+                      كان هذا الحساب مستخدماً مع Google سابقاً. ونظراً لعدم العثور على سجل المصادقة القديم، تم إنشاء كلمة مرور مؤقتة. يجب على المستخدم بعد تسجيل الدخول بهذه كلمة المرور إعادة ربط حساب Google الخاص به من قسم الملف الشخصي &gt; الأمان.
                     </p>
                   )}
               </div>
@@ -453,7 +445,7 @@ export default function AdminDeleted({ type }) {
                 className="btn-approve"
                 onClick={closeRestoreSuccessModal}
               >
-                Tamam
+                تم
               </button>
             </div>
           </div>

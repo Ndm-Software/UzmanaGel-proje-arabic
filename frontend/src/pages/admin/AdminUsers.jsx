@@ -70,7 +70,7 @@ export default function AdminUsers() {
         console.error("Kullanıcılar yüklenirken hata:", error.message);
       }
 
-      showErrorToastFunc("Kullanıcılar yüklenirken hata oluştu.");
+      showErrorToastFunc("حدث خطأ أثناء تحميل المستخدمين.");
     } finally {
       setLoading(false);
     }
@@ -78,7 +78,7 @@ export default function AdminUsers() {
 
   const handleDeleteUser = (user) => {
     if (!user?.id) {
-      showErrorToastFunc("Geçersiz kullanıcı bilgisi");
+      showErrorToastFunc("معلومات مستخدم غير صالحة");
       return;
     }
 
@@ -89,12 +89,12 @@ export default function AdminUsers() {
 
   const handleConfirmDeleteClient = async () => {
     if (!clientToDelete?.id) {
-      setClientDeleteError("Geçersiz kullanıcı bilgisi.");
+      setClientDeleteError("معلومات مستخدم غير صالحة.");
       return;
     }
 
     const userName = sanitizeText(
-      clientToDelete.displayName || clientToDelete.email || "Kullanıcı",
+      clientToDelete.displayName || clientToDelete.email || "مستخدم",
       50
     );
 
@@ -111,14 +111,14 @@ export default function AdminUsers() {
       setShowClientDeleteModal(false);
       setClientToDelete(null);
 
-      showSuccessToastFunc(`${userName} başarıyla silindi!`);
+      showSuccessToastFunc(`تم حذف ${userName} بنجاح!`);
     } catch (error) {
       if (isDevelopment) {
         console.error("Kullanıcı silinirken hata:", error.message);
       }
 
       setClientDeleteError(
-        error?.message || "Kullanıcı silinirken hata oluştu."
+        error?.message || "حدث خطأ أثناء حذف المستخدم."
       );
     } finally {
       setIsDeleting(false);
@@ -183,20 +183,20 @@ export default function AdminUsers() {
   };
 
   if (authLoading) {
-    return <LoadingSpinner text="Yetki kontrol ediliyor..." />;
+    return <LoadingSpinner text="جاري التحقق من الصلاحيات..." />;
   }
 
   if (!authorized) {
     return (
       <div className="no-data">
         <i className="fas fa-shield-alt fa-3x"></i>
-        <p>Bu sayfaya erişim yetkiniz yok. Sadece adminler erişebilir.</p>
+        <p>ليس لديك صلاحية للوصول إلى هذه الصفحة. يمكن للمسؤولين فقط الوصول.</p>
       </div>
     );
   }
 
   if (loading) {
-    return <LoadingSpinner text="Yükleniyor..." />;
+    return <LoadingSpinner text="جاري التحميل..." />;
   }
 
   const filteredData = getFilteredAndSortedData();
@@ -213,7 +213,7 @@ export default function AdminUsers() {
         <div className="search-wrapper">
           <input
             type="text"
-            placeholder="Kullanıcılarda ara (isim, email)..."
+            placeholder="ابحث في المستخدمين (الاسم، البريد الإلكتروني)..."
             value={searchTerm}
             onChange={handleSearchChange}
             className="search-input"
@@ -229,21 +229,21 @@ export default function AdminUsers() {
 
         <div className="filter-group">
           <span className="filter-label">
-            <i className="fas fa-sort-amount-down"></i> Sırala:
+            <i className="fas fa-sort-amount-down"></i> فرز:
           </span>
 
           <button
             className={`filter-btn ${sortOrder === "newest" ? "active" : ""}`}
             onClick={() => handleSortChange("newest")}
           >
-            🕒 En Yeni
+            🕒 الأحدث
           </button>
 
           <button
             className={`filter-btn ${sortOrder === "oldest" ? "active" : ""}`}
             onClick={() => handleSortChange("oldest")}
           >
-            📅 En Eski
+            📅 الأقدم
           </button>
         </div>
       </div>
@@ -254,13 +254,13 @@ export default function AdminUsers() {
 
           <p>
             {searchTerm
-              ? "Aramanıza uygun kullanıcı bulunamadı."
-              : "Kayıtlı kullanıcı bulunmuyor."}
+              ? "لم يتم العثور على مستخدمين يطابقون بحثك."
+              : "لا يوجد مستخدمون مسجلون."}
           </p>
 
           {searchTerm && (
             <button className="clear-filter-btn" onClick={clearSearch}>
-              Aramayı Temizle
+              مسح البحث
             </button>
           )}
         </div>
@@ -285,7 +285,7 @@ export default function AdminUsers() {
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1 || isDeleting}
               >
-                ← Önceki
+                ← السابق
               </button>
 
               <span className="page-info">
@@ -297,7 +297,7 @@ export default function AdminUsers() {
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages || isDeleting}
               >
-                Sonraki →
+                التالي →
               </button>
             </div>
           )}
@@ -309,30 +309,28 @@ export default function AdminUsers() {
           <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
             <div className="delete-modal-header">
               <span className="delete-modal-icon">⚠️</span>
-              <h3>Kullanıcıyı Sil</h3>
+              <h3>حذف المستخدم</h3>
             </div>
 
             <div className="delete-modal-body">
               <p>
+                أنت على وشك حذف المستخدم{" "}
                 <strong>
                   {sanitizeText(
                     clientToDelete.displayName ||
                       clientToDelete.email ||
-                      "Kullanıcı",
+                      "مستخدم",
                     50
                   )}
                 </strong>{" "}
-                adlı kullanıcıyı ve tüm verilerini{" "}
-                <strong style={{ color: "#ef4444" }}>kalıcı olarak</strong>{" "}
-                silmek üzeresiniz.
+                وجميع بياناته <strong style={{ color: "#ef4444" }}>نهائياً</strong>.
               </p>
 
               <p className="delete-modal-warning">
-                Bu kullanıcıyı silmek istediğinizden emin misiniz? Bu hesaba
-                ait tüm veriler kalıcı olarak silinecektir.
+                هل أنت متأكد من رغبتك في حذف هذا المستخدم؟ سيتم حذف جميع البيانات المرتبطة بهذا الحساب نهائياً.
               </p>
 
-              <p className="delete-modal-warning">Bu işlem geri alınamaz!</p>
+              <p className="delete-modal-warning">هذا الإجراء لا يمكن التراجع عنه!</p>
 
               {clientDeleteError && (
                 <div className="delete-modal-error">
@@ -347,7 +345,7 @@ export default function AdminUsers() {
                 onClick={closeClientDeleteModal}
                 disabled={isDeleting}
               >
-                İptal
+                إلغاء
               </button>
 
               <button
@@ -355,7 +353,7 @@ export default function AdminUsers() {
                 onClick={handleConfirmDeleteClient}
                 disabled={isDeleting}
               >
-                {isDeleting ? "Siliniyor..." : "Sil"}
+                {isDeleting ? "جاري الحذف..." : "حذف"}
               </button>
             </div>
           </div>

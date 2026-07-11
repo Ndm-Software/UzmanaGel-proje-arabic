@@ -51,20 +51,20 @@ const LISTING_STATUS = {
 const STATUS_TABS = [
   {
     key: LISTING_STATUS.ACTIVE,
-    label: "Yayındaki İlanlar",
-    description: "Şu anda yayında olan ve kullanıcılar tarafından görülebilen ilanlar.",
+    label: "الإعلانات النشطة",
+    description: "الإعلانات المنشورة حالياً والتي يمكن للمستخدمين رؤيتها.",
     icon: "fa-bullhorn",
   },
   {
     key: LISTING_STATUS.UNPUBLISHED,
-    label: "Yayından Kaldırılanlar",
-    description: "Yayından kaldırılmış ilanlar. Düzenleyip tekrar yayına alabilirsiniz.",
+    label: "الإعلانات المتوقفة",
+    description: "الإعلانات المتوقفة عن النشر. يمكنك تعديلها وإعادة نشرها.",
     icon: "fa-eye-slash",
   },
   {
     key: LISTING_STATUS.DELETED,
-    label: "Silinenler",
-    description: "Silinmiş ilanlar. Bu bölümde işlem yapılamaz.",
+    label: "المحذوفة",
+    description: "الإعلانات المحذوفة. لا يمكن اتخاذ أي إجراء في هذا القسم.",
     icon: "fa-trash",
   },
 ];
@@ -80,21 +80,21 @@ const normalizeListingStatus = (item) => {
 };
 
 const getStatusBadgeText = (status) => {
-  if (status === LISTING_STATUS.ACTIVE) return "Yayında";
-  if (status === LISTING_STATUS.UNPUBLISHED) return "Yayından Kaldırıldı";
-  if (status === LISTING_STATUS.DELETED) return "Silindi";
-  return "Bilinmiyor";
+  if (status === LISTING_STATUS.ACTIVE) return "نشط";
+  if (status === LISTING_STATUS.UNPUBLISHED) return "متوقف";
+  if (status === LISTING_STATUS.DELETED) return "محذوف";
+  return "غير معروف";
 };
 
 const statusChangeSuccessMessage = (nextStatus) => {
   const s = String(nextStatus || "").toUpperCase();
-  if (s === LISTING_STATUS.ACTIVE) return "İlan tekrar yayına alındı.";
-  if (s === LISTING_STATUS.UNPUBLISHED) return "İlan yayından kaldırıldı.";
-  if (s === LISTING_STATUS.DELETED) return "İlan silindi.";
-  return "İlan durumu güncellendi.";
+  if (s === LISTING_STATUS.ACTIVE) return "تمت إعادة نشر الإعلان بنجاح.";
+  if (s === LISTING_STATUS.UNPUBLISHED) return "تم إيقاف نشر الإعلان.";
+  if (s === LISTING_STATUS.DELETED) return "تم حذف الإعلان.";
+  return "تم تحديث حالة الإعلان.";
 };
 
-const EDIT_NO_CHANGES_MSG = "Herhangi bir değişiklik yapılmadı.";
+const EDIT_NO_CHANGES_MSG = "لم يتم إجراء أي تغييرات.";
 
 export default function ExpertMyListingsPage() {
   const navigate = useNavigate();
@@ -649,9 +649,9 @@ export default function ExpertMyListingsPage() {
       <main className="expert-my-listings-main">
         <section className="expert-my-listings-header">
           <div>
-            <p className="expert-my-listings-kicker">Uzman Paneli</p>
-            <h1>İlanlarım</h1>
-            <p>{expertDisplayName} hesabına ait ilanları görüntülüyorsunuz.</p>
+            <p className="expert-my-listings-kicker">لوحة التحكم للخبير</p>
+            <h1>إعلاناتي</h1>
+            <p>أنت تقوم بعرض الإعلانات الخاصة بحساب الخبير {expertDisplayName}.</p>
 
             {deleteError ? (
               <p style={{ color: "#ef4444" }}>{sanitizeText(deleteError)}</p>
@@ -659,7 +659,7 @@ export default function ExpertMyListingsPage() {
 
             {isTotalLimitReached ? (
               <p style={{ color: "#f3d79a", marginTop: 8 }}>
-                Yayındaki ilan limitine ulaştınız. Yeni ilan veremezsiniz.
+                لقد وصلت إلى الحد الأقصى للإعلانات النشطة. لا يمكنك إضافة إعلان جديد.
               </p>
             ) : null}
           </div>
@@ -667,11 +667,11 @@ export default function ExpertMyListingsPage() {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
             {isTotalLimitReached ? (
               <button type="button" className="expert-my-listings-create-btn" disabled>
-                <i className="fas fa-ban"></i> İlan Verilemez
+                <i className="fas fa-ban"></i> لا يمكن إضافة إعلان
               </button>
             ) : (
               <Link to="/uzman/ilan-ekle" className="expert-my-listings-create-btn">
-                <i className="fas fa-plus"></i> İlan Ver
+                <i className="fas fa-plus"></i> إضافة إعلان
               </Link>
             )}
           </div>
@@ -679,7 +679,7 @@ export default function ExpertMyListingsPage() {
 
         <section className="expert-my-listings-content">
           <div className="expert-my-listings-content-top">
-            <div className="expert-my-listings-tabs" role="tablist" aria-label="İlan durumları">
+            <div className="expert-my-listings-tabs" role="tablist" aria-label="حالات الإعلان">
               {STATUS_TABS.map((tab) => (
                 <button
                   key={tab.key}
@@ -713,22 +713,22 @@ export default function ExpertMyListingsPage() {
           {activeStatusTab === LISTING_STATUS.DELETED &&
           (statusCounts?.[LISTING_STATUS.DELETED] || 0) > MAX_DELETED_VISIBLE ? (
             <p style={{ color: "#94a3b8", marginTop: 8, fontSize: 13 }}>
-              Son {MAX_DELETED_VISIBLE} silinen ilan gösteriliyor.
+              يتم عرض آخر {MAX_DELETED_VISIBLE} إعلاناً محذوفاً.
             </p>
           ) : null}
 
           {listingsLoading ? (
-            <LoadingSpinner text="İlanlar yükleniyor..." />
+            <LoadingSpinner text="جاري تحميل الإعلانات..." />
           ) : visibleListings.length === 0 ? (
             <div className="expert-my-listings-empty">
               <i className="fas fa-rectangle-list"></i>
-              <h3>Bu bölümde ilan yok</h3>
+              <h3>لا توجد إعلانات في هذا القسم</h3>
               <p>
                 {activeStatusTab === LISTING_STATUS.ACTIVE
-                  ? "Yayında olan ilanınız bulunmuyor."
+                  ? "ليس لديك إعلانات نشطة حالياً."
                   : activeStatusTab === LISTING_STATUS.UNPUBLISHED
-                    ? "Yayından kaldırılmış ilanınız bulunmuyor."
-                    : "Silinmiş ilanınız bulunmuyor."}
+                    ? "ليس لديك إعلانات متوقفة عن النشر."
+                    : "ليس لديك إعلانات محذوفة."}
               </p>
             </div>
           ) : (
@@ -760,7 +760,7 @@ export default function ExpertMyListingsPage() {
 
                     {String(item.serviceSubcategory || "").trim() ? (
                       <p className="expert-my-listings-specialty">
-                        <span className="expert-my-listings-specialty-label">Uzmanlık</span>
+                        <span className="expert-my-listings-specialty-label">التخصص</span>
                         {": "}
                         {sanitizeText(String(item.serviceSubcategory).trim())}
                       </p>
@@ -770,11 +770,11 @@ export default function ExpertMyListingsPage() {
 
                     <div className="expert-my-listings-card-footer">
                       <div className="expert-my-listings-card-footer-top">
-                        <strong>TL {item.price}</strong>
+                        <strong>{item.price} ل.س</strong>
 
                         {item.normalizedStatus !== LISTING_STATUS.DELETED ? (
                           <button type="button" onClick={() => openEditModal(item)}>
-                            Düzenle
+                            تعديل
                           </button>
                         ) : null}
                       </div>
@@ -788,7 +788,7 @@ export default function ExpertMyListingsPage() {
                               onClick={() => handleChangeListingStatus(item, LISTING_STATUS.UNPUBLISHED)}
                               disabled={deletingId === item.id}
                             >
-                              {deletingId === item.id ? "İşleniyor..." : "Yayından Kaldır"}
+                              {deletingId === item.id ? "جاري المعالجة..." : "إيقاف النشر"}
                             </button>
                           ) : null}
 
@@ -799,7 +799,7 @@ export default function ExpertMyListingsPage() {
                               onClick={() => handleChangeListingStatus(item, LISTING_STATUS.ACTIVE)}
                               disabled={deletingId === item.id}
                             >
-                              {deletingId === item.id ? "İşleniyor..." : "Tekrar Yayına Al"}
+                              {deletingId === item.id ? "جاري المعالجة..." : "إعادة نشر"}
                             </button>
                           ) : null}
 
@@ -812,12 +812,12 @@ export default function ExpertMyListingsPage() {
                             }}
                             disabled={deletingId === item.id}
                           >
-                            {deletingId === item.id ? "Siliniyor..." : "Sil"}
+                            {deletingId === item.id ? "جاري الحذف..." : "حذف"}
                           </button>
                         </div>
                       ) : (
                         <span className="expert-my-listings-deleted-note">
-                          Bu ilan silinmiştir. İşlem yapılamaz.
+                          هذا الإعلان محذوف. لا يمكن اتخاذ أي إجراء عليه.
                         </span>
                       )}
                     </div>
@@ -842,14 +842,14 @@ export default function ExpertMyListingsPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="expert-my-listings-edit-inner">
-              <h2>İlanı Düzenle</h2>
+              <h2>تعديل الإعلان</h2>
               <p className="expert-my-listings-edit-subtitle">
                 {sanitizeText(editingItem.title)}
               </p>
 
               <p className="expert-my-listings-edit-data-note">
                 <i className="fas fa-database" aria-hidden="true"></i>
-                Alanlar mevcut ilan verisinden dolduruldu. Turuncu: mevcut değer, Yeşil: değiştirilmiş değer.
+                تم ملء الحقول من بيانات الإعلان الحالية. البرتقالي: القيمة الحالية، الأخضر: القيمة المعدلة.
               </p>
 
               {editError && (
@@ -868,7 +868,7 @@ export default function ExpertMyListingsPage() {
               <form onSubmit={handleEditSubmit}>
                 <div className="expert-my-listings-edit-image">
                   <div className="expert-my-listings-edit-image-header">
-                    <span>Kapak Fotoğrafı</span>
+                    <span>الصورة الرئيسية</span>
 
                     <div className="expert-my-listings-edit-image-actions">
                       <button
@@ -886,7 +886,7 @@ export default function ExpertMyListingsPage() {
                         }}
                         disabled={savingEdit}
                       >
-                        Mevcut
+                        الحالية
                       </button>
 
                       <button
@@ -895,7 +895,7 @@ export default function ExpertMyListingsPage() {
                         onClick={() => setEditImageMode("replace")}
                         disabled={savingEdit}
                       >
-                        Değiştir
+                        تعديل
                       </button>
 
                       <button
@@ -913,7 +913,7 @@ export default function ExpertMyListingsPage() {
                         }}
                         disabled={savingEdit}
                       >
-                        Kaldır
+                        إزالة
                       </button>
                     </div>
                   </div>
@@ -926,7 +926,7 @@ export default function ExpertMyListingsPage() {
                         const file = e.target.files?.[0] || null;
 
                         if (file && file.size > 5 * 1024 * 1024) {
-                          setEditError("Kapak fotoğrafı 5MB'dan büyük olamaz.");
+                          setEditError("لا يمكن أن تتجاوز الصورة الرئيسية 5 ميغابايت.");
                           e.target.value = "";
                           return;
                         }
@@ -957,7 +957,7 @@ export default function ExpertMyListingsPage() {
                     ) : (
                       <div className="expert-my-listings-edit-image-empty">
                         <i className="fas fa-image"></i>
-                        <span>Kapak fotoğrafı yok</span>
+                        <span>لا توجد صورة رئيسية</span>
                       </div>
                     )}
                   </div>
@@ -965,7 +965,7 @@ export default function ExpertMyListingsPage() {
 
                 <div className="expert-my-listings-edit-grid">
                   <label>
-                    Başlık
+                    العنوان
                     <input
                       type="text"
                       className={isFieldChanged("title") ? "field-changed" : ""}
@@ -982,14 +982,14 @@ export default function ExpertMyListingsPage() {
                   </label>
 
                   <label>
-                    Kategori
+                    الفئة
                     <select
                       className="field-locked"
                       value={editForm.category}
                       required
                       disabled
                     >
-                      <option value="">Kategori seçiniz</option>
+                      <option value="">اختر فئة</option>
 
                       {categoriesData.map((category) => (
                         <option key={category.id} value={sanitizeText(category.name)}>
@@ -1009,14 +1009,14 @@ export default function ExpertMyListingsPage() {
 
                 <div className="expert-my-listings-edit-grid">
                   <label>
-                    Uzmanlık
+                    التخصص
                     <select
                       className="field-locked"
                       value={editForm.serviceSubcategory}
                       required
                       disabled
                     >
-                      <option value="">Uzmanlık seçiniz</option>
+                      <option value="">اختر تخصصاً</option>
 
                       {providerSpecialties.map((s) => (
                         <option key={s.name} value={s.name}>
@@ -1034,7 +1034,7 @@ export default function ExpertMyListingsPage() {
                   </label>
 
                   <label>
-                    Ayrıntılar
+                    التفاصيل
                     <input
                       type="text"
                       className={isFieldChanged("serviceSubcategoryDetails") ? "field-changed" : ""}
@@ -1045,7 +1045,7 @@ export default function ExpertMyListingsPage() {
                           serviceSubcategoryDetails: e.target.value.slice(0, 500),
                         }))
                       }
-                      placeholder="Örn: Kaç m²? Malzeme dahil mi?"
+                      placeholder="مثال: كم متر مربع؟ هل المواد مشمولة؟"
                       maxLength={500}
                     />
                   </label>
@@ -1053,7 +1053,7 @@ export default function ExpertMyListingsPage() {
 
                 <div className="expert-my-listings-edit-grid">
                   <label>
-                    Ücret (TL)
+                    السعر (ل.س)
                     <input
                       type="number"
                       min={String(selectedSpecialtyMinPrice || 0)}
@@ -1076,13 +1076,13 @@ export default function ExpertMyListingsPage() {
                     editForm.price &&
                     Number(editForm.price) < selectedSpecialtyMinPrice ? (
                       <small className="expert-my-listings-edit-helper expert-my-listings-edit-helper--error">
-                        En az {Number(selectedSpecialtyMinPrice).toLocaleString("tr-TR")} TL olmalı (
-                        {sanitizeText(String(editForm.serviceSubcategory || "").trim())} başlangıç fiyatı).
+                        يجب أن يكون على الأقل {Number(selectedSpecialtyMinPrice).toLocaleString("ar-SY")} ل.س (
+                        سعر البداية لـ {sanitizeText(String(editForm.serviceSubcategory || "").trim())}).
                       </small>
                     ) : selectedSpecialtyMinPrice > 0 ? (
                       <small className="expert-my-listings-edit-helper">
-                        {sanitizeText(String(editForm.serviceSubcategory || "").trim())} başlangıç fiyatı:{" "}
-                        {Number(selectedSpecialtyMinPrice).toLocaleString("tr-TR")} TL
+                        سعر البداية لـ {sanitizeText(String(editForm.serviceSubcategory || "").trim())}:{" "}
+                        {Number(selectedSpecialtyMinPrice).toLocaleString("ar-SY")} ل.س
                       </small>
                     ) : (
                       <small className="expert-my-listings-edit-helper expert-my-listings-edit-helper--spacer" aria-hidden="true">
@@ -1092,7 +1092,7 @@ export default function ExpertMyListingsPage() {
                   </label>
 
                   <label>
-                    Hizmet Tipi
+                    نوع الخدمة
                     <select
                       name="pricingType"
                       className={isFieldChanged("pricingType") ? "field-changed" : ""}
@@ -1105,8 +1105,7 @@ export default function ExpertMyListingsPage() {
                       }
                       required
                     >
-                      <option value="Proje Bazlı">Proje Bazlı</option>
-                      <option value="Saatlik Ücret">Saatlik Ücret</option>
+                      <option value="Proje Bazlı">حسب المشروع</option>
                     </select>
                     <small className="expert-my-listings-edit-helper expert-my-listings-edit-helper--spacer" aria-hidden="true">
                       &nbsp;
@@ -1115,7 +1114,7 @@ export default function ExpertMyListingsPage() {
                 </div>
 
                 <label>
-                  Şehir
+                  المدينة
                   <input
                     type="text"
                     className="field-locked"
@@ -1126,7 +1125,7 @@ export default function ExpertMyListingsPage() {
                 </label>
 
                 <label>
-                  Açıklama
+                  الوصف
                   <textarea
                     rows={5}
                     className={isFieldChanged("description") ? "field-changed" : ""}
@@ -1154,11 +1153,11 @@ export default function ExpertMyListingsPage() {
                     }}
                     disabled={savingEdit}
                   >
-                    Vazgeç
+                    إلغاء
                   </button>
 
                   <button type="submit" className="primary" disabled={savingEdit}>
-                    {savingEdit ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
+                    {savingEdit ? "جاري الحفظ..." : "حفظ التغييرات"}
                   </button>
                 </div>
               </form>
@@ -1178,12 +1177,12 @@ export default function ExpertMyListingsPage() {
             role="dialog"
             aria-modal="true"
           >
-            <h3>İlan silinenler bölümüne taşınacak.</h3>
-            <p>Bu ilan artık yayında görünmeyecek ve işlem yapılamaz hale gelecektir.</p>
+            <h3>سيتم نقل الإعلان إلى قسم المحذوفات.</h3>
+            <p>لن يظهر هذا الإعلان في المنشورات بعد الآن ولا يمكن اتخاذ أي إجراء عليه.</p>
 
             <div className="expert-my-listings-modal-actions">
               <button type="button" onClick={() => setConfirmDeleteItem(null)}>
-                Vazgeç
+                إلغاء
               </button>
 
               <button
@@ -1192,7 +1191,7 @@ export default function ExpertMyListingsPage() {
                 onClick={() => handleDeleteConfirmed(confirmDeleteItem)}
                 disabled={deletingId === confirmDeleteItem.id}
               >
-                {deletingId === confirmDeleteItem.id ? "Siliniyor..." : "Sil"}
+                {deletingId === confirmDeleteItem.id ? "جاري الحذف..." : "حذف"}
               </button>
             </div>
           </div>
@@ -1201,3 +1200,8 @@ export default function ExpertMyListingsPage() {
     </div>
   );
 }
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH:
+1. Hourly Rate ("Saatlik Ücret") option from pricingType select drop-down list.
+*/

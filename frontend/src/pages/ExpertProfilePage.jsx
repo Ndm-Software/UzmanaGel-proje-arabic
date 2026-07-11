@@ -94,8 +94,8 @@ const isPdf = (url) => {
 };
 const imageUrlsOnly = (urls) => urls.filter(u => !isPdf(u));
 const getTurkishDayName = (day) => ({
-  monday: 'Pazartesi', tuesday: 'Salı', wednesday: 'Çarşamba',
-  thursday: 'Perşembe', friday: 'Cuma', saturday: 'Cumartesi', sunday: 'Pazar'
+  monday: 'الاثنين', tuesday: 'الثلاثاء', wednesday: 'الأربعاء',
+  thursday: 'الخميس', friday: 'الجمعة', saturday: 'السبت', sunday: 'الأحد'
 })[day] || day;
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -146,10 +146,10 @@ const toMillis = (value) => {
 };
 
 const formatAppointmentDate = (dateStr) => {
-  if (!dateStr) return 'Belirtilmemiş';
+  if (!dateStr) return 'غير محدد';
   const parsed = new Date(`${dateStr}T00:00:00`);
   if (Number.isNaN(parsed.getTime())) return sanitizeText(dateStr);
-  return parsed.toLocaleDateString('tr-TR', {
+  return parsed.toLocaleDateString('ar-SY', {
     day: '2-digit',
     month: 'long',
     year: 'numeric'
@@ -170,23 +170,23 @@ const getExpertHistoryMeta = (item) => {
   const now = Date.now();
 
   if (normalizedStatus === 'completed') {
-    return { key: 'completed', label: 'Tamamlandi', icon: 'fa-flag-checkered', badgeClass: 'order-badge--done' };
+    return { key: 'completed', label: 'مكتمل', icon: 'fa-flag-checkered', badgeClass: 'order-badge--done' };
   }
 
   if (normalizedStatus === 'expired' || (normalizedStatus === 'approved' && endTime && endTime < now)) {
-    return { key: 'expired', label: 'Vakti Gecti', icon: 'fa-history', badgeClass: '' };
+    return { key: 'expired', label: 'انتهى وقته', icon: 'fa-history', badgeClass: '' };
   }
 
   if (normalizedStatus === 'cancelled_by_expert') {
-    return { key: 'cancelled_by_expert', label: 'Uzman Iptali', icon: 'fa-ban', badgeClass: '' };
+    return { key: 'cancelled_by_expert', label: 'إلغاء الخبير', icon: 'fa-ban', badgeClass: '' };
   }
 
   if (normalizedStatus === 'cancelled_by_customer') {
-    return { key: 'cancelled_by_customer', label: 'Musteri Iptali', icon: 'fa-user-slash', badgeClass: '' };
+    return { key: 'cancelled_by_customer', label: 'إلغاء العميل', icon: 'fa-user-slash', badgeClass: '' };
   }
 
   if (normalizedStatus === 'rejected') {
-    return { key: 'rejected', label: 'Reddedildi', icon: 'fa-circle-xmark', badgeClass: '' };
+    return { key: 'rejected', label: 'مرفوض', icon: 'fa-circle-xmark', badgeClass: '' };
   }
 
   return null;
@@ -201,13 +201,13 @@ const hasRepeatedChars = (str) => {
 
 const validatePassword = (pass) => {
   const errors = [];
-  if (pass.length < 6) errors.push('En az 6 karakter olmalıdır');
-  if (!/[A-Z]/.test(pass)) errors.push('En az 1 büyük harf içermelidir');
-  if (!/[a-z]/.test(pass)) errors.push('En az 1 küçük harf içermelidir');
-  if (!/[0-9]/.test(pass)) errors.push('En az 1 rakam içermelidir');
-  if (!hasSpecialChar(pass)) errors.push('En az 1 özel karakter içermelidir');
-  if (hasConsecutiveChars(pass)) errors.push('Ardışık karakterler içermemelidir (örn. abc, 123)');
-  if (hasRepeatedChars(pass)) errors.push('Aynı karakteri 3 kez tekrarlamamalıdır (örn. aaa)');
+  if (pass.length < 6) errors.push('يجب أن تكون 6 أحرف على الأقل');
+  if (!/[A-Z]/.test(pass)) errors.push('يجب أن تحتوي على حرف كبير واحد على الأقل');
+  if (!/[a-z]/.test(pass)) errors.push('يجب أن تحتوي على حرف صغير واحد على الأقل');
+  if (!/[0-9]/.test(pass)) errors.push('يجب أن تحتوي على رقم واحد على الأقل');
+  if (!hasSpecialChar(pass)) errors.push('يجب أن تحتوي على رمز خاص واحد على الأقل');
+  if (hasConsecutiveChars(pass)) errors.push('يجب ألا تحتوي على أحرف متتالية (مثل: abc، 123)');
+  if (hasRepeatedChars(pass)) errors.push('يجب ألا تكرر نفس الحرف 3 مرات متتالية (مثل: aaa)');
   return errors;
 };
 
@@ -233,12 +233,12 @@ const getStrengthColor = (strength) => {
 };
 
 const getStrengthText = (strength) => {
-  if (strength === 0) return 'Şifre gücü: Zayıf';
-  if (strength <= 25) return 'Şifre gücü: Çok Zayıf';
-  if (strength <= 50) return 'Şifre gücü: Orta';
-  if (strength <= 75) return 'Şifre gücü: İyi';
-  if (strength < 100) return 'Şifre gücü: Çok İyi';
-  return 'Şifre gücü: Mükemmel ✓';
+  if (strength === 0) return 'قوة كلمة المرور: ضعيفة';
+  if (strength <= 25) return 'قوة كلمة المرور: ضعيفة جداً';
+  if (strength <= 50) return 'قوة كلمة المرور: متوسطة';
+  if (strength <= 75) return 'قوة كلمة المرور: جيدة';
+  if (strength < 100) return 'قوة كلمة المرور: جيدة جداً';
+  return 'قوة كلمة المرور: ممتازة ✓';
 };
 
 const PhotoThumb = ({ url, index, allUrls, onDelete, size = 120, height = 120 }) => {
@@ -253,8 +253,8 @@ const PhotoThumb = ({ url, index, allUrls, onDelete, size = 120, height = 120 })
         {pdf ? (
           <div className="photo-thumb__pdf" onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}>
             <i className="fas fa-file-pdf photo-thumb__pdf-icon"></i>
-            <span className="photo-thumb__pdf-label">PDF Belge</span>
-            <span className="photo-thumb__pdf-open"><i className="fas fa-external-link-alt"></i> Aç</span>
+            <span className="photo-thumb__pdf-label">مستند PDF</span>
+            <span className="photo-thumb__pdf-open"><i className="fas fa-external-link-alt"></i> فتح</span>
           </div>
         ) : (
           <>
@@ -318,7 +318,7 @@ const NameModal = ({ user, currentName, onClose, onSuccess }) => {
     e.preventDefault();
 
     if (!firstName.trim() || !lastName.trim()) {
-      setError('Ad ve soyad zorunludur.');
+      setError('الاسم والكنية مطلوبان.');
       return;
     }
 
@@ -342,22 +342,22 @@ const NameModal = ({ user, currentName, onClose, onSuccess }) => {
         /* ignore */
       }
 
-      setSuccess('Ad soyad güncellendi.');
+      setSuccess('تم تحديث الاسم والكنية.');
       onSuccess(displayName);
       setTimeout(onClose, 1200);
     } catch (err) {
       if (isDevelopment) console.error('Ad soyad güncellenemedi:', err?.message || err);
-      setError('Ad soyad güncellenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+      setError('حدث خطأ أثناء تحديث الاسم والكنية. يرجى المحاولة مرة أخرى لاحقاً.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal title="Ad Soyad Güncelle" onClose={onClose}>
+    <Modal title="تحديث الاسم والكنية" onClose={onClose}>
       <form onSubmit={handleSubmit} className="modal-form">
         <div className="modal-field">
-          <label>Ad</label>
+          <label>الاسم</label>
           <input
             type="text"
             value={firstName}
@@ -370,7 +370,7 @@ const NameModal = ({ user, currentName, onClose, onSuccess }) => {
         </div>
 
         <div className="modal-field">
-          <label>Soyad</label>
+          <label>الكنية</label>
           <input
             type="text"
             value={lastName}
@@ -386,10 +386,10 @@ const NameModal = ({ user, currentName, onClose, onSuccess }) => {
 
         <div className="modal-actions">
           <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>
-            İptal
+            إلغاء
           </button>
           <button type="submit" className="settings-primary-button" disabled={loading}>
-            {loading ? 'Kaydediliyor...' : 'Kaydet'}
+            {loading ? 'جاري الحفظ...' : 'حفظ'}
           </button>
         </div>
       </form>
@@ -419,7 +419,7 @@ const PriceRangeModal = ({ uid, currentMin, currentMax, onClose, onSuccess }) =>
     const nextMax = normalize(maxPrice);
 
     if (nextMax > 0 && nextMin > nextMax) {
-      setError("Min fiyat, max fiyattan büyük olamaz.");
+      setError("الحد الأدنى للسعر لا يمكن أن يتجاوز الحد الأقصى.");
       return;
     }
 
@@ -430,22 +430,22 @@ const PriceRangeModal = ({ uid, currentMin, currentMax, onClose, onSuccess }) =>
         maxPrice: nextMax,
         updatedAt: new Date().toISOString(),
       });
-      setSuccess("Fiyat aralığı güncellendi.");
+      setSuccess("تم تحديث نطاق السعر.");
       onSuccess?.({ minPrice: nextMin, maxPrice: nextMax });
       setTimeout(() => onClose?.(), 900);
     } catch (err) {
       if (isDevelopment) console.error("Fiyat aralığı güncellenemedi:", err?.message || err);
-      setError("Fiyat aralığı güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
+      setError("حدث خطأ أثناء تحديث نطاق السعر. يرجى المحاولة مرة أخرى.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal title="Fiyat Aralığı" onClose={onClose}>
+    <Modal title="نطاق السعر" onClose={onClose}>
       <form onSubmit={handleSubmit} className="modal-form">
         <div className="modal-field">
-          <label>Minimum Fiyat (TL)</label>
+          <label>الحد الأدنى للسعر (ل.س)</label>
           <input
             type="number"
             min="0"
@@ -454,12 +454,12 @@ const PriceRangeModal = ({ uid, currentMin, currentMax, onClose, onSuccess }) =>
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
             disabled={loading}
-            placeholder="Örn: 150"
+            placeholder="مثال: 150"
           />
         </div>
 
         <div className="modal-field">
-          <label>Maksimum Fiyat (TL)</label>
+          <label>الحد الأقصى للسعر (ل.س)</label>
           <input
             type="number"
             min="0"
@@ -468,12 +468,12 @@ const PriceRangeModal = ({ uid, currentMin, currentMax, onClose, onSuccess }) =>
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             disabled={loading}
-            placeholder="Örn: 1200"
+            placeholder="مثال: 1200"
           />
         </div>
 
         <p className="modal-info-text" style={{ color: "var(--text-muted)", marginTop: 6 }}>
-          Bu aralık, ilan ve uzmanlık fiyat kurallarında referans alınır.
+          يتم استخدام هذا النطاق كمرجع لقواعد الأسعار للإعلانات والتخصصات.
         </p>
 
         {error && <p className="modal-error">{sanitizeText(error)}</p>}
@@ -481,10 +481,10 @@ const PriceRangeModal = ({ uid, currentMin, currentMax, onClose, onSuccess }) =>
 
         <div className="modal-actions">
           <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>
-            İptal
+            إلغاء
           </button>
           <button type="submit" className="settings-primary-button" disabled={loading}>
-            {loading ? "Kaydediliyor..." : "Kaydet"}
+            {loading ? "جاري الحفظ..." : "حفظ"}
           </button>
         </div>
       </form>
@@ -510,22 +510,22 @@ const ChangePasswordModal = ({ onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (passwordErrors.length > 0) { setError('Şifre gereksinimleri karşılanmıyor.'); return; }
-    if (passwordStrength !== 100) { setError(`Şifre yeterince güçlü değil. Güç: ${Math.round(passwordStrength)}% (100% gerekli)`); return; }
-    if (form.newPassword !== form.confirmPassword) { setError('Yeni şifreler eşleşmiyor.'); return; }
+    if (passwordErrors.length > 0) { setError('لم يتم استيفاء متطلبات كلمة المرور.'); return; }
+    if (passwordStrength !== 100) { setError(`كلمة المرور ليست قوية بما فيه الكفاية. القوة: ${Math.round(passwordStrength)}% (مطلوب 100%)`); return; }
+    if (form.newPassword !== form.confirmPassword) { setError('كلمات المرور الجديدة لا تتطابق.'); return; }
     setLoading(true); setError('');
     try {
       await updateUserPassword({ currentPassword: form.currentPassword, newPassword: form.newPassword });
-      setSuccess('Şifreniz başarıyla güncellendi.');
+      setSuccess('تم تحديث كلمة المرور بنجاح.');
       setTimeout(() => {
         onSuccess?.();
         onClose?.();
       }, 1500);
     } catch (err) {
       if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-        setError('Mevcut şifreniz hatalı.');
+        setError('كلمة المرور الحالية غير صحيحة.');
       } else {
-        setError('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+        setError('حدث خطأ. يرجى المحاولة مرة أخرى لاحقاً.');
       }
     } finally { setLoading(false); }
   };
@@ -533,10 +533,10 @@ const ChangePasswordModal = ({ onClose, onSuccess }) => {
   const color = getStrengthColor(passwordStrength);
 
   return (
-    <Modal title="Şifre Değiştir" onClose={onClose}>
+    <Modal title="تغيير كلمة المرور" onClose={onClose}>
       <form onSubmit={handleSubmit} className="modal-form">
         <div className="modal-field">
-          <label>Mevcut Şifre</label>
+          <label>كلمة المرور الحالية</label>
           <div className="modal-input-wrapper">
             <input type={showPasswords.current ? 'text' : 'password'} value={form.currentPassword}
               onChange={e => setForm(p => ({ ...p, currentPassword: e.target.value }))} required />
@@ -548,7 +548,7 @@ const ChangePasswordModal = ({ onClose, onSuccess }) => {
         </div>
 
         <div className="modal-field">
-          <label>Yeni Şifre</label>
+          <label>كلمة المرور الجديدة</label>
           <div className="modal-input-wrapper">
             <input type={showPasswords.new ? 'text' : 'password'} value={form.newPassword}
               onChange={handleNewPasswordChange} required />
@@ -581,17 +581,17 @@ const ChangePasswordModal = ({ onClose, onSuccess }) => {
 
           {form.newPassword.length > 0 && passwordErrors.length === 0 && passwordStrength === 100 && (
             <small style={{ color: '#22c55e', display: 'block', marginTop: '4px', fontWeight: 600 }}>
-              <i className="fas fa-check-circle"></i> Şifre tüm gereksinimleri karşılıyor ✓
+              <i className="fas fa-check-circle"></i> كلمة المرور تستوفي جميع الشروط ✓
             </small>
           )}
 
           <small style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '6px', display: 'block' }}>
-            ✓ Min 6 karakter &nbsp;✓ Büyük harf &nbsp;✓ Küçük harf &nbsp;✓ Rakam &nbsp;✓ Özel karakter &nbsp;✓ Ardışık yok
+            ✓ 6 أحرف كحد أدنى &nbsp;✓ حرف كبير &nbsp;✓ حرف صغير &nbsp;✓ رقم &nbsp;✓ رمز خاص &nbsp;✓ لا توجد أحرف متتالية
           </small>
         </div>
 
         <div className="modal-field">
-          <label>Yeni Şifre (Tekrar)</label>
+          <label>تأكيد كلمة المرور الجديدة</label>
           <div className="modal-input-wrapper">
             <input type={showPasswords.confirm ? 'text' : 'password'} value={form.confirmPassword}
               onChange={e => setForm(p => ({ ...p, confirmPassword: e.target.value }))} required />
@@ -606,7 +606,7 @@ const ChangePasswordModal = ({ onClose, onSuccess }) => {
               display: 'block', marginTop: '4px', fontWeight: 600
             }}>
               <i className={`fas fa-${form.newPassword === form.confirmPassword ? 'check' : 'times'}-circle`}></i>
-              {form.newPassword === form.confirmPassword ? ' Şifreler eşleşiyor ✓' : ' Şifreler eşleşmiyor ✗'}
+              {form.newPassword === form.confirmPassword ? ' كلمات المرور متطابقة ✓' : ' كلمات المرور غير متطابقة ✗'}
             </small>
           )}
         </div>
@@ -615,10 +615,10 @@ const ChangePasswordModal = ({ onClose, onSuccess }) => {
         {success && <p className="modal-success">{sanitizeText(success)}</p>}
 
         <div className="modal-actions">
-          <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>İptal</button>
+          <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>إلغاء</button>
           <button type="submit" className="settings-primary-button"
             disabled={loading || passwordStrength !== 100 || form.newPassword !== form.confirmPassword}>
-            {loading ? <><i className="fas fa-spinner fa-spin"></i> Kaydediliyor...</> : 'Kaydet'}
+            {loading ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : 'حفظ'}
           </button>
         </div>
       </form>
@@ -676,11 +676,11 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
 
   const validatePhone = () => {
     const d = normalize(digits);
-    if (d.length !== 10 || !d.startsWith('5')) {
-      setError('5xx xxx xx xx formatında geçerli bir numara girin.');
+    if (d.length !== 10 || !d.startsWith('9')) {
+      setError('يرجى إدخال رقم هاتف صالح بالصيغة 9xx xxx xx xx.');
       return null;
     }
-    return `+90${d}`;
+    return `+963${d}`;
   };
 
   const handleSendOtp = async (e) => {
@@ -698,10 +698,10 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
       const result = await startPhoneLinking(phoneNumber);
       setConfirmationResult(result);
       setStep('otp');
-      setSuccess('SMS kodu gönderildi. Lütfen telefonunu kontrol et.');
+      setSuccess('تم إرسال رمز التحقق (SMS). يرجى التحقق من هاتفك.');
     } catch (err) {
       if (isDevelopment) console.error('Kod gönderme hatası:', err?.message || err);
-      setError('Kod gönderilemedi. Lütfen daha sonra tekrar deneyin.');
+      setError('تعذّر إرسال الرمز. يرجى المحاولة مرة أخرى لاحقاً.');
     } finally {
       setSendingOtp(false);
     }
@@ -713,12 +713,12 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
     setSuccess('');
 
     if (!confirmationResult) {
-      setError('Doğrulama oturumu bulunamadı. Lütfen yeniden kod gönder.');
+      setError('لم يتم العثور على جلسة التحقق. يرجى إرسال الرمز مجدداً.');
       return;
     }
 
     if (!String(otpCode).trim() || String(otpCode).trim().length < 6) {
-      setError('Lütfen 6 haneli doğrulama kodunu girin.');
+      setError('يرجى إدخال رمز التحقق المكون من 6 أرقام.');
       return;
     }
 
@@ -726,7 +726,7 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
 
     try {
       const result = await confirmPhoneLinking(confirmationResult, otpCode);
-      const finalPhone = result?.user?.phoneNumber || `+90${normalize(digits)}`;
+      const finalPhone = result?.user?.phoneNumber || `+963${normalize(digits)}`;
 
       try {
         if (auth.currentUser?.uid) {
@@ -736,7 +736,7 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
         /* ignore */
       }
 
-      setSuccess('Telefon numarası başarıyla doğrulandı ve kaydedildi.');
+      setSuccess('تم التحقق من رقم الهاتف وحفظه بنجاح.');
       onSuccess(finalPhone);
       setTimeout(() => {
         clearRecaptcha();
@@ -744,7 +744,7 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
       }, 1200);
     } catch (err) {
       if (isDevelopment) console.error('Doğrulama hatası:', err?.message || err);
-      setError('Doğrulama başarısız oldu. Lütfen daha sonra tekrar deneyin.');
+      setError('فشلت عملية التحقق. يرجى المحاولة مرة أخرى لاحقاً.');
     } finally {
       setLoading(false);
     }
@@ -764,37 +764,37 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
       initRecaptcha('expert-profile-phone-recaptcha', { size: 'invisible' });
       const result = await startPhoneLinking(phoneNumber);
       setConfirmationResult(result);
-      setSuccess('Yeni SMS kodu gönderildi.');
+      setSuccess('تم إرسال رمز تحقق جديد.');
     } catch (err) {
       if (isDevelopment) console.error('Kod gönderme hatası:', err?.message || err);
-      setError('Kod tekrar gönderilemedi. Lütfen daha sonra tekrar deneyin.');
+      setError('تعذّر إعادة إرسال الرمز. يرجى المحاولة مرة أخرى لاحقاً.');
     } finally {
       setSendingOtp(false);
     }
   };
 
   return (
-    <Modal title="Telefon Numarasını Güncelle" onClose={onClose}>
+    <Modal title="تحديث رقم الهاتف" onClose={onClose}>
       <form onSubmit={step === 'phone' ? handleSendOtp : handleVerifyAndSave} className="modal-form">
         <div className="phone-verify-shell">
           <div className="phone-verify-step">
             <div className={`phone-step-badge ${step === 'phone' ? 'active' : 'done'}`}>1</div>
-            <span>Numara</span>
+            <span>الرقم</span>
           </div>
           <div className="phone-step-line"></div>
           <div className="phone-verify-step">
             <div className={`phone-step-badge ${step === 'otp' ? 'active' : ''}`}>2</div>
-            <span>OTP</span>
+            <span>الرمز</span>
           </div>
         </div>
 
         <div className="modal-field">
-          <label>Yeni Telefon (+90)</label>
+          <label>رقم الهاتف الجديد (+963)</label>
           <input
             type="tel"
             value={format(digits)}
             onChange={(e) => setDigits(normalize(e.target.value))}
-            placeholder="5xx xxx xx xx"
+            placeholder="9xx xxx xx xx"
             required
             disabled={loading || sendingOtp || step === 'otp'}
           />
@@ -802,13 +802,13 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
 
         {step === 'otp' && (
           <div className="modal-field">
-            <label>OTP Kodu</label>
+            <label>رمز التحقق (OTP)</label>
             <input
               type="text"
               inputMode="numeric"
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="6 haneli kod"
+              placeholder="رمز مكون من 6 أرقام"
               required
               disabled={loading}
             />
@@ -823,22 +823,22 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
         {step === 'otp' && (
           <button type="button" className="phone-resend-btn" onClick={handleResendOtp} disabled={sendingOtp || loading}>
             <i className="fas fa-rotate-right"></i>
-            {sendingOtp ? 'Kod gönderiliyor...' : 'Kodu tekrar gönder'}
+            {sendingOtp ? 'جاري الإرسال...' : 'إعادة إرسال الرمز'}
           </button>
         )}
 
         <div className="modal-actions">
           <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading || sendingOtp}>
-            İptal
+            إلغاء
           </button>
 
           {step === 'phone' ? (
             <button type="submit" className="settings-primary-button" disabled={sendingOtp || loading}>
-              {sendingOtp ? 'Kod Gönderiliyor...' : 'Kod Gönder'}
+              {sendingOtp ? 'جاري الإرسال...' : 'إرسال الرمز'}
             </button>
           ) : (
             <button type="submit" className="settings-primary-button" disabled={loading}>
-              {loading ? 'Doğrulanıyor...' : 'Doğrula ve Kaydet'}
+              {loading ? 'جاري التحقق...' : 'تحقق وحفظ'}
             </button>
           )}
         </div>
@@ -871,16 +871,16 @@ const WorkingHoursModal = ({ uid, currentHours, onClose, onSuccess }) => {
     setLoading(true); setError('');
     try {
       await updateWorkingHours({ uid, workingHours: hours });
-      setSuccess('Çalışma saatleriniz güncellendi.');
+      setSuccess('تم تحديث ساعات العمل الخاصة بك.');
       onSuccess(hours);
       setTimeout(onClose, 1500);
     } catch {
-      setError('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+      setError('حدث خطأ. يرجى المحاولة مرة أخرى لاحقاً.');
     } finally { setLoading(false); }
   };
 
   return (
-    <Modal title="Çalışma Saatlerini Düzenle" onClose={onClose}>
+    <Modal title="تعديل ساعات العمل" onClose={onClose}>
       <form onSubmit={handleSubmit} className="modal-form">
         <div className="working-hours-edit-list">
           {DAYS.map(day => (
@@ -899,7 +899,7 @@ const WorkingHoursModal = ({ uid, currentHours, onClose, onSuccess }) => {
                   <input type="time" value={hours[day].end} onChange={e => setTime(day, 'end', e.target.value)} />
                 </div>
               ) : (
-                <span className="working-hours-closed">Kapalı</span>
+                <span className="working-hours-closed">مغلق</span>
               )}
             </div>
           ))}
@@ -907,9 +907,9 @@ const WorkingHoursModal = ({ uid, currentHours, onClose, onSuccess }) => {
         {error && <p className="modal-error">{sanitizeText(error)}</p>}
         {success && <p className="modal-success">{sanitizeText(success)}</p>}
         <div className="modal-actions">
-          <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>İptal</button>
+          <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>إلغاء</button>
           <button type="submit" className="settings-primary-button" disabled={loading}>
-            {loading ? <><i className="fas fa-spinner fa-spin"></i> Kaydediliyor...</> : 'Kaydet'}
+            {loading ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : 'حفظ'}
           </button>
         </div>
       </form>
@@ -927,7 +927,7 @@ const DeleteAccountModal = ({ onClose, onDeleted, hasPasswordProvider = false, h
 
   const finishDeactivateFlow = (result) => {
     setSuccess(
-      `Hesabınız devre dışı bırakıldı. ${result?.deletedListingsCount || 0} ilan kaldırıldı. Yönlendiriliyorsunuz...`
+      `تم تعطيل حسابك بنجاح. تم حذف إعلاناتك النشطة (${result?.deletedListingsCount || 0}). جاري تحويلك...`
     );
     setTimeout(() => {
       onDeleted();
@@ -938,7 +938,7 @@ const DeleteAccountModal = ({ onClose, onDeleted, hasPasswordProvider = false, h
     e.preventDefault();
 
     if (!password.trim()) {
-      setError('Lütfen şifrenizi girin.');
+      setError('يرجى إدخال كلمة المرور.');
       return;
     }
 
@@ -950,7 +950,7 @@ const DeleteAccountModal = ({ onClose, onDeleted, hasPasswordProvider = false, h
       const result = await deleteProviderAccount({ password });
       finishDeactivateFlow(result);
     } catch (err) {
-      setError(err?.message || 'Hesabı devre dışı bırakma işlemi sırasında bir hata oluştu.');
+      setError(err?.message || 'حدث خطأ أثناء محاولة تعطيل الحساب.');
     } finally {
       setLoading(false);
     }
@@ -965,32 +965,32 @@ const DeleteAccountModal = ({ onClose, onDeleted, hasPasswordProvider = false, h
       const result = await deleteProviderAccount({ useGoogle: true });
       finishDeactivateFlow(result);
     } catch (err) {
-      setError(err?.message || 'Google ile doğrulama sırasında bir hata oluştu.');
+      setError(err?.message || 'حدث خطأ أثناء التحقق بواسطة Google.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal title="Hesabı Devre Dışı Bırak" onClose={onClose}>
+    <Modal title="تعطيل الحساب" onClose={onClose}>
       <form
         onSubmit={hasPasswordProvider ? handlePasswordSubmit : (e) => e.preventDefault()}
         className="modal-form"
       >
         <p className="modal-info-text">
-          Hesabınız hemen kalıcı olarak silinmez. Hesabınız devre dışı bırakılır ve 60 gün boyunca geri açılabilir.
-          Bu süreçte aktif ilanlarınız yayından kaldırılır. 60 gün sonunda hesabınız kalıcı olarak silinir.
+          لن يتم حذف حسابك نهائياً على الفور. سيتم تعطيل الحساب ويمكن استعادته خلال 60 يوماً.
+          خلال هذه الفترة، ستتم إزالة إعلاناتك النشطة من المنصة. بعد 60 يوماً، سيتم حذف الحساب نهائياً.
         </p>
 
         {hasPasswordProvider ? (
           <div className="modal-field">
-            <label>Şifrenizi Girin</label>
+            <label>أدخل كلمة المرور</label>
             <div className="modal-input-wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mevcut şifrenizi girin"
+                placeholder="أدخل كلمة المرور الحالية"
                 required
                 disabled={loading}
               />
@@ -1008,10 +1008,10 @@ const DeleteAccountModal = ({ onClose, onDeleted, hasPasswordProvider = false, h
           <div className="delete-auth-box">
             <div className="delete-auth-title">
               <i className="fab fa-google"></i>
-              Google ile doğrulama gerekli
+              التحقق بواسطة Google مطلوب
             </div>
             <p className="delete-auth-subtitle">
-              Bu hesap Google ile giriş yapıyor. Devam etmek için Google hesabınızla yeniden doğrulama yapın.
+              يسجل هذا الحساب الدخول عبر Google. للمتابعة، يرجى إعادة التحقق من حساب Google الخاص بك.
             </p>
           </div>
         ) : (
@@ -1946,7 +1946,7 @@ const ExpertProfilePage = () => {
       <Navbar />
 
       {showSpecialtiesModal && (
-        <Modal title="Uzmanlık & Başlangıç Fiyatları" onClose={() => (specialtiesSaving ? null : setShowSpecialtiesModal(false))}>
+        <Modal title="التخصصات وأسعار البداية" onClose={() => (specialtiesSaving ? null : setShowSpecialtiesModal(false))}>
           <div className="specialties-price-modal">
             <div className="specialties-price-topline">
               <div className="specialties-price-counter">
@@ -1954,15 +1954,15 @@ const ExpertProfilePage = () => {
               </div>
               {specialtiesDraft.length >= SPECIALTIES_PRICE_LIMIT && (
                 <div className="specialties-price-limitwarn">
-                  En fazla {SPECIALTIES_PRICE_LIMIT} satır eklenebilir. Yeni eklemek için bir satır silin.
+                  يمكن إضافة ما يصل إلى {SPECIALTIES_PRICE_LIMIT} تخصصات. احذف سطراً لإضافة تخصص جديد.
                 </div>
               )}
             </div>
 
             <div className="specialties-price-table">
               <div className="specialties-price-row specialties-price-head">
-                <div>Uzmanlık</div>
-                <div>Başlangıç Fiyatı</div>
+                <div>التخصص</div>
+                <div>سعر البداية</div>
                 <div></div>
               </div>
 
@@ -1973,7 +1973,7 @@ const ExpertProfilePage = () => {
                       className="specialties-price-input"
                       value={row.name}
                       onChange={(e) => updateDraftRow(idx, { name: e.target.value })}
-                      placeholder="Örn: Dış Cephe Boya"
+                      placeholder="مثال: دهان خارجي"
                       disabled={specialtiesSaving}
                     />
                   </div>
@@ -1984,12 +1984,12 @@ const ExpertProfilePage = () => {
                       inputMode="numeric"
                       value={row.startingPrice ?? 0}
                       onChange={(e) => updateDraftRow(idx, { startingPrice: e.target.value })}
-                      placeholder="Örn: 600"
+                      placeholder="مثال: 600"
                       disabled={specialtiesSaving}
                       min={String(Math.max(0, Number(expertData?.minPrice) || 0))}
                       max={Number(expertData?.maxPrice) > 0 ? String(Math.max(0, Number(expertData?.maxPrice) || 0)) : undefined}
                     />
-                    <span className="specialties-price-currency">TL</span>
+                    <span className="specialties-price-currency">ل.س</span>
                   </div>
                   <div>
                     <button
@@ -1997,7 +1997,7 @@ const ExpertProfilePage = () => {
                       className="specialties-price-remove"
                       onClick={() => removeDraftRow(idx)}
                       disabled={specialtiesSaving}
-                      title="Satırı sil"
+                      title="حذف السطر"
                     >
                       <i className="fas fa-trash"></i>
                     </button>
@@ -2014,16 +2014,16 @@ const ExpertProfilePage = () => {
                 className="settings-secondary-button"
                 onClick={addDraftRow}
                 disabled={specialtiesSaving || specialtiesDraft.length >= SPECIALTIES_PRICE_LIMIT}
-                title={specialtiesDraft.length >= SPECIALTIES_PRICE_LIMIT ? "Limit dolu" : "Satır ekle"}
+                title={specialtiesDraft.length >= SPECIALTIES_PRICE_LIMIT ? "الحد ممتلئ" : "إضافة تخصص"}
               >
-                + Satır Ekle
+                + إضافة تخصص
               </button>
               <div style={{ display: "flex", gap: 10 }}>
                 <button type="button" className="settings-secondary-button" onClick={() => setShowSpecialtiesModal(false)} disabled={specialtiesSaving}>
-                  İptal
+                  إلغاء
                 </button>
                 <button type="button" className="settings-primary-button" onClick={saveSpecialties} disabled={specialtiesSaving}>
-                  {specialtiesSaving ? <><i className="fas fa-spinner fa-spin"></i> Kaydediliyor...</> : "Kaydet"}
+                  {specialtiesSaving ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : "حفظ"}
                 </button>
               </div>
             </div>
@@ -2127,7 +2127,7 @@ const ExpertProfilePage = () => {
 
             <div className="profile-header-info">
               <div className="profile-header-meta">
-                <h1 className="profile-header-name">{sanitizeText(expertData?.businessName || 'Belirtilmemiş')}</h1>
+                <h1 className="profile-header-name">{sanitizeText(expertData?.businessName || 'غير محدد')}</h1>
                 {String(expertData?.profession || '').trim() ? (
                   <span className="profile-header-sub profile-header-sub--profession">
                     {sanitizeText(String(expertData.profession).trim())}
@@ -2140,14 +2140,14 @@ const ExpertProfilePage = () => {
                 <span className="profile-header-sub">{sanitizeText(getUserDisplayName())}</span>
               </div>
               <div className="profile-header-contact">
-                <span><i className="fas fa-envelope"></i> {sanitizeText(userData?.email || 'Belirtilmemiş')}</span>
-                <span><i className="fas fa-phone"></i> {sanitizeText(userData?.phoneNumber || 'Belirtilmemiş')}</span>
+                <span><i className="fas fa-envelope"></i> {sanitizeText(userData?.email || 'غير محدد')}</span>
+                <span><i className="fas fa-phone"></i> {sanitizeText(userData?.phoneNumber || 'غير محدد')}</span>
               </div>
               <div className="profile-header-meta">
-                <span className="profile-badge-approved"><i className="fas fa-check-circle"></i> Onaylı Uzman</span>
+                <span className="profile-badge-approved"><i className="fas fa-check-circle"></i> خبير معتمد</span>
                 <span className="profile-badge-since">
                   <i className="fas fa-calendar-alt"></i>
-                  {userData?.createdAt ? `${new Date(userData.createdAt).getFullYear()} Yılından beri üye` : 'Belirtilmemiş'}
+                  {userData?.createdAt ? `عضو منذ عام ${new Date(userData.createdAt).getFullYear()}` : 'غير محدد'}
                 </span>
               </div>
             </div>
@@ -2156,12 +2156,12 @@ const ExpertProfilePage = () => {
               <div className="profile-header-stats">
               <div className="header-stat-item">
                 <span className="header-stat-value">{fixedAvg} <i className="fas fa-star"></i></span>
-                <span className="header-stat-label">Müşteri Puanı</span>
-                <span className="profile-stat-sub">({activeReviewCount} Yorum)</span>
+                <span className="header-stat-label">تقييم العملاء</span>
+                <span className="profile-stat-sub">({activeReviewCount} تقييم)</span>
               </div>
               <div className="header-stat-item">
                 <span className="header-stat-value">{completedAppointments.length}</span>
-                <span className="header-stat-label">Tamamlanan İş</span>
+                <span className="header-stat-label">الأعمال المنجزة</span>
               </div>
             </div>
           </div>
@@ -2170,11 +2170,11 @@ const ExpertProfilePage = () => {
         <div className="expert-tabs">
           {['user', 'working-hours', 'portfolio', 'security', 'address'].map((tab) => (
             <button key={tab} className={`tab-btn ${activeSetting === tab ? 'active' : ''}`} onClick={() => setActiveSetting(tab)}>
-              {tab === 'user' && <><i className="fas fa-user-circle"></i> Kullanıcı Bilgileri</>}
-              {tab === 'working-hours' && <><i className="fas fa-clock"></i> Çalışma Saatleri</>}
-              {tab === 'portfolio' && <><i className="fas fa-images"></i> Portfolyo & Belgeler</>}
-              {tab === 'security' && <><i className="fas fa-shield-alt"></i> Güvenlik</>}
-              {tab === 'address' && <><i className="fas fa-map-marker-alt"></i> İş Yeri Adresim</>}
+              {tab === 'user' && <><i className="fas fa-user-circle"></i> معلومات المستخدم</>}
+              {tab === 'working-hours' && <><i className="fas fa-clock"></i> ساعات العمل</>}
+              {tab === 'portfolio' && <><i className="fas fa-images"></i> معرض الأعمال والشهادات</>}
+              {tab === 'security' && <><i className="fas fa-shield-alt"></i> الأمان</>}
+              {tab === 'address' && <><i className="fas fa-map-marker-alt"></i> عنوان العمل</>}
             </button>
           ))}
         </div>
@@ -2182,54 +2182,47 @@ const ExpertProfilePage = () => {
         <section className="profile-card-section profile-settings-detail">
           {activeSetting === 'user' && (
             <div className="settings-combined-container">
-              <h4 className="settings-section-title">Kişisel Bilgiler</h4>
+              <h4 className="settings-section-title">معلومات شخصية</h4>
               <div className="settings-detail-grid" style={{ marginBottom: '25px' }}>
-                <div className="settings-field-group"><span className="settings-field-label">AD</span><span className="settings-field-value">{sanitizeText(getFirstName())}</span></div>
-                <div className="settings-field-group"><span className="settings-field-label">SOYAD</span><span className="settings-field-value">{sanitizeText(getLastName())}</span></div>
-                <div className="settings-field-group"><span className="settings-field-label">İŞLETME ADI</span><span className="settings-field-value">{sanitizeText(expertData?.businessName || 'Belirtilmemiş')}</span></div>
+                <div className="settings-field-group"><span className="settings-field-label">الاسم</span><span className="settings-field-value">{sanitizeText(getFirstName())}</span></div>
+                <div className="settings-field-group"><span className="settings-field-label">الكنية</span><span className="settings-field-value">{sanitizeText(getLastName())}</span></div>
+                <div className="settings-field-group"><span className="settings-field-label">اسم العمل</span><span className="settings-field-value">{sanitizeText(expertData?.businessName || 'غير محدد')}</span></div>
                 <div className="settings-field-group">
                   <div className="settings-field-label-row">
-                    <span className="settings-field-label">E-POSTA ADRESİ</span>
+                    <span className="settings-field-label">البريد الإلكتروني</span>
                     {emailVerified ? (
-                      <span className="settings-email-status-inline verified" title="E-posta doğrulandı">
+                      <span className="settings-email-status-inline verified" title="تم التحقق من البريد">
                         <span className="settings-email-status-dot verified"></span>
-                        <span className="settings-email-status-text verified">Doğrulandı</span>
+                        <span className="settings-email-status-text verified">تم التحقق</span>
                       </span>
                     ) : (
-                      <span className="settings-email-status-inline unverified" title="E-posta doğrulanmadı">
+                      <span className="settings-email-status-inline unverified" title="لم يتم التحقق من البريد">
                         <span className="settings-email-status-dot unverified"></span>
-                        <span className="settings-email-status-text unverified">Doğrulanmadı</span>
+                        <span className="settings-email-status-text unverified">لم يتم التحقق</span>
                       </span>
                     )}
                   </div>
-                  <span className="settings-field-value">{sanitizeText(userData?.email || user?.email || 'Belirtilmemiş')}</span>
+                  <span className="settings-field-value">{sanitizeText(userData?.email || user?.email || 'غير محدد')}</span>
                 </div>
-                <div className="settings-field-group"><span className="settings-field-label">TELEFON NUMARASI</span><span className="settings-field-value">{sanitizeText(userData?.phoneNumber || 'Belirtilmemiş')}</span></div>
+                <div className="settings-field-group"><span className="settings-field-label">رقم الهاتف</span><span className="settings-field-value">{sanitizeText(userData?.phoneNumber || 'غير محدد')}</span></div>
               </div>
-              <h4 className="settings-section-title">İşletme ve Vergi Bilgileri</h4>
+              <h4 className="settings-section-title">التعليم والخبرة</h4>
               <div className="settings-detail-grid" style={{ marginBottom: '25px' }}>
-                <div className="settings-field-group"><span className="settings-field-label">İŞLETME TÜRÜ</span><span className="settings-field-value">{sanitizeText(expertData?.providerType || 'Belirtilmemiş')}</span></div>
-                {expertData?.providerType === 'Şirket' && (
-                  <div className="settings-field-group"><span className="settings-field-label">VERGİ NUMARASI</span><span className="settings-field-value">{sanitizeText(expertData?.taxNumber || 'Belirtilmemiş')}</span></div>
-                )}
+                <div className="settings-field-group"><span className="settings-field-label">الخبرة</span><span className="settings-field-value">{expertData?.experienceYears ?? 'غير محدد'} سنوات</span></div>
+                <div className="settings-field-group"><span className="settings-field-label">التعليم</span><span className="settings-field-value">{sanitizeText(expertData?.educationInfo || 'غير محدد')}</span></div>
               </div>
-              <h4 className="settings-section-title">Eğitim ve Deneyim</h4>
-              <div className="settings-detail-grid" style={{ marginBottom: '25px' }}>
-                <div className="settings-field-group"><span className="settings-field-label">DENEYİM</span><span className="settings-field-value">{expertData?.experienceYears ?? 'Belirtilmemiş'} Yıl</span></div>
-                <div className="settings-field-group"><span className="settings-field-label">EĞİTİM</span><span className="settings-field-value">{sanitizeText(expertData?.educationInfo || 'Belirtilmemiş')}</span></div>
-              </div>
-              <h4 className="settings-section-title">Uzmanlıklar</h4>
+              <h4 className="settings-section-title">التخصصات</h4>
               <div className="expert-price-range-banner">
                 <div className="expert-price-range-banner__main">
                   <div className="expert-price-range-banner__icon" aria-hidden="true">
                     <i className="fas fa-coins"></i>
                   </div>
                   <div className="expert-price-range-banner__text">
-                    <span className="expert-price-range-banner__label">Fiyat aralığı</span>
+                    <span className="expert-price-range-banner__label">نطاق السعر</span>
                     <span className="expert-price-range-banner__value">
-                      Min fiyat {Number(expertData?.minPrice || 0).toLocaleString('tr-TR')} TL
+                      الحد الأدنى {Number(expertData?.minPrice || 0).toLocaleString('ar-SY')} ل.س
                       {' - '}
-                      Max fiyat {Number(expertData?.maxPrice || 0).toLocaleString('tr-TR')} TL
+                      الحد الأقصى {Number(expertData?.maxPrice || 0).toLocaleString('ar-SY')} ل.س
                     </span>
                   </div>
                 </div>
@@ -2238,50 +2231,50 @@ const ExpertProfilePage = () => {
                   className="settings-secondary-button specialties-edit-btn"
                   onClick={() => setActiveModal('priceRange')}
                 >
-                  <i className="fas fa-pen" aria-hidden="true"></i> Düzenle
+                  <i className="fas fa-pen" aria-hidden="true"></i> تعديل
                 </button>
               </div>
               <div className="specialties-price-header">
                 <p className="settings-helper-text specialties-price-header__hint">
-                  Müşteriler profilinizi incelerken fiyat hakkında fikir sahibi olur.
+                  يأخذ العملاء فكرة عن السعر عند مراجعة ملفك الشخصي.
                 </p>
                 <button
                   type="button"
                   className="settings-secondary-button specialties-edit-btn"
                   onClick={openSpecialtiesModal}
                 >
-                  <i className="fas fa-pen" aria-hidden="true"></i> Düzenle
+                  <i className="fas fa-pen" aria-hidden="true"></i> تعديل
                 </button>
               </div>
 
               {normalizeSpecialties(expertData?.specialties).length > 0 ? (
                 <div className="specialties-price-table">
                   <div className="specialties-price-row specialties-price-head">
-                    <div>Uzmanlık</div>
-                    <div>Fiyat</div>
+                    <div>التخصص</div>
+                    <div>السعر</div>
                     <div></div>
                   </div>
                   {normalizeSpecialties(expertData?.specialties).map((s, i) => (
                     <div key={`${s.name}-${i}`} className="specialties-price-row">
                       <div className="specialties-price-name">{sanitizeText(s.name)}</div>
                       <div className="specialties-price-price">
-                        {Number(s.startingPrice || 0).toLocaleString("tr-TR")} TL{" "}
-                        <span className="specialties-price-muted">’den başlayan</span>
+                        {Number(s.startingPrice || 0).toLocaleString("ar-SY")} ل.س{" "}
+                        <span className="specialties-price-muted">تبدأ من</span>
                       </div>
                       <div></div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <span className="specialties-empty">Belirtilmemiş</span>
+                <span className="specialties-empty">غير محدد</span>
               )}
             </div>
           )}
 
           {activeSetting === 'working-hours' && (
             <div className="settings-working-hours">
-              <h4 className="settings-section-title">Haftalık Çalışma Programı</h4>
-              <p className="settings-helper-text">Aşağıda haftalık çalışma saatlerinizi görüntüleyebilirsiniz.</p>
+              <h4 className="settings-section-title">برنامج العمل الأسبوعي</h4>
+              <p className="settings-helper-text">يمكنك عرض ساعات عملك الأسبوعية أدناه.</p>
               {expertData?.workingHours && Object.values(expertData.workingHours).some(d => d.enabled) ? (
                 <div className="working-hours-container">
                   {DAYS.map(day => {
@@ -2298,12 +2291,12 @@ const ExpertProfilePage = () => {
               ) : (
                 <div className="working-hours-empty-state">
                   <i className="fas fa-clock working-hours-empty-icon"></i>
-                  <p>Çalışma Saati Belirtilmemiş</p>
+                  <p>لم يتم تحديد ساعات عمل</p>
                 </div>
               )}
               <div className="settings-save-row">
                 <button className="settings-primary-button" onClick={() => setActiveModal('workingHours')}>
-                  <i className="fas fa-edit"></i> Çalışma Saatlerini Düzenle
+                  <i className="fas fa-edit"></i> تعديل ساعات العمل
                 </button>
               </div>
             </div>
@@ -2315,36 +2308,36 @@ const ExpertProfilePage = () => {
               <div className="settings-security-item portfolio-section">
                 <div className="portfolio-section-header cert-section-head">
                   <div>
-                    <div className="settings-security-title">Yasal Belgeler</div>
+                    <div className="settings-security-title">الشهادات المرفوعة</div>
                   </div>
                 </div>
                 <div className="portfolio-thumbs">
                   {certificates.length > 0
                     ? certificates.map((url, i) => <PhotoThumb key={i} url={url} index={i} allUrls={certificates} size={120} height={80} />)
-                    : <span className="portfolio-empty">Henüz sertifika yüklenmemiş.</span>}
+                    : <span className="portfolio-empty">لم يتم رفع أي شهادات بعد.</span>}
                 </div>
               </div>
 
               <div className="settings-security-item portfolio-section">
                 <div className="portfolio-section-header">
                   <div>
-                    <div className="settings-security-title">İş Portfolyosu (Fotoğraflar)</div>
-                    <div className="settings-security-subtitle">Dükkan ve tamamlanan iş fotoğrafları müşterilere gösterilir.</div>
+                    <div className="settings-security-title">معرض الأعمال (الصور)</div>
+                    <div className="settings-security-subtitle">يتم عرض صور المتجر والأعمال المنجزة للعملاء.</div>
                   </div>
                   <label className={`portfolio-upload-label ${portfolioUploading ? 'portfolio-upload-label--disabled' : ''}`}>
                     <input type="file" accept="image/*" multiple style={{ display: 'none' }} disabled={portfolioUploading} onChange={handlePortfolioUpload} />
                     <span className={`settings-secondary-button portfolio-upload-btn ${portfolioUploading ? 'portfolio-upload-btn--loading' : ''}`}>
-                      {portfolioUploading ? <><i className="fas fa-spinner fa-spin"></i> Yükleniyor...</> : '+ Yeni Ekle'}
+                      {portfolioUploading ? <><i className="fas fa-spinner fa-spin"></i> جاري الرفع...</> : 'إضافة جديد +'}
                     </span>
                   </label>
                 </div>
                 {portfolioLoading ? (
-                  <span className="settings-helper-text"><i className="fas fa-spinner fa-spin"></i> Fotoğraflar yükleniyor...</span>
+                  <span className="settings-helper-text"><i className="fas fa-spinner fa-spin"></i> جاري تحميل الصور...</span>
                 ) : (
                   <div className="portfolio-thumbs">
                     {portfolioUrls.length > 0
                       ? portfolioUrls.map((url, i) => <PhotoThumb key={i} url={url} index={i} allUrls={portfolioUrls} onDelete={handlePortfolioDelete} size={120} height={120} />)
-                      : <span className="portfolio-empty">Henüz portfolyo fotoğrafı eklenmemiş.</span>}
+                      : <span className="portfolio-empty">لم يتم إضافة صور معرض الأعمال بعد.</span>}
                   </div>
                 )}
               </div>
@@ -2352,15 +2345,15 @@ const ExpertProfilePage = () => {
               <div className="settings-security-item portfolio-section ba-section-wrapper">
                 <div className="portfolio-section-header">
                   <div>
-                    <div className="settings-security-title">Öncesi ve Sonrası Galerisi</div>
+                    <div className="settings-security-title">معرض قبل وبعد</div>
                     <div
                       className={`settings-security-subtitle ${
                         baGallery.length >= 5 ? "ba-subtitle-warning" : ""
                       }`}
                     >
                       {baGallery.length >= 5
-                        ? `Hepsi dolu. Birini silin veya güncelleyin. (5 / 5 Grup) 5'ten fazla grup yüklenemez.`
-                        : `İşlerinizin değişimini gösterin (${baGallery.length} / 5 Grup)`}
+                        ? `المعرض ممتلئ. احذف أحدها أو قم بتحديثه. (5 / 5 مجموعات) لا يمكن تحميل أكثر من 5 مجموعات.`
+                        : `اعرض التغيير في أعمالك (${baGallery.length} / 5 مجموعات)`}
                     </div>
                   </div>
                   {baGallery.length < 5 && (
@@ -2368,13 +2361,13 @@ const ExpertProfilePage = () => {
                       className="settings-secondary-button portfolio-upload-btn"
                       onClick={() => setShowBaAddModal(true)}
                     >
-                      + Yeni Ekle
+                      إضافة جديد +
                     </button>
                   )}
                 </div>
 
                 {baLoading ? (
-                  <span className="settings-helper-text"><i className="fas fa-spinner fa-spin"></i> Yükleniyor...</span>
+                  <span className="settings-helper-text"><i className="fas fa-spinner fa-spin"></i> جاري الرفع...</span>
                 ) : (
                   <div className="ba-grid-container">
                     {baGallery.map((pair) => (
@@ -2385,12 +2378,12 @@ const ExpertProfilePage = () => {
                           <img src={pair.afterUrl} className="ba-img-after" alt="Yeni" />
                         </div>
                         <div className="ba-card-footer-labels">
-                          <span className="label-eski">ESKİ</span>
-                          <span className="label-yeni">YENİ</span>
+                          <span className="label-eski">قبل</span>
+                          <span className="label-yeni">بعد</span>
                         </div>
                       </div>
                     ))}
-                    {baGallery.length === 0 && <span className="portfolio-empty">Henüz çalışma eklenmemiş.</span>}
+                    {baGallery.length === 0 && <span className="portfolio-empty">لم يتم إضافة أي أعمال بعد.</span>}
                   </div>
                 )}
               </div>
@@ -2418,65 +2411,65 @@ const ExpertProfilePage = () => {
               )}
 
               <p className="settings-helper-text">
-                Uzman hesabınızın güvenliğini artırmak ve müşterilerle iletişimi doğru tutmak için aşağıdaki ayarları kullanabilirsiniz.
+                يمكنك استخدام الإعدادات أدناه لزيادة أمان حساب الخبير الخاص بك والحفاظ على صحة التواصل مع العملاء.
               </p>
 
               <div className="settings-security-list">
                 <div className="settings-security-item">
                   <div>
-                    <div className="settings-security-title">Ad Soyad Güncelle</div>
-                    <div className="settings-security-subtitle">Profilinizde görünen kişisel ad ve soyad bilginizi güncelleyin.</div>
+                    <div className="settings-security-title">تحديث الاسم والكنية</div>
+                    <div className="settings-security-subtitle">قم بتحديث الاسم والكنية الشخصيين اللذين يظهران في ملفك الشخصي.</div>
                   </div>
                   <button className="settings-primary-button" onClick={() => setActiveModal('name')}>
-                    Düzenle
+                    تعديل
                   </button>
                 </div>
 
                 <div className="settings-security-item">
                   <div>
-                    <div className="settings-security-title">Telefon Numarası Güncelle</div>
-                    <div className="settings-security-subtitle">Yeni numaranızı SMS kodu ile doğrulayarak hesabınıza bağlayın.</div>
+                    <div className="settings-security-title">تحديث رقم الهاتف</div>
+                    <div className="settings-security-subtitle">اربط رقمك الجديد بالحساب بعد التحقق منه عبر رمز SMS.</div>
                   </div>
                   <button className="settings-secondary-button" onClick={() => setActiveModal('phone')}>
-                    Telefonu Düzenle
+                    تعديل الهاتف
                   </button>
                 </div>
 
                 <div className="settings-security-item">
                   <div>
-                    <div className="settings-security-title">Google Hesabı</div>
+                    <div className="settings-security-title">حساب Google</div>
                     <div className="settings-security-subtitle">
-                      Google hesabınızı mevcut uzman hesabınıza bağlayarak daha hızlı giriş yapabilirsiniz.
+                      يربط حساب Google الخاص بك لتسجيل الدخول بشكل أسرع.
                     </div>
                   </div>
 
                   {googleLinked ? (
                     <span className="settings-status-badge">
-                      <i className="fab fa-google"></i> Google bağlı
+                      <i className="fab fa-google"></i> حساب Google مرتبط
                     </span>
                   ) : canLinkGoogle ? (
                     <button className="settings-primary-button" onClick={handleLinkGoogle} disabled={googleLinkLoading}>
-                      {googleLinkLoading ? 'Bağlanıyor...' : 'Google Hesabını Bağla'}
+                      {googleLinkLoading ? 'جاري الربط...' : 'ربط حساب Google'}
                     </button>
                   ) : (
                     <span className="settings-disabled-badge">
-                      Sadece Gmail kullanıcıları bağlayabilir
+                      يمكن لمستخدمي Gmail فقط الربط
                     </span>
                   )}
                 </div>
 
                 <div className="settings-security-item">
                   <div>
-                    <div className="settings-security-title">Şifre Değiştir</div>
+                    <div className="settings-security-title">تغيير كلمة المرور</div>
                     <div className="settings-security-subtitle">
                       {hasPasswordProvider
-                        ? 'Hesap şifrenizi düzenli aralıklarla güncellemeniz önerilir.'
-                        : 'Bu hesap Google ile giriş yapıyor ve kullanılabilir bir şifreye sahip değil.'}
+                        ? 'يُنصح بتحديث كلمة مرور حسابك بشكل دوري.'
+                        : 'يسجل هذا الحساب الدخول عبر Google وليس لديه كلمة مرور نشطة.'}
                     </div>
                   </div>
 
                   <span
-                    title={hasPasswordProvider ? '' : 'Bu hesap Google ile bağlıdır ve şifreye sahip değildir.'}
+                    title={hasPasswordProvider ? '' : 'يسجل هذا الحساب الدخول عبر Google وليس لديه كلمة مرور.'}
                     style={{ display: 'inline-flex' }}
                   >
                     <button
@@ -2485,20 +2478,20 @@ const ExpertProfilePage = () => {
                       disabled={!hasPasswordProvider}
                       style={!hasPasswordProvider ? { opacity: 0.55, cursor: 'not-allowed' } : {}}
                     >
-                      Şifreyi Değiştir
+                      تغيير كلمة المرور
                     </button>
                   </span>
                 </div>
 
                 <div className="settings-security-item security-danger-row">
                   <div>
-                    <div className="security-danger-title">Hesabımı Devre Dışı Bırak</div>
+                    <div className="security-danger-title">تعطيل حسابي</div>
                     <div className="settings-security-subtitle">
-                      Hesabınız devre dışı bırakılır ve 60 gün boyunca geri açılabilir. 60 gün sonunda kalıcı olarak silinir.
+                      سيتم تعطيل حسابك ويمكن استعادته خلال 60 يوماً. بعد 60 يوماً، سيتم حذفه نهائياً.
                     </div>
                   </div>
                   <button className="settings-danger-button" onClick={() => setActiveModal('deleteAccount')}>
-                    Hesabı Devre Dışı Bırak
+                    تعطيل الحساب
                   </button>
                 </div>
               </div>
@@ -2507,7 +2500,7 @@ const ExpertProfilePage = () => {
 
           {activeSetting === 'address' && (
             <div className="settings-combined-container">
-              <h4 className="settings-section-title">Mevcut İş Yeri Adresiniz</h4>
+              <h4 className="settings-section-title">عنوان العمل الحالي</h4>
               
               {mainAddressData ? (
                 <div className="address-display-card">
@@ -2524,7 +2517,7 @@ const ExpertProfilePage = () => {
                   </div>
                 </div>
               ) : (
-                <p className="settings-helper-text">Henüz kayıtlı bir iş yeri adresi bulunamadı.</p>
+                <p className="settings-helper-text">لم يتم العثور على عنوان عمل مسجل بعد.</p>
               )}
 
               <div className="address-request-section" style={{ marginTop: '30px' }}>
@@ -2532,10 +2525,10 @@ const ExpertProfilePage = () => {
                 {addressRequest?.status === 'REJECTED' && (
                   <div className="rejection-alert-box">
                     <div className="rejection-alert-title">
-                      <i className="fas fa-exclamation-triangle"></i> Adres Değişiklik Talebiniz Reddedildi
+                      <i className="fas fa-exclamation-triangle"></i> تم رفض طلب تغيير العنوان
                     </div>
                     <p className="rejection-alert-reason">
-                      <strong>Red Nedeni:</strong> {addressRequest.rejectionReason || "Belirtilmemiş."}
+                      <strong>سبب الرفض:</strong> {addressRequest.rejectionReason || "غير محدد."}
                     </p>
                   </div>
                 )}
@@ -2552,19 +2545,19 @@ const ExpertProfilePage = () => {
                   }}
                 >
                   {(!addressRequest || addressRequest?.status === 'COMPLETED') && (
-                    <><i className="fas fa-file-signature"></i> Adres Değişikliği Talebinde Bulun</>
+                    <><i className="fas fa-file-signature"></i> طلب تغيير عنوان العمل</>
                   )}
                   
                   {addressRequest?.status === 'PENDING' && (
-                    <><i className="fas fa-hourglass-half"></i> Talep Değerlendirme Aşamasında</>
+                    <><i className="fas fa-hourglass-half"></i> الطلب قيد المراجعة</>
                   )}
                   
                   {addressRequest?.status === 'APPROVED' && (
-                    <><i className="fas fa-check-circle"></i> Onaylandı! Güncellemek İçin Tıklayın</>
+                    <><i className="fas fa-check-circle"></i> تم القبول! انقر للتحديث</>
                   )}
                   
                   {addressRequest?.status === 'REJECTED' && (
-                    <><i className="fas fa-redo"></i> Reddedildi. Tekrar Başvur</>
+                    <><i className="fas fa-redo"></i> تم الرفض. أعد تقديم الطلب</>
                   )}
                 </button>
               </div>
@@ -2572,148 +2565,63 @@ const ExpertProfilePage = () => {
           )}
         </section>
 
-        <div className="profile-grid">
-          <div className="profile-left-column">
-            <section className="profile-card-section">
-              <div className="section-header">
-                <h3><i className="fas fa-box"></i> Son İşlerim</h3>
-                <button
-                  className="view-all"
-                  onClick={() => setShowAllRecentJobs(true)}
-                  type="button"
-                >
-                  Tümü <i className="fas fa-arrow-right"></i>
-                </button>
+        <div className="profile-reviews-section">
+          <section className="profile-card-section">
+            <div className="section-header">
+              <h3><i className="fas fa-star"></i> تقييمات العملاء</h3>
+            </div>
+
+            <div className="profile-reviews-summary">
+              <div className="profile-reviews-summary__avg">
+                المتوسط: <span className="profile-reviews-summary__score">{fixedAvg}</span>{' '}
+                <i className="fas fa-star" aria-hidden="true"></i>
               </div>
-              <p className="settings-helper-text" style={{ marginBottom: '14px' }}>
-                {completedAppointments.length} tamamlanan iş kaydı, {uniqueCustomerCount} farklı müşteri
-              </p>
+              <div className="profile-reviews-summary__count">
+                {activeReviewCount} تقييم
+              </div>
+            </div>
+
+            {reviewsLoading ? (
+              <div style={{ color: 'var(--text-muted)', padding: '12px 0' }}>
+                <i className="fas fa-spinner fa-spin"></i> جاري تحميل التقييمات...
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="working-hours-empty-state" style={{ padding: '22px 12px' }}>
+                <i className="fas fa-comment-slash working-hours-empty-icon"></i>
+                <p>لا توجد تقييمات بعد.</p>
+              </div>
+            ) : (
               <div className="orders-list">
-                {visibleRecentJobs.length === 0 ? (
-                  <div className="ma-empty" style={{ padding: "18px", textAlign: "center" }}>
-                    <i className="fas fa-box-open ma-empty-icon"></i>
-                    <h3 className="ma-empty-title">Henüz tamamlanan işlem yok</h3>
-                    <p className="ma-empty-text">Bir randevunuz tamamlandığında burada görünecek.</p>
+                {reviews.map((r) => (
+                  <div key={r.id} className="order-item job-item profile-review-item">
+                    <div className="profile-review-item__body">
+                      <div className="profile-review-item__head">
+                        <div className="profile-review-stars" aria-label={`${r.rating || 0} yıldız`}>
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <i key={i} className="fas fa-star" style={{ opacity: i < Number(r.rating || 0) ? 1 : 0.25 }}></i>
+                          ))}
+                        </div>
+                        <div className="profile-review-date">
+                          {r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('ar-SY') : ''}
+                        </div>
+                      </div>
+                      <div className="profile-review-comment">
+                        {r.comment ? `“${sanitizeText(r.comment)}”` : <span className="profile-review-comment--empty">لم يتم إضافة تعليق.</span>}
+                      </div>
+                    </div>
                   </div>
-                ) : (
-                  visibleRecentJobs.map((job) => (
-                    <div key={job.id} className="order-item" role="button" tabIndex={0}>
-                      <div className="order-info" style={{ width: "100%" }}>
-                        <div className="order-title-row">
-                          <h4 className="order-title">{sanitizeText(job.title)}</h4>
-                          <span className="order-chevron" aria-hidden="true">
-                            <i className="fas fa-chevron-right"></i>
-                          </span>
-                        </div>
-
-                        <div className="order-meta">
-                          <span className="order-meta-item">
-                            <i className="fas fa-calendar-alt"></i> {sanitizeText(job.date || "")}
-                          </span>
-                          {job.time ? (
-                            <span className="order-meta-item">
-                              <i className="fas fa-clock"></i> {sanitizeText(job.time)}
-                            </span>
-                          ) : null}
-                          {(job.district || job.city) ? (
-                            <span className="order-meta-item">
-                              <i className="fas fa-map-marker-alt"></i>{" "}
-                              {sanitizeText([job.district, job.city].filter(Boolean).join(", "))}
-                            </span>
-                          ) : null}
-                        </div>
-
-                        <div className="order-subline">
-                          <span className="order-badge">
-                            <i className="fas fa-user"></i> {sanitizeText(job.client)}
-                          </span>
-                          <span className={`order-badge ${job.statusBadgeClass}`.trim()}>
-                            <i className={`fas ${job.statusIcon}`}></i> {sanitizeText(job.statusLabel)}
-                          </span>
-                        </div>
-
-                        {String(job.address || "").trim() ? (
-                          <div className="order-meta" style={{ marginTop: 10 }}>
-                            <span className="order-meta-item" title={sanitizeText(job.address)}>
-                              <i className="fas fa-location-dot"></i> {sanitizeText(job.address)}
-                            </span>
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  ))
-                )}
+                ))}
               </div>
-              {recentJobs.length > 3 && (
-                <button
-                  className="settings-secondary-button"
-                  style={{ width: '100%', marginTop: '15px', padding: '12px', fontWeight: 'bold' }}
-                  onClick={() => setShowAllRecentJobs((prev) => !prev)}
-                >
-                  {showAllRecentJobs ? 'Daha Az Göster' : 'Hepsini Görüntüle'}
-                </button>
-              )}
-            </section>
-          </div>
+            )}
 
-          <div className="profile-right-column">
-            <section className="profile-card-section">
-              <div className="section-header">
-                <h3><i className="fas fa-star"></i> Müşteri Yorumları</h3>
-              </div>
-
-              <div className="profile-reviews-summary">
-                <div className="profile-reviews-summary__avg">
-                  Ortalama: <span className="profile-reviews-summary__score">{fixedAvg}</span>{' '}
-                  <i className="fas fa-star" aria-hidden="true"></i>
-                </div>
-                <div className="profile-reviews-summary__count">
-                  {activeReviewCount} yorum
-                </div>
-              </div>
-
-              {reviewsLoading ? (
-                <div style={{ color: 'var(--text-muted)', padding: '12px 0' }}>
-                  <i className="fas fa-spinner fa-spin"></i> Yorumlar yükleniyor...
-                </div>
-              ) : reviews.length === 0 ? (
-                <div className="working-hours-empty-state" style={{ padding: '22px 12px' }}>
-                  <i className="fas fa-comment-slash working-hours-empty-icon"></i>
-                  <p>Henüz yorum yok.</p>
-                </div>
-              ) : (
-                <div className="orders-list">
-                  {reviews.map((r) => (
-                    <div key={r.id} className="order-item job-item profile-review-item">
-                      <div className="profile-review-item__body">
-                        <div className="profile-review-item__head">
-                          <div className="profile-review-stars" aria-label={`${r.rating || 0} yıldız`}>
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <i key={i} className="fas fa-star" style={{ opacity: i < Number(r.rating || 0) ? 1 : 0.25 }}></i>
-                            ))}
-                          </div>
-                          <div className="profile-review-date">
-                            {r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('tr-TR') : ''}
-                          </div>
-                        </div>
-                        <div className="profile-review-comment">
-                          {r.comment ? `“${sanitizeText(r.comment)}”` : <span className="profile-review-comment--empty">Yorum eklenmedi.</span>}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <button
-                className="settings-secondary-button"
-                style={{ width: '100%', marginTop: 12, padding: '12px', fontWeight: 'bold' }}
-                onClick={() => navigate(`/uzman/${user.uid}?tab=reviews`)}
-              >
-                Tümünü Gör (Herkese Açık Profil) →
-              </button>
-            </section>
-          </div>
+            <button
+              className="settings-secondary-button"
+              style={{ width: '100%', marginTop: 12, padding: '12px', fontWeight: 'bold' }}
+              onClick={() => navigate(`/uzman/${user.uid}?tab=reviews`)}
+            >
+              مشاهدة الكل (الملف الشخصي العام) →
+            </button>
+          </section>
         </div>
       </main>
 
@@ -2912,3 +2820,9 @@ const ExpertProfilePage = () => {
 };
 
 export default ExpertProfilePage;
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH:
+1. Recent Jobs ("Son İşlerim") section.
+2. ID Document ("kimlik belgesi") display / "Yasal Belgeler" section was simplified to only show certificates.
+*/

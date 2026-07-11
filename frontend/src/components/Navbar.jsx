@@ -72,7 +72,7 @@ const Navbar = () => {
             setFirestoreDisplayName(
               userData.displayName ||
               userData.email?.split('@')[0] ||
-              'Kullanıcı'
+              'مستخدم'
             );
           } else {
             setUserType(null);
@@ -293,7 +293,7 @@ const Navbar = () => {
   const pageType = getPageType();
 
   const getUserDisplayName = () => {
-    const name = firestoreDisplayName || user?.email?.split('@')[0] || 'Kullanıcı';
+    const name = firestoreDisplayName || user?.email?.split('@')[0] || 'مستخدم';
     return sanitizeText(name);
   };
 
@@ -310,37 +310,7 @@ const Navbar = () => {
 
       return (
         <>
-          {showExpertTokens && (
-            <div
-              className="navbar-token-wrapper"
-              onMouseEnter={() => setShowTokenTooltip(true)}
-              onMouseLeave={() => setShowTokenTooltip(false)}
-            >
-              <button
-                type="button"
-                className="navbar-token-badge"
-                onClick={() => {
-                  setIsTokenPanelOpen(true);
-                }}
-              >
-                <span className="token-icon-circle">
-                  <i className="fas fa-coins"></i>
-                </span>
-                <span className="token-amount-value">{tokenBalance}</span>
-                <span className="token-plus-icon">+</span>
-              </button>
-
-              {showTokenTooltip && (
-                <button
-                  type="button"
-                  className="token-tooltip-button"
-                  onClick={() => setIsTokenPanelOpen(true)}
-                >
-                  Jeton Yükle
-                </button>
-              )}
-            </div>
-          )}
+          {/* Token balance badge removed for Syria Launch */}
 
           {/* Notification bell removed for Syria Launch */}
 
@@ -399,11 +369,7 @@ const Navbar = () => {
 
                 {/* "KVKK" dropdown link removed for Syria Launch */}
 
-                {userType === 'PROVIDER' && (
-                  <Link to="/canli-isbasi-merkezi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
-                    <i className="fas fa-satellite-dish" style={{ color: '#4ade80' }}></i> مركز العمل المباشر
-                  </Link>
-                )}
+                {/* "Canlı İşbaşı" dropdown link removed for Syria Launch */}
 
                 {/* "Canlı Hizmet Takibi" dropdown links removed for Syria Launch */}
 
@@ -472,14 +438,7 @@ const Navbar = () => {
             {userType === 'PROVIDER' && (
               <>
                 <Link to="/uzman/ilanlarim" className="navbar-link">إعلاناتي</Link>
-                <Link to="/randevu-takvimi" className="navbar-link">
-                  جدول المواعيد
-                  {pendingAppointmentsCount > 0 && (
-                    <span className="nav-count-badge" aria-label={`Bekleyen randevu sayısı: ${pendingAppointmentsCount}`}>
-                      {pendingAppointmentsCount > 99 ? '99+' : pendingAppointmentsCount}
-                    </span>
-                  )}
-                </Link>
+                {/* "Randevu Takvimi" link removed for Syria Launch */}
               </>
             )}
 
@@ -517,14 +476,7 @@ const Navbar = () => {
                 {userType === 'PROVIDER' && (
                   <>
                     <Link to="/uzman/ilanlarim" onClick={closeMobileMenu}>إعلاناتي</Link>
-                    <Link to="/randevu-takvimi" onClick={closeMobileMenu} className="mobile-menu-link-with-badge">
-                      <span>جدول المواعيد</span>
-                      {pendingAppointmentsCount > 0 && (
-                        <span className="mobile-count-badge" aria-label={`Bekleyen randevu sayısı: ${pendingAppointmentsCount}`}>
-                          {pendingAppointmentsCount > 99 ? '99+' : pendingAppointmentsCount}
-                        </span>
-                      )}
-                    </Link>
+                    {/* "Randevu Takvimi" mobile link removed for Syria Launch */}
                   </>
                 )}
 
@@ -616,6 +568,9 @@ REMOVED BLOCKS FOR SYRIA LAUNCH (TURKISH FRONTEND SIMPLIFICATION):
 
 6. "Randevularım" Mobile Navbar Link:
                     <Link to="/customer-appointments" onClick={closeMobileMenu}>Randevularım</Link>
+7. Token Balance Badge ("saatlik ücret" / coins display on navbar)
+8. Appointment Calendar ("randevu-takvimi" / جدول المواعيد) links from desktop & mobile menus
+9. Live Work Center ("canli-isbasi-merkezi" / مركز العمل المباشر) dropdown link
 */
 
 export default Navbar;

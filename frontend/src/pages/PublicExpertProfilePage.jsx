@@ -269,14 +269,11 @@ const PublicExpertProfilePage = () => {
   const certificates = expertData?.certificates || [];
   const providerType = expertData?.providerType || '';
 
-  // Belgeler kayit sirasina gore: [0]=kimlik, [1..n-1]=sertifikalar, son=vergi levhasi (sadece sirket)
-  const identityDoc = certificates[0] || null;
   const isCompany = providerType === 'Şirket' || providerType === 'company';
-  const taxDoc = isCompany && certificates.length > 1 ? certificates[certificates.length - 1] : null;
-  const certDocs = certificates.slice(1, taxDoc ? certificates.length - 1 : certificates.length);
+  const taxDoc = isCompany && certificates.length > 0 ? certificates[certificates.length - 1] : null;
+  const certDocs = certificates.slice(0, taxDoc ? certificates.length - 1 : certificates.length);
 
   const docList = [
-    ...(identityDoc ? [{ label: 'الهوية', icon: 'fa-id-card' }] : []),
     ...certDocs.map((_, i) => ({ label: certDocs.length > 1 ? `شهادة ${i + 1}` : 'شهادة', icon: 'fa-certificate' })),
     ...(taxDoc ? [{ label: 'اللوحة الضريبية', icon: 'fa-file-invoice' }] : []),
   ];
@@ -573,3 +570,8 @@ const PublicExpertProfilePage = () => {
 };
 
 export default PublicExpertProfilePage;
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH:
+1. ID Document ("الهوية" / "identityDoc") from certificates list display (it is now treated as a regular certificate).
+*/

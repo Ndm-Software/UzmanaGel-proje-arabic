@@ -29,12 +29,12 @@ const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/jpg', 'application
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 const validateFile = (file, type) => {
-  if (!file) return { valid: false, error: `${type} dosyası bulunamadı` };
+  if (!file) return { valid: false, error: `ملف ${type} غير موجود.` };
   if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-    return { valid: false, error: `${type} dosyası sadece PDF, JPG veya PNG formatında olabilir.` };
+    return { valid: false, error: `ملف ${type} يجب أن يكون بصيغة PDF, JPG أو PNG فقط.` };
   }
   if (file.size > MAX_FILE_SIZE) {
-    return { valid: false, error: `${type} dosyası 5MB\'dan büyük olamaz.` };
+    return { valid: false, error: `ملف ${type} يجب أن يكون أصغر من 5MB.` };
   }
   return { valid: true, error: null };
 };
@@ -199,12 +199,12 @@ const ExpertCompleteProfilePage = () => {
     } catch (error) {
       if (isDevelopment) console.error('Veriler yüklenirken hata:', error.message);
       setCategoriesData([
-        { id: "temizlik", name: "Temizlik", expertise: ["Ev Temizliği", "Ofis Temizliği", "Halı Yıkama"] },
-        { id: "elektrikci", name: "Elektrikçi", expertise: ["Tesisat Çekimi", "Arıza Tespiti", "Sigorta Değişimi"] },
-        { id: "tesisatci", name: "Tesisatçı", expertise: ["Musluk Tamiri", "Klozet Montajı", "Petek Temizliği"] },
-        { id: "boya-badana", name: "Boya & Badana", expertise: ["İç Cephe Boya", "Dış Cephe Boya", "Alçı Sıva"] }
+        { id: "temizlik", name: "تنظيف", expertise: ["تنظيف منازل", "تنظيف مكاتب", "غسيل سجاد"] },
+        { id: "elektrikci", name: "كهربائي", expertise: ["تمديد شبكات", "كشف أعطال", "تبديل قواطع"] },
+        { id: "tesisatci", name: "سباك", expertise: ["تصليح صنابير", "تركيب مراحيض", "تنظيف رادياتير"] },
+        { id: "boya-badana", name: "دهان وجبس", expertise: ["دهان داخلي", "دهان خارجي", "جبس بورد"] }
       ]);
-      setCitiesData(["İstanbul", "Ankara", "İzmir", "Bursa", "Antalya", "Adana"]);
+      setCitiesData(["دمشق", "حلب", "حمص", "اللاذقية", "طرطوس", "حماة"]);
     } finally {
       setLoadingData(false);
     }
@@ -346,7 +346,7 @@ const ExpertCompleteProfilePage = () => {
     const files = Array.from(event.target.files);
     const validFiles = [];
     for (const file of files) {
-      const validation = validateFile(file, 'Sertifika');
+      const validation = validateFile(file, 'شهادة');
       if (validation.valid) {
         validFiles.push(file);
       } else {
@@ -393,7 +393,7 @@ const ExpertCompleteProfilePage = () => {
   const handleTaxPlateUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const validation = validateFile(file, 'Vergi levhası');
+      const validation = validateFile(file, 'اللوحة الضريبية');
       if (!validation.valid) {
         setError(validation.error);
         event.target.value = '';
@@ -439,38 +439,34 @@ const ExpertCompleteProfilePage = () => {
   };
 
   const validateStep1 = () => {
-    if (!formData.fullName.trim()) { setError('Ad Soyad gereklidir'); return false; }
-    if (formData.fullName.length > 100) { setError('Ad Soyad 100 karakterden uzun olamaz'); return false; }
-    if (!formData.businessName.trim()) { setError('İşletme adı gereklidir'); return false; }
-    if (formData.businessName.length > 200) { setError('İşletme adı 200 karakterden uzun olamaz'); return false; }
-    if (formData.selectedCategories.length === 0) { setError('Bir hizmet kategorisi seçmelisiniz'); return false; }
-    if (formData.providerType === 'company') {
-      if (!formData.taxNumber) { setError('Şirketler için vergi numarası gereklidir'); return false; }
-      if (!isTaxNumberValid(formData.taxNumber)) { setError('Vergi numarası 10 haneli olmalıdır'); return false; }
-    }
-    if (!selectedAddress && !formData.city) { setError('Adres bilgisi gereklidir'); return false; }
+    if (!formData.fullName.trim()) { setError('الاسم الكامل مطلوب'); return false; }
+    if (formData.fullName.length > 100) { setError('الاسم الكامل لا يمكن أن يتجاوز 100 حرف'); return false; }
+    if (!formData.businessName.trim()) { setError('اسم النشاط التجاري مطلوب'); return false; }
+    if (formData.businessName.length > 200) { setError('اسم النشاط التجاري لا يمكن أن يتجاوز 200 حرف'); return false; }
+    if (formData.selectedCategories.length === 0) { setError('يجب اختيار فئة خدمة واحدة'); return false; }
+    if (!selectedAddress && !formData.city) { setError('معلومات العنوان مطلوبة'); return false; }
     return true;
   };
 
   const validateStep2 = () => {
     const hasWorkingDay = Object.values(formData.workingHours).some(day => day.enabled);
-    if (!hasWorkingDay) { setError('En az bir gün için çalışma saati belirlemelisiniz'); return false; }
-    if (!formData.minPrice || !formData.maxPrice) { setError('Fiyat aralığı gereklidir'); return false; }
+    if (!hasWorkingDay) { setError('يجب تحديد ساعات العمل ليوم واحد على الأقل'); return false; }
+    if (!formData.minPrice || !formData.maxPrice) { setError('نطاق السعر مطلوب'); return false; }
     const minPriceNum = parseInt(formData.minPrice);
     const maxPriceNum = parseInt(formData.maxPrice);
-    if (isNaN(minPriceNum) || isNaN(maxPriceNum)) { setError('Geçerli fiyat giriniz'); return false; }
-    if (minPriceNum >= maxPriceNum) { setError('Minimum fiyat maksimum fiyattan küçük olmalıdır'); return false; }
-    if (minPriceNum < 0 || maxPriceNum > 1000000) { setError('Fiyat aralığı 0-1.000.000 TL arasında olmalıdır'); return false; }
+    if (isNaN(minPriceNum) || isNaN(maxPriceNum)) { setError('يرجى إدخال سعر صحيح'); return false; }
+    if (minPriceNum >= maxPriceNum) { setError('يجب أن يكون الحد الأدنى للسعر أقل من الحد الأقصى'); return false; }
+    if (minPriceNum < 0 || maxPriceNum > 1000000) { setError('يجب أن يكون نطاق السعر بين 0 و 1,000,000 ل.س'); return false; }
     return true;
   };
 
   const validateStep3 = () => {
-    if (!formData.experienceYears) { setError('Deneyim yılı gereklidir'); return false; }
+    if (!formData.experienceYears) { setError('سنوات الخبرة مطلوبة'); return false; }
     const expYears = parseInt(formData.experienceYears);
-    if (isNaN(expYears) || expYears < 0 || expYears > 50) { setError('Deneyim yılı 0-50 arasında olmalıdır'); return false; }
-    if (formData.selectedExpertise.length === 0) { setError('En az bir uzmanlık alanı seçmelisiniz'); return false; }
+    if (isNaN(expYears) || expYears < 0 || expYears > 50) { setError('يجب أن تكون سنوات الخبرة بين 0 و 50 عاماً'); return false; }
+    if (formData.selectedExpertise.length === 0) { setError('يجب عليك اختيار مجال تخصص واحد على الأقل'); return false; }
     if (formData.selectedExpertise.some(e => !String(e.startingPrice || '').trim() || Number(e.startingPrice) <= 0)) {
-      setError('Lütfen seçtiğiniz her uzmanlık için başlangıç fiyatı girin');
+      setError('يرجى إدخال سعر البداية لكل تخصص اخترته');
       return false;
     }
     
@@ -480,7 +476,7 @@ const ExpertCompleteProfilePage = () => {
       for (const expertise of formData.selectedExpertise) {
         const expertisePrice = Number(expertise.startingPrice);
         if (expertisePrice > maxPriceNum) {
-          setError(`"${sanitizeText(expertise.name)}" başlangıç fiyatı (${expertisePrice} TL) maksimum fiyatınızdan (${maxPriceNum} TL) yüksek olamaz.`);
+          setError(`سعر البداية لـ "${sanitizeText(expertise.name)}" (${expertisePrice} ل.س) لا يمكن أن يكون أعلى من الحد الأقصى للسعر (${maxPriceNum} ل.س).`);
           return false;
         }
       }
@@ -488,7 +484,6 @@ const ExpertCompleteProfilePage = () => {
     
     //if (!formData.identityFile) { setError('Kimlik belgesi yüklemelisiniz'); return false; }
 
-    if (formData.providerType === 'company' && !formData.taxPlateFile) { setError('Şirketler için vergi levhası yüklemelisiniz'); return false; }
     // Sertifikalar artık zorunlu değil - kontrol kaldırıldı
     return true;
   };
@@ -522,7 +517,7 @@ const ExpertCompleteProfilePage = () => {
 
     try {
       const uid = user?.uid || stateUid;
-      if (!uid) throw new Error('Kullanıcı bilgisi bulunamadı!');
+      if (!uid) throw new Error('تعذّر العثور على معلومات المستخدم!');
 
       const formDataObj = new FormData();
       let needsRequest = false;
@@ -557,7 +552,7 @@ const ExpertCompleteProfilePage = () => {
 
         if (verifyRes.status === 503) {
           const errorData = await verifyRes.json();
-          throw new Error(errorData.error || 'Belge doğrulama servisi şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.');
+          throw new Error(errorData.error || 'خدمة التحقق من المستندات غير متاحة حالياً. يرجى المحاولة مرة أخرى لاحقاً.');
         }
         if (!verifyRes.ok) throw new Error(`HTTP ${verifyRes.status}: ${verifyRes.statusText}`);
 
@@ -611,23 +606,9 @@ const ExpertCompleteProfilePage = () => {
         rejectionReason = 'Kimlik belgesi geçersiz';
       }*/
 
-      // Sertifikalar artık zorunlu değil - sadece varsa kontrol et
+      // Rejection control for certificates
       if (mergedResults.certificates && mergedResults.certificates.length > 0) {
-        if (mergedResults.certificates.every(c => c.verdict === 'rejected')) {
-          hasRejection = true;
-          rejectionReason = 'Tüm sertifikalar geçersiz';
-        }
-      }
-
-      if (formData.providerType === 'company') {
-        if (!mergedResults.taxPlate || mergedResults.taxPlate.verdict === 'rejected') {
-          hasRejection = true;
-          rejectionReason = 'Vergi levhası geçersiz';
-        }
-      }
-
-      if (hasRejection) {
-        setError("Lütfen geçerli belgeler yükleyip tekrar deneyin.");
+        setError("يرجى تحميل مستندات صالحة والمحاولة مجدداً.");
         return;
       }
 
@@ -667,7 +648,7 @@ const ExpertCompleteProfilePage = () => {
           providerType: formData.providerType,
           taxNumber: sanitizeText(formData.taxNumber).slice(0, 10),
           category: sanitizeText(categoryNames).slice(0, 500),
-          addressName: selectedAddress?.addressName ? sanitizeText(selectedAddress.addressName).slice(0, 200) : "İş Adresi",
+          addressName: selectedAddress?.addressName ? sanitizeText(selectedAddress.addressName).slice(0, 200) : "عنوان العمل",
           city: selectedAddress?.city ? sanitizeText(selectedAddress.city).slice(0, 100) : sanitizeText(formData.city).slice(0, 100),
           district: selectedAddress?.district ? sanitizeText(selectedAddress.district).slice(0, 100) : "",
           neighborhood: selectedAddress?.neighborhood ? sanitizeText(selectedAddress.neighborhood).slice(0, 100) : "",
@@ -709,7 +690,7 @@ const ExpertCompleteProfilePage = () => {
 
     } catch (err) {
       if (isDevelopment) console.error("Submit error:", err.message);
-      setError('Profil tamamlanırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+      setError('حدث خطأ أثناء إكمال الملف الشخصي. يرجى المحاولة مرة أخرى لاحقاً.');
       setAnalyzing(false);
       setLoading(false);
       setShowAnalysisModal(false);
@@ -733,15 +714,14 @@ const ExpertCompleteProfilePage = () => {
     const hasRejection = results && (
       (results.certificates && results.certificates.length > 0
         ? results.certificates.every(c => c.verdict === 'rejected')
-        : false) ||
-      (formData.providerType === 'company' && (!results.taxPlate || results.taxPlate.verdict === 'rejected'))
+        : false)
     );
 
     const headerTitle = analyzing
-      ? 'Belgeler Analiz Ediliyor'
+      ? 'جاري تحليل المستندات'
       : hasRejection
-        ? 'Belge Doğrulama Başarısız'
-        : 'Belge Analizi Tamamlandı';
+        ? 'فشل التحقق من المستندات'
+        : 'اكتمل تحليل المستندات';
 
     const headerIcon = analyzing
       ? 'fa-file-search'
@@ -768,9 +748,9 @@ const ExpertCompleteProfilePage = () => {
             {analyzing ? (
               <div className="analysis-loading">
                 <div className="loading-spinner"></div>
-                <p>Yüklediğiniz belgeler inceleniyor...</p>
-                <p className="loading-text">Sertifikalar ve vergi levhası kontrol ediliyor.</p>
-                <small>Bu işlem 5-10 saniye sürebilir.</small>
+                <p>جاري فحص المستندات التي قمت برفعها...</p>
+                <p className="loading-text">يتم التحقق من الشهادات واللوحة الضريبية.</p>
+                <small>قد تستغرق هذه العملية 5-10 ثوانٍ.</small>
               </div>
             ) : (
               <div className="analysis-results">
@@ -815,17 +795,17 @@ const ExpertCompleteProfilePage = () => {
                     </div>
                     <div className="result-content">
                       <div className="result-title">
-                        <strong>Sertifika {idx + 1}</strong>
+                        <strong>الشهادة {idx + 1}</strong>
                         <span className={`verdict-badge ${cert.verdict}`}>
-                          {cert.verdict === 'approved' ? 'ONAYLANDI' :
-                           cert.verdict === 'rejected' ? 'REDDEDİLDİ' : 'İNCELENMELİ'}
+                          {cert.verdict === 'approved' ? 'مقبول' :
+                           cert.verdict === 'rejected' ? 'مرفوض' : 'قيد المراجعة'}
                         </span>
                       </div>
                       <p className="result-reason">{sanitizeText(cert.reason)}</p>
                       {cert.verdict === 'rejected' && (
                         <div className="error-detail">
                           <i className="fas fa-info-circle"></i>
-                          <span>Bu belge nedeniyle kaydınız tamamlanamadı.</span>
+                          <span>لم يتم إكمال تسجيلك بسبب هذا المستند.</span>
                         </div>
                       )}
                     </div>
@@ -843,17 +823,17 @@ const ExpertCompleteProfilePage = () => {
                     </div>
                     <div className="result-content">
                       <div className="result-title">
-                        <strong>Vergi Levhası</strong>
+                        <strong>اللوحة الضريبية</strong>
                         <span className={`verdict-badge ${results.taxPlate.verdict}`}>
-                          {results.taxPlate.verdict === 'approved' ? 'ONAYLANDI' :
-                           results.taxPlate.verdict === 'rejected' ? 'REDDEDİLDİ' : 'İNCELENMELİ'}
+                          {results.taxPlate.verdict === 'approved' ? 'مقبول' :
+                           results.taxPlate.verdict === 'rejected' ? 'مرفوض' : 'قيد المراجعة'}
                         </span>
                       </div>
                       <p className="result-reason">{sanitizeText(results.taxPlate.reason)}</p>
                       {results.taxPlate.verdict === 'rejected' && (
                         <div className="error-detail">
                           <i className="fas fa-info-circle"></i>
-                          <span>Bu belge nedeniyle kaydınız tamamlanamadı.</span>
+                          <span>لم يتم إكمال تسجيلك بسبب هذا المستند.</span>
                         </div>
                       )}
                     </div>
@@ -863,14 +843,14 @@ const ExpertCompleteProfilePage = () => {
                 {hasRejection && (
                   <div className="rejection-warning">
                     <i className="fas fa-exclamation-triangle"></i>
-                    <p>Yukarıda belirtilen nedenlerden dolayı kaydınız tamamlanamadı. Lütfen geçerli belgeler yükleyip tekrar deneyin.</p>
+                    <p>تعذّر إكمال تسجيلك للأسباب المذكورة أعلاه. يرجى تحميل مستندات صالحة والمحاولة مجدداً.</p>
                   </div>
                 )}
 
                 {!hasRejection && results && (
                   <div className="success-warning">
                     <i className="fas fa-check-circle"></i>
-                    <p>Belgeler başarıyla doğrulandı! Profiliniz kaydediliyor...</p>
+                    <p>تم التحقق من المستندات بنجاح! جاري حفظ ملفك الشخصي...</p>
                   </div>
                 )}
               </div>
@@ -887,7 +867,7 @@ const ExpertCompleteProfilePage = () => {
                 }}
               >
                 <i className="fas fa-times"></i>
-                Kapat ve Düzelt
+                إغلاق وتعديل
               </button>
             </div>
           )}
@@ -901,7 +881,7 @@ const ExpertCompleteProfilePage = () => {
       <div className="expert-complete-page">
         <Navbar />
         <div className="loading-container">
-          <LoadingSpinner text="Yükleniyor..." />
+          <LoadingSpinner text="جاري التحميل..." />
         </div>
       </div>
     );
@@ -917,10 +897,10 @@ const ExpertCompleteProfilePage = () => {
               <div className="success-icon">
                 <i className="fas fa-check-circle"></i>
               </div>
-              <h3>Profil Tamamlandı!</h3>
-              <p>Profiliniz başarıyla oluşturuldu. Admin onayından sonra uzman olarak giriş yapabileceksiniz.</p>
-              <p className="info-text">Onay süreci tamamlandığında SMS ile bilgilendirileceksiniz.</p>
-              <p className="redirect-text">İlanlar sayfasına yönlendiriliyorsunuz...</p>
+              <h3>اكتمل الملف الشخصي!</h3>
+              <p>تم إنشاء ملفك الشخصي بنجاح. بعد موافقة المسؤول، ستتمكن من تسجيل الدخول كخبير.</p>
+              <p className="info-text">سيتم إعلامك عبر رسالة SMS عند اكتمال عملية الموافقة.</p>
+              <p className="redirect-text">جاري إعادة توجيهك إلى صفحة الإعلانات...</p>
             </div>
           </div>
         </main>
@@ -929,14 +909,14 @@ const ExpertCompleteProfilePage = () => {
   }
 
   return (
-    <div className="expert-complete-page">
+    <div className="expert-complete-page" dir="rtl">
       <Navbar />
       
       <main className="app-main">
         <div className="app-container">
           <div className="app-title-section">
-            <h1>Profili Tamamla</h1>
-            <p>Uzmanlık bilgilerinizi girin</p>
+            <h1>إكمال الملف الشخصي</h1>
+            <p>أدخل معلومات تخصصك</p>
           </div>
 
           <div className="form-container">
@@ -946,9 +926,9 @@ const ExpertCompleteProfilePage = () => {
                   <div className={`step-item ${currentStep === step ? 'active' : ''} ${currentStep > step ? 'completed' : ''}`} data-step={step}>
                     <div className="step-circle">{step}</div>
                     <span className="step-label">
-                      {step === 1 && 'İşletme'}
-                      {step === 2 && 'Çalışma'}
-                      {step === 3 && 'Profesyonel'}
+                      {step === 1 && 'المنشأة'}
+                      {step === 2 && 'العمل'}
+                      {step === 3 && 'الخبرة المهنية'}
                     </span>
                   </div>
                   {step < 3 && <div className="step-line"></div>}
@@ -958,73 +938,35 @@ const ExpertCompleteProfilePage = () => {
 
             {currentStep === 1 && (
               <div className="form-step active">
-                <h2 className="step-title">İşletme Bilgileri</h2>
+                <h2 className="step-title">معلومات المنشأة</h2>
                 <div className="form-grid">
                   <div className="form-group full-width">
                     <label className="form-label">
                       <i className="fas fa-user"></i>
-                      Ad Soyad <span className="required">*</span>
+                      الاسم الكامل <span className="required">*</span>
                     </label>
                     <input type="text" className="form-input" value={formData.fullName}
                       onChange={(e) => setFormData({...formData, fullName: e.target.value.slice(0, 100)})}
-                      placeholder="Ad Soyad" required disabled={loading || analyzing} maxLength="100" />
+                      placeholder="الاسم الكامل" required disabled={loading || analyzing} maxLength="100" />
                   </div>
 
                   <div className="form-group full-width">
                     <label className="form-label">
                       <i className="fas fa-building"></i>
-                      İşletme / Marka Adı <span className="required">*</span>
+                      اسم المنشأة / الاسم التجاري <span className="required">*</span>
                     </label>
                     <input type="text" className="form-input" value={formData.businessName}
                       onChange={(e) => setFormData({...formData, businessName: e.target.value.slice(0, 200)})}
-                      placeholder="İşletme veya marka adınız" required disabled={loading || analyzing} maxLength="200" />
+                      placeholder="اسم المنشأة أو اسمك التجاري" required disabled={loading || analyzing} maxLength="200" />
                   </div>
 
-                  <div className="form-group full-width">
-                    <label className="form-label">İşletme Türü <span className="required">*</span></label>
-                    <div className="business-type-cards">
-                      <label className={`business-card ${formData.providerType === 'individual' ? 'selected' : ''}`}
-                        onClick={() => setFormData({...formData, providerType: 'individual', taxNumber: ''})}>
-                        <div className="card-content">
-                          <div className="card-icon"><i className="fas fa-user-tie"></i></div>
-                          <div className="card-info"><h4>Şahıs İşletmesi</h4><p>Bireysel olarak hizmet verecekler</p></div>
-                          <div className="card-check"><i className="fas fa-check-circle"></i></div>
-                        </div>
-                      </label>
-                      <label className={`business-card ${formData.providerType === 'company' ? 'selected' : ''}`}
-                        onClick={() => setFormData({...formData, providerType: 'company'})}>
-                        <div className="card-content">
-                          <div className="card-icon"><i className="fas fa-building"></i></div>
-                          <div className="card-info"><h4>Şirket</h4><p>Limited, Anonim vb. şirketler</p></div>
-                          <div className="card-check"><i className="fas fa-check-circle"></i></div>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-
-                  {formData.providerType === 'company' && (
-                    <div className="form-group full-width">
-                      <label className="form-label">
-                        <i className="fas fa-building"></i>
-                        Vergi Numarası <span className="required">*</span>
-                      </label>
-                      <input type="text"
-                        className={`form-input ${formData.taxNumber.length > 0 && !isTaxNumberValid(formData.taxNumber) ? 'input-error' : formData.taxNumber.length === 10 ? 'input-success' : ''}`}
-                        value={formData.taxNumber} onChange={(e) => handleTaxNumberChange(e.target.value)}
-                        placeholder="10 haneli vergi numarası" maxLength={10} inputMode="numeric" disabled={loading || analyzing} />
-                      <small className={`field-hint ${formData.taxNumber.length > 0 && !isTaxNumberValid(formData.taxNumber) ? 'hint-error' : ''}`}>
-                        {formData.taxNumber.length > 0
-                          ? `${formData.taxNumber.length}/10 hane${formData.taxNumber.length === 10 ? ' ✓' : ''}`
-                          : 'Şirketler için 10 haneli vergi numarası zorunludur'}
-                      </small>
-                    </div>
-                  )}
+                  {/* Business type cards and tax number inputs removed for individual-only setup */}
 
                   <div className="form-group full-width">
                     <label className="form-label">
                       <i className="fas fa-tags"></i>
-                      Hizmet Kategorisi <span className="required">*</span>
-                      <span className="selected-count">1 kategori seçilebilir</span>
+                      فئة الخدمة <span className="required">*</span>
+                      <span className="selected-count">يمكن اختيار فئة واحدة فقط</span>
                     </label>
                     <div className="categories-grid">
                       {categoriesData.map(category => (
@@ -1036,7 +978,7 @@ const ExpertCompleteProfilePage = () => {
                       ))}
                       <div className={`category-item other-category ${formData.showCustomCategoryInput ? 'selected' : ''}`}
                         onClick={() => setFormData(prev => ({...prev, showCustomCategoryInput: true}))}>
-                        <i className="fas fa-plus"></i> Diğer
+                        <i className="fas fa-plus"></i> أخرى
                       </div>
                     </div>
 
@@ -1045,9 +987,9 @@ const ExpertCompleteProfilePage = () => {
                         <div className="expertise-add">
                           <input type="text" className="form-input" value={formData.customCategoryInput}
                             onChange={(e) => setFormData({...formData, customCategoryInput: e.target.value.slice(0, 100)})}
-                            placeholder="Kategori adı yazın..." autoFocus disabled={loading || analyzing} maxLength="100" />
+                            placeholder="اكتب اسم الفئة..." autoFocus disabled={loading || analyzing} maxLength="100" />
                           <button type="button" className="btn-add" onClick={addCustomCategory} disabled={loading || analyzing}>
-                            <i className="fas fa-plus"></i> Ekle
+                            <i className="fas fa-plus"></i> إضافة
                           </button>
                           <button type="button" className="btn-cancel"
                             onClick={() => setFormData(prev => ({...prev, showCustomCategoryInput: false, customCategoryInput: ''}))}
@@ -1060,7 +1002,7 @@ const ExpertCompleteProfilePage = () => {
 
                     {formData.selectedCategories.filter(c => c.isCustom).length > 0 && (
                       <div className="custom-items-list">
-                        <label className="form-label small">Eklediğiniz Kategoriler:</label>
+                        <label className="form-label small">الفئات التي أضفتها:</label>
                         <div className="custom-items-tags">
                           {formData.selectedCategories.filter(c => c.isCustom).map((category, index) => (
                             <div key={index} className="custom-item-tag">
@@ -1078,20 +1020,20 @@ const ExpertCompleteProfilePage = () => {
                   <div className="form-group full-width">
                     <label className="form-label">
                       <i className="fas fa-map-marker-alt"></i>
-                      Adres Bilgisi <span className="required">*</span>
-                      <span className="address-hint">(Lütfen iş yeri adresinizi giriniz)</span>
+                      معلومات العنوان <span className="required">*</span>
+                      <span className="address-hint">(يرجى إدخال عنوان مقر العمل الخاص بك)</span>
                     </label>
                     <button type="button" className="btn-add" onClick={openAddressModal}
                       style={{ marginBottom: '15px', width: '100%' }} disabled={loading || analyzing}>
                       <i className="fas fa-plus"></i>
-                      {selectedAddress ? 'Adresi Düzenle' : 'Adres Ekle / Seç'}
+                      {selectedAddress ? 'تعديل العنوان' : 'إضافة / اختيار العنوان'}
                     </button>
                     {selectedAddress && (
                       <div className="custom-items-list">
                         <div className="custom-item-tag" style={{ width: '100%', justifyContent: 'space-between' }}>
                           <div>
                             <i className="fas fa-home"></i>
-                            <strong>{sanitizeText(selectedAddress.addressName || 'Kayıtlı Adres')}</strong>
+                            <strong>{sanitizeText(selectedAddress.addressName || 'العنوان المسجل')}</strong>
                             <p style={{ margin: '5px 0 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
                               {sanitizeText(selectedAddress.city)} {sanitizeText(selectedAddress.district)} {sanitizeText(selectedAddress.neighborhood)}
                             </p>
@@ -1106,41 +1048,36 @@ const ExpertCompleteProfilePage = () => {
 
             {currentStep === 2 && (
               <div className="form-step active">
-                <h2 className="step-title">Çalışma Detayları</h2>
+                <h2 className="step-title">تفاصيل العمل</h2>
                 <div className="form-grid">
                   <div className="form-group">
-                    <label className="form-label"><i className="fas fa-tag"></i> Min Fiyat (₺) <span className="required">*</span></label>
+                    <label className="form-label"><i className="fas fa-tag"></i> الحد الأدنى للسعر (ل.س) <span className="required">*</span></label>
                     <input type="number" className="form-input" value={formData.minPrice}
                       onChange={(e) => setFormData({...formData, minPrice: e.target.value.slice(0, 10)})}
-                      placeholder="Min. fiyat" min="0" max="1000000" required disabled={loading || analyzing} />
+                      placeholder="الحد الأدنى" min="0" max="1000000" required disabled={loading || analyzing} />
                   </div>
                   <div className="form-group">
-                    <label className="form-label"><i className="fas fa-tag"></i> Max Fiyat (₺) <span className="required">*</span></label>
+                    <label className="form-label"><i className="fas fa-tag"></i> الحد الأقصى للسعر (ل.س) <span className="required">*</span></label>
                     <input type="number" className="form-input" value={formData.maxPrice}
                       onChange={(e) => setFormData({...formData, maxPrice: e.target.value.slice(0, 10)})}
-                      placeholder="Max. fiyat" min="0" max="1000000" required disabled={loading || analyzing} />
+                      placeholder="الحد الأقصى" min="0" max="1000000" required disabled={loading || analyzing} />
                   </div>
 
                   <div className="form-group full-width">
-                    <label className="form-label"><i className="fas fa-coins"></i> Fiyatlandırma Modeli <span className="required">*</span></label>
+                    <label className="form-label"><i className="fas fa-coins"></i> نموذج التسعير <span className="required">*</span></label>
                     <div className="pricing-type-group">
                       <label className="pricing-option">
                         <input type="radio" name="pricingModel" checked={formData.pricingModel === 'Proje Bazlı'}
                           onChange={() => setFormData({...formData, pricingModel: 'Proje Bazlı'})} disabled={loading || analyzing} />
-                        <span>Proje Bazlı</span>
-                      </label>
-                      <label className="pricing-option">
-                        <input type="radio" name="pricingModel" checked={formData.pricingModel === 'Saatlik Ücret'}
-                          onChange={() => setFormData({...formData, pricingModel: 'Saatlik Ücret'})} disabled={loading || analyzing} />
-                        <span>Saatlik Ücret</span>
+                        <span>مشروع كامل</span>
                       </label>
                     </div>
                   </div>
 
                   <div className="form-group full-width">
                     <label className="form-label">
-                      <i className="fas fa-clock"></i> Çalışma Saatleri <span className="required">*</span>
-                      <span className="field-hint">En az bir gün seçmelisiniz</span>
+                      <i className="fas fa-clock"></i> أوقات العمل <span className="required">*</span>
+                      <span className="field-hint">يجب اختيار يوم واحد على الأقل</span>
                     </label>
                     <div className="working-hours-grid">
                       {Object.entries(formData.workingHours).map(([day, hours]) => (
@@ -1151,10 +1088,10 @@ const ExpertCompleteProfilePage = () => {
                                 onChange={(e) => handleWorkingHourChange(day, 'enabled', e.target.checked)}
                                 disabled={loading || analyzing} />
                               <span className="day-name">
-                                {day === 'monday' && 'Pazartesi'}{day === 'tuesday' && 'Salı'}
-                                {day === 'wednesday' && 'Çarşamba'}{day === 'thursday' && 'Perşembe'}
-                                {day === 'friday' && 'Cuma'}{day === 'saturday' && 'Cumartesi'}
-                                {day === 'sunday' && 'Pazar'}
+                                {day === 'monday' && 'الاثنين'}{day === 'tuesday' && 'الثلاثاء'}
+                                {day === 'wednesday' && 'الأربعاء'}{day === 'thursday' && 'الخميس'}
+                                {day === 'friday' && 'الجمعة'}{day === 'saturday' && 'السبت'}
+                                {day === 'sunday' && 'الأحد'}
                               </span>
                             </label>
                           </div>
@@ -1177,25 +1114,25 @@ const ExpertCompleteProfilePage = () => {
 
             {currentStep === 3 && (
               <div className="form-step active">
-                <h2 className="step-title">Profesyonel Bilgiler</h2>
+                <h2 className="step-title">الخبرة المهنية</h2>
                 <div className="form-grid">
                   <div className="form-group">
-                    <label className="form-label"><i className="fas fa-briefcase"></i> Deneyim Yılı <span className="required">*</span></label>
+                    <label className="form-label"><i className="fas fa-briefcase"></i> سنوات الخبرة <span className="required">*</span></label>
                     <input type="number" name="experienceYears" className="form-input" value={formData.experienceYears}
                       onChange={(e) => setFormData({...formData, experienceYears: e.target.value.slice(0, 2)})}
-                      placeholder="Örn: 5" min="0" max="50" required disabled={loading || analyzing} />
+                      placeholder="مثال: 5" min="0" max="50" required disabled={loading || analyzing} />
                   </div>
                   <div className="form-group">
-                    <label className="form-label"><i className="fas fa-graduation-cap"></i> Eğitim Bilgisi <span className="optional">(opsiyonel)</span></label>
+                    <label className="form-label"><i className="fas fa-graduation-cap"></i> المعلومات التعليمية <span className="optional">(اختياري)</span></label>
                     <input type="text" className="form-input" value={formData.educationInfo}
                       onChange={(e) => setFormData({...formData, educationInfo: e.target.value.slice(0, 500)})}
-                      placeholder="Okul / Bölüm" disabled={loading || analyzing} maxLength="500" />
+                      placeholder="المدرسة / القسم" disabled={loading || analyzing} maxLength="500" />
                   </div>
 
                   <div className="form-group full-width">
                     <label className="form-label">
-                      <i className="fas fa-star"></i> Uzmanlık Alanları <span className="required">*</span>
-                      <span className="selected-count">{formData.selectedExpertise.length} seçildi</span>
+                      <i className="fas fa-star"></i> مجالات التخصص <span className="required">*</span>
+                      <span className="selected-count">تم تحديد {formData.selectedExpertise.length}</span>
                     </label>
                     {availableExpertise.length > 0 && (
                       <div className="categories-grid">
@@ -1208,7 +1145,7 @@ const ExpertCompleteProfilePage = () => {
                         ))}
                         <div className={`category-item other-category ${formData.showCustomExpertiseInput ? 'selected' : ''}`}
                           onClick={() => setFormData(prev => ({...prev, showCustomExpertiseInput: true}))}>
-                          <i className="fas fa-plus"></i> Diğer
+                          <i className="fas fa-plus"></i> أخرى
                         </div>
                       </div>
                     )}
@@ -1218,9 +1155,9 @@ const ExpertCompleteProfilePage = () => {
                         <div className="expertise-add">
                           <input type="text" className="form-input" value={formData.customExpertiseInput}
                             onChange={(e) => setFormData({...formData, customExpertiseInput: e.target.value.slice(0, 100)})}
-                            placeholder="Uzmanlık alanı yazın..." autoFocus disabled={loading || analyzing} maxLength="100" />
+                            placeholder="اكتب مجال التخصص..." autoFocus disabled={loading || analyzing} maxLength="100" />
                           <button type="button" className="btn-add" onClick={addCustomExpertise} disabled={loading || analyzing}>
-                            <i className="fas fa-plus"></i> Ekle
+                            <i className="fas fa-plus"></i> إضافة
                           </button>
                           <button type="button" className="btn-cancel"
                             onClick={() => setFormData(prev => ({...prev, showCustomExpertiseInput: false, customExpertiseInput: ''}))}
@@ -1233,7 +1170,7 @@ const ExpertCompleteProfilePage = () => {
 
                     {formData.selectedExpertise.filter(e => e.isCustom).length > 0 && (
                       <div className="custom-items-list">
-                        <label className="form-label small">Eklediğiniz Uzmanlıklar:</label>
+                        <label className="form-label small">مجالات التخصص التي أضفتها:</label>
                         <div className="custom-items-tags">
                           {formData.selectedExpertise.filter(e => e.isCustom).map((expertise, index) => (
                             <div key={index} className="custom-item-tag">
@@ -1250,7 +1187,7 @@ const ExpertCompleteProfilePage = () => {
                     {formData.selectedExpertise.length > 0 && (
                       <div style={{ marginTop: 14 }}>
                         <label className="form-label small" style={{ marginBottom: 10, display: 'block' }}>
-                          Başlangıç Fiyatları <span className="required">*</span>
+                          أسعار البداية <span className="required">*</span>
                         </label>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
                           {formData.selectedExpertise.map((e, idx) => (
@@ -1265,15 +1202,15 @@ const ExpertCompleteProfilePage = () => {
                                   className="form-input"
                                   value={e.startingPrice || ""}
                                   onChange={(ev) => setExpertiseStartingPrice(e.name, ev.target.value)}
-                                  placeholder="Örn: 600"
+                                  placeholder="مثال: 600"
                                   disabled={loading || analyzing}
                                   required
                                   maxLength="10"
                                 />
-                                <span style={{ color: 'var(--text-muted)', fontWeight: 700 }}>TL</span>
+                                <span style={{ color: 'var(--text-muted)', fontWeight: 700 }}>ل.س</span>
                               </div>
                               <small style={{ color: 'var(--text-muted)' }}>
-                                “{sanitizeText(e.name)}” için başlangıç fiyatı
+                                سعر البداية لـ “{sanitizeText(e.name)}”
                               </small>
                             </div>
                           ))}
@@ -1283,54 +1220,22 @@ const ExpertCompleteProfilePage = () => {
                   </div>
 
                   <div className="form-group full-width">
-                    <label className="form-label"><i className="fas fa-file-upload"></i> Belgeler</label>
+                    <label className="form-label"><i className="fas fa-file-upload"></i> المستندات</label>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginTop: '15px' }}>
-
-                                            {/* Eski Kimlik Belgesi kartı gerektiğinde geri açılabilir.
-<div className="upload-card">
-                        <div className="upload-card-header">
-                          <i className="fas fa-id-card"></i>
-                          <span>Kimlik Belgesi <span className="required">*</span></span>
-                        </div>
-                        <div className="upload-card-body">
-                          <input type="file" id="identity-upload" accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={handleIdentityUpload} style={{ display: 'none' }} disabled={loading || analyzing} />
-                          <button type="button" className="btn-upload"
-                            onClick={() => document.getElementById('identity-upload').click()} disabled={loading || analyzing}>
-                            <i className="fas fa-upload"></i> {formData.identityFile ? 'Dosyayı Değiştir' : 'Dosya Seç'}
-                          </button>
-                          <small>PDF, JPG, PNG (max 5MB)</small>
-                        </div>
-                        {formData.identityFile ? (
-                          <div className="upload-card-footer">
-                            <div className="uploaded-file">
-                              <i className="fas fa-file"></i>
-                              <span>{formData.identityFile.name.length > 20 ? formData.identityFile.name.slice(0, 15) + '...' : formData.identityFile.name}</span>
-                              <button onClick={removeIdentityFile} disabled={loading || analyzing}>✕</button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="upload-card-warning">
-                            <i className="fas fa-exclamation-circle"></i> Kimlik yüklemelisiniz
-                          </div>
-                        )}
-                      </div>
-
-                      */}
 
                       <div className="upload-card">
                         <div className="upload-card-header">
                           <i className="fas fa-certificate"></i>
-                          <span>Sertifikalar <span className="optional">(opsiyonel)</span></span>
+                          <span>الشهادات <span className="optional">(اختياري)</span></span>
                         </div>
                         <div className="upload-card-body">
                           <input type="file" id="certificate-upload-input" accept=".pdf,.jpg,.jpeg,.png" multiple
                             onChange={handleCertificateUpload} style={{ display: 'none' }} disabled={loading || analyzing} />
                           <button type="button" className="btn-upload"
                             onClick={() => document.getElementById('certificate-upload-input').click()} disabled={loading || analyzing}>
-                            <i className="fas fa-upload"></i> Dosya Seç
+                            <i className="fas fa-upload"></i> اختر ملفاً
                           </button>
-                          <small>PDF, JPG, PNG (max 5MB) - Birden fazla seçebilirsiniz (opsiyonel)</small>
+                          <small>PDF, JPG, PNG (بحد أقصى 5MB) - يمكنك تحديد ملفات متعددة (اختياري)</small>
                         </div>
                         {formData.certificateFilesList.length > 0 ? (
                           <div className="upload-card-footer">
@@ -1346,52 +1251,13 @@ const ExpertCompleteProfilePage = () => {
                           <div className="upload-card-footer">
                             <div className="uploaded-file" style={{ opacity: 0.6 }}>
                               <i className="fas fa-info-circle"></i>
-                              <span>Opsiyonel, atlanabilir</span>
+                              <span>اختياري، يمكن تخطيه</span>
                             </div>
                           </div>
                         )}
                       </div>
 
-                      {formData.providerType === 'company' ? (
-                        <div className="upload-card">
-                          <div className="upload-card-header">
-                            <i className="fas fa-file-invoice"></i>
-                            <span>Vergi Levhası <span className="required">*</span></span>
-                          </div>
-                          <div className="upload-card-body">
-                            <input type="file" id="taxplate-upload" accept=".pdf,.jpg,.jpeg,.png"
-                              onChange={handleTaxPlateUpload} style={{ display: 'none' }} disabled={loading || analyzing} />
-                            <button type="button" className="btn-upload"
-                              onClick={() => document.getElementById('taxplate-upload').click()} disabled={loading || analyzing}>
-                              <i className="fas fa-upload"></i> {formData.taxPlateFile ? 'Dosyayı Değiştir' : 'Dosya Seç'}
-                            </button>
-                            <small>PDF, JPG, PNG (max 5MB)</small>
-                          </div>
-                          {formData.taxPlateFile ? (
-                            <div className="upload-card-footer">
-                              <div className="uploaded-file">
-                                <i className="fas fa-file"></i>
-                                <span>{formData.taxPlateFile.name.length > 20 ? formData.taxPlateFile.name.slice(0, 15) + '...' : formData.taxPlateFile.name}</span>
-                                <button onClick={removeTaxPlateFile} disabled={loading || analyzing}>✕</button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="upload-card-warning">
-                              <i className="fas fa-exclamation-circle"></i> Vergi levhası yüklemelisiniz
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="upload-card empty-card">
-                          <div className="upload-card-header">
-                            <i className="fas fa-building"></i>
-                            <span>Şahıs İşletmesi</span>
-                          </div>
-                          <div className="upload-card-body">
-                            <p className="empty-message">Vergi levhası gerekmez</p>
-                          </div>
-                        </div>
-                      )}
+                      {/* Company tax plate upload card removed */}
                     </div>
                   </div>
                 </div>
@@ -1410,22 +1276,22 @@ const ExpertCompleteProfilePage = () => {
             <div className="form-navigation">
               {currentStep > 1 && (
                 <button className="btn btn-secondary" onClick={prevStep} disabled={loading || analyzing}>
-                  <i className="fas fa-arrow-left"></i> Geri
+                  <i className="fas fa-arrow-left"></i> رجوع
                 </button>
               )}
               {currentStep < totalSteps ? (
                 <button className="btn btn-primary" onClick={nextStep} disabled={loading || analyzing}>
-                  İleri <i className="fas fa-arrow-right"></i>
+                  التالي <i className="fas fa-arrow-right"></i>
                 </button>
               ) : (
                 <button className="btn btn-primary" onClick={handleSubmit}
                   disabled={loading || analyzing} style={{ minWidth: '200px' }}>
                   {loading ? (
-                    <span><i className="fas fa-spinner fa-spin"></i> Kaydediliyor...</span>
+                    <span><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</span>
                   ) : analyzing ? (
-                    <span><i className="fas fa-spinner fa-spin"></i> Belgeler Analiz Ediliyor...</span>
+                    <span><i className="fas fa-spinner fa-spin"></i> جاري تحليل المستندات...</span>
                   ) : (
-                    <span><i className="fas fa-check"></i> Kaydet ve Bitir</span>
+                    <span><i className="fas fa-check"></i> حفظ وإنهاء</span>
                   )}
                 </button>
               )}
@@ -1448,3 +1314,11 @@ const ExpertCompleteProfilePage = () => {
 };
 
 export default ExpertCompleteProfilePage;
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH:
+1. Company ("şirket") provider type option.
+2. Tax number ("taxNumber") input and validation.
+3. Tax plate ("taxPlateFile") upload card and validation.
+4. Hourly rate ("saatlik ücret") option (was already not present in Arabic).
+*/

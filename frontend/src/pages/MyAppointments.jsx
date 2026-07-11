@@ -160,7 +160,7 @@ const MyAppointments = () => {
   useEffect(() => {
     if (!expandedId) return;
     const req = myRequests.find((r) => r.id === expandedId);
-    if (req?.status === 'completed') {
+    if (req?.status === 'completed' || req?.status === 'approved' || req?.status === 'expired') {
       ensureReviewLoaded(expandedId);
     }
   }, [expandedId, myRequests]);
@@ -264,7 +264,7 @@ const MyAppointments = () => {
 
     if (next) {
       const req = myRequests.find((r) => r.id === next);
-      if (req?.status === 'completed') {
+      if (req?.status === 'completed' || req?.status === 'approved' || req?.status === 'expired') {
         ensureReviewLoaded(next);
       }
     }
@@ -617,7 +617,8 @@ const continueToChatFromRequest = async (
 
         if (!apptSnap.exists()) throw new Error('Randevu bulunamadı.');
         const appt = apptSnap.data() || {};
-        if (appt.status !== 'completed') throw new Error('Sadece tamamlanmış randevular değerlendirilebilir.');
+        const allowedStatuses = ['completed', 'approved', 'expired'];
+        if (!allowedStatuses.includes(appt.status)) throw new Error('Sadece onaylanmış, tamamlanmış veya geçmiş randevular değerlendirilebilir.');
         if (appt.clientId !== auth.currentUser.uid) throw new Error('Bu randevuyu sadece sahibi değerlendirebilir.');
 
         const expertId = appt.expertId || req.expertId || null;
@@ -1282,7 +1283,7 @@ const continueToChatFromRequest = async (
                         </div>
                       )}
 
-                      {isCompleted && (
+                      {(isCompleted || isApproved || req.status === 'expired') && (
                         <div style={{ marginTop: '12px' }}>
                           {reviewsByAppointmentId?.[req.id] ? (
                             <div style={{ 
@@ -1727,5 +1728,25 @@ const continueToChatFromRequest = async (
     </div>
   );
 };
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH (TURKISH FRONTEND SIMPLIFICATION):
+
+1. expandedId check in useEffect:
+    if (req?.status === 'completed') {
+      ensureReviewLoaded(expandedId);
+    }
+
+2. next check in toggleExpand:
+      if (req?.status === 'completed') {
+        ensureReviewLoaded(next);
+      }
+
+3. appt.status check in submitReview transaction:
+        if (appt.status !== 'completed') throw new Error('Sadece tamamlanmış randevular değerlendirilebilir.');
+
+4. isCompleted check in UI:
+                      {isCompleted && (
+*/
 
 export default MyAppointments;

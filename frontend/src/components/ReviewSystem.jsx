@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { db } from '../firebase/firebaseClient';
-import { collection, query, where, orderBy, onSnapshot, doc, getDoc, getDocs } from 'firebase/firestore';
+import { db, auth } from '../firebase/firebaseClient';
+import { collection, query, where, orderBy, onSnapshot, doc, getDoc, getDocs, addDoc, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { motion } from 'framer-motion';
+import { showAppToast } from '../utils/showAppToast';
 import '../styles/ReviewSystem.css';
 
 const API_BASE_URL =
@@ -43,6 +44,214 @@ const ReviewSystem = ({
   const [activeListingIds, setActiveListingIds] = useState(null); // Set<string> | null
   const [activeListingLoading, setActiveListingLoading] = useState(false);
 
+  // Syria Launch Direct Review States
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (usr) => {
+      setCurrentUser(usr);
+      if (usr) {
+        try {
+          const userDoc = await getDoc(doc(db, 'users', usr.uid));
+          if (userDoc.exists()) {
+            setUserRole(userDoc.data()?.userType || 'CLIENT');
+          }
+        } catch {
+          setUserRole('CLIENT');
+        }
+      } else {
+        setUserRole(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleWriteReviewClick = () => {
+    if (!currentUser) {
+      showAppToast("Değerlendirme yapmak için lütfen giriş yapın.", "error");
+      return;
+    }
+    if (userRole === 'PROVIDER' || userRole === 'PENDING_PROVIDER') {
+      showAppToast("Uzmanlar değerlendirme yapamaz.", "error");
+      return;
+    }
+    setIsModalOpen(true);
+    setRating(0);
+    setComment("");
+  };
+
+  const handleSubmitReview = async () => {
+    if (rating < 1 || rating > 5) {
+      showAppToast("Lütfen 1-5 arası bir puan seçin.", "error");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      let expertId = null;
+      let listingId = null;
+      let listingTitle = "";
+
+      const isDev = process.env.NODE_ENV === 'development';
+
+      if (targetType === 'listing') {
+        listingId = targetId;
+        // Fetch listing to resolve expertId and title
+        const listingSnap = await getDoc(doc(db, 'services', listingId));
+        if (listingSnap.exists()) {
+          const data = listingSnap.data() || {};
+          expertId = data.providerId || null;
+          listingTitle = data.title || "";
+        } else {
+          throw new Error("Hizmet bilgisi bulunamadı.");
+        }
+      } else {
+        expertId = targetId;
+        listingId = null;
+        listingTitle = null;
+      }
+
+      if (!expertId) {
+        throw new Error("Uzman bilgisi bulunamadı.");
+      }
+
+      // Check if an appointment exists
+      const appointmentsRef = collection(db, 'appointments');
+      let q;
+      if (listingId) {
+        q = query(
+          appointmentsRef,
+          where('clientId', '==', currentUser.uid),
+          where('expertId', '==', expertId),
+          where('listingId', '==', listingId)
+        );
+      } else {
+        q = query(
+          appointmentsRef,
+          where('clientId', '==', currentUser.uid),
+          where('expertId', '==', expertId)
+        );
+      }
+
+      const querySnap = await getDocs(q);
+      let apptId = null;
+
+      if (!querySnap.empty) {
+        apptId = querySnap.docs[0].id;
+      } else {
+        // Create a dummy approved appointment
+        let clientName = currentUser.displayName || "Müşteri";
+        try {
+          const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+          if (userDoc.exists()) {
+            clientName = userDoc.data().displayName || clientName;
+          }
+        } catch (err) {
+          if (isDev) console.error("Client name load error:", err);
+        }
+
+        let expertName = "Uzman";
+        try {
+          const expertDoc = await getDoc(doc(db, 'service_providers', expertId));
+          if (expertDoc.exists()) {
+            const data = expertDoc.data() || {};
+            expertName = data.businessName || data.displayName || "Uzman";
+          }
+        } catch (err) {
+          if (isDev) console.error("Expert name load error:", err);
+        }
+
+        const todayStr = new Date().toLocaleDateString('sv-SE');
+        const dummyAppointment = {
+          clientId: currentUser.uid,
+          expertId: expertId,
+          listingId: listingId || null,
+          listingTitle: listingTitle || null,
+          expertName: expertName,
+          client: clientName,
+          date: todayStr,
+          start: "12:00",
+          end: "12:15",
+          status: "approved",
+          createdBy: "customer",
+          createdTime: Date.now(),
+          note: "Doğrudan Değerlendirme Başlatıldı",
+          fullAddress: "Çevrimiçi Görüşme",
+          address: "Çevrimiçi",
+        };
+
+        const newApptDoc = await addDoc(collection(db, 'appointments'), dummyAppointment);
+        apptId = newApptDoc.id;
+      }
+
+      // Execute Firebase transaction for review and stats updates
+      await runTransaction(db, async (transaction) => {
+        const reviewRef = doc(db, 'reviews', apptId);
+        const expertRef = doc(db, 'service_providers', expertId);
+        const serviceRef = listingId ? doc(db, 'services', listingId) : null;
+
+        const existingReview = await transaction.get(reviewRef);
+        if (existingReview.exists()) {
+          throw new Error('Bu randevu/işlem zaten değerlendirilmiş.');
+        }
+
+        const expertSnap = await transaction.get(expertRef);
+        const serviceSnap = serviceRef ? await transaction.get(serviceRef) : null;
+
+        const payload = {
+          appointmentId: apptId,
+          expertId: expertId,
+          listingId: listingId || null,
+          clientId: currentUser.uid,
+          rating: rating,
+          comment: comment.trim() || '',
+          createdAt: serverTimestamp(),
+        };
+
+        transaction.set(reviewRef, payload);
+
+        if (expertSnap.exists()) {
+          const expert = expertSnap.data() || {};
+          const prevCount = Number(expert.reviewCount || 0);
+          const prevAvg = Number(expert.rating || 0);
+          const newCount = prevCount + 1;
+          const newAvg = Number(((prevAvg * prevCount + rating) / newCount).toFixed(2));
+          transaction.update(expertRef, {
+            rating: newAvg,
+            reviewCount: newCount,
+            updatedAt: new Date().toISOString(),
+          });
+        }
+
+        if (serviceRef && serviceSnap?.exists()) {
+          const service = serviceSnap.data() || {};
+          const prevCount = Number(service.reviews || 0);
+          const prevAvg = Number(service.rating || 0);
+          const newCount = prevCount + 1;
+          const newAvg = Number(((prevAvg * prevCount + rating) / newCount).toFixed(2));
+          transaction.update(serviceRef, {
+            rating: newAvg,
+            reviews: newCount,
+            updatedAt: new Date().toISOString(),
+          });
+        }
+      });
+
+      showAppToast("Değerlendirmeniz alındı. Teşekkürler!", "success");
+      setIsModalOpen(false);
+    } catch (error) {
+      if (isDev) console.error("Değerlendirme hatası:", error);
+      showAppToast(error.message || "Değerlendirme gönderilemedi.", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const maskName = (fullName) => {
     if (!fullName) return "Gizli Kullanıcı";
     return fullName
@@ -50,9 +259,9 @@ const ReviewSystem = ({
       .split(/\s+/)
       .filter(Boolean)
       .map((word) => {
-      if (word.length <= 1) return word;
-      return word[0] + '*'.repeat(word.length - 1);
-    })
+        if (word.length <= 1) return word;
+        return word[0] + '*'.repeat(word.length - 1);
+      })
       .join(' ');
   };
 
@@ -264,6 +473,27 @@ const ReviewSystem = ({
           </div>
         </div>
         <div className="review-section-actions">
+          {/* Write review button for clients or non-registered users */}
+          <button
+            type="button"
+            className="review-write-btn"
+            onClick={handleWriteReviewClick}
+            style={{
+              background: 'linear-gradient(135deg, #f59e0b, #f97316)',
+              border: 'none',
+              color: 'white',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              marginRight: '12px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <i className="fas fa-star"></i> Değerlendir ve Yorumla
+          </button>
           {enableSort && (
             <select
               value={sortKey}
@@ -345,41 +575,41 @@ const ReviewSystem = ({
 
         {paginationMode === 'pages' ? (
           <div className="review-pagination-wrap">
-              <button
-                type="button"
-                className="review-pagination-btn"
-                onClick={() => setPage((p) => Math.max(1, (Number(p) || 1) - 1))}
-                disabled={safePage <= 1}
-              >
-                ‹
-              </button>
+            <button
+              type="button"
+              className="review-pagination-btn"
+              onClick={() => setPage((p) => Math.max(1, (Number(p) || 1) - 1))}
+              disabled={safePage <= 1}
+            >
+              ‹
+            </button>
 
-              {pageNumbers.map((n, idx) => (
-                typeof n === 'string' ? (
-                  <span key={`ellipsis-${idx}`} className="review-pagination-ellipsis">
-                    {n}
-                  </span>
-                ) : (
-                  <button
-                    key={n}
-                    type="button"
-                    className={`review-pagination-btn${n === safePage ? " is-active" : ""}`}
-                    onClick={() => setPage(n)}
-                  >
-                    {n}
-                  </button>
-                )
-              ))}
+            {pageNumbers.map((n, idx) => (
+              typeof n === 'string' ? (
+                <span key={`ellipsis-${idx}`} className="review-pagination-ellipsis">
+                  {n}
+                </span>
+              ) : (
+                <button
+                  key={n}
+                  type="button"
+                  className={`review-pagination-btn${n === safePage ? " is-active" : ""}`}
+                  onClick={() => setPage(n)}
+                >
+                  {n}
+                </button>
+              )
+            ))}
 
-              <button
-                type="button"
-                className="review-pagination-btn"
-                onClick={() => setPage((p) => Math.min(totalPages, (Number(p) || 1) + 1))}
-                disabled={safePage >= totalPages}
-              >
-                ›
-              </button>
-            </div>
+            <button
+              type="button"
+              className="review-pagination-btn"
+              onClick={() => setPage((p) => Math.min(totalPages, (Number(p) || 1) + 1))}
+              disabled={safePage >= totalPages}
+            >
+              ›
+            </button>
+          </div>
         ) : (
           displayReviews.length > visibleCount && (
             paginationMode === 'all' ? (
@@ -402,8 +632,136 @@ const ReviewSystem = ({
           )
         )}
       </div>
+
+      {isModalOpen && (
+        <div className="detail-overlay" onClick={() => !submitting && setIsModalOpen(false)} style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.65)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 16
+        }}>
+          <div className="confirm-modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '680px', background: '#1e293b', border: '1px solid #334155', borderRadius: '16px', padding: '24px', width: '100%' }}>
+            <div className="confirm-modal-icon" style={{ color: '#fbbf24', textAlign: 'center', fontSize: '32px', marginBottom: '12px' }}>
+              <i className="fas fa-star"></i>
+            </div>
+            <h3 style={{ color: '#f8fafc', fontSize: '20px', fontWeight: 800, textAlign: 'center', margin: '0 0 8px 0' }}>Değerlendir ve Yorumla</h3>
+            <p style={{ color: '#94a3b8', marginTop: '6px', fontSize: '13px', textAlign: 'center', marginBottom: '20px' }}>
+              Deneyiminizi puanlayın ve uzman hakkında yorum yapın.
+            </p>
+
+            <div style={{ marginTop: '16px', padding: '14px', background: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+                <div style={{ color: '#e2e8f0', fontWeight: 700 }}>Puan</div>
+                <div style={{ color: '#fbbf24', fontSize: '20px' }}>
+                  {Array.from({ length: 5 }).map((_, i) => {
+                    const value = i + 1;
+                    const active = value <= rating;
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => setRating(value)}
+                        disabled={submitting}
+                        style={{
+                          all: 'unset',
+                          cursor: submitting ? 'not-allowed' : 'pointer',
+                          padding: '2px 4px',
+                          opacity: active ? 1 : 0.3,
+                        }}
+                        aria-label={`${value} yıldız`}
+                        title={`${value} yıldız`}
+                      >
+                        <i className="fas fa-star"></i>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '14px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: '#e2e8f0', fontWeight: 700 }}>
+                Yorum (opsiyonel)
+              </label>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                disabled={submitting}
+                rows={5}
+                style={{
+                  width: '100%',
+                  resize: 'vertical',
+                  background: '#0f172a',
+                  color: '#e2e8f0',
+                  border: '1px solid #334155',
+                  borderRadius: '12px',
+                  padding: '12px',
+                  outline: 'none',
+                  fontSize: '14px',
+                  lineHeight: 1.6
+                }}
+                placeholder="Deneyiminizi yazın..."
+                maxLength={1000}
+              />
+              <div style={{ marginTop: '6px', color: '#94a3b8', fontSize: '12px', textAlign: 'right' }}>
+                {comment.length}/1000
+              </div>
+            </div>
+
+            <div className="confirm-modal-actions" style={{ marginTop: '24px', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <button 
+                type="button"
+                className="confirm-btn-cancel" 
+                onClick={() => setIsModalOpen(false)} 
+                disabled={submitting}
+                style={{
+                  background: '#334155',
+                  border: 'none',
+                  color: '#cbd5e1',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer'
+                }}
+              >
+                Vazgeç
+              </button>
+              <button
+                type="button"
+                className="confirm-btn-confirm"
+                onClick={handleSubmitReview}
+                disabled={submitting}
+                style={{ 
+                  background: 'linear-gradient(135deg, #f59e0b, #f97316)', 
+                  border: 'none', 
+                  color: 'white',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  fontWeight: 'bold',
+                  cursor: submitting ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {submitting ? (
+                  <><i className="fas fa-spinner fa-spin"></i> Gönderiliyor...</>
+                ) : (
+                  <>Gönder</>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH (TURKISH FRONTEND SIMPLIFICATION):
+- None (Added features to ReviewSystem.jsx without removing lines of code).
+*/
 
 export default ReviewSystem;

@@ -10,7 +10,7 @@ import { getOrCreateConversation } from "../services/chatApi";
 import { useAuthGuard } from "../hooks/useAuthGuard";
 import { getProfilePhoto } from "../services/updateService";
 import { getListingImageStyle } from "../utils/listingImagePresentation";
-import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { db, auth } from "../firebase/firebaseClient";
 import DOMPurify from 'dompurify';
 import "../styles/ListingDetailPage.css";
@@ -205,12 +205,49 @@ export default function ListingDetailPage() {
 
       setChatLoading(true);
 
-      const approvedAppointmentId = await getApprovedAppointmentIdForListing();
+      let approvedAppointmentId = await getApprovedAppointmentIdForListing();
 
       if (!approvedAppointmentId) {
-        showToast("Bu ilana dair onaylanmış bir randevunuz bulunmalıdır. Randevu oluşturup uzman onayladıktan sonra mesaj gönderebilirsiniz.", "error");
-        setChatLoading(false);
-        return;
+        // Syria Launch: Bypass manual booking by auto-creating an approved appointment document
+        try {
+          const currentUser = auth.currentUser;
+          let clientName = currentUser?.displayName || "Müşteri";
+          try {
+            const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+            if (userDoc.exists()) {
+              clientName = userDoc.data().displayName || clientName;
+            }
+          } catch (err) {
+            if (isDevelopment) console.error("Müşteri ismi alınamadı:", err);
+          }
+
+          const todayStr = new Date().toLocaleDateString('sv-SE');
+          const dummyAppointment = {
+            clientId: currentUser.uid,
+            expertId: providerUid,
+            listingId: serviceId,
+            listingTitle: serviceTitle,
+            expertName: listing?.expertName || "Uzman",
+            client: clientName,
+            date: todayStr,
+            start: "12:00",
+            end: "12:15",
+            status: "approved",
+            createdBy: "customer",
+            createdTime: Date.now(),
+            note: "Doğrudan İletişim Başlatıldı",
+            fullAddress: "Çevrimiçi Görüşme",
+            address: "Çevrimiçi",
+          };
+
+          const docRef = await addDoc(collection(db, "appointments"), dummyAppointment);
+          approvedAppointmentId = docRef.id;
+        } catch (apptErr) {
+          if (isDevelopment) console.error("Otomatik randevu oluşturma hatası:", apptErr);
+          showToast("İletişim başlatılamadı. Lütfen daha sonra tekrar deneyin.", "error");
+          setChatLoading(false);
+          return;
+        }
       }
 
       const result = await getOrCreateConversation(providerUid, serviceId, serviceTitle, approvedAppointmentId);
@@ -223,40 +260,7 @@ export default function ListingDetailPage() {
     }
   };
 
-  const handleAppointmentClick = async () => {
-    if (!isSignedIn) {
-      showToast("Randevu oluşturmak için lütfen giriş yapın.", "error");
-      setTimeout(() => navigate("/login"), 1500);
-      return;
-    }
-
-    // Kullanıcının userType'ını kontrol et
-    try {
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-        if (userDoc.exists()) {
-          const userType = userDoc.data()?.userType;
-          
-          // PENDING_PROVIDER ise uyarı göster ve işlemi durdur
-          if (userType === "PENDING_PROVIDER") {
-            showToast(
-              "Uzman başvurunuz henüz değerlendirilme aşamasında. Lütfen başvurunuzun onaylanmasını veya reddedilmesini bekleyin.",
-              "error"
-            );
-            return;
-          }
-        }
-      }
-    } catch (error) {
-      if (isDevelopment) console.error("Kullanıcı tipi kontrol hatası:", error);
-      // Hata durumunda devam etme, güvenlik için geri dön
-      showToast("Lütfen daha sonra tekrar deneyin.", "error");
-      return;
-    }
-
-    navigate(`/customer-appointment/${listing.providerId}?listingId=${listingId}`);
-  };
+  // handleAppointmentClick removed for Syria Launch (bypassed direct chat)
 
   const handleExpertProfileClick = () => {
     navigate(`/uzman/${listing.providerId}`);
@@ -335,9 +339,11 @@ export default function ListingDetailPage() {
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "flex-end" }}>
             <button
               className="ld-appointment-btn"
-              onClick={handleAppointmentClick}
+              onClick={handleStartChat}
+              disabled={chatLoading}
+              style={chatLoading ? { opacity: 0.7, cursor: "not-allowed" } : {}}
             >
-              <i className="fas fa-calendar-plus"></i> Randevu Oluştur
+              <i className="fas fa-comments"></i> Uzmanla İletişime Geç
             </button>
           </div>
         </div>
@@ -466,3 +472,60 @@ export default function ListingDetailPage() {
     </div>
   );
 }
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH (TURKISH FRONTEND SIMPLIFICATION):
+
+1. handleAppointmentClick function:
+  const handleAppointmentClick = async () => {
+    if (!isSignedIn) {
+      showToast("Randevu oluşturmak için lütfen giriş yapın.", "error");
+      setTimeout(() => navigate("/login"), 1500);
+      return;
+    }
+
+    // Kullanıcının userType'ını kontrol et
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        if (userDoc.exists()) {
+          const userType = userDoc.data()?.userType;
+          
+          // PENDING_PROVIDER ise uyarı göster ve işlemi durdur
+          if (userType === "PENDING_PROVIDER") {
+            showToast(
+              "Uzman başvurunuz henüz değerlendirilme aşamasında. Lütfen başvurunuzun onaylanmasını veya reddedilmesini bekleyin.",
+              "error"
+            );
+            return;
+          }
+        }
+      }
+    } catch (error) {
+      if (isDevelopment) console.error("Kullanıcı tipi kontrol hatası:", error);
+      // Hata durumunda devam etme, güvenlik için geri dön
+      showToast("Lütfen daha sonra tekrar deneyin.", "error");
+      return;
+    }
+
+    navigate(`/customer-appointment/${listing.providerId}?listingId=${listingId}`);
+  };
+
+2. Randevu Oluştur button JSX:
+            <button
+              className="ld-appointment-btn"
+              onClick={handleAppointmentClick}
+            >
+              <i className="fas fa-calendar-plus"></i> Randevu Oluştur
+            </button>
+
+3. old handleStartChat check:
+      const approvedAppointmentId = await getApprovedAppointmentIdForListing();
+
+      if (!approvedAppointmentId) {
+        showToast("Bu ilana dair onaylanmış bir randevunuz bulunmalıdır. Randevu oluşturup uzman onayladıktan sonra mesaj gönderebilirsiniz.", "error");
+        setChatLoading(false);
+        return;
+      }
+*/

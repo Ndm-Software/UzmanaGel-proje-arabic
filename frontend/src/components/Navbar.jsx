@@ -342,14 +342,7 @@ const Navbar = () => {
             </div>
           )}
 
-          <Link to="/bildirimler" className="navbar-icon-link" title="Bildirimler">
-            <i className="fas fa-bell"></i>
-            {unreadNotificationsCount > 0 && (
-              <span className="notification-badge">
-                {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
-              </span>
-            )}
-          </Link>
+          {/* Notification bell removed for Syria Launch */}
 
           <Link to="/mesajlar" className="navbar-icon-link" title="Mesajlar">
             <i className="fas fa-envelope"></i>
@@ -382,9 +375,7 @@ const Navbar = () => {
                     <Link to="/uzman-profil" onClick={() => setDropdownOpen(false)}>
                       <i className="fa-solid fa-user-tie"></i> Uzman Profilim
                     </Link>
-                    <Link to="/customer-appointments" onClick={() => setDropdownOpen(false)}>
-                      <i className="fas fa-calendar-check"></i> Randevularım
-                    </Link>
+                    {/* "Randevularım" dropdown link removed for Syria Launch */}
                   </>
                 ) : (
                   <Link to="/profile" onClick={() => setDropdownOpen(false)}>
@@ -406,9 +397,7 @@ const Navbar = () => {
                   <i className="fa-solid fa-circle-info"></i> Hakkımızda
                 </Link>
 
-                <Link to="/kvkk" onClick={() => setDropdownOpen(false)}>
-                  <i className="fa-solid fa-shield-halved"></i> KVKK
-                </Link>
+                {/* "KVKK" dropdown link removed for Syria Launch */}
 
                 {userType === 'PROVIDER' && (
                   <Link to="/canli-isbasi-merkezi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
@@ -416,15 +405,7 @@ const Navbar = () => {
                   </Link>
                 )}
 
-                {userType === 'CLIENT' ? (
-                  <Link to="/canli-hizmet-takibi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
-                    <i className="fas fa-broadcast-tower" style={{ color: '#60a5fa' }}></i> Canlı Hizmet Takibi
-                  </Link>
-                ) : hasTodayAppointment && (
-                  <Link to="/canli-hizmet-takibi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
-                    <i className="fas fa-broadcast-tower" style={{ color: '#60a5fa' }}></i> Canlı Hizmet Takibi
-                  </Link>
-                )}
+                {/* "Canlı Hizmet Takibi" dropdown links removed for Syria Launch */}
 
                 <hr />
 
@@ -505,7 +486,7 @@ const Navbar = () => {
             {userType === 'CLIENT' && (
               <>
                 <Link to="/ilanlar" className="navbar-link">İlanlar</Link>
-                <Link to="/customer-appointments" className="navbar-link">Randevularım</Link>
+                {/* "Randevularım" link removed for Syria Launch */}
               </>
             )}
 
@@ -550,7 +531,7 @@ const Navbar = () => {
                 {userType === 'CLIENT' && (
                   <>
                     <Link to="/ilanlar" onClick={closeMobileMenu}>İlanlar</Link>
-                    <Link to="/customer-appointments" onClick={closeMobileMenu}>Randevularım</Link>
+                    {/* "Randevularım" link removed for Syria Launch */}
                   </>
                 )}
 
@@ -595,5 +576,46 @@ const Navbar = () => {
     </>
   );
 };
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH (TURKISH FRONTEND SIMPLIFICATION):
+
+1. Notification Bell:
+          <Link to="/bildirimler" className="navbar-icon-link" title="Bildirimler">
+            <i className="fas fa-bell"></i>
+            {unreadNotificationsCount > 0 && (
+              <span className="notification-badge">
+                {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+              </span>
+            )}
+          </Link>
+
+2. "Randevularım" in Dropdown:
+                    <Link to="/customer-appointments" onClick={() => setDropdownOpen(false)}>
+                      <i className="fas fa-calendar-check"></i> Randevularım
+                    </Link>
+
+3. "KVKK" in Dropdown:
+                <Link to="/kvkk" onClick={() => setDropdownOpen(false)}>
+                  <i className="fa-solid fa-shield-halved"></i> KVKK
+                </Link>
+
+4. "Canlı Hizmet Takibi" in Dropdown:
+                {userType === 'CLIENT' ? (
+                  <Link to="/canli-hizmet-takibi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
+                    <i className="fas fa-broadcast-tower" style={{ color: '#60a5fa' }}></i> Canlı Hizmet Takibi
+                  </Link>
+                ) : hasTodayAppointment && (
+                  <Link to="/canli-hizmet-takibi" onClick={() => setDropdownOpen(false)} style={{ fontWeight: 'bold' }}>
+                    <i className="fas fa-broadcast-tower" style={{ color: '#60a5fa' }}></i> Canlı Hizmet Takibi
+                  </Link>
+                )}
+
+5. "Randevularım" Desktop Navbar Link:
+                <Link to="/customer-appointments" className="navbar-link">Randevularım</Link>
+
+6. "Randevularım" Mobile Navbar Link:
+                    <Link to="/customer-appointments" onClick={closeMobileMenu}>Randevularım</Link>
+*/
 
 export default Navbar;

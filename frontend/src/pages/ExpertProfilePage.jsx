@@ -2572,91 +2572,9 @@ const ExpertProfilePage = () => {
           )}
         </section>
 
+        {/* "Son İşlerim" section removed for Syria Launch */}
         <div className="profile-grid">
-          <div className="profile-left-column">
-            <section className="profile-card-section">
-              <div className="section-header">
-                <h3><i className="fas fa-box"></i> Son İşlerim</h3>
-                <button
-                  className="view-all"
-                  onClick={() => setShowAllRecentJobs(true)}
-                  type="button"
-                >
-                  Tümü <i className="fas fa-arrow-right"></i>
-                </button>
-              </div>
-              <p className="settings-helper-text" style={{ marginBottom: '14px' }}>
-                {completedAppointments.length} tamamlanan iş kaydı, {uniqueCustomerCount} farklı müşteri
-              </p>
-              <div className="orders-list">
-                {visibleRecentJobs.length === 0 ? (
-                  <div className="ma-empty" style={{ padding: "18px", textAlign: "center" }}>
-                    <i className="fas fa-box-open ma-empty-icon"></i>
-                    <h3 className="ma-empty-title">Henüz tamamlanan işlem yok</h3>
-                    <p className="ma-empty-text">Bir randevunuz tamamlandığında burada görünecek.</p>
-                  </div>
-                ) : (
-                  visibleRecentJobs.map((job) => (
-                    <div key={job.id} className="order-item" role="button" tabIndex={0}>
-                      <div className="order-info" style={{ width: "100%" }}>
-                        <div className="order-title-row">
-                          <h4 className="order-title">{sanitizeText(job.title)}</h4>
-                          <span className="order-chevron" aria-hidden="true">
-                            <i className="fas fa-chevron-right"></i>
-                          </span>
-                        </div>
-
-                        <div className="order-meta">
-                          <span className="order-meta-item">
-                            <i className="fas fa-calendar-alt"></i> {sanitizeText(job.date || "")}
-                          </span>
-                          {job.time ? (
-                            <span className="order-meta-item">
-                              <i className="fas fa-clock"></i> {sanitizeText(job.time)}
-                            </span>
-                          ) : null}
-                          {(job.district || job.city) ? (
-                            <span className="order-meta-item">
-                              <i className="fas fa-map-marker-alt"></i>{" "}
-                              {sanitizeText([job.district, job.city].filter(Boolean).join(", "))}
-                            </span>
-                          ) : null}
-                        </div>
-
-                        <div className="order-subline">
-                          <span className="order-badge">
-                            <i className="fas fa-user"></i> {sanitizeText(job.client)}
-                          </span>
-                          <span className={`order-badge ${job.statusBadgeClass}`.trim()}>
-                            <i className={`fas ${job.statusIcon}`}></i> {sanitizeText(job.statusLabel)}
-                          </span>
-                        </div>
-
-                        {String(job.address || "").trim() ? (
-                          <div className="order-meta" style={{ marginTop: 10 }}>
-                            <span className="order-meta-item" title={sanitizeText(job.address)}>
-                              <i className="fas fa-location-dot"></i> {sanitizeText(job.address)}
-                            </span>
-                          </div>
-                        ) : null}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-              {recentJobs.length > 3 && (
-                <button
-                  className="settings-secondary-button"
-                  style={{ width: '100%', marginTop: '15px', padding: '12px', fontWeight: 'bold' }}
-                  onClick={() => setShowAllRecentJobs((prev) => !prev)}
-                >
-                  {showAllRecentJobs ? 'Daha Az Göster' : 'Hepsini Görüntüle'}
-                </button>
-              )}
-            </section>
-          </div>
-
-          <div className="profile-right-column">
+          <div className="profile-right-column" style={{ gridColumn: '1 / -1' }}>
             <section className="profile-card-section">
               <div className="section-header">
                 <h3><i className="fas fa-star"></i> Müşteri Yorumları</h3>
@@ -2912,3 +2830,39 @@ const ExpertProfilePage = () => {
 };
 
 export default ExpertProfilePage;
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH (TURKISH FRONTEND SIMPLIFICATION):
+
+1. Son İşlerim Section (profile-left-column):
+        <div className="profile-grid">
+          <div className="profile-left-column">
+            <section className="profile-card-section">
+              <div className="section-header">
+                <h3><i className="fas fa-box"></i> Son İşlerim</h3>
+                <button className="view-all" onClick={() => setShowAllRecentJobs(true)} type="button">
+                  Tümü <i className="fas fa-arrow-right"></i>
+                </button>
+              </div>
+              <p className="settings-helper-text" style={{ marginBottom: '14px' }}>
+                {completedAppointments.length} tamamlanan iş kaydı, {uniqueCustomerCount} farklı müşteri
+              </p>
+              <div className="orders-list">
+                {visibleRecentJobs.length === 0 ? (
+                  <div className="ma-empty" style={{ padding: "18px", textAlign: "center" }}>
+                    <i className="fas fa-box-open ma-empty-icon"></i>
+                    <h3 className="ma-empty-title">Henüz tamamlanan işlem yok</h3>
+                    <p className="ma-empty-text">Bir randevunuz tamamlandığında burada görünecek.</p>
+                  </div>
+                ) : (
+                  visibleRecentJobs.map((job) => ( ... ))
+                )}
+              </div>
+              {recentJobs.length > 3 && (
+                <button ... onClick={() => setShowAllRecentJobs((prev) => !prev)}>
+                  {showAllRecentJobs ? 'Daha Az Göster' : 'Hepsini Görüntüle'}
+                </button>
+              )}
+            </section>
+          </div>
+*/

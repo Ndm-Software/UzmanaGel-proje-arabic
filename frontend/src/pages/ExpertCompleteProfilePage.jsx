@@ -991,34 +991,11 @@ const ExpertCompleteProfilePage = () => {
                           <div className="card-check"><i className="fas fa-check-circle"></i></div>
                         </div>
                       </label>
-                      <label className={`business-card ${formData.providerType === 'company' ? 'selected' : ''}`}
-                        onClick={() => setFormData({...formData, providerType: 'company'})}>
-                        <div className="card-content">
-                          <div className="card-icon"><i className="fas fa-building"></i></div>
-                          <div className="card-info"><h4>Şirket</h4><p>Limited, Anonim vb. şirketler</p></div>
-                          <div className="card-check"><i className="fas fa-check-circle"></i></div>
-                        </div>
-                      </label>
+                      {/* "Şirket" business card option removed for Syria Launch - individual freelancers only */}
                     </div>
                   </div>
 
-                  {formData.providerType === 'company' && (
-                    <div className="form-group full-width">
-                      <label className="form-label">
-                        <i className="fas fa-building"></i>
-                        Vergi Numarası <span className="required">*</span>
-                      </label>
-                      <input type="text"
-                        className={`form-input ${formData.taxNumber.length > 0 && !isTaxNumberValid(formData.taxNumber) ? 'input-error' : formData.taxNumber.length === 10 ? 'input-success' : ''}`}
-                        value={formData.taxNumber} onChange={(e) => handleTaxNumberChange(e.target.value)}
-                        placeholder="10 haneli vergi numarası" maxLength={10} inputMode="numeric" disabled={loading || analyzing} />
-                      <small className={`field-hint ${formData.taxNumber.length > 0 && !isTaxNumberValid(formData.taxNumber) ? 'hint-error' : ''}`}>
-                        {formData.taxNumber.length > 0
-                          ? `${formData.taxNumber.length}/10 hane${formData.taxNumber.length === 10 ? ' ✓' : ''}`
-                          : 'Şirketler için 10 haneli vergi numarası zorunludur'}
-                      </small>
-                    </div>
-                  )}
+                  {/* Tax number field (Şirket only) removed for Syria Launch */}
 
                   <div className="form-group full-width">
                     <label className="form-label">
@@ -1129,11 +1106,7 @@ const ExpertCompleteProfilePage = () => {
                           onChange={() => setFormData({...formData, pricingModel: 'Proje Bazlı'})} disabled={loading || analyzing} />
                         <span>Proje Bazlı</span>
                       </label>
-                      <label className="pricing-option">
-                        <input type="radio" name="pricingModel" checked={formData.pricingModel === 'Saatlik Ücret'}
-                          onChange={() => setFormData({...formData, pricingModel: 'Saatlik Ücret'})} disabled={loading || analyzing} />
-                        <span>Saatlik Ücret</span>
-                      </label>
+                      {/* "Saatlik Ücret" option removed for Syria Launch */}
                     </div>
                   </div>
 
@@ -1448,3 +1421,14 @@ const ExpertCompleteProfilePage = () => {
 };
 
 export default ExpertCompleteProfilePage;
+
+/*
+REMOVED BLOCKS FOR SYRIA LAUNCH (TURKISH FRONTEND SIMPLIFICATION):
+
+1. Saatlik Ücret Pricing Model:
+                      <label className="pricing-option">
+                        <input type="radio" name="pricingModel" checked={formData.pricingModel === 'Saatlik Ücret'}
+                          onChange={() => setFormData({...formData, pricingModel: 'Saatlik Ücret'})} disabled={loading || analyzing} />
+                        <span>Saatlik Ücret</span>
+                      </label>
+*/

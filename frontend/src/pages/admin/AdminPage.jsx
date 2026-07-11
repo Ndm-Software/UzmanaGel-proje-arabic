@@ -61,7 +61,7 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState(() => {
     const tabFromUrl = searchParams.get("tab");
     const sanitizedTab = sanitizeUrlParam(tabFromUrl);
-    return validTabs.includes(sanitizedTab) ? sanitizedTab : "dashboard";
+    return validTabs.includes(sanitizedTab) ? sanitizedTab : "listings";
   });
 
   const [appointmentsFilter, setAppointmentsFilter] = useState(null);
@@ -267,51 +267,6 @@ export default function AdminPage() {
         <aside className="admin-sidebar">
           <h3>Admin Paneli</h3>
           <nav>
-            <button
-              className={`nav-link ${activeTab === "dashboard" ? "active" : ""}`}
-              onClick={() => handleTabChange("dashboard")}
-            >
-              <i className="fas fa-chart-line"></i> Dashboard
-            </button>
-
-            <div className="sidebar-divider">👥 Uzman Yönetimi</div>
-
-            <button
-              className={`nav-link ${activeTab === "pending" ? "active" : ""}`}
-              onClick={() => handleTabChange("pending")}
-            >
-              <i className="fas fa-clock"></i> Onay Bekleyenler
-              <span className="nav-count">{counts.pending}</span>
-            </button>
-
-            <button
-              className={`nav-link ${activeTab === "experts" ? "active" : ""}`}
-              onClick={() => handleTabChange("experts")}
-            >
-              <i className="fas fa-briefcase"></i> Tüm Uzmanlar
-              <span className="nav-count">{counts.experts}</span>
-            </button>
-
-            <button
-              className={`nav-link ${activeTab === "rejected" ? "active" : ""}`}
-              onClick={() => handleTabChange("rejected")}
-            >
-              <i className="fas fa-times-circle"></i> Reddedilen Uzmanlar
-              <span className="nav-count">{counts.rejected}</span>
-            </button>
-
-            <div className="sidebar-divider">📍 Adres Yönetimi</div>
-
-            <button
-              className={`nav-link ${activeTab === "addressRequests" ? "active" : ""}`}
-              onClick={() => handleTabChange("addressRequests")}
-            >
-              <i className="fas fa-map-marker-alt"></i> Adres Değişiklik Talepleri
-              {counts.addressRequests > 0 && (
-                <span className="nav-count">{counts.addressRequests}</span>
-              )}
-            </button>
-
             <div className="sidebar-divider">📋 İlan Yönetimi</div>
 
             <button
@@ -321,23 +276,14 @@ export default function AdminPage() {
               <i className="fas fa-ad"></i> Tüm İlanlar
             </button>
 
-            <button
-              className={`nav-link ${activeTab === "reportedListings" ? "active" : ""}`}
-              onClick={() => handleTabChange("reportedListings")}
-            >
-              <i className="fas fa-flag"></i> Bildirilen İlanlar
-              {counts.listingReports > 0 && (
-                <span className="nav-count">{counts.listingReports}</span>
-              )}
-            </button>
-
-            <div className="sidebar-divider">📅 Randevu Yönetimi</div>
+            <div className="sidebar-divider">👥 Uzman Yönetimi</div>
 
             <button
-              className={`nav-link ${activeTab === "appointments" ? "active" : ""}`}
-              onClick={() => handleTabChange("appointments")}
+              className={`nav-link ${activeTab === "experts" ? "active" : ""}`}
+              onClick={() => handleTabChange("experts")}
             >
-              <i className="fas fa-calendar-check"></i> Müşteri Talepleri
+              <i className="fas fa-briefcase"></i> Tüm Uzmanlar
+              <span className="nav-count">{counts.experts}</span>
             </button>
 
             <div className="sidebar-divider">👤 Kullanıcı Yönetimi</div>
@@ -375,22 +321,6 @@ export default function AdminPage() {
               <span className="nav-count">{counts.deletedClients}</span>
             </button>
 
-            <div className="sidebar-divider">💰 Finans Yönetimi</div>
-
-            <button
-              className={`nav-link ${activeTab === "tokenTransactions" ? "active" : ""}`}
-              onClick={() => handleTabChange("tokenTransactions")}
-            >
-              <i className="fas fa-coins"></i> Jeton İşlemleri
-            </button>
-
-            <button
-              className={`nav-link ${activeTab === "paymentReports" ? "active" : ""}`}
-              onClick={() => handleTabChange("paymentReports")}
-            >
-              <i className="fas fa-chart-pie"></i> Ödeme Raporları
-            </button>
-
             <div className="sidebar-divider">⚙️ Sistem</div>
 
             <button
@@ -412,3 +342,78 @@ export default function AdminPage() {
     </div>
   );
 }
+
+/*
+Archived elements removed for Syrian Launch:
+            <button
+              className={`nav-link ${activeTab === "dashboard" ? "active" : ""}`}
+              onClick={() => handleTabChange("dashboard")}
+            >
+              <i className="fas fa-chart-line"></i> Dashboard
+            </button>
+
+            <div className="sidebar-divider">👥 Uzman Yönetimi</div>
+
+            <button
+              className={`nav-link ${activeTab === "pending" ? "active" : ""}`}
+              onClick={() => handleTabChange("pending")}
+            >
+              <i className="fas fa-clock"></i> Onay Bekleyenler
+              <span className="nav-count">{counts.pending}</span>
+            </button>
+
+            <button
+              className={`nav-link ${activeTab === "rejected" ? "active" : ""}`}
+              onClick={() => handleTabChange("rejected")}
+            >
+              <i className="fas fa-times-circle"></i> Reddedilen Uzmanlar
+              <span className="nav-count">{counts.rejected}</span>
+            </button>
+
+            <div className="sidebar-divider">📍 Adres Yönetimi</div>
+
+            <button
+              className={`nav-link ${activeTab === "addressRequests" ? "active" : ""}`}
+              onClick={() => handleTabChange("addressRequests")}
+            >
+              <i className="fas fa-map-marker-alt"></i> Adres Değişiklik Talepleri
+              {counts.addressRequests > 0 && (
+                <span className="nav-count">{counts.addressRequests}</span>
+              )}
+            </button>
+
+            <button
+              className={`nav-link ${activeTab === "reportedListings" ? "active" : ""}`}
+              onClick={() => handleTabChange("reportedListings")}
+            >
+              <i className="fas fa-flag"></i> Bildirilen İlanlar
+              {counts.listingReports > 0 && (
+                <span className="nav-count">{counts.listingReports}</span>
+              )}
+            </button>
+
+            <div className="sidebar-divider">📅 Randevu Yönetimi</div>
+
+            <button
+              className={`nav-link ${activeTab === "appointments" ? "active" : ""}`}
+              onClick={() => handleTabChange("appointments")}
+            >
+              <i className="fas fa-calendar-check"></i> Müşteri Talepleri
+            </button>
+
+            <div className="sidebar-divider">💰 Finans Yönetimi</div>
+
+            <button
+              className={`nav-link ${activeTab === "tokenTransactions" ? "active" : ""}`}
+              onClick={() => handleTabChange("tokenTransactions")}
+            >
+              <i className="fas fa-coins"></i> Jeton İşlemleri
+            </button>
+
+            <button
+              className={`nav-link ${activeTab === "paymentReports" ? "active" : ""}`}
+              onClick={() => handleTabChange("paymentReports")}
+            >
+              <i className="fas fa-chart-pie"></i> Ödeme Raporları
+            </button>
+*/

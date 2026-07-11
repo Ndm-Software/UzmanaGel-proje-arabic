@@ -166,7 +166,7 @@ const ContactPage = () => {
     e.preventDefault();
     
     if (!isLoggedIn) {
-      showAppToast('يرجى تسجيل الدخول لإرسال رسالة.', 'info');
+      showAppToast('Mesaj göndermek için lütfen giriş yapın.', 'info');
       setTimeout(() => {
         navigate('/login');
       }, 1500);
@@ -177,25 +177,25 @@ const ContactPage = () => {
     setError('');
 
     if (!formData.fullName.trim()) {
-      setError("يرجى إدخال الاسم الكامل.");
+      setError("Lütfen ad soyad giriniz.");
       setLoading(false);
       return;
     }
 
     if (!validateEmail(formData.email)) {
-      setError("يرجى إدخال عنوان بريد إلكتروني صالح.");
+      setError("Lütfen geçerli bir e-posta adresi girin.");
       setLoading(false);
       return;
     }
 
     if (!validatePhone(formData.phone)) {
-      setError("يرجى إدخال رقم هاتف صالح. (يمكنك فقط استخدام الأرقام، + و -)");
+      setError("Lütfen geçerli bir telefon numarası girin. (Sadece rakam, + ve - karakterleri kullanabilirsiniz)");
       setLoading(false);
       return;
     }
 
     if (formData.message.trim().length < 10) {
-      setError("رسالتك قصيرة جداً، يرجى كتابة 10 أحرف على الأقل.");
+      setError("Mesajınız çok kısa, lütfen en az 10 karakter yazın.");
       setLoading(false);
       return;
     }
@@ -215,7 +215,7 @@ const ContactPage = () => {
       }
 
       if (localSentTimes.length >= 2) {
-        setError("لقد وصلت إلى الحد الأقصى لإرسال الرسائل. يرجى المحاولة مرة أخرى بعد يومين.");
+        setError("Maksimum mesaj gönderme sınırına ulaştınız. Lütfen 2 gün sonra tekrar deneyiniz.");
         setLoading(false);
         return;
       }
@@ -250,7 +250,7 @@ const ContactPage = () => {
 
     } catch (err) {
       if (isDevelopment) console.error(err.message);
-      setError("تعذر إرسال الرسالة. يرجى المحاولة مرة أخرى.");
+      setError("Mesaj gönderilemedi. Lütfen tekrar deneyin.");
     } finally {
       setLoading(false);
     }
@@ -261,7 +261,7 @@ const ContactPage = () => {
       <PageTransition>
         <div className="contact-page">
           <Navbar />
-          <LoadingSpinner text="جاري تحميل الصفحة..." />
+          <LoadingSpinner text="Sayfa yükleniyor..." />
         </div>
       </PageTransition>
     );
@@ -276,21 +276,21 @@ const ContactPage = () => {
             {isSent ? (
               <div className="success-content animation-fadeIn">
                 <div className="popup-icon"><i className="fas fa-check-circle"></i></div>
-                <h3>تم استلام رسالتك!</h3>
-                <p>شكرًا لتواصلك معنا. سنرد عليك في أقرب وقت ممكن.</p>
-                <button className="submit-button" onClick={() => setIsSent(false)}>إرسال رسالة جديدة</button>
+                <h3>Mesajınız Alındı!</h3>
+                <p>Bizimle iletişime geçtiğiniz için teşekkürler. En kısa sürede geri döneceğiz.</p>
+                <button className="submit-button" onClick={() => setIsSent(false)}>Yeni Mesaj Gönder</button>
               </div>
             ) : (
               <>
                 <div className="contact-icon-wrapper"><i className="fas fa-envelope"></i></div>
-                <h2>اتصل بنا</h2>
+                <h2>Bize Ulaşın</h2>
 
                 <form className="contact-form" onSubmit={handleSubmit}>
                   <div className="input-group">
                     <input 
                       type="text" 
                       name="fullName" 
-                      placeholder="الاسم الكامل" 
+                      placeholder="Ad Soyad" 
                       className={`contact-input ${isLoggedIn ? 'disabled-field' : ''}`}
                       required 
                       value={formData.fullName} 
@@ -310,7 +310,7 @@ const ContactPage = () => {
                     <input 
                       type="email" 
                       name="email" 
-                      placeholder="البريد الإلكتروني" 
+                      placeholder="E-posta" 
                       className={`contact-input ${isLoggedIn ? 'disabled-field' : ''}`}
                       required 
                       value={formData.email} 
@@ -330,7 +330,7 @@ const ContactPage = () => {
                     <input 
                       type="tel" 
                       name="phone" 
-                      placeholder="الهاتف" 
+                      placeholder="Telefon" 
                       className={`contact-input ${isLoggedIn ? 'disabled-field' : ''}`}
                       required 
                       value={formData.phone} 
@@ -348,7 +348,7 @@ const ContactPage = () => {
                   
                   <textarea 
                     name="message" 
-                    placeholder="رسالتك" 
+                    placeholder="Mesajınız" 
                     className="contact-input" 
                     required 
                     value={formData.message} 
@@ -364,12 +364,12 @@ const ContactPage = () => {
                     {loading ? (
                       <>
                         <i className="fas fa-spinner fa-spin"></i>
-                        جاري الإرسال...
+                        Gönderiliyor...
                       </>
                     ) : (
                       <>
                         <i className="fas fa-paper-plane"></i>
-                        إرسال الرسالة
+                        Mesajı Gönder
                       </>
                     )}
                   </button>

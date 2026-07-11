@@ -125,7 +125,7 @@ export default function HomePage() {
         if (isDevelopment) console.error("Failed to load latest listings:", error.message);
         if (!cancelled) {
           setLatestListings([]);
-          setLatestListingsError("تعذر تحميل الإعلانات.");
+          setLatestListingsError("İlanlar yüklenemedi.");
         }
       } finally {
         if (!cancelled) {
@@ -220,7 +220,7 @@ export default function HomePage() {
 
   const formatPrice = (value) => {
     const numeric = Number(value) || 0;
-    return `₺ ${new Intl.NumberFormat("ar-SY").format(numeric)}`;
+    return `${new Intl.NumberFormat("tr-TR").format(numeric)} ₺`;
   };
 
   const formatCount = (value) =>
@@ -235,12 +235,13 @@ export default function HomePage() {
           <div className="hero-container">
             <section className="hero-content">
               <h1 className="hero-title">
-                بكبسة زر واحدة <span className="hero-highlight">اعثر على خبيرك</span> سريع،
-                آمن، سهل
+                Tek tıkla <span className="hero-highlight">uzmanını bul</span> hızlı,
+                güvenli, kolay
               </h1>
 
               <p className="hero-subtitle">
-                تواصل مع خبراء موثقين خلال دقائق عبر منصة UzmanaGel — سريع، آمن وبدون عناء.
+                UzmanaGel ile doğrulanmış uzmanlara dakikalar içinde ulaşın — hızlı,
+                güvenli ve zahmetsiz.
               </p>
 
               {!user && (
@@ -250,7 +251,7 @@ export default function HomePage() {
                     className="cta-button cta-button--primary"
                     onClick={handleUzmanBulClick}
                   >
-                    ابحث عن خبير
+                    Uzman Bul
                   </button>
 
                   <button
@@ -258,7 +259,7 @@ export default function HomePage() {
                     className="cta-button cta-button--accent"
                     onClick={handleUzmanOlClick}
                   >
-                    كن خبيراً
+                    Uzman Ol
                   </button>
                 </div>
               )}
@@ -266,15 +267,15 @@ export default function HomePage() {
               <div className="hero-features">
                 <div className="feature-row">
                   <span className="status-dot" aria-hidden="true" />
-                  خبراء موثقون
+                  Doğrulanmış Uzmanlar
                 </div>
                 <div className="feature-row">
                   <span className="status-dot" aria-hidden="true" />
-                  موعد سريع
+                  Hızlı Randevu
                 </div>
                 <div className="feature-row">
                   <span className="status-dot" aria-hidden="true" />
-                  دفع آمن
+                  Güvenli Ödeme
                 </div>
               </div>
             </section>
@@ -304,16 +305,18 @@ export default function HomePage() {
             </div>
 
             <div className="app-banner-content">
-              <h2 className="app-banner-title">حقيبة الصيانة في جيبك</h2>
+              <h2 className="app-banner-title">Cebinizdeki Tamir Çantası</h2>
               <p className="app-banner-text">
-                مع تطبيق Uzmanagel للجوال، اعثر على معلم صيانة عاجل أينما كنت. التقط صورة للمشكلة وأرسلها، وتتبع وصول المعلم مباشرة من الخريطة.
+                Uzmanagel mobil uygulaması ile nerede olursanız olun acil usta bulun.
+                Arızanın fotoğrafını çekip gönderin, ustanın gelişini haritadan canlı
+                takip edin.
               </p>
 
               <div className="app-banner-actions">
                 <a
                   className="app-banner-button app-banner-button--apple"
                   href="#"
-                  aria-label="تنزيل من App Store"
+                  aria-label="App Store'dan İndir"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -344,13 +347,13 @@ export default function HomePage() {
                       }}
                     />
                   </span>
-                  <span>تنزيل من App Store</span>
+                  <span>App Store'dan İndir</span>
                 </a>
 
                 <a
                   className="app-banner-button app-banner-button--google"
                   href="#"
-                  aria-label="تنزيل من Google Play"
+                  aria-label="Google Play'den Al"
                   style={{
                     display: "inline-flex",
                     alignItems: "center",
@@ -380,7 +383,7 @@ export default function HomePage() {
                       }}
                     />
                   </span>
-                  <span>تنزيل من Google Play</span>
+                  <span>Google Play'den Al</span>
                 </a>
               </div>
             </div>
@@ -392,10 +395,10 @@ export default function HomePage() {
             <div className="how-container">
               <header className="how-header">
                 <h2 className="how-title">
-                  كيف <span className="how-accent">يعمل؟</span>
+                  Nasıl <span className="how-accent">Çalışır?</span>
                 </h2>
                 <p className="how-subtitle">
-                  احصل على الخبير الذي تحتاجه في 3 خطوات بسيطة.
+                  3 basit adımda ihtiyacın olan uzmana ulaş.
                 </p>
               </header>
 
@@ -413,9 +416,10 @@ export default function HomePage() {
                       }}
                     />
                   </div>
-                  <h3 className="how-card-title">1. حدد احتياجك</h3>
+                  <h3 className="how-card-title">1. İhtiyacını Belirle</h3>
                   <p className="how-card-text">
-                    قرر ما تريد القيام به، وما هي الميزانية التي خصصتها، ومتى يجب إنجاز العمل.
+                    Ne yapılmasını istediğini, ne kadar bütçe ayırdığını ve ne zaman
+                    yapılması gerektiğine karar ver.
                   </p>
                 </article>
 
@@ -432,9 +436,10 @@ export default function HomePage() {
                       }}
                     />
                   </div>
-                  <h3 className="how-card-title">2. اختر الخبير</h3>
+                  <h3 className="how-card-title">2. Uzmanı Seç</h3>
                   <p className="how-card-text">
-                    تصفح الإعلانات المخصصة لك. اقرأ التعليقات، شاهد التقييمات، واطلع على الأعمال السابقة ثم اختر الخبير الأنسب لك.
+                    Sana özel ilanları incele. Yorumları oku, puanları gör, portföyüne
+                    bak ve sana en uygun uzmana karar ver.
                   </p>
                 </article>
 
@@ -451,9 +456,10 @@ export default function HomePage() {
                       }}
                     />
                   </div>
-                  <h3 className="how-card-title">3. اتفق بأمان</h3>
+                  <h3 className="how-card-title">3. Güvenle Anlaş</h3>
                   <p className="how-card-text">
-                    اتفق من خلال المنصة، وسيتم حفظ المدفوعات في الأمانة. بعد اكتمال العمل، يتم تحويل المبلغ للخبير.
+                    Platform üzerinden anlaş, ödemeyi emanete al. İş tamamlandıktan
+                    sonra ödeme uzmana aktarılır.
                   </p>
                 </article>
               </div>
@@ -465,10 +471,10 @@ export default function HomePage() {
           <div className="videos-container">
             <div className="videos-header">
               <h2 className="videos-title">
-                اكتشفوا <span className="videos-accent">خطوات خدماتنا عبر الفيديو</span>
+                Hizmet Süreçlerimizi <span className="videos-accent">Videolarla Keşfedin</span>
               </h2>
               <p className="videos-subtitle">
-                شاهدوا خطوات طلب خبير وتقديم الخدمات خطوة بخطوة
+                Uzman çağırma ve hizmet verme süreçlerimizi adım adım izleyin
               </p>
             </div>
 
@@ -490,9 +496,9 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="video-info">
-                  <h3 className="video-title">كيف تجد خبيراً؟</h3>
+                  <h3 className="video-title">Uzman Nasıl Bulunur?</h3>
                   <p className="video-description">
-                    حدد احتياجاتك، وتصفح الإعلانات المنشورة، واتفق مع الخبير الأنسب لك.
+                    İhtiyacınızı belirleyin, yayınlanan ilanları inceleyin ve en uygun uzmanla anlaşın.
                   </p>
                 </div>
               </div>
@@ -514,9 +520,9 @@ export default function HomePage() {
                   </div>
                 </div>
                 <div className="video-info">
-                  <h3 className="video-title">كيف تجد عميلاً؟</h3>
+                  <h3 className="video-title">Müşteri Nasıl Bulunur?</h3>
                   <p className="video-description">
-                    انشر إعلاناً، وانتظر العروض، واتفق مع العميل الأنسب.
+                    İlan verin,teklif gelmesini bekleyin ve en uygun müşteriyle anlaşın .
                   </p>
                 </div>
               </div>
@@ -527,11 +533,11 @@ export default function HomePage() {
         <section className="section-band section-band--plain" id="featured-listings">
           <section className="listings-section">
             <div className="listings-container">
-              <h2 className="section-title">آخر الإعلانات المضافة</h2>
+              <h2 className="section-title">Son Eklenen İlanlar</h2>
               <div className="listings-grid">
                 {latestListingsLoading && (
                   <div className="listing-card" role="status" aria-live="polite">
-                    جاري تحميل الإعلانات...
+                    İlanlar yükleniyor...
                   </div>
                 )}
 
@@ -545,7 +551,7 @@ export default function HomePage() {
                   !latestListingsError &&
                   latestListings.length === 0 && (
                     <div className="listing-card" role="status" aria-live="polite">
-                      لا توجد إعلانات منشورة بعد.
+                      Henüz yayında ilan yok.
                     </div>
                   )}
 
@@ -589,7 +595,7 @@ export default function HomePage() {
                               navigate(`/ilan/${listing.id}`);
                             }}
                           >
-                            عرض الإعلان
+                            İlana Git
                           </button>
                         </div>
 
@@ -604,7 +610,7 @@ export default function HomePage() {
                           <div className="listing-meta">
                             <span>{listing.city}</span>
                             <span>•</span>
-                            <span>{listing.expertName || "خبير"}</span>
+                            <span>{listing.expertName || "Uzman"}</span>
                           </div>
 
                           <div className="armut-bottom">
@@ -612,7 +618,7 @@ export default function HomePage() {
                               <span className="listing-rating">★ {listing.rating}</span>
                             )}
                             <span className="jobs-done">
-                              {Number(listing.reviews) || 0} تقييم
+                              {Number(listing.reviews) || 0} yorum
                             </span>
                           </div>
                         </div>
@@ -633,7 +639,7 @@ export default function HomePage() {
                     <img src={happyFaceImage} alt="" className="stats-icon-img" />
                   </div>
                   <div className="stats-value">{formatCount(platformStats.happyReviewerCount)}</div>
-                  <div className="stats-label">عميل سعيد</div>
+                  <div className="stats-label">Mutlu Müşteri</div>
                 </article>
 
                 <article className="stats-card">
@@ -641,7 +647,7 @@ export default function HomePage() {
                     <img src={badgeImage} alt="" className="stats-icon-img" />
                   </div>
                   <div className="stats-value">{formatCount(platformStats.providerCount)}</div>
-                  <div className="stats-label">خبير مسجل</div>
+                  <div className="stats-label">Kayıtlı Uzman</div>
                 </article>
 
                 <article className="stats-card">
@@ -649,7 +655,7 @@ export default function HomePage() {
                     <img src={completedImage} alt="" className="stats-icon-img" />
                   </div>
                   <div className="stats-value">{formatCount(platformStats.completedAppointmentsCount)}</div>
-                  <div className="stats-label">عمل مكتمل</div>
+                  <div className="stats-label">Tamamlanan İş</div>
                 </article>
 
                 <article className="stats-card">
@@ -657,7 +663,7 @@ export default function HomePage() {
                     <img src={turkiyeImage} alt="" className="stats-icon-img" />
                   </div>
                   <div className="stats-value">81</div>
-                  <div className="stats-label">خدمة في المدن</div>
+                  <div className="stats-label">Şehirde Hizmet</div>
                 </article>
               </div>
             </div>

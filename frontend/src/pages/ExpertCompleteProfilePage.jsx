@@ -98,7 +98,7 @@ const ExpertCompleteProfilePage = () => {
     isCertified: false,
     certificateFiles: [],
     showCertificateUpload: false,
-   // identityFile: null,
+    identityFile: null,
     certificateFilesList: [],
     taxPlateFile: null
   });
@@ -311,8 +311,7 @@ const ExpertCompleteProfilePage = () => {
   };
 
   // DÜZELTİLDİ - Dosya validasyonu eklendi
-
-  /* const handleIdentityUpload = (event) => {
+  const handleIdentityUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
       const validation = validateFile(file, 'Kimlik');
@@ -328,9 +327,9 @@ const ExpertCompleteProfilePage = () => {
         return next;
       });
     }
-  }; */
+  };
 
-  /* const removeIdentityFile = () => {
+  const removeIdentityFile = () => {
     setFormData(prev => ({ ...prev, identityFile: null }));
     setAnalysisCache(prev => {
       const next = { ...prev };
@@ -339,7 +338,7 @@ const ExpertCompleteProfilePage = () => {
     });
     const input = document.getElementById('identity-upload');
     if (input) input.value = '';
-  }; */
+  };
 
   // DÜZELTİLDİ - Dosya validasyonu eklendi
   const handleCertificateUpload = (event) => {
@@ -486,8 +485,7 @@ const ExpertCompleteProfilePage = () => {
       }
     }
     
-    //if (!formData.identityFile) { setError('Kimlik belgesi yüklemelisiniz'); return false; }
-
+    if (!formData.identityFile) { setError('Kimlik belgesi yüklemelisiniz'); return false; }
     if (formData.providerType === 'company' && !formData.taxPlateFile) { setError('Şirketler için vergi levhası yüklemelisiniz'); return false; }
     // Sertifikalar artık zorunlu değil - kontrol kaldırıldı
     return true;
@@ -527,10 +525,10 @@ const ExpertCompleteProfilePage = () => {
       const formDataObj = new FormData();
       let needsRequest = false;
 
-      /*if (formData.identityFile && !analysisCache.identity) {
+      if (formData.identityFile && !analysisCache.identity) {
         formDataObj.append('identity', formData.identityFile);
         needsRequest = true;
-      } */
+      }
 
       formData.certificateFilesList.forEach((file, idx) => {
         if (!analysisCache[`certificates_${idx}`]) {
@@ -544,8 +542,7 @@ const ExpertCompleteProfilePage = () => {
         needsRequest = true;
       }
 
-     // let freshResults = { identity: null, certificates: [], taxPlate: null };
-     let freshResults = { certificates: [], taxPlate: null };
+      let freshResults = { identity: null, certificates: [], taxPlate: null };
 
       if (needsRequest) {
         const token = await auth.currentUser?.getIdToken();
@@ -567,9 +564,9 @@ const ExpertCompleteProfilePage = () => {
 
       const newCache = { ...analysisCache };
 
-      /*if (freshResults.identity) {
+      if (freshResults.identity) {
         newCache.identity = freshResults.identity;
-      } */
+      }
 
       const freshCertList = freshResults.certificates || [];
       let freshCertCursor = 0;
@@ -586,16 +583,9 @@ const ExpertCompleteProfilePage = () => {
 
       setAnalysisCache(newCache);
 
-     /* const mergedResults = {
+      const mergedResults = {
         identity: newCache.identity || null,
         certificates: formData.certificateFilesList.map((_, idx) => newCache[`certificates_${idx}`]).filter(Boolean),
-        taxPlate: newCache.taxPlate || null,
-      };*/
-
-      const mergedResults = {
-        certificates: formData.certificateFilesList
-          .map((_, idx) => newCache[`certificates_${idx}`])
-          .filter(Boolean),
         taxPlate: newCache.taxPlate || null,
       };
 
@@ -606,10 +596,10 @@ const ExpertCompleteProfilePage = () => {
       let hasRejection = false;
       let rejectionReason = '';
 
-      /*if (!mergedResults.identity || mergedResults.identity.verdict === 'rejected') {
+      if (!mergedResults.identity || mergedResults.identity.verdict === 'rejected') {
         hasRejection = true;
         rejectionReason = 'Kimlik belgesi geçersiz';
-      }*/
+      }
 
       // Sertifikalar artık zorunlu değil - sadece varsa kontrol et
       if (mergedResults.certificates && mergedResults.certificates.length > 0) {
@@ -640,13 +630,8 @@ const ExpertCompleteProfilePage = () => {
         name: sanitizeText(e.name).slice(0, 100),
         startingPrice: Number(String(e.startingPrice || "").replace(/[^\d]/g, "")) || 0,
       }));
-      /*const allFiles = [
-        formData.identityFile,
-        ...formData.certificateFilesList,
-        ...(formData.taxPlateFile ? [formData.taxPlateFile] : [])
-      ].filter(Boolean); */
-
       const allFiles = [
+        formData.identityFile,
         ...formData.certificateFilesList,
         ...(formData.taxPlateFile ? [formData.taxPlateFile] : [])
       ].filter(Boolean);
@@ -687,19 +672,12 @@ const ExpertCompleteProfilePage = () => {
           specialties,
           certificateFiles: allFiles,
           workingHours: formData.workingHours,
-
-          /*ocrResults: {
+          ocrResults: {
             identity: mergedResults.identity,
             certificates: mergedResults.certificates,
             taxPlate: mergedResults.taxPlate,
             verifiedAt: new Date().toISOString()
-          }*/
-
-            ocrResults: {
-              certificates: mergedResults.certificates,
-              taxPlate: mergedResults.taxPlate,
-              verifiedAt: new Date().toISOString()
-            }
+          }
         }
       });
 
@@ -721,16 +699,9 @@ const ExpertCompleteProfilePage = () => {
 
     const results = analysisResults;
 
-    /* const hasRejection = results && (
+    const hasRejection = results && (
       !results.identity ||
       results.identity.verdict === 'rejected' ||
-      (results.certificates && results.certificates.length > 0
-        ? results.certificates.every(c => c.verdict === 'rejected')
-        : false) ||
-      (formData.providerType === 'company' && (!results.taxPlate || results.taxPlate.verdict === 'rejected'))
-    ); */
-
-    const hasRejection = results && (
       (results.certificates && results.certificates.length > 0
         ? results.certificates.every(c => c.verdict === 'rejected')
         : false) ||
@@ -769,12 +740,11 @@ const ExpertCompleteProfilePage = () => {
               <div className="analysis-loading">
                 <div className="loading-spinner"></div>
                 <p>Yüklediğiniz belgeler inceleniyor...</p>
-                <p className="loading-text">Sertifikalar ve vergi levhası kontrol ediliyor.</p>
+                <p className="loading-text">Kimlik, sertifikalar ve vergi levhası kontrol ediliyor.</p>
                 <small>Bu işlem 5-10 saniye sürebilir.</small>
               </div>
             ) : (
               <div className="analysis-results">
-                {/* Eski kimlik analizi UI kodu gerektiğinde geri açılabilir.
                 {results?.identity && (
                   <div className={`result-item ${results.identity.verdict}`}>
                     <div className="result-icon">
@@ -802,7 +772,6 @@ const ExpertCompleteProfilePage = () => {
                     </div>
                   </div>
                 )}
-                */}
 
                 {results?.certificates?.map((cert, idx) => (
                   <div key={idx} className={`result-item ${cert.verdict}`}>
@@ -870,7 +839,7 @@ const ExpertCompleteProfilePage = () => {
                 {!hasRejection && results && (
                   <div className="success-warning">
                     <i className="fas fa-check-circle"></i>
-                    <p>Belgeler başarıyla doğrulandı! Profiliniz kaydediliyor...</p>
+                    <p>Tüm belgeler başarıyla doğrulandı! Profiliniz kaydediliyor...</p>
                   </div>
                 )}
               </div>
@@ -1284,10 +1253,9 @@ const ExpertCompleteProfilePage = () => {
 
                   <div className="form-group full-width">
                     <label className="form-label"><i className="fas fa-file-upload"></i> Belgeler</label>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginTop: '15px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '15px' }}>
 
-                                            {/* Eski Kimlik Belgesi kartı gerektiğinde geri açılabilir.
-<div className="upload-card">
+                      <div className="upload-card">
                         <div className="upload-card-header">
                           <i className="fas fa-id-card"></i>
                           <span>Kimlik Belgesi <span className="required">*</span></span>
@@ -1315,8 +1283,6 @@ const ExpertCompleteProfilePage = () => {
                           </div>
                         )}
                       </div>
-
-                      */}
 
                       <div className="upload-card">
                         <div className="upload-card-header">

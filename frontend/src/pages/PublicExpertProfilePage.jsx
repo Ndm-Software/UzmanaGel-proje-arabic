@@ -57,7 +57,7 @@ const Lightbox = ({ images, startIndex, onClose }) => {
           <i className="fas fa-chevron-left"></i>
         </button>
       )}
-      <img className="lightbox-image" src={images[current]} alt={`صورة ${current + 1}`} onClick={e => e.stopPropagation()} />
+      <img className="lightbox-image" src={images[current]} alt={`Görsel ${current + 1}`} onClick={e => e.stopPropagation()} />
       {images.length > 1 && (
         <button className="lightbox-next" onClick={e => { e.stopPropagation(); next(); }}>
           <i className="fas fa-chevron-right"></i>
@@ -76,8 +76,8 @@ const isPdf = (url) => {
 const imageUrlsOnly = (urls) => urls.filter(u => !isPdf(u));
 
 const getTurkishDayName = (day) => ({
-  monday: 'الإثنين', tuesday: 'الثلاثاء', wednesday: 'الأربعاء',
-  thursday: 'الخميس', friday: 'الجمعة', saturday: 'السبت', sunday: 'الأحد'
+  monday: 'Pazartesi', tuesday: 'Salı', wednesday: 'Çarşamba',
+  thursday: 'Perşembe', friday: 'Cuma', saturday: 'Cumartesi', sunday: 'Pazar'
 })[day] || day;
 
 const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
@@ -95,12 +95,12 @@ const PhotoThumb = ({ url, index, allUrls, size = 120, height = 120 }) => {
         {pdf ? (
           <div className="photo-thumb__pdf" onClick={() => window.open(url, '_blank', 'noopener,noreferrer')}>
             <i className="fas fa-file-pdf photo-thumb__pdf-icon"></i>
-            <span className="photo-thumb__pdf-label">مستند PDF</span>
-            <span className="photo-thumb__pdf-open"><i className="fas fa-external-link-alt"></i> فتح</span>
+            <span className="photo-thumb__pdf-label">PDF Belge</span>
+            <span className="photo-thumb__pdf-open"><i className="fas fa-external-link-alt"></i> Aç</span>
           </div>
         ) : (
           <>
-            <img className="photo-thumb__img" src={url} alt={`صورة ${index + 1}`} onClick={() => setLightbox(true)} />
+            <img className="photo-thumb__img" src={url} alt={`Görsel ${index + 1}`} onClick={() => setLightbox(true)} />
             <div className="photo-thumb__overlay" onClick={() => setLightbox(true)}>
               <i className="fas fa-search-plus photo-thumb__zoom-icon"></i>
             </div>
@@ -225,15 +225,15 @@ const PublicExpertProfilePage = () => {
     return () => { cancelled = true; };
   }, [providerId]);
 
-  const getDisplayName = () => sanitizeText(expertData?.displayName || expertData?.businessName || 'الخبير');
+  const getDisplayName = () => sanitizeText(expertData?.displayName || expertData?.businessName || 'Uzman');
   const getFirstName = () => {
     const name = getDisplayName();
-    return name.split(' ')[0] || 'غير محدد';
+    return name.split(' ')[0] || 'Belirtilmemiş';
   };
   const getLastName = () => {
     const name = getDisplayName();
     const parts = name.split(' ');
-    return parts.length > 1 ? parts.slice(1).join(' ') : 'غير محدد';
+    return parts.length > 1 ? parts.slice(1).join(' ') : 'Belirtilmemiş';
   };
   const getUserInitials = () => {
     const name = getDisplayName();
@@ -249,7 +249,7 @@ const PublicExpertProfilePage = () => {
   if (loading) return (
     <div className="profile-page">
       <Navbar />
-      <LoadingSpinner text="جاري تحميل الملف الشخصي..." />
+      <LoadingSpinner text="Profil yükleniyor..." />
     </div>
   );
 
@@ -258,9 +258,9 @@ const PublicExpertProfilePage = () => {
       <Navbar />
       <div style={{ textAlign: 'center', padding: '80px 20px', color: 'var(--text-muted)' }}>
         <i className="fas fa-user-slash" style={{ fontSize: '48px', marginBottom: '16px', display: 'block' }}></i>
-        <p style={{ fontSize: '18px', marginBottom: '20px' }}>لم يتم العثور على ملف الخبير الشخصي.</p>
+        <p style={{ fontSize: '18px', marginBottom: '20px' }}>Uzman profili bulunamadı.</p>
         <button className="settings-secondary-button" onClick={() => navigate('/ilanlar')}>
-          العودة للإعلانات
+          İlanlara Dön
         </button>
       </div>
     </div>
@@ -276,9 +276,9 @@ const PublicExpertProfilePage = () => {
   const certDocs = certificates.slice(1, taxDoc ? certificates.length - 1 : certificates.length);
 
   const docList = [
-    ...(identityDoc ? [{ label: 'الهوية', icon: 'fa-id-card' }] : []),
-    ...certDocs.map((_, i) => ({ label: certDocs.length > 1 ? `شهادة ${i + 1}` : 'شهادة', icon: 'fa-certificate' })),
-    ...(taxDoc ? [{ label: 'اللوحة الضريبية', icon: 'fa-file-invoice' }] : []),
+    ...(identityDoc ? [{ label: 'Kimlik', icon: 'fa-id-card' }] : []),
+    ...certDocs.map((_, i) => ({ label: certDocs.length > 1 ? `Sertifika ${i + 1}` : 'Sertifika', icon: 'fa-certificate' })),
+    ...(taxDoc ? [{ label: 'Vergi Levhası', icon: 'fa-file-invoice' }] : []),
   ];
 
   return (
@@ -312,7 +312,7 @@ const PublicExpertProfilePage = () => {
             </div>
             <div className="profile-header-info">
               <div className="profile-header-meta">
-                <h1 className="profile-header-name">{sanitizeText(expertData?.businessName || 'غير محدد')}</h1>
+                <h1 className="profile-header-name">{sanitizeText(expertData?.businessName || 'Belirtilmemiş')}</h1>
                 {String(expertData?.profession || '').trim() ? (
                   <span className="profile-header-sub profile-header-sub--profession">
                     {sanitizeText(String(expertData.profession).trim())}
@@ -326,17 +326,17 @@ const PublicExpertProfilePage = () => {
               </div>
 
               <div className="profile-header-contact">
-                <span><i className="fas fa-map-marker-alt"></i> {sanitizeText(expertData?.city || 'غير محدد')}</span>
-                <span><i className="fas fa-briefcase"></i> {sanitizeText(expertData?.category || 'غير محدد')}</span>
+                <span><i className="fas fa-map-marker-alt"></i> {sanitizeText(expertData?.city || 'Belirtilmemiş')}</span>
+                <span><i className="fas fa-briefcase"></i> {sanitizeText(expertData?.category || 'Belirtilmemiş')}</span>
               </div>
 
               <div className="profile-header-meta">
                 <span className="profile-badge-approved">
-                  <i className="fas fa-check-circle"></i> خبير موثق
+                  <i className="fas fa-check-circle"></i> Onaylı Uzman
                 </span>
                 <span className="profile-badge-since">
                   <i className="fas fa-calendar-alt"></i>
-                  {expertData?.createdAt ? `عضو منذ عام ${new Date(expertData.createdAt).getFullYear()}` : ''}
+                  {expertData?.createdAt ? `${new Date(expertData.createdAt).getFullYear()} Yılından beri üye` : ''}
                 </span>
               </div>
             </div>
@@ -346,8 +346,8 @@ const PublicExpertProfilePage = () => {
             <div className="profile-header-stats">
               <div className="header-stat-item">
                 <span className="header-stat-value">{fixedAvg} <i className="fas fa-star"></i></span>
-                <span className="header-stat-label">تقييم العملاء</span>
-                <span className="profile-stat-sub">({activeReviewCount} تقييمات)</span>
+                <span className="header-stat-label">Müşteri Puanı</span>
+                <span className="profile-stat-sub">({activeReviewCount} Yorum)</span>
               </div>
             </div>
           </div>
@@ -356,17 +356,17 @@ const PublicExpertProfilePage = () => {
         {/* TAB MENÜ - aynı kalır */}
         <div className="expert-tabs">
           <button className={`tab-btn ${activeTab === 'info' ? 'active' : ''}`} onClick={() => setActiveTab('info')}>
-            <i className="fas fa-user-circle"></i> معلومات الملف الشخصي
+            <i className="fas fa-user-circle"></i> Profil Bilgileri
           </button>
           <button className={`tab-btn ${activeTab === 'portfolio' ? 'active' : ''}`} onClick={() => setActiveTab('portfolio')}>
-            <i className="fas fa-images"></i> المعرض والوثائق
+            <i className="fas fa-images"></i> Portfolyo & Belgeler
           </button>
           <button className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>
-            <i className="fas fa-star"></i> التعليقات
+            <i className="fas fa-star"></i> Yorumlar
           </button>
           {expertData?.workingHours && Object.values(expertData.workingHours).some(d => d.enabled) && (
             <button className={`tab-btn ${activeTab === 'hours' ? 'active' : ''}`} onClick={() => setActiveTab('hours')}>
-              <i className="fas fa-clock"></i> ساعات العمل
+              <i className="fas fa-clock"></i> Çalışma Saatleri
             </button>
           )}
         </div>
@@ -377,48 +377,48 @@ const PublicExpertProfilePage = () => {
           {/* PROFİL BİLGİLERİ */}
           {activeTab === 'info' && (
             <div className="settings-combined-container">
-              <h4 className="settings-section-title">معلومات شخصية</h4>
+              <h4 className="settings-section-title">Kişisel Bilgiler</h4>
               <div className="settings-detail-grid" style={{ marginBottom: '25px' }}>
                 <div className="settings-field-group">
-                  <span className="settings-field-label">الاسم</span>
+                  <span className="settings-field-label">AD</span>
                   <span className="settings-field-value">{sanitizeText(getFirstName())}</span>
                 </div>
                 <div className="settings-field-group">
-                  <span className="settings-field-label">الكنية</span>
+                  <span className="settings-field-label">SOYAD</span>
                   <span className="settings-field-value">{sanitizeText(getLastName())}</span>
                 </div>
                 <div className="settings-field-group">
-                  <span className="settings-field-label">اسم العمل</span>
-                  <span className="settings-field-value">{sanitizeText(expertData?.businessName || 'غير محدد')}</span>
+                  <span className="settings-field-label">İŞLETME ADI</span>
+                  <span className="settings-field-value">{sanitizeText(expertData?.businessName || 'Belirtilmemiş')}</span>
                 </div>
               </div>
 
-              <h4 className="settings-section-title">التعليم والخبرة</h4>
+              <h4 className="settings-section-title">Eğitim ve Deneyim</h4>
               <div className="settings-detail-grid" style={{ marginBottom: '25px' }}>
                 <div className="settings-field-group">
-                  <span className="settings-field-label">الخبرة</span>
-                  <span className="settings-field-value">{expertData?.experienceYears ? `${sanitizeText(expertData.experienceYears)} سنوات` : 'غير محدد'}</span>
+                  <span className="settings-field-label">DENEYİM</span>
+                  <span className="settings-field-value">{sanitizeText(expertData?.experienceYears ?? 'Belirtilmemiş')} Yıl</span>
                 </div>
                 <div className="settings-field-group">
-                  <span className="settings-field-label">التعليم</span>
-                  <span className="settings-field-value">{sanitizeText(expertData?.educationInfo || 'غير محدد')}</span>
+                  <span className="settings-field-label">EĞİTİM</span>
+                  <span className="settings-field-value">{sanitizeText(expertData?.educationInfo || 'Belirtilmemiş')}</span>
                 </div>
               </div>
 
-              <h4 className="settings-section-title">التخصصات</h4>
+              <h4 className="settings-section-title">Uzmanlıklar</h4>
               {normalizeSpecialties(expertData?.specialties).length > 0 ? (
                 <div className="specialties-price-table">
                   <div className="specialties-price-row specialties-price-head">
-                    <div>التخصص</div>
-                    <div>السعر</div>
+                    <div>Uzmanlık</div>
+                    <div>Fiyat</div>
                     <div></div>
                   </div>
                   {normalizeSpecialties(expertData?.specialties).map((s, i) => (
                     <div key={`${s.name}-${i}`} className="specialties-price-row">
                       <div className="specialties-price-name">{sanitizeText(s.name)}</div>
                       <div className="specialties-price-price">
-                        {Number(s.startingPrice || 0).toLocaleString("tr-TR")} ل.س{" "}
-                        <span className="specialties-price-muted">تبدأ من</span>
+                        {Number(s.startingPrice || 0).toLocaleString("tr-TR")} TL{" "}
+                        <span className="specialties-price-muted">’den başlayan</span>
                       </div>
                       <div></div>
                     </div>
@@ -436,18 +436,18 @@ const PublicExpertProfilePage = () => {
               <div className="settings-security-item portfolio-section">
                 <div className="portfolio-section-header cert-section-head">
                   <div>
-                    <div className="settings-security-title">الوثائق الرسمية</div>
-                    <div className="settings-security-subtitle">الوثائق المعتمدة.</div>
+                    <div className="settings-security-title">Yasal Belgeler</div>
+                    <div className="settings-security-subtitle">Onaylanmış belgeler.</div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {docList.length === 0 && <span className="portfolio-empty">لا توجد وثائق.</span>}
+                  {docList.length === 0 && <span className="portfolio-empty">Belge bulunmuyor.</span>}
                   {docList.map((doc, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--input-bg)', padding: '10px 14px', borderRadius: '10px', fontSize: '14px' }}>
                       <i className={`fas ${doc.icon}`} style={{ color: 'var(--primary)' }}></i>
                       <span>{doc.label}</span>
                       <span style={{ marginLeft: 'auto', color: '#10b981', fontSize: '13px', fontWeight: '600' }}>
-                        <i className="fas fa-check-circle"></i> معتمد
+                        <i className="fas fa-check-circle"></i> Onaylandı
                       </span>
                     </div>
                   ))}
@@ -457,8 +457,8 @@ const PublicExpertProfilePage = () => {
               <div className="settings-security-item portfolio-section">
                 <div className="portfolio-section-header">
                   <div>
-                    <div className="settings-security-title">معرض الأعمال</div>
-                    <div className="settings-security-subtitle">صور من الأعمال المكتملة.</div>
+                    <div className="settings-security-title">İş Portfolyosu</div>
+                    <div className="settings-security-subtitle">Tamamlanan işlerden görseller.</div>
                   </div>
                 </div>
                 <div className="portfolio-thumbs">
@@ -466,7 +466,7 @@ const PublicExpertProfilePage = () => {
                     ? portfolioUrls.map((url, i) => (
                         <PhotoThumb key={i} url={url} index={i} allUrls={portfolioUrls} size={120} height={120} />
                       ))
-                    : <span className="portfolio-empty">لم يتم إضافة صور للمعرض بعد.</span>
+                    : <span className="portfolio-empty">Henüz portfolyo fotoğrafı eklenmemiş.</span>
                   }
                 </div>
               </div>
@@ -474,44 +474,44 @@ const PublicExpertProfilePage = () => {
               <div className="settings-security-item portfolio-section ba-section-wrapper">
                 <div className="portfolio-section-header">
                   <div>
-                    <div className="settings-security-title">معرض قبل وبعد</div>
+                    <div className="settings-security-title">Öncesi ve Sonrası Galerisi</div>
                     <div className="settings-security-subtitle">
-                      أظهر التغير في عملك ({baGallery.length} / 5 مجموعات)
+                      İşlerinizin değişimini gösterin ({baGallery.length} / 5 Grup)
                     </div>
                   </div>
                 </div>
 
                 {baLoading ? (
                   <span className="settings-helper-text">
-                    <i className="fas fa-spinner fa-spin"></i> جاري التحميل...
+                    <i className="fas fa-spinner fa-spin"></i> Yükleniyor...
                   </span>
                 ) : (
                   <div className="ba-grid-container">
                     {baGallery.map((pair) => (
                       <div key={pair.id} className="ba-main-card">
-                        <div className="ba-card-header-title">{sanitizeText(pair.title || "العمل")}</div>
+                        <div className="ba-card-header-title">{sanitizeText(pair.title || "Çalışma")}</div>
                         <div className="ba-card-media">
                           <img
                             src={pair.beforeUrl}
                             className="ba-img-before"
-                            alt="قبل"
+                            alt="Eski"
                             onClick={() => pair.beforeUrl && window.open(pair.beforeUrl, "_blank", "noopener,noreferrer")}
                           />
                           <img
                             src={pair.afterUrl}
                             className="ba-img-after"
-                            alt="بعد"
+                            alt="Yeni"
                             onClick={() => pair.afterUrl && window.open(pair.afterUrl, "_blank", "noopener,noreferrer")}
                           />
                         </div>
                         <div className="ba-card-footer-labels">
-                          <span className="label-eski">قبل</span>
-                          <span className="label-yeni">بعد</span>
+                          <span className="label-eski">ESKİ</span>
+                          <span className="label-yeni">YENİ</span>
                         </div>
                       </div>
                     ))}
                     {baGallery.length === 0 && (
-                      <span className="portfolio-empty">لم يتم إضافة أعمال قبل/بعد بعد.</span>
+                      <span className="portfolio-empty">Henüz öncesi/sonrası çalışma eklenmemiş.</span>
                     )}
                   </div>
                 )}
@@ -538,7 +538,7 @@ const PublicExpertProfilePage = () => {
           {/* ÇALIŞMA SAATLERİ */}
           {activeTab === 'hours' && (
             <div className="settings-working-hours">
-              <h4 className="settings-section-title">برنامج العمل الأسبوعي</h4>
+              <h4 className="settings-section-title">Haftalık Çalışma Programı</h4>
               <div className="working-hours-container">
                 {DAYS.map(day => {
                   const h = expertData?.workingHours?.[day];
@@ -563,7 +563,7 @@ const PublicExpertProfilePage = () => {
         {/* GERİ DÖN BUTONU */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
           <button className="settings-secondary-button" style={{ padding: '12px 30px' }} onClick={() => navigate(-1)}>
-            <i className="fas fa-arrow-left"></i> الرجوع
+            <i className="fas fa-arrow-left"></i> Geri Dön
           </button>
         </div>
 

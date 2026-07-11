@@ -23,60 +23,60 @@ const stagger = {
 };
 
 const stats = [
-  { value: "81", label: "Şehirde aktif hizmet" },
-  { valueKey: "providerCount", label: "Doğrulanmış uzman" },
-  { valueKey: "completedAppointmentsCount", label: "Tamamlanan iş" },
-  { value: 5, label: "5 yıldızlık hizmet", type: "stars" },
+  { value: "81", label: "خدمة نشطة في المدينة" },
+  { valueKey: "providerCount", label: "خبير موثق" },
+  { valueKey: "completedAppointmentsCount", label: "عمل مكتمل" },
+  { value: 5, label: "خدمة 5 نجوم", type: "stars" },
 ];
 
 const journey = [
   {
-    title: "İlk ürün versiyonu",
-    text: "Yaptığımız piyasa araştırmaları sonucunda böyle bir uygulamaya ihtiyaç olduğuna karar verdik ve ilk ürün versiyonunu geliştirdik.",
+    title: "نسخة المنتج الأولى",
+    text: "بناءً على أبحاث السوق التي أجريناها، قررنا أن هناك حاجة لمثل هذا التطبيق وقمنا بتطوير نسخة المنتج الأولى.",
   },
   {
-    title: "Büyüme dönemi",
-    text: "Farklı kategorilerde yayına çıkıp uzman doğrulama ve yorum sistemini derinleştirdik.",
+    title: "فترة النمو",
+    text: "انطلقنا في فئات مختلفة وقمنا بتعميق نظام توثيق الخبراء والتعليقات.",
   },
   {
-    title: "Akıllı eşleşme",
-    text: "Hizmet talebini doğru uzmana daha hızlı yönlendiren veri odaklı eşleşme modelini devreye aldık.",
+    title: "المطابقة الذكية",
+    text: "قمنا بتفعيل نموذج المطابقة المعتمد على البيانات لتوجيه طلب الخدمة إلى الخبير المناسب بشكل أسرع.",
   },
   {
-    title: "Deneyim 2.0",
-    text: "Mobil odaklı yeni arayüz, daha hızlı akışlar ve güven odaklı ürün geliştirmeleriyle ilerliyoruz.",
+    title: "تجربة 2.0",
+    text: "نتقدم بواجهة جديدة تركز على الهاتف المحمول، وتدفقات أسرع، وتطويرات للمنتج تركز على الثقة.",
   },
 ];
 
 const values = [
   {
-    title: "Güven",
-    text: "Profil doğrulama, yorumlar ve açık iletişim ile hem kullanıcı hem uzman tarafında güven inşa ediyoruz.",
+    title: "الثقة",
+    text: "نبني الثقة لدى كل من العميل والخبير من خلال توثيق الملفات الشخصية والتعليقات والتواصل المفتوح.",
   },
   {
-    title: "Hız",
-    text: "Dakikalar içinde teklif al, en uygun uzmanı seç ve süreci tek yerden yönet.",
+    title: "السرعة",
+    text: "احصل على عروض أسعار خلال دقائق، واختر الخبير الأنسب، ودر العملية من مكان واحد.",
   },
   {
-    title: "Kalite",
-    text: "Veri destekli eşleşme ve geri bildirim mekanizmamızla sürekli daha iyi sonuçlar üretiyoruz.",
+    title: "الجودة",
+    text: "ننتج نتائج أفضل باستمرار من خلال آلية المطابقة والتعليقات المدعومة بالبيانات.",
   },
 ];
 
 const team = [
   {
     name: "Ali",
-    role: "Ürün Lideri",
+    role: "قائد المنتج",
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
   },
   {
     name: "Ayşe",
-    role: "Teknoloji Lideri",
+    role: "القائد التقني",
     image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
   },
   {
     name: "Ahmet",
-    role: "Topluluk ve Güven",
+    role: "المجتمع والأمان",
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80",
   },
 ];
@@ -141,21 +141,19 @@ export default function AboutPage() {
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             >
               <div className="about-hero-copy">
-                <p className="about-eyebrow">HAKKIMIZDA</p>
+                <p className="about-eyebrow">من نحن</p>
                 <h1>
-                  Hizmet bulmayı
-                  <span> güvenilir, hızlı ve sade </span>
-                  hale getiriyoruz.
+                  نجعل العثور على الخدمات
+                  <span> موثوقاً وسريعاً وبسيطاً </span>
+                  .
                 </h1>
                 <p>
-                  UzmanaGel, ihtiyaç sahibi kullanıcılarla uzmanları tek bir güvenli platformda
-                  birleştirir. Amacımız; zaman kaybını azaltmak, kaliteyi yükseltmek ve sürecin
-                  her adımında şeffaflık sağlamaktır.
+                  منصة UzmanaGel تجمع بين العملاء الباحثين عن خدمات والخبراء في منصة آمنة واحدة. هدفنا تقليل هدر الوقت، ورفع الجودة، وضمان الشفافية في كل خطوة.
                 </p>
                 <div className="about-hero-badges">
-                  <span>Doğrulanmış Profiller</span>
-                  <span>Hızlı Teklif Akışı</span>
-                  <span>Şeffaf Değerlendirme</span>
+                  <span>ملفات شخصية موثقة</span>
+                  <span>عروض أسعار سريعة</span>
+                  <span>تقييم شفاف</span>
                 </div>
               </div>
 
@@ -202,10 +200,9 @@ export default function AboutPage() {
               viewport={{ once: true, amount: 0.35 }}
               transition={{ duration: 0.55 }}
             >
-              <h2>Misyonumuz</h2>
+              <h2>مهمتنا</h2>
               <p>
-                Hizmet almayı da hizmet vermeyi de kolaylaştıran bir ekosistem kuruyoruz.
-                Kullanıcı doğru uzmana hızlı ulaşır; uzman ise işini güvenle büyütür.
+                نبني نظاماً يسهل تلقي وتقديم الخدمات على حد سواء. نساعد العملاء في الوصول إلى الخبراء بسرعة، ونمكن الخبراء من تنمية أعمالهم بأمان.
               </p>
             </motion.article>
 
@@ -217,10 +214,9 @@ export default function AboutPage() {
               viewport={{ once: true, amount: 0.35 }}
               transition={{ duration: 0.55, delay: 0.1 }}
             >
-              <h2>Vizyonumuz</h2>
+              <h2>رؤيتنا</h2>
               <p>
-                Türkiye&apos;nin en güvenilir hizmet platformu olmak ve her şehirde aynı kalite
-                standardını koruyarak kalıcı değer üretmek.
+                نسعى لنكون المنصة الأكثر موثوقية لتقديم الخدمات مع الحفاظ على نفس معايير الجودة العالية في كل مدينة لخلق قيمة مستدامة.
               </p>
             </motion.article>
           </section>
@@ -232,7 +228,7 @@ export default function AboutPage() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.6 }}
             >
-              Bizi Farklı Kılan
+              ما يميزنا
             </motion.h2>
             <motion.div
               className="about-values-grid"
@@ -257,7 +253,7 @@ export default function AboutPage() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.6 }}
             >
-              Gelişim Yolculuğumuz
+              مسيرة تطورنا
             </motion.h2>
             <motion.div
               className="about-timeline"
@@ -282,7 +278,7 @@ export default function AboutPage() {
               whileInView="visible"
               viewport={{ once: true, amount: 0.5 }}
             >
-              Ekibimiz
+              فريقنا
             </motion.h2>
             <motion.div
               className="about-team-grid"
@@ -310,10 +306,9 @@ export default function AboutPage() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.6 }}
           >
-            <h2>Hizmet sürecini daha iyi bir standarda taşıyoruz.</h2>
+            <h2>نرتقي بعملية تقديم الخدمات إلى معيار أفضل.</h2>
             <p>
-              Her geçen gün daha güvenli, daha hızlı ve daha verimli bir deneyim için ürünümüzü
-              geliştirmeye devam ediyoruz.
+              نواصل تطوير منتجنا يومياً لنقدم تجربة أكثر أماناً وسرعة وكفاءة.
             </p>
           </motion.section>
         </main>

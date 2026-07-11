@@ -20,12 +20,12 @@ import { showAppToast } from "../utils/showAppToast";
 const isDevelopment = process.env.NODE_ENV === 'development';
 
 const SORT_OPTIONS = [
-  { label: "Varsayılan", value: "default" },
-  { label: "En Yakın (Mesafe)", value: "distance_asc" },
-  { label: "Fiyat: Düşükten Yükseğe", value: "price_asc" },
-  { label: "Fiyat: Yüksekten Düşüğe", value: "price_desc" },
-  { label: "Puana Gore (En Yüksek)", value: "rating_desc" },
-  { label: "Yorum Sayısına Göre (En Çok)", value: "reviews_desc" },
+  { label: "الافتراضي", value: "default" },
+  { label: "الأقرب (المسافة)", value: "distance_asc" },
+  { label: "السعر: من الأقل إلى الأعلى", value: "price_asc" },
+  { label: "السعر: من الأعلى إلى الأقل", value: "price_desc" },
+  { label: "حسب التقييم (الأعلى)", value: "rating_desc" },
+  { label: "حسب عدد التعليقات (الأكثر)", value: "reviews_desc" },
 ];
 
 function sortCodeFromLabel(label) {
@@ -33,7 +33,7 @@ function sortCodeFromLabel(label) {
   return found ? found.value : "default";
 }
 
-const FILTER_SENTINEL_LABELS = new Set(["Tüm Uzmanlıklar", "Tüm Şehirler", "Tüm Kategoriler"]);
+const FILTER_SENTINEL_LABELS = new Set(["جميع التخصصات", "جميع المدن", "جميع الفئات"]);
 
 function specialtyNameFromEntry(entry) {
   if (entry == null) return "";
@@ -99,7 +99,7 @@ const LocationModal = ({ isOpen, onClose, userAddresses, onLocationSelect, curre
   return (
     <div className="location-modal active">
       <div className="modal-header">
-        <h4><i className="fas fa-map-marker-alt"></i> Konum Seç</h4>
+        <h4><i className="fas fa-map-marker-alt"></i> اختر موقعاً</h4>
         <button className="close-btn" onClick={onClose}>&times;</button>
       </div>
 
@@ -108,17 +108,17 @@ const LocationModal = ({ isOpen, onClose, userAddresses, onLocationSelect, curre
           <div className="no-addresses-icon">
             <i className="fas fa-home"></i>
           </div>
-          <p>Kayıtlı adresiniz bulunmuyor.</p>
-          <p className="no-addresses-subtext">Profil sayfanızdan adres ekleyerek konumunuzu belirleyebilirsiniz.</p>
+          <p>ليس لديك أي عناوين مسجلة.</p>
+          <p className="no-addresses-subtext">يمكنك تحديد موقعك عن طريق إضافة عنوان من صفحة ملفك الشخصي.</p>
           <button className="btn-secondary" onClick={() => { onClose(); navigate("/profile"); }}>
-            Profil Sayfasına Git <i className="fas fa-arrow-right"></i>
+            الذهاب لصفحة الملف الشخصي <i className="fas fa-arrow-right"></i>
           </button>
         </div>
       ) : (
         <div className="saved-addresses">
           <div className="addresses-header">
             <i className="fas fa-address-book"></i>
-            <span>Kayıtlı Adresleriniz</span>
+            <span>عناوينك المسجلة</span>
           </div>
           <div className="addresses-list">
             {userAddresses.map(address => (
@@ -127,7 +127,7 @@ const LocationModal = ({ isOpen, onClose, userAddresses, onLocationSelect, curre
                   <i className="fas fa-location-dot"></i>
                 </div>
                 <div className="address-details">
-                  <div className="address-name">{address.addressName || "Adresim"}</div>
+                  <div className="address-name">{address.addressName || "عنواني"}</div>
                   <div className="address-full">
                     {address.neighborhood && `${address.neighborhood}, `}
                     {address.district}, {address.city}
@@ -150,7 +150,7 @@ const VoiceModal = ({ isOpen, onClose, status, onStop }) => {
     <div className="voice-modal active">
       <div className="voice-modal-content">
         <div className="voice-header">
-          <h3>Sesli Arama</h3>
+          <h3>البحث الصوتي</h3>
           <button className="close-btn" onClick={onClose}>&times;</button>
         </div>
         <div className="voice-body">
@@ -159,7 +159,7 @@ const VoiceModal = ({ isOpen, onClose, status, onStop }) => {
           </div>
           <p className="voice-text">{status}</p>
           <button className="stop-voice-btn" onClick={onStop}>
-            <i className="fas fa-stop"></i> Durdur
+            <i className="fas fa-stop"></i> إيقاف
           </button>
         </div>
       </div>
@@ -459,7 +459,7 @@ const AdPage = () => {
   const getUserDisplayName = () => {
     if (firestoreDisplayName) return firestoreDisplayName;
     if (user?.email) return user.email.split("@")[0];
-    return "Misafir";
+    return "زائر";
   };
 
   const handleSearch = (text) => {
@@ -470,7 +470,7 @@ const AdPage = () => {
 
   const startVoiceSearch = () => {
     setShowVoiceModal(true);
-    setVoiceStatus("Dinliyorum...");
+    setVoiceStatus("جاري الاستماع...");
     if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
@@ -486,19 +486,19 @@ const AdPage = () => {
         setTimeout(() => setShowVoiceModal(false), 1500);
       };
       recognition.onerror = () => {
-        setVoiceStatus("Anlasilamadi, tekrar deneyin");
+        setVoiceStatus("لم يتم الفهم، يرجى المحاولة مرة أخرى");
         setTimeout(() => setShowVoiceModal(false), 1500);
       };
       recognition.onend = () => { setTimeout(() => setShowVoiceModal(false), 1500); };
     } else {
-      setVoiceStatus("Tarayiciniz sesli aramayi desteklemiyor");
+      setVoiceStatus("متصفحك لا يدعم البحث الصوتي");
       setTimeout(() => setShowVoiceModal(false), 2000);
     }
   };
 
   const toggleFavorite = async (id) => {
     if (!user) {
-      showAppToast("Favorilere eklemek için giriş yapın.", "error");
+      showAppToast("يرجى تسجيل الدخول لإضافة الإعلان للمفضلة.", "error");
       navigate("/login");
       return;
     }
@@ -510,12 +510,12 @@ const AdPage = () => {
         await removeFavorite(id, user);
       } else {
         await addFavorite(id, user);
-        showAppToast("İlan favorilerinize eklendi.", "success");
+        showAppToast("تم إضافة الإعلان إلى المفضلة.", "success");
       }
     } catch (error) {
       setFavorites(prevFavorites);
       if (isDevelopment) console.error("Failed to update favorite:", error.message);
-      showAppToast("Favori güncellenemedi. Lütfen tekrar deneyin.", "error");
+      showAppToast("تعذر تحديث المفضلة. يرجى المحاولة مرة أخرى.", "error");
     }
   };
 
@@ -531,19 +531,19 @@ const AdPage = () => {
   };
 
   const resetFilters = () => {
-    setTempCategory("Tüm Kategoriler");
-    setTempSpecialty("Tüm Uzmanlıklar");
-    setTempCity("Tüm Şehirler");
+    setTempCategory("جميع الفئات");
+    setTempSpecialty("جميع التخصصات");
+    setTempCity("جميع المدن");
     setTempMinPrice("");
     setTempMaxPrice("");
-    setTempSortBy("Varsayılan");
+    setTempSortBy("الافتراضي");
     setSearchText("");
-    setActiveCategory("Tüm Kategoriler");
-    setActiveSpecialty("Tüm Uzmanlıklar");
-    setActiveCity("Tüm Şehirler");
+    setActiveCategory("جميع الفئات");
+    setActiveSpecialty("جميع التخصصات");
+    setActiveCity("جميع المدن");
     setActiveMinPrice("");
     setActiveMaxPrice("");
-    setActiveSortBy("Varsayılan");
+    setActiveSortBy("الافتراضي");
     setCurrentPage(1);
     updateListingsPageParam(1);
   };
@@ -560,7 +560,7 @@ const AdPage = () => {
     return (
       <div className="ad-page">
         <Navbar />
-        <LoadingSpinner text="Sayfa yükleniyor, lütfen bekleyin..." />
+        <LoadingSpinner text="جاري تحميل الصفحة، يرجى الانتظار..." />
       </div>
     );
   }
@@ -570,8 +570,8 @@ const AdPage = () => {
       <Navbar />
 
       <div className="welcome-banner">
-        <h1>Hoş geldiniz, <span className="highlight-text">{getUserDisplayName()}</span></h1>
-        <p>Bugün hangi konuda bir uzmana ihtiyacınız var?</p>
+        <h1>مرحباً بك، <span className="highlight-text">{getUserDisplayName()}</span></h1>
+        <p>في أي مجال تحتاج خبيراً اليوم؟</p>
       </div>
 
       <div className="search-section">
@@ -582,7 +582,7 @@ const AdPage = () => {
               className="search-input"
               value={searchText}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Hizmet, uzman veya kategori ara..."
+              placeholder="ابحث عن خدمة، خبير، أو فئة..."
             />
             <button className="voice-btn" onClick={startVoiceSearch}>
               <i className="fas fa-microphone"></i>
@@ -594,13 +594,13 @@ const AdPage = () => {
           <button className="location-btn" onClick={() => setShowLocationModal(true)}>
             <i className="fas fa-map-marker-alt location-icon"></i>
             <div className="location-info">
-              <span className="location-label">Konumunuz</span>
+              <span className="location-label">موقعك</span>
               <span className="location-value">
                 {selectedLocation.city
                   ? selectedLocation.district
                     ? `${selectedLocation.district}, ${selectedLocation.city}`
                     : selectedLocation.city
-                  : "Konum sec"}
+                  : "اختر موقعاً"}
               </span>
             </div>
             <i className="fas fa-chevron-down"></i>
@@ -628,11 +628,11 @@ const AdPage = () => {
                 <div className="sidebar-warning sidebar-warning-incomplete">
                   <div className="sidebar-warning-header">
                     <i className="fas fa-exclamation-circle"></i>
-                    <h4>Başvurunuz Eksik!</h4>
+                    <h4>طلبك غير مكتمل!</h4>
                   </div>
-                  <p>Merhaba {expertName}, uzman başvurunuzu tamamlamak için profilinizi doldurun.</p>
+                  <p>مرحباً {expertName}، يرجى إكمال ملفك الشخصي لإتمام طلب انضمامك كخبير.</p>
                   <button className="sidebar-warning-button" onClick={() => navigate('/expert-complete-profile')}>
-                    Profili Tamamla <i className="fas fa-arrow-right"></i>
+                    أكمل الملف الشخصي <i className="fas fa-arrow-right"></i>
                   </button>
                 </div>
               )}
@@ -640,18 +640,18 @@ const AdPage = () => {
                 <div className="sidebar-warning sidebar-warning-pending">
                   <div className="sidebar-warning-header">
                     <i className="fas fa-hourglass-end"></i>
-                    <h4>Onay Bekleniyor</h4>
+                    <h4>بانتظار الموافقة</h4>
                   </div>
-                  <p>Merhaba {expertName}, profiliniz başarıyla tamamlandı. Admin onayı bekleniyor.</p>
-                  <p className="sidebar-warning-subtext">Onay süreci tamamlandığında SMS ile bilgilendirileceksiniz.</p>
+                  <p>مرحباً {expertName}، تم إكمال ملفك الشخصي بنجاح وبانتظار موافقة الإدارة.</p>
+                  <p className="sidebar-warning-subtext">سيتم إبلاغك عبر رسالة SMS فور اكتمال عملية الموافقة.</p>
                   <div className="pending-info">
                     <div className="pending-item">
                       <i className="fas fa-check-circle"></i>
-                      <span>Profil tamamlandı</span>
+                      <span>تم إكمال الملف الشخصي</span>
                     </div>
                     <div className="pending-item">
                       <i className="fas fa-clock"></i>
-                      <span>Admin onayı bekleniyor</span>
+                      <span>بانتظار موافقة الإدارة</span>
                     </div>
                   </div>
                 </div>
@@ -660,18 +660,18 @@ const AdPage = () => {
           )}
 
           <div className="filter-header">
-            <h3>Filtrele ve Sırala</h3>
+            <h3>تصفية وترتيب</h3>
           </div>
 
           <div className="filter-group">
-            <label><i className="fa-solid fa-border-all"></i> Kategori</label>
+            <label><i className="fa-solid fa-border-all"></i> الفئة</label>
             <select value={tempCategory} onChange={(e) => setTempCategory(e.target.value)}>
               {categoryOptions.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
             </select>
           </div>
 
           <div className="filter-group">
-            <label><i className="fa-solid fa-wand-magic-sparkles"></i> Uzmanlık</label>
+            <label><i className="fa-solid fa-wand-magic-sparkles"></i> التخصص</label>
             <select value={tempSpecialty} onChange={(e) => setTempSpecialty(e.target.value)}>
               {specialtyOptions.map((s) => (
                 <option key={s} value={s}>{typeof s === "string" ? s : specialtyNameFromEntry(s)}</option>
@@ -680,40 +680,40 @@ const AdPage = () => {
           </div>
 
           <div className="filter-group">
-            <label><i className="fa-solid fa-location-dot"></i> Şehir</label>
+            <label><i className="fa-solid fa-location-dot"></i> المدينة</label>
             <select value={tempCity} onChange={(e) => setTempCity(e.target.value)}>
               {cityOptions.map((city) => <option key={city} value={city}>{city}</option>)}
             </select>
           </div>
 
           <div className="filter-group">
-            <label><i className="fa-solid fa-money-bill-wave"></i> Fiyat Aralığı</label>
+            <label><i className="fa-solid fa-money-bill-wave"></i> نطاق السعر</label>
             <div className="price-inputs">
-              <input type="number" placeholder="Min TL" value={tempMinPrice} onChange={(e) => setTempMinPrice(e.target.value)} min="0" />
+              <input type="number" placeholder="الحد الأدنى ل.س" value={tempMinPrice} onChange={(e) => setTempMinPrice(e.target.value)} min="0" />
               <span>-</span>
-              <input type="number" placeholder="Max TL" value={tempMaxPrice} onChange={(e) => setTempMaxPrice(e.target.value)} min="0" />
+              <input type="number" placeholder="الحد الأقصى ل.س" value={tempMaxPrice} onChange={(e) => setTempMaxPrice(e.target.value)} min="0" />
             </div>
           </div>
 
           <div className="filter-group">
-            <label><i className="fa-solid fa-arrow-down-short-wide"></i> Sıralama</label>
+            <label><i className="fa-solid fa-arrow-down-short-wide"></i> الترتيب</label>
             <select value={tempSortBy} onChange={(e) => setTempSortBy(e.target.value)}>
               {SORT_OPTIONS.map((opt) => <option key={opt.value} value={opt.label}>{opt.label}</option>)}
             </select>
           </div>
 
-          <button className="btn-apply-filter" onClick={applyFilters}>Uygula</button>
-          <button className="btn-clear-filter" onClick={resetFilters}>Sıfırla</button>
+          <button className="btn-apply-filter" onClick={applyFilters}>تطبيق</button>
+          <button className="btn-clear-filter" onClick={resetFilters}>إعادة تعيين</button>
         </aside>
 
         <main className="experts-list">
           {listingsLoading ? (
-            <LoadingSpinner text="Ilanlar yukleniyor..." />
+            <LoadingSpinner text="جاري تحميل الإعلانات..." />
           ) : filteredListings.length === 0 ? (
             <div className="no-results">
               <i className="fas fa-search"></i>
-              <p>Aradığınız kriterlere uygun ilan bulunamadı.</p>
-              <button className="btn-clear-filter" onClick={resetFilters}>Filtreleri Temizle</button>
+              <p>لم يتم العثور على إعلانات تطابق المعايير المحددة.</p>
+              <button className="btn-clear-filter" onClick={resetFilters}>مسح التصفية</button>
             </div>
           ) : (
             <>
@@ -741,10 +741,10 @@ const AdPage = () => {
                         )}
                       </p>
                       <div className="expert-stats">
-                        <span className="rating"><i className="fa-solid fa-star"></i> {item.rating} ({item.reviews} yorum)</span>
+                        <span className="rating"><i className="fa-solid fa-star"></i> {item.rating} ({item.reviews} تقييم)</span>
                         <span className="distance">
                           <i className="fa-solid fa-location-arrow"></i> 
-                          {item.distanceKm ? `${item.distanceKm.toFixed(1)} km` : "Mesafe bilinmiyor"}
+                          {item.distanceKm ? `${item.distanceKm.toFixed(1)} كم` : "المسافة غير معروفة"}
                         </span>
                       </div>
                     </div>
@@ -762,10 +762,10 @@ const AdPage = () => {
                     </div>
                     <div className="price">
                       <strong>₺{item.price}</strong>
-                      <span className="price-text">'den baslayan</span>
+                      <span className="price-text">تبدأ من</span>
                     </div>
                     <button className="btn-view-profile" onClick={() => navigate(`/ilan/${item.id}`)}>
-                      İlanı İncele
+                      عرض الإعلان
                     </button>
                   </div>
                 </div>
@@ -773,9 +773,9 @@ const AdPage = () => {
 
               {totalPages > 1 && (
                 <div style={{ display: "flex", gap: "8px", marginTop: "16px", justifyContent: "center" }}>
-                  <button className="btn-clear-filter" disabled={currentPage <= 1} onClick={() => goToListingsPage(currentPage - 1)}>Onceki</button>
-                  <button className="btn-apply-filter" style={{ cursor: "default" }}>Sayfa {pageInfo} - Toplam {totalListings}</button>
-                  <button className="btn-clear-filter" disabled={currentPage >= totalPages} onClick={() => goToListingsPage(currentPage + 1)}>Sonraki</button>
+                  <button className="btn-clear-filter" disabled={currentPage <= 1} onClick={() => goToListingsPage(currentPage - 1)}>السابق</button>
+                  <button className="btn-apply-filter" style={{ cursor: "default" }}>صفحة {pageInfo} - الإجمالي {totalListings}</button>
+                  <button className="btn-clear-filter" disabled={currentPage >= totalPages} onClick={() => goToListingsPage(currentPage + 1)}>التالي</button>
                 </div>
               )}
             </>

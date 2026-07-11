@@ -54,7 +54,7 @@ export default function FavoritesPage() {
       } catch (error) {
         if (isDevelopment) console.error("Failed to load favorites:", error.message);
         if (!cancelled) {
-          setErrorText("Favoriler yuklenemedi. Lutfen tekrar deneyin.");
+          setErrorText("تعذر تحميل المفضلة. يرجى المحاولة مرة أخرى.");
         }
       }
     };
@@ -90,7 +90,7 @@ export default function FavoritesPage() {
         if (isDevelopment) console.error("Failed to load favorite listing cards:", error.message);
         if (!cancelled) {
           setFavoriteItems([]);
-          setErrorText("Favori ilanlar yuklenemedi. Lutfen tekrar deneyin.");
+          setErrorText("تعذر تحميل الإعلانات المفضلة. يرجى المحاولة مرة أخرى.");
         }
       });
 
@@ -116,7 +116,7 @@ export default function FavoritesPage() {
     } catch (error) {
       setFavorites(prev);
       if (isDevelopment) console.error("Failed to update favorite:", error.message);
-      setErrorText("Favori guncellenemedi. Lutfen tekrar deneyin.");
+      setErrorText("تعذر تحديث المفضلة. يرجى المحاولة مرة أخرى.");
     }
   };
 
@@ -124,7 +124,7 @@ export default function FavoritesPage() {
     return (
       <div className="favorites-page">
         <Navbar />
-        <LoadingSpinner text="Favoriler yukleniyor..." />
+        <LoadingSpinner text="جاري تحميل المفضلة..." />
       </div>
     );
   }
@@ -135,8 +135,8 @@ export default function FavoritesPage() {
     <div className="favorites-page">
       <Navbar />
       <div className="welcome-banner">
-        <h1>Favorilerim</h1>
-        <p>Favoriye ekledigin ilanlar burada listelenir.</p>
+        <h1>مفضلتي</h1>
+        <p>الإعلانات التي أضفتها إلى المفضلة تظهر هنا.</p>
         {errorText ? <p>{sanitizeText(errorText)}</p> : null}
       </div>
 
@@ -145,7 +145,7 @@ export default function FavoritesPage() {
           {favoriteItems.length === 0 ? (
             <div className="no-results">
               <i className="fas fa-heart"></i>
-              <p>Henuz favori eklemedin.</p>
+              <p>لم تقم بإضافة أي إعلان للمفضلة بعد.</p>
             </div>
           ) : (
             favoriteItems.map((item) => (
@@ -177,7 +177,7 @@ export default function FavoritesPage() {
                     </p>
                     <div className="expert-stats">
                       <span className="rating">
-                        <i className="fa-solid fa-star"></i> {item.rating ?? 0} ({item.reviews ?? 0} yorum)
+                        <i className="fa-solid fa-star"></i> {item.rating ?? 0} ({item.reviews ?? 0} تقييم)
                       </span>
                       {item.distanceKm != null && (
                         <span className="distance">
@@ -195,17 +195,17 @@ export default function FavoritesPage() {
                       type="button"
                       className={`btn-favorite ${favorites[item.id] ? "active" : ""}`}
                       onClick={() => toggle(item.id)}
-                      aria-label="Favoriden cikar"
+                      aria-label="إزالة من المفضلة"
                     >
                       <i className={`fa-${favorites[item.id] ? "solid" : "regular"} fa-heart`}></i>
                     </button>
                   </div>
                   <div className="price">
                     <strong>₺{item.price}</strong>
-                    <span className="price-text">'den baslayan</span>
+                    <span className="price-text">تبدأ من</span>
                   </div>
                   <button type="button" className="btn-view-profile" onClick={() => navigate(`/ilan/${item.id}`)}>
-                    Ilani Incele
+                    عرض الإعلان
                   </button>
                 </div>
               </div>

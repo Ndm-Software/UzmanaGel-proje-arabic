@@ -168,7 +168,7 @@ export default function ListingDetailPage() {
 
   const handleStartChat = async () => {
     if (!isSignedIn) {
-      showToast("Mesaj göndermek için lütfen giriş yapın.", "error");
+      showToast("يرجى تسجيل الدخول أولاً لإرسال رسالة.", "error");
       setTimeout(() => navigate("/login"), 1500);
       return;
     }
@@ -182,7 +182,7 @@ export default function ListingDetailPage() {
         
         if (userType === "PENDING_PROVIDER") {
           showToast(
-            "Uzman başvurunuz henüz değerlendirilme aşamasında. Onaylandıktan sonra mesaj gönderebilirsiniz.",
+            "طلب انضمامك كخبير قيد المراجعة حالياً. ستتمكن من إرسال الرسائل بعد الموافقة.",
             "error"
           );
           return;
@@ -191,7 +191,7 @@ export default function ListingDetailPage() {
     }
   } catch (error) {
     if (isDevelopment) console.error("Kullanıcı tipi kontrol hatası:", error);
-    showToast("Lütfen daha sonra tekrar deneyin.", "error");
+    showToast("يرجى المحاولة مرة أخرى لاحقاً.", "error");
     return;
   }
 
@@ -200,8 +200,8 @@ export default function ListingDetailPage() {
       const serviceId = String(listing?.id || listingId || "").trim();
       const serviceTitle = String(listing?.title || "").trim();
 
-      if (!providerUid) { showToast("Uzman bilgisi bulunamadı."); return; }
-      if (!serviceId) { showToast("Hizmet bilgisi bulunamadı."); return; }
+      if (!providerUid) { showToast("لم يتم العثور على معلومات الخبير."); return; }
+      if (!serviceId) { showToast("لم يتم العثور على معلومات الخدمة."); return; }
 
       setChatLoading(true);
 
@@ -227,7 +227,7 @@ export default function ListingDetailPage() {
             expertId: providerUid,
             listingId: serviceId,
             listingTitle: serviceTitle,
-            expertName: listing?.expertName || "Uzman",
+            expertName: listing?.expertName || "خبير",
             client: clientName,
             date: todayStr,
             start: "12:00",
@@ -235,16 +235,16 @@ export default function ListingDetailPage() {
             status: "approved",
             createdBy: "customer",
             createdTime: Date.now(),
-            note: "Doğrudan İletişim Başlatıldı",
-            fullAddress: "Çevrimiçi Görüşme",
-            address: "Çevrimiçi",
+            note: "تم بدء التواصل المباشر",
+            fullAddress: "مقابلة عبر الإنترنت",
+            address: "عبر الإنترنت",
           };
 
           const docRef = await addDoc(collection(db, "appointments"), dummyAppointment);
           approvedAppointmentId = docRef.id;
         } catch (apptErr) {
           if (isDevelopment) console.error("Otomatik randevu oluşturma hatası:", apptErr);
-          showToast("İletişim başlatılamadı. Lütfen daha sonra tekrar deneyin.", "error");
+          showToast("تعذر بدء التواصل. يرجى المحاولة مرة أخرى لاحقاً.", "error");
           setChatLoading(false);
           return;
         }
@@ -254,7 +254,7 @@ export default function ListingDetailPage() {
       navigate(`/mesajlar?conversation=${result.conversationId}&open=true`);
     } catch (error) {
       if (isDevelopment) console.error("Chat baslatma hatasi:", error.message);
-      showToast(error.message || "Mesajlaşma başlatılırken hata oluştu.");
+      showToast(error.message || "حدث خطأ أثناء بدء المراسلة.");
     } finally {
       setChatLoading(false);
     }
@@ -270,7 +270,7 @@ export default function ListingDetailPage() {
     return (
       <div className="ld-page">
         <Navbar />
-        <LoadingSpinner text="İlan yükleniyor..." />
+        <LoadingSpinner text="جاري تحميل الإعلان..." />
       </div>
     );
   }
@@ -281,10 +281,10 @@ export default function ListingDetailPage() {
         <Navbar />
         <div className="ld-not-found">
           <i className="fas fa-file-circle-xmark"></i>
-          <h2>İlan Bulunamadı</h2>
-          <p>Aradığınız ilan mevcut değil veya kaldırılmış olabilir.</p>
+          <h2>الإعلان غير موجود</h2>
+          <p>الإعلان الذي تبحث عنه غير موجود أو قد يكون تم حذفه.</p>
           <button onClick={() => navigate("/ilanlar")}>
-            <i className="fas fa-arrow-left"></i> İlanlara Dön
+            <i className="fas fa-arrow-left"></i> العودة إلى الإعلانات
           </button>
         </div>
       </div>
@@ -304,7 +304,7 @@ export default function ListingDetailPage() {
       <div className="ld-container">
         <div className="ld-topbar">
           <button className="ld-back-btn" onClick={() => navigate(-1)}>
-            <i className="fas fa-arrow-left"></i> Geri
+            <i className="fas fa-arrow-left"></i> رجوع
           </button>
         </div>
 
@@ -327,11 +327,11 @@ export default function ListingDetailPage() {
               </span>
             </div>
             <div className="ld-meta">
-              <span><i className="fas fa-user-tie"></i> {sanitizeText(listing.expertName || "Uzman")}</span>
-              <span><i className="fas fa-map-marker-alt"></i> {sanitizeText(listing.city || "Belirtilmemiş")}</span>
+              <span><i className="fas fa-user-tie"></i> {sanitizeText(listing.expertName || "خبير")}</span>
+              <span><i className="fas fa-map-marker-alt"></i> {sanitizeText(listing.city || "غير محدد")}</span>
               <span className="ld-rating">
                 <i className="fas fa-star"></i> {listing.rating ?? 0}
-                <em>({effectiveReviewCount} yorum)</em>
+                <em>({effectiveReviewCount} تقييم)</em>
               </span>
             </div>
           </div>
@@ -343,7 +343,7 @@ export default function ListingDetailPage() {
               disabled={chatLoading}
               style={chatLoading ? { opacity: 0.7, cursor: "not-allowed" } : {}}
             >
-              <i className="fas fa-comments"></i> Uzmanla İletişime Geç
+              <i className="fas fa-comments"></i> تواصل مع الخبير
             </button>
           </div>
         </div>
@@ -351,40 +351,40 @@ export default function ListingDetailPage() {
         <div className="ld-grid">
           <div className="ld-left">
             <div className="ld-card">
-              <h2 className="ld-card-title"><i className="fas fa-circle-info"></i> İlan Hakkında</h2>
-              <p className="ld-desc">{sanitizeText(listing.description || "Bu ilan için henüz açıklama eklenmemiş.")}</p>
+              <h2 className="ld-card-title"><i className="fas fa-circle-info"></i> عن الإعلان</h2>
+              <p className="ld-desc">{sanitizeText(listing.description || "لم يتم إضافة وصف لهذا الإعلان بعد.")}</p>
             </div>
 
             <div className="ld-card">
-              <h2 className="ld-card-title"><i className="fas fa-list-check"></i> Hizmet Detayları</h2>
+              <h2 className="ld-card-title"><i className="fas fa-list-check"></i> تفاصيل الخدمة</h2>
               <div className="ld-details">
                 <div className="ld-detail-item">
-                  <span className="ld-detail-label">Kategori</span>
+                  <span className="ld-detail-label">الفئة</span>
                   <span className="ld-detail-value">{sanitizeText(listing.category)}</span>
                 </div>
                 {String(listing.serviceSubcategory || "").trim() ? (
                   <div className="ld-detail-item">
-                    <span className="ld-detail-label">Uzmanlık</span>
+                    <span className="ld-detail-label">التخصص</span>
                     <span className="ld-detail-value">{sanitizeText(String(listing.serviceSubcategory).trim())}</span>
                   </div>
                 ) : null}
                 {String(listing.serviceSubcategoryDetails || "").trim() ? (
                   <div className="ld-detail-item">
-                    <span className="ld-detail-label">Ayrıntılar</span>
+                    <span className="ld-detail-label">التفاصيل</span>
                     <span className="ld-detail-value">{sanitizeText(String(listing.serviceSubcategoryDetails).trim())}</span>
                   </div>
                 ) : null}
                 <div className="ld-detail-item">
-                  <span className="ld-detail-label">Şehir</span>
-                  <span className="ld-detail-value">{sanitizeText(listing.city || "Belirtilmemiş")}</span>
+                  <span className="ld-detail-label">المدينة</span>
+                  <span className="ld-detail-value">{sanitizeText(listing.city || "غير محدد")}</span>
                 </div>
                 <div className="ld-detail-item">
-                  <span className="ld-detail-label">Ücret</span>
+                  <span className="ld-detail-label">السعر</span>
                   <span className="ld-detail-value ld-price">₺{formatPrice(listing.price)}</span>
                 </div>
                 <div className="ld-detail-item">
-                  <span className="ld-detail-label">Hizmet Tipi</span>
-                  <span className="ld-detail-value">{sanitizeText(listing.pricingType || "Belirtilmemiş")}</span>
+                  <span className="ld-detail-label">نوع الخدمة</span>
+                  <span className="ld-detail-value">{sanitizeText(listing.pricingType || "غير محدد")}</span>
                 </div>
               </div>
             </div>
@@ -409,9 +409,9 @@ export default function ListingDetailPage() {
                   )}
                 </div>
                 <div>
-                  <h3 className="ld-provider-name">{sanitizeText(listing.expertName || "Uzman")}</h3>
+                  <h3 className="ld-provider-name">{sanitizeText(listing.expertName || "خبير")}</h3>
                   <span className="ld-provider-badge">
-                    <i className="fas fa-check-circle"></i> Onaylı Uzman
+                    <i className="fas fa-check-circle"></i> خبير موثق
                   </span>
                 </div>
               </div>
@@ -419,12 +419,12 @@ export default function ListingDetailPage() {
               <div className="ld-provider-stats">
                 <div className="ld-stat">
                   <span className="ld-stat-val"><i className="fas fa-star"></i> {expertRating}</span>
-                  <span className="ld-stat-lbl">Puan</span>
+                  <span className="ld-stat-lbl">التقييم</span>
                 </div>
                 <div className="ld-stat-sep" />
                 <div className="ld-stat">
                   <span className="ld-stat-val">{expertReviewCount}</span>
-                  <span className="ld-stat-lbl">Yorum</span>
+                  <span className="ld-stat-lbl">تعليق</span>
                 </div>
               </div>
 
@@ -435,18 +435,18 @@ export default function ListingDetailPage() {
                 style={chatLoading ? { opacity: 0.7, cursor: "not-allowed" } : {}}
               >
                 <i className="fas fa-message"></i>{" "}
-                {chatLoading ? "Mesaj açılıyor..." : "Bu hizmet için mesaj at"}
+                {chatLoading ? "جاري فتح الرسالة..." : "أرسل رسالة لهذه الخدمة"}
               </button>
 
               <button
                 className="ld-profile-btn"
                 onClick={handleExpertProfileClick}
               >
-                <i className="fas fa-id-card"></i> Uzman Profilini İncele
+                <i className="fas fa-id-card"></i> عرض الملف الشخصي للخبير
               </button>
 
               {!canOpenProfile && (
-                <p className="ld-no-profile">Bu ilan için profil mevcut değil.</p>
+                <p className="ld-no-profile">الملف الشخصي غير متوفر لهذا الإعلان.</p>
               )}
             </div>
           </div>

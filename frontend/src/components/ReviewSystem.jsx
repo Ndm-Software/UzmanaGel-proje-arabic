@@ -73,11 +73,11 @@ const ReviewSystem = ({
 
   const handleWriteReviewClick = () => {
     if (!currentUser) {
-      showAppToast("Değerlendirme yapmak için lütfen giriş yapın.", "error");
+      showAppToast("يرجى تسجيل الدخول أولاً لإجراء التقييم.", "error");
       return;
     }
     if (userRole === 'PROVIDER' || userRole === 'PENDING_PROVIDER') {
-      showAppToast("Uzmanlar değerlendirme yapamaz.", "error");
+      showAppToast("الخبراء لا يمكنهم إجراء تقييم.", "error");
       return;
     }
     setIsModalOpen(true);
@@ -87,7 +87,7 @@ const ReviewSystem = ({
 
   const handleSubmitReview = async () => {
     if (rating < 1 || rating > 5) {
-      showAppToast("Lütfen 1-5 arası bir puan seçin.", "error");
+      showAppToast("يرجى اختيار تقييم بين 1 و 5 نجوم.", "error");
       return;
     }
 
@@ -108,7 +108,7 @@ const ReviewSystem = ({
           expertId = data.providerId || null;
           listingTitle = data.title || "";
         } else {
-          throw new Error("Hizmet bilgisi bulunamadı.");
+          throw new Error("لم يتم العثور على معلومات الخدمة.");
         }
       } else {
         expertId = targetId;
@@ -117,7 +117,7 @@ const ReviewSystem = ({
       }
 
       if (!expertId) {
-        throw new Error("Uzman bilgisi bulunamadı.");
+        throw new Error("لم يتم العثور على معلومات الخبير.");
       }
 
       // Check if an appointment exists
@@ -145,7 +145,7 @@ const ReviewSystem = ({
         apptId = querySnap.docs[0].id;
       } else {
         // Create a dummy approved appointment
-        let clientName = currentUser.displayName || "Müşteri";
+        let clientName = currentUser.displayName || "عميل";
         try {
           const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
           if (userDoc.exists()) {
@@ -155,12 +155,12 @@ const ReviewSystem = ({
           if (isDev) console.error("Client name load error:", err);
         }
 
-        let expertName = "Uzman";
+        let expertName = "خبير";
         try {
           const expertDoc = await getDoc(doc(db, 'service_providers', expertId));
           if (expertDoc.exists()) {
             const data = expertDoc.data() || {};
-            expertName = data.businessName || data.displayName || "Uzman";
+            expertName = data.businessName || data.displayName || "خبير";
           }
         } catch (err) {
           if (isDev) console.error("Expert name load error:", err);
@@ -180,9 +180,9 @@ const ReviewSystem = ({
           status: "approved",
           createdBy: "customer",
           createdTime: Date.now(),
-          note: "Doğrudan Değerlendirme Başlatıldı",
-          fullAddress: "Çevrimiçi Görüşme",
-          address: "Çevrimiçi",
+          note: "بدأ التقييم المباشر",
+          fullAddress: "مقابلة عبر الإنترنت",
+          address: "عبر الإنترنت",
         };
 
         const newApptDoc = await addDoc(collection(db, 'appointments'), dummyAppointment);
@@ -197,7 +197,7 @@ const ReviewSystem = ({
 
         const existingReview = await transaction.get(reviewRef);
         if (existingReview.exists()) {
-          throw new Error('Bu randevu/işlem zaten değerlendirilmiş.');
+          throw new Error('تم تقييم هذا الموعد/الخدمة بالفعل.');
         }
 
         const expertSnap = await transaction.get(expertRef);
@@ -242,11 +242,11 @@ const ReviewSystem = ({
         }
       });
 
-      showAppToast("Değerlendirmeniz alındı. Teşekkürler!", "success");
+      showAppToast("تم استلام تقييمك. شكراً لك!", "success");
       setIsModalOpen(false);
     } catch (error) {
       if (isDev) console.error("Değerlendirme hatası:", error);
-      showAppToast(error.message || "Değerlendirme gönderilemedi.", "error");
+      showAppToast(error.message || "فشل إرسال التقييم.", "error");
     } finally {
       setSubmitting(false);
     }
@@ -461,13 +461,13 @@ const ReviewSystem = ({
     ? (summaryReviews.reduce((acc, curr) => acc + Number(curr.rating || 0), 0) / totalSummaryCount).toFixed(1)
     : "0.0";
 
-  if (loading) return <div className="review-loading">Yorumlar yükleniyor...</div>;
+  if (loading) return <div className="review-loading">جاري تحميل التعليقات...</div>;
 
   return (
     <div className="review-section-wrapper">
       <div className="ld-reviews-header-wrapper">
         <div className="review-section-title-wrap">
-          <h2 className="review-section-title">Müşteri Yorumları</h2>
+          <h2 className="review-section-title">تقييمات العملاء</h2>
           <div className="review-section-avg">
             {averageRating} <i className="fas fa-star"></i>
           </div>
@@ -492,7 +492,7 @@ const ReviewSystem = ({
               gap: '6px'
             }}
           >
-            <i className="fas fa-star"></i> Değerlendir ve Yorumla
+            <i className="fas fa-star"></i> التقييم وكتابة تعليق
           </button>
           {enableSort && (
             <select
@@ -502,13 +502,13 @@ const ReviewSystem = ({
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
-                  {opt.label}
+                  {opt.label === "En yeni" ? "الأحدث" : opt.label === "En eski" ? "الأقدم" : opt.label === "En yüksek yıldız" ? "الأعلى تقييماً" : "الأقل تقييماً"}
                 </option>
               ))}
             </select>
           )}
           <div className="ld-reviews-summary-badge">
-            Toplam {isActiveListingFilterReady ? totalSummaryCount : totalAllCount} Değerlendirme
+            إجمالي {isActiveListingFilterReady ? totalSummaryCount : totalAllCount} تقييم
           </div>
         </div>
       </div>
@@ -524,12 +524,12 @@ const ReviewSystem = ({
             >
               <div className="review-header-row">
                 <div className="review-info-item">
-                  <strong className="review-label">Müşteri İsim:</strong>
+                  <strong className="review-label">اسم العميل:</strong>
                   <span className="review-value">{userNames[rev.clientId] || "..."}</span>
                 </div>
 
                 <div className="review-info-item review-rating-wrapper">
-                  <strong className="review-label">Müşteri Puanı:</strong>
+                  <strong className="review-label">تقييم العميل:</strong>
                   <div className="review-stars">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <i
@@ -541,30 +541,30 @@ const ReviewSystem = ({
                 </div>
 
                 <div className="review-info-item review-date-wrapper">
-                  <strong className="review-label">Değerlendirme Tarihi:</strong>
+                  <strong className="review-label">تاريخ التقييم:</strong>
                   <span className="review-value">
                     {formatDate(rev.createdAt)}{" "}
-                    <span className="review-date-sub">{timeAgo(rev.createdAt)}</span>
+                    <span className="review-date-sub">{timeAgo(rev.createdAt).replace("Bugün", "اليوم").replace("Gün önce", "أيام مضت").replace("Ay önce", "أشهر مضت")}</span>
                   </span>
                 </div>
               </div>
 
               {showListingInfo && targetType === 'expert' && String(rev?.listingId || '').trim() ? (
                 <div className="review-listing-row">
-                  <strong className="review-label">İlan:</strong>{' '}
+                  <strong className="review-label">الإعلان:</strong>{' '}
                   <a
                     href={`/ilan/${encodeURIComponent(String(rev.listingId).trim())}`}
                     className="review-listing-link"
                   >
-                    {listingTitles[String(rev.listingId).trim()] || `İlan (${String(rev.listingId).trim()})`}
+                    {listingTitles[String(rev.listingId).trim()] || `إعلان (${String(rev.listingId).trim()})`}
                   </a>
                 </div>
               ) : null}
 
               <div className="review-comment-block">
-                <strong className="review-label">Müşteri Yorumu: </strong>
+                <strong className="review-label">تعليق العميل: </strong>
                 <span className="review-comment-text">
-                  "{rev.comment || "Yorum bırakılmadı."}"
+                  "{rev.comment || "لم يتم ترك تعليق."}"
                 </span>
               </div>
             </motion.div>
@@ -618,7 +618,7 @@ const ReviewSystem = ({
                 className="review-load-btn"
                 onClick={() => setVisibleCount(displayReviews.length)}
               >
-                Tümünü Gör ({displayReviews.length - visibleCount} kaldı)
+                عرض الكل ({displayReviews.length - visibleCount} متبقي)
               </button>
             ) : (
               <button
@@ -626,7 +626,7 @@ const ReviewSystem = ({
                 className="review-load-btn"
                 onClick={() => setVisibleCount((prev) => prev + Math.max(1, Number(step) || 5))}
               >
-                Daha Fazla Yorum Gör ({displayReviews.length - visibleCount} kaldı)
+                عرض المزيد من التعليقات ({displayReviews.length - visibleCount} متبقي)
               </button>
             )
           )
@@ -648,14 +648,14 @@ const ReviewSystem = ({
             <div className="confirm-modal-icon" style={{ color: '#fbbf24', textAlign: 'center', fontSize: '32px', marginBottom: '12px' }}>
               <i className="fas fa-star"></i>
             </div>
-            <h3 style={{ color: '#f8fafc', fontSize: '20px', fontWeight: 800, textAlign: 'center', margin: '0 0 8px 0' }}>Değerlendir ve Yorumla</h3>
+            <h3 style={{ color: '#f8fafc', fontSize: '20px', fontWeight: 800, textAlign: 'center', margin: '0 0 8px 0' }}>التقييم وكتابة تعليق</h3>
             <p style={{ color: '#94a3b8', marginTop: '6px', fontSize: '13px', textAlign: 'center', marginBottom: '20px' }}>
-              Deneyiminizi puanlayın ve uzman hakkında yorum yapın.
+              قيم تجربتك واكتب تعليقك حول الخبير.
             </p>
 
             <div style={{ marginTop: '16px', padding: '14px', background: '#0f172a', border: '1px solid #334155', borderRadius: '12px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-                <div style={{ color: '#e2e8f0', fontWeight: 700 }}>Puan</div>
+                <div style={{ color: '#e2e8f0', fontWeight: 700 }}>التقييم</div>
                 <div style={{ color: '#fbbf24', fontSize: '20px' }}>
                   {Array.from({ length: 5 }).map((_, i) => {
                     const value = i + 1;
@@ -672,8 +672,8 @@ const ReviewSystem = ({
                           padding: '2px 4px',
                           opacity: active ? 1 : 0.3,
                         }}
-                        aria-label={`${value} yıldız`}
-                        title={`${value} yıldız`}
+                        aria-label={`${value} نجمة`}
+                        title={`${value} نجمة`}
                       >
                         <i className="fas fa-star"></i>
                       </button>
@@ -685,7 +685,7 @@ const ReviewSystem = ({
 
             <div style={{ marginTop: '14px' }}>
               <label style={{ display: 'block', marginBottom: '8px', color: '#e2e8f0', fontWeight: 700 }}>
-                Yorum (opsiyonel)
+                التعليق (اختياري)
               </label>
               <textarea
                 value={comment}
@@ -704,7 +704,7 @@ const ReviewSystem = ({
                   fontSize: '14px',
                   lineHeight: 1.6
                 }}
-                placeholder="Deneyiminizi yazın..."
+                placeholder="اكتب تجربتك هنا..."
                 maxLength={1000}
               />
               <div style={{ marginTop: '6px', color: '#94a3b8', fontSize: '12px', textAlign: 'right' }}>
@@ -728,7 +728,7 @@ const ReviewSystem = ({
                   cursor: 'pointer'
                 }}
               >
-                Vazgeç
+                إلغاء
               </button>
               <button
                 type="button"
@@ -746,9 +746,9 @@ const ReviewSystem = ({
                 }}
               >
                 {submitting ? (
-                  <><i className="fas fa-spinner fa-spin"></i> Gönderiliyor...</>
+                  <><i className="fas fa-spinner fa-spin"></i> جاري الإرسال...</>
                 ) : (
-                  <>Gönder</>
+                  <>إرسال</>
                 )}
               </button>
             </div>

@@ -1,104 +1,143 @@
 :root {
-  --addr-modal-overlay: rgba(0, 0, 0, 0.55);
+  --addr-modal-overlay: rgba(0, 0, 0, 0.62);
 }
 
 [data-theme="light"] {
-  --addr-modal-overlay: rgba(15, 23, 42, 0.22);
+  --addr-modal-overlay: rgba(15, 23, 42, 0.28);
 }
 
 .address-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--addr-modal-overlay);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  inset: 0;
+  z-index: 1000;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
-}
 
-[data-theme="light"] .address-modal-overlay {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  padding: 20px;
+
+  background: var(--addr-modal-overlay);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
 }
 
 .address-modal-container {
-  display: flex;
-  flex-direction: row;
-  width: auto;
-  max-width: 90vw;
-  height: auto;
-  max-height: 90vh;
-  gap: 0;
-  position: relative;
-  transition: all 0.3s ease;
-  align-items: stretch;
+  width: min(560px, 100%);
+  max-height: 92vh;
 }
 
 .address-modal-box {
-  max-width: 800px;
-  width: 95%;
-  max-height: 90vh;
-  position: relative;
-  margin: 0;
-  height: auto;
-  border-radius: 15px;
-  flex-shrink: 0;
+  width: 100%;
+  max-height: 92vh;
   overflow-y: auto;
+
+  direction: rtl;
+  text-align: right;
+
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border-right: 4px solid var(--primary);
+  border-radius: 18px;
+
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
 }
 
 .address-modal-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid var(--card-border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   position: sticky;
   top: 0;
-  background: var(--card-bg);
   z-index: 10;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+
+  padding: 22px 24px;
+
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.address-modal-heading {
+  flex: 1;
 }
 
 .address-modal-header h3 {
-  font-size: 20px;
-  color: var(--primary);
   margin: 0;
-  font-weight: bold;
+
+  color: var(--primary);
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.address-modal-subtitle {
+  margin: 7px 0 0;
+
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .address-modal-close-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
   background: var(--input-bg);
-  border: none;
+  border: 1px solid transparent;
   border-radius: 12px;
+
   color: var(--text-muted);
+  font-size: 22px;
+  line-height: 1;
+
   cursor: pointer;
-  font-size: 20px;
   transition: all 0.2s ease;
 }
 
 .address-modal-close-btn:hover {
+  color: #ffffff;
   background: #ef4444;
-  color: white;
+  border-color: #ef4444;
 }
 
 .address-modal-body {
-  padding: 20px;
+  padding: 24px;
+}
+
+.address-temp-warning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 20px;
+  padding: 12px 14px;
+
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 10px;
+
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.address-temp-warning i {
+  color: #3b82f6;
+  font-size: 17px;
 }
 
 .address-form-fields {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  padding: 0 10px;
+  gap: 20px;
 }
 
 .address-field {
@@ -107,12 +146,12 @@
 
 .address-label {
   display: block;
-  color: var(--primary);
-  font-size: 12px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+
+  margin-bottom: 8px;
+
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .address-label.required::after {
@@ -120,322 +159,126 @@
   color: #ef4444;
 }
 
-.address-label.optional {
-  color: var(--text-soft);
-}
-
 .address-label.optional::after {
-  content: " (İsteğe Bağlı)";
+  content: " (اختياري)";
   color: var(--text-muted);
-  font-weight: normal;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .address-input,
 .address-select {
   width: 100%;
-  padding: 12px;
-  background: var(--input-bg);
+  box-sizing: border-box;
+
+  padding: 13px 15px;
+
+  direction: rtl;
+  text-align: right;
+  font-family: inherit;
+  font-size: 15px;
+
   color: var(--text-main);
-  border-radius: 8px;
-  border: 1px solid var(--card-border);
-  font-size: 14px;
-  transition: all 0.2s ease;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border, var(--card-border));
+  border-radius: 11px;
+
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.address-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 
 .address-input:focus,
 .address-select:focus {
-  outline: none;
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(214, 178, 94, 0.14);
 }
 
-.address-row-2cols {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-}
-
-.address-row-3cols {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-}
-
-.address-search-mode {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: var(--input-bg);
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #3b82f6;
-}
-
-.address-manual-mode {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background: var(--input-bg);
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #f59e0b;
-}
-
-.address-search-header,
-.address-manual-header {
-  display: flex;
-  gap: 10px;
-}
-
-.address-search-input,
-.address-manual-input {
-  flex: 1;
-  padding: 12px;
-  background: var(--card-bg);
-  color: var(--text-main);
-  border-radius: 8px;
-  border: 1px solid var(--card-border);
-}
-
-.address-search-back,
-.address-manual-back {
-  padding: 0 15px;
-  background: #e74c3c;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
+.address-select {
   cursor: pointer;
 }
 
-.address-search-results {
-  max-height: 150px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
+.address-select option {
+  color: var(--text-main);
+  background: var(--card-bg);
 }
 
-.address-search-results::-webkit-scrollbar {
-  width: 6px;
+.address-textarea {
+  min-height: 115px;
+  resize: vertical;
+  line-height: 1.7;
 }
 
-.address-search-results::-webkit-scrollbar-track {
-  background: var(--input-bg);
-  border-radius: 10px;
-}
+.address-character-count {
+  display: block;
 
-.address-search-results::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border-radius: 10px;
-}
+  margin-top: 6px;
 
-.address-search-result-item {
+  color: var(--text-muted);
+  font-size: 11px;
   text-align: left;
-  padding: 10px;
-  background: var(--card-bg);
-  color: var(--text-main);
-  border: 1px solid var(--card-border);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.address-search-result-item:hover {
-  border-color: var(--primary);
-}
-
-.address-search-no-result {
-  padding: 10px;
-  color: var(--text-muted);
-  text-align: center;
-  font-size: 12px;
-}
-
-.address-manual-save {
-  width: 100%;
-  padding: 12px;
-  background: #f59e0b;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.address-coords-status {
-  background: var(--input-bg);
-  border: 1px solid rgba(214, 178, 94, 0.28);
-  border-radius: 8px;
-  padding: 10px 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.address-coords-label {
-  font-size: 11px;
-  color: var(--primary);
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-.address-coords-value {
-  font-size: 11px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.address-coords-value.success {
-  color: #4caf50;
-}
-
-.address-coords-value.warning {
-  color: var(--primary);
-  background: transparent;
-  font-weight: 600;
-}
-
-[data-theme="light"] .address-coords-value.warning {
-  color: var(--primary-dark);
-}
-
-.address-coords-value.info {
-  color: var(--text-muted);
 }
 
 .address-modal-actions {
-  margin-top: 10px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
   position: sticky;
   bottom: 0;
+
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+
+  margin-top: 24px;
+  padding-top: 18px;
+
+  direction: rtl;
   background: var(--card-bg);
-  padding-top: 20px;
   border-top: 1px solid var(--card-border);
-  padding: 10px 10px 10px 10px;
+}
+
+.address-cancel-btn,
+.address-save-btn {
+  min-width: 125px;
+
+  padding: 11px 22px;
+
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .address-cancel-btn {
-  padding: 10px 24px;
+  color: var(--text-main);
   background: var(--input-bg);
   border: 1px solid var(--card-border);
-  border-radius: 40px;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .address-cancel-btn:hover {
-  background: var(--card-border);
-  color: var(--text-main);
+  border-color: var(--text-muted);
 }
 
 .address-save-btn {
-  padding: 10px 24px;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  border: none;
-  border-radius: 12px;
   color: #0f1117;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-dark) 100%
+  );
+  border: none;
 }
 
 .address-save-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
-}
-
-.address-warning-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1100;
-  border-radius: 15px;
-}
-
-[data-theme="light"] .address-warning-overlay {
-  background: rgba(15, 23, 42, 0.35);
-}
-
-.address-warning-modal {
-  background: var(--card-bg);
-  padding: 30px;
-  border-radius: 15px;
-  border: 2px solid #f97316;
-  text-align: center;
-  max-width: 400px;
-  margin: 20px;
-}
-
-.address-warning-modal h4 {
-  color: var(--text-main);
-  margin-bottom: 15px;
-}
-
-.address-warning-modal p {
-  color: var(--text-muted);
-  font-size: 13px;
-  line-height: 1.5;
-  margin-bottom: 20px;
-}
-
-.address-warning-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.address-warning-google {
-  padding: 12px;
-  background: #3b82f6;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.address-warning-google:hover {
-  background: #2563eb;
-}
-
-.address-warning-risk {
-  padding: 10px;
-  background: transparent;
-  color: var(--text-muted);
-  border: 1px solid var(--card-border);
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.address-temp-warning {
-  background: rgba(59, 130, 246, 0.12);
-  border-left: 3px solid #3b82f6;
-  border-radius: 8px;
-  padding: 12px 15px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.address-temp-warning i {
-  color: #3b82f6;
-  font-size: 18px;
-}
-
-.address-temp-warning span {
-  color: var(--text-muted);
-  font-size: 13px;
+  box-shadow: 0 5px 16px rgba(212, 175, 55, 0.28);
 }
 
 .address-modal-box::-webkit-scrollbar {
@@ -444,7 +287,6 @@
 
 .address-modal-box::-webkit-scrollbar-track {
   background: var(--input-bg);
-  border-radius: 10px;
 }
 
 .address-modal-box::-webkit-scrollbar-thumb {
@@ -452,71 +294,63 @@
   border-radius: 10px;
 }
 
-@media (max-width: 768px) {
+[data-theme="light"] .address-modal-box {
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.14);
+}
+
+@media (max-width: 600px) {
+  .address-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
   .address-modal-container {
-    max-width: 95vw;
-    max-height: 95vh;
+    width: 100%;
+    max-height: 94vh;
   }
-  
-  .address-row-2cols,
-  .address-row-3cols {
-    grid-template-columns: 1fr;
-    gap: 15px;
+
+  .address-modal-box {
+    max-height: 94vh;
+
+    border-right: none;
+    border-top: 4px solid var(--primary);
+    border-radius: 20px 20px 0 0;
   }
-  
+
+  .address-modal-header {
+    padding: 18px 20px;
+  }
+
+  .address-modal-header h3 {
+    font-size: 20px;
+  }
+
+  .address-modal-body {
+    padding: 20px;
+  }
+
   .address-modal-actions {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
-  
+
   .address-cancel-btn,
   .address-save-btn {
     width: 100%;
-    text-align: center;
   }
 }
 
-@media (max-width: 480px) {
-  .address-modal-header {
-    padding: 16px 20px;
-  }
-  
-  .address-modal-header h3 {
-    font-size: 18px;
-  }
-  
-  .address-modal-body {
-    padding: 16px;
-  }
-  
-  .address-form-fields {
-    padding: 0;
-  }
-  
-  .address-warning-modal {
-    padding: 20px;
-    margin: 16px;
-  }
-}
+/*
+============================================================================
+OLD CSS REMOVED FROM THE ACTIVE UI
+============================================================================
 
-[data-theme="light"] .address-modal-box {
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
-}
+The old stylesheet contained rules for:
+- city/district two-column rows
+- neighborhood search/manual modes
+- building, floor and apartment fields
+- coordinate status
+- location warning dialog
 
-[data-theme="light"] .address-coords-status {
-  background: #f8fafc;
-  border-color: rgba(214, 178, 94, 0.35);
-}
-
-[data-theme="light"] .address-search-mode {
-  border-color: #3b82f6;
-  background: #f8fafc;
-}
-
-[data-theme="light"] .address-manual-mode {
-  border-color: var(--primary);
-  background: rgba(214, 178, 94, 0.08);
-}
-
-[data-theme="light"] .address-save-btn {
-  color: #0f1117;
-}
+Those selectors are no longer used by AddressModal.jsx. The original CSS
+remains available in the previous uploaded file / Git history.
+*/

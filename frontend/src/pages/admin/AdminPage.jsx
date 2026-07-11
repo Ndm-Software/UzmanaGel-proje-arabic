@@ -1,3 +1,5 @@
+// AdminPage.jsx file code 
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { collection, query, where, getDocs } from "firebase/firestore";

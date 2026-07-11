@@ -1,3 +1,5 @@
+//ProfilePage.jsx file code 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -56,25 +58,43 @@ const sanitizeText = (text) => {
 const filterAddressChips = (items) =>
   items.filter((item) => item && String(item.value || '').trim());
 
-const buildAddressChipLines = (address) =>
-  [
+const buildAddressChipLines = (address) => {
+  const governorate =
+    address.governorate ||
+    address.city ||
+    "";
+
+  const area =
+    address.area ||
+    address.district ||
+    address.neighborhood ||
+    "";
+
+  const additionalInfo =
+    address.additionalInfo ||
+    address.street ||
+    "";
+
+  return [
     filterAddressChips([
-      { label: 'Şehir', value: address.city },
-      { label: 'İlçe', value: address.district },
-      { label: 'Mahalle', value: address.neighborhood },
+      {
+        label: "المحافظة",
+        value: governorate,
+      },
+      {
+        label: "المنطقة",
+        value: area,
+      },
     ]),
+
     filterAddressChips([
-      { label: 'Sokak', value: address.street },
-      address.siteName ? { label: 'Site', value: address.siteName } : null,
-      address.apartmentName ? { label: 'Apt', value: address.apartmentName } : null,
-    ]),
-    filterAddressChips([
-      address.blockName ? { label: 'Blok', value: address.blockName } : null,
-      { label: 'Bina', value: address.buildingNo },
-      { label: 'Kat', value: address.floor },
-      { label: 'Daire', value: address.doorNo },
+      {
+        label: "معلومات إضافية",
+        value: additionalInfo,
+      },
     ]),
   ].filter((row) => row.length > 0);
+};
 
 const hasSpecialChar = (str) =>
   /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(str);
@@ -1236,90 +1256,200 @@ const ProfilePage = () => {
     }
   };
 
-  const handleSaveAddress = async (formData) => {
-    const {
-      addressName,
-      city,
-      district,
-      neighborhood,
-      street,
-      siteName,
-      apartmentName,
-      blockName,
-      buildingNo,
-      floor,
-      doorNo,
-      lat,
-      lng,
-      coordSource,
-    } = formData;
+  const handleSaveAddress = async (addressData) => {
+  /*
+   * واجهة العنوان العربية:
+   *
+   * governorate   = المحافظة
+   * area          = المنطقة
+   * additionalInfo = معلومات إضافية اختيارية
+   *
+   * مع إبقاء حقول Firestore القديمة للتوافق مع باقي المشروع:
+   *
+   * city         <- governorate
+   * district     <- area
+   * neighborhood <- area
+   * street       <- additionalInfo
+   */
 
-    if (
-      !city ||
-      !district ||
-      !neighborhood ||
-      !street?.trim() ||
-      street.trim().length < 3 ||
-      !buildingNo?.trim() ||
-      !floor?.trim() ||
-      !doorNo?.trim()
-    ) {
-      showAppToast('Eksik veya Hatalı Alan! Cadde/Sokak, Bina No, Kat ve Daire bilgilerini doldurmak zorunludur.', 'error');
-      return;
+  const governorate = sanitizeText(
+    addressData.governorate ||
+      addressData.city ||
+      ""
+  )
+    .trim()
+    .slice(0, 100);
+
+  const area = sanitizeText(
+    addressData.area ||
+      addressData.district ||
+      addressData.neighborhood ||
+      ""
+  )
+    .trim()
+    .slice(0, 100);
+
+  const additionalInfo = sanitizeText(
+    addressData.additionalInfo ||
+      addressData.street ||
+      ""
+  )
+    .trim()
+    .slice(0, 300);
+
+  // المحافظة مطلوبة
+  if (!governorate) {
+    showAppToast(
+      "يرجى اختيار المحافظة.",
+      "error"
+    );
+    return;
+  }
+
+  // المنطقة مطلوبة
+  if (!area) {
+    showAppToast(
+      "يرجى إدخال المنطقة.",
+      "error"
+    );
+    return;
+  }
+
+  if (!user?.uid) {
+    showAppToast(
+      "تعذر تحديد المستخدم. يرجى تسجيل الدخول مجدداً.",
+      "error"
+    );
+    return;
+  }
+
+  try {
+    const finalAddressData = {
+      /*
+       * الحقول الجديدة الخاصة بالواجهة العربية.
+       */
+      governorate,
+      area,
+      additionalInfo,
+
+      /*
+       * الحقول القديمة تبقى موجودة للتوافق مع بقية المشروع.
+       */
+      addressName: sanitizeText(
+        addressData.addressName ||
+          "عنوان العمل"
+      )
+        .trim()
+        .slice(0, 200),
+
+      city: governorate,
+      district: area,
+      neighborhood: area,
+      street: additionalInfo,
+
+      /*
+       * الحقول القديمة المخفية من الواجهة.
+       * ليست إجبارية، لكنها لا تُحذف من بنية البيانات.
+       */
+      siteName: sanitizeText(
+        addressData.siteName || ""
+      )
+        .trim()
+        .slice(0, 200),
+
+      apartmentName: sanitizeText(
+        addressData.apartmentName || ""
+      )
+        .trim()
+        .slice(0, 200),
+
+      blockName: sanitizeText(
+        addressData.blockName || ""
+      )
+        .trim()
+        .slice(0, 100),
+
+      buildingNo: sanitizeText(
+        addressData.buildingNo || ""
+      )
+        .trim()
+        .slice(0, 50),
+
+      floor: sanitizeText(
+        addressData.floor || ""
+      )
+        .trim()
+        .slice(0, 50),
+
+      doorNo: sanitizeText(
+        addressData.doorNo || ""
+      )
+        .trim()
+        .slice(0, 50),
+
+      lat: addressData.lat ?? null,
+      lng: addressData.lng ?? null,
+
+      coordSource:
+        addressData.coordSource ||
+        "Manual",
+
+      updatedAt: serverTimestamp(),
+    };
+
+    if (editingAddressId) {
+      const addressDocRef = doc(
+        db,
+        "users",
+        user.uid,
+        "addresses",
+        editingAddressId
+      );
+
+      await updateDoc(
+        addressDocRef,
+        finalAddressData
+      );
+
+      showAppToast(
+        "تم تحديث العنوان بنجاح.",
+        "success"
+      );
+    } else {
+      const addressesRef = collection(
+        db,
+        "users",
+        user.uid,
+        "addresses"
+      );
+
+      await addDoc(addressesRef, {
+        ...finalAddressData,
+        createdAt: serverTimestamp(),
+      });
+
+      showAppToast(
+        "تم حفظ العنوان بنجاح.",
+        "success"
+      );
     }
 
-    const forbiddenWords = ['asd', 'qwe', 'test', 'zxc', 'deneme', 'adsız', 'bilinmiyor', 'yok'];
-    const lowerStreet = (street || '').toLowerCase().trim();
-    const lowerBuilding = (buildingNo || '').toLowerCase().trim();
-
-    const validStreetPattern = /^[a-zA-ZğüşıöçĞÜŞİÖÇ\s\d/.-]+$/;
-    if (!validStreetPattern.test(street)) {
-      showAppToast('Cadde/Sokak adı geçersiz karakterler içeriyor!', 'error');
-      return;
+    setShowAddAddressModal(false);
+    setEditingAddressId(null);
+  } catch (error) {
+    if (isDevelopment) {
+      console.error(
+        "Address save error:",
+        error
+      );
     }
 
-    if (forbiddenWords.includes(lowerStreet) || forbiddenWords.includes(lowerBuilding)) {
-      showAppToast('Lütfen gerçek adres bilgilerini girdiğinizden emin olun.', 'error');
-      return;
-    }
-
-    try {
-      const finalAddressData = {
-        addressName: sanitizeText(addressName?.trim() || 'İsimsiz Adres'),
-        city: sanitizeText(city),
-        district: sanitizeText(district),
-        neighborhood: sanitizeText(neighborhood),
-        street: sanitizeText(street.trim()),
-        siteName: sanitizeText(siteName?.trim() || ''),
-        apartmentName: sanitizeText(apartmentName?.trim() || ''),
-        blockName: sanitizeText(blockName?.trim() || ''),
-        buildingNo: sanitizeText(buildingNo.trim()),
-        floor: sanitizeText(floor.trim()),
-        doorNo: sanitizeText(doorNo.trim()),
-        lat: lat ?? null,
-        lng: lng ?? null,
-        coordSource: coordSource || 'Unknown',
-        updatedAt: serverTimestamp(),
-      };
-
-      if (editingAddressId) {
-        const addressDocRef = doc(db, 'users', user.uid, 'addresses', editingAddressId);
-        await updateDoc(addressDocRef, finalAddressData);
-        showAppToast('Adresiniz başarıyla güncellendi!', 'success');
-      } else {
-        finalAddressData.createdAt = serverTimestamp();
-        const addressesRef = collection(db, 'users', user.uid, 'addresses');
-        await addDoc(addressesRef, finalAddressData);
-        showAppToast('Adresiniz başarıyla kaydedildi!', 'success');
-      }
-
-      setShowAddAddressModal(false);
-      setEditingAddressId(null);
-    } catch (error) {
-      if (isDevelopment) console.error('Firebase işlem hatası:', error.message);
-      showAppToast('İşlem sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyin.', 'error');
-    }
-  };
+    showAppToast(
+      "حدث خطأ أثناء حفظ العنوان. يرجى المحاولة مرة أخرى.",
+      "error"
+    );
+  }
+};
 
   const handleEditClick = (address) => {
     setEditingAddressId(address.id);

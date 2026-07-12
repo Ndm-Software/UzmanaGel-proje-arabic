@@ -78,7 +78,7 @@ export const useAdminOnly = () => {
         setAuthorized(true);
         setErrorMessage('');
       } else {
-        setErrorMessage('Bu sayfaya erişim yetkiniz yok. Sadece adminler erişebilir.');
+        setErrorMessage('ليست لديك صلاحية الوصول إلى هذه الصفحة. يمكن للمسؤولين فقط الدخول.');
         setTimeout(() => {
           window.location.href = '/';
         }, 3000);
@@ -100,17 +100,17 @@ export const useProviderOnly = () => {
         setAuthorized(true);
         setErrorMessage('');
       } else if (userRole === 'PENDING_PROVIDER') {
-        setErrorMessage('Uzman başvurunuz admin onayı bekliyor. Onaylandıktan sonra bu sayfayı kullanabilirsiniz.');
+        setErrorMessage('طلب الخبير الخاص بك بانتظار موافقة الإدارة. يمكنك استخدام هذه الصفحة بعد الموافقة.');
         setTimeout(() => {
           window.location.href = '/ilanlar';
         }, 3000);
       } else if (userRole === 'CLIENT') {
-        setErrorMessage('Bu sayfa sadece uzmanlar içindir.');
+        setErrorMessage('هذه الصفحة مخصصة للخبراء فقط.');
         setTimeout(() => {
           window.location.href = '/ilanlar';
         }, 3000);
       } else {
-        setErrorMessage('Bu sayfaya erişim yetkiniz yok.');
+        setErrorMessage('ليست لديك صلاحية الوصول إلى هذه الصفحة.');
         setTimeout(() => {
           window.location.href = '/';
         }, 3000);
@@ -132,7 +132,7 @@ export const useClientOnly = () => {
         setAuthorized(true);
         setErrorMessage('');
       } else {
-        setErrorMessage('Bu sayfa sadece müşteriler içindir.');
+        setErrorMessage('هذه الصفحة مخصصة للعملاء فقط.');
         setTimeout(() => {
           window.location.href = '/';
         }, 3000);
@@ -154,7 +154,7 @@ export const useAuthRequired = () => {
         setAuthorized(true);
         setErrorMessage('');
       } else {
-        setErrorMessage('Bu sayfayı görmek için lütfen giriş yapın.');
+        setErrorMessage('يرجى تسجيل الدخول لعرض هذه الصفحة.');
         setTimeout(() => {
           window.location.href = '/login';
         }, 3000);

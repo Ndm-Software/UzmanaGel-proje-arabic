@@ -359,11 +359,11 @@ const MyAppointments = () => {
     const appointmentId = String(req.id || '').trim();
 
     if (!providerUid) {
-      throw new Error('Bu randevuda uzman bilgisi eksik. Lütfen yeni bir test randevusu oluşturun.');
+      throw new Error('معلومات الخبير في هذا الموعد ناقصة. يرجى إنشاء موعد جديد.');
     }
 
     if (!appointmentId) {
-      throw new Error('Bu randevuda appointmentId eksik. Lütfen yeni bir test randevusu oluşturun.');
+      throw new Error('معلومات الموعد ناقصة. يرجى إنشاء موعد جديد.');
     }
 
     if (!serviceId) {
@@ -398,7 +398,7 @@ const MyAppointments = () => {
 
     if (!serviceId) {
       throw new Error(
-        'Bu randevuda hizmet/ilan bilgisi eksik. Randevu oluşturulurken serviceId veya listingId kaydedilmelidir.'
+        'معلومات الخدمة أو الإعلان في هذا الموعد ناقصة.'
       );
     }
 
@@ -546,7 +546,7 @@ const MyAppointments = () => {
   const openReviewModal = async (req) => {
     const existing = await ensureReviewLoaded(req?.id);
     if (existing) {
-      showAppToast('Bu randevu zaten değerlendirilmiş.', 'info');
+      showAppToast('تم تقييم هذا الموعد مسبقاً.', 'info');
       return;
     }
 
@@ -612,14 +612,14 @@ const MyAppointments = () => {
         const apptSnap = await transaction.get(apptRef);
 
         if (existingReview.exists()) {
-          throw new Error('Bu randevu zaten değerlendirilmiş.');
+          throw new Error('تم تقييم هذا الموعد مسبقاً.');
         }
 
-        if (!apptSnap.exists()) throw new Error('Randevu bulunamadı.');
+        if (!apptSnap.exists()) throw new Error('لم يتم العثور على الموعد.');
         const appt = apptSnap.data() || {};
         const allowedStatuses = ['completed', 'approved', 'expired'];
         if (!allowedStatuses.includes(appt.status)) throw new Error('Sadece onaylanmış, tamamlanmış veya geçmiş randevular değerlendirilebilir.');
-        if (appt.clientId !== auth.currentUser.uid) throw new Error('Bu randevuyu sadece sahibi değerlendirebilir.');
+        if (appt.clientId !== auth.currentUser.uid) throw new Error('يمكن لصاحب الموعد فقط تقييمه.');
 
         const expertId = appt.expertId || req.expertId || null;
         const listingId = appt.listingId || appt.serviceId || req.listingId || req.serviceId || null;

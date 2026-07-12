@@ -24,7 +24,7 @@ export async function checkPasswordResetEligibility(email) {
 
   if (!response.ok) {
     const error = new Error(
-      data?.message || "Şifre sıfırlama uygunluk kontrolü başarısız oldu."
+      data?.message || "تعذر التحقق من إمكانية إعادة تعيين كلمة المرور."
     );
     error.code = data?.code || "PASSWORD_RESET_ELIGIBILITY_FAILED";
     throw error;

@@ -39,7 +39,7 @@ const NotificationsPage = () => {
     type: 'warning',
     title: '',
     message: '',
-    primaryText: 'Tamam'
+    primaryText: 'حسناً'
   });
 
   const [chatTermsModal, setChatTermsModal] = useState({
@@ -72,9 +72,9 @@ const NotificationsPage = () => {
 
   const openNoticeModal = ({
     type = 'warning',
-    title = 'Bilgilendirme',
+    title = 'تنبيه',
     message = '',
-    primaryText = 'Tamam'
+    primaryText = 'حسناً'
   }) => {
     setNoticeModal({
       open: true,
@@ -181,7 +181,7 @@ const NotificationsPage = () => {
       if (process.env.NODE_ENV === 'development') {
         console.error('Bildirimler yüklenirken hata:', error);
       }
-      setError('Bildirimler yüklenirken bir hata oluştu');
+      setError('حدث خطأ أثناء تحميل الإشعارات.');
     } finally {
       setLoading(false);
     }
@@ -204,8 +204,8 @@ const NotificationsPage = () => {
 
       openNoticeModal({
         type: 'error',
-        title: 'İşlem Tamamlanamadı',
-        message: 'Bildirimler güncellenirken bir hata oluştu. Lütfen tekrar deneyin.'
+        title: 'تعذر إكمال العملية',
+        message: 'حدث خطأ أثناء تحديث الإشعارات. يرجى المحاولة مرة أخرى.'
       });
     }
   };
@@ -257,8 +257,8 @@ const NotificationsPage = () => {
 
       openNoticeModal({
         type: 'error',
-        title: 'Silme İşlemi Başarısız',
-        message: 'Bildirim silinirken bir hata oluştu. Lütfen tekrar deneyin.'
+        title: 'فشلت عملية الحذف',
+        message: 'حدث خطأ أثناء حذف الإشعار. يرجى المحاولة مرة أخرى.'
       });
     }
   };
@@ -313,19 +313,43 @@ const NotificationsPage = () => {
     const diffHours = Math.floor(diff / (1000 * 60 * 60));
     const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (diffMinutes < 1) return 'Şimdi';
-    if (diffMinutes < 60) return `${diffMinutes} dakika önce`;
-    if (diffHours < 24) return `${diffHours} saat önce`;
-    if (diffDays === 1) return 'Dün';
-    if (diffDays < 7) return `${diffDays} gün önce`;
+    if (diffMinutes < 1) return 'الآن';
+    if (diffMinutes < 60) return `منذ ${diffMinutes} دقيقة`;
+    if (diffHours < 24) return `منذ ${diffHours} ساعة`;
+    if (diffDays === 1) return 'أمس';
+    if (diffDays < 7) return `منذ ${diffDays} أيام`;
     
-    return date.toLocaleDateString('tr-TR', {
+    return date.toLocaleDateString('ar-SY', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const normalizeNotificationText = (value) => {
+    const text = String(value || '').trim();
+    if (!text) return '';
+
+    const lower = text.toLowerCase();
+    const replacements = [
+      ['randevu talebiniz onaylandı', 'تمت الموافقة على طلب الموعد.'],
+      ['randevu talebiniz reddedildi', 'تم رفض طلب الموعد.'],
+      ['randevu talebiniz iptal edildi', 'تم إلغاء طلب الموعد.'],
+      ['randevunuz iptal edildi', 'تم إلغاء الموعد.'],
+      ['randevu talebi oluşturulamadı', 'تعذر إنشاء طلب الموعد.'],
+      ['adres değişiklik talebiniz admin tarafından onaylandı', 'تمت الموافقة على طلب تغيير العنوان.'],
+      ['adres değişiklik talebiniz reddedildi', 'تم رفض طلب تغيير العنوان.'],
+      ['ilanınız yayından kaldırıldı', 'تم إيقاف نشر إعلانك.'],
+      ['ilanınız kalıcı olarak silindi', 'تم حذف إعلانك نهائياً.'],
+      ['ilanınız tekrar yayına alındı', 'تمت إعادة نشر إعلانك.'],
+      ['bu, bir sorundur', 'حدثت مشكلة. يرجى المحاولة مرة أخرى.'],
+      ['bu, şu anda geçerli olan bir durumdur', 'تم تنفيذ هذه العملية مسبقاً.'],
+    ];
+
+    const matched = replacements.find(([needle]) => lower.includes(needle));
+    return matched ? matched[1] : text;
   };
 
   const refreshNotifications = () => {
@@ -379,13 +403,13 @@ const NotificationsPage = () => {
   const handleTalkToExpert = async (notification) => {
     try {
       const chatData = getNotificationChatData(notification);
-      const { providerUid, serviceId, appointmentId } = chatData;
+      const { providerUid, serviceId } = chatData;
 
       if (!providerUid) {
         openNoticeModal({
           type: 'warning',
-          title: 'Sohbet Başlatılamıyor',
-          message: 'Bu bildirimde uzman bilgisi eksik. Lütfen yeni bir test yapın.'
+          title: 'تعذر بدء المحادثة',
+          message: 'معلومات الخبير ناقصة في هذا الإشعار. يرجى المحاولة مرة أخرى.'
         });
         return;
       }
@@ -393,17 +417,8 @@ const NotificationsPage = () => {
       if (!serviceId) {
         openNoticeModal({
           type: 'warning',
-          title: 'Sohbet Başlatılamıyor',
-          message: 'Bu bildirimde hizmet bilgisi eksik. Lütfen yeni bir test yapın.'
-        });
-        return;
-      }
-
-      if (!appointmentId) {
-        openNoticeModal({
-          type: 'warning',
-          title: 'Sohbet Başlatılamıyor',
-          message: 'Bu bildirimde randevu bilgisi eksik. Lütfen randevular sayfasından sohbeti açmayı deneyin.'
+          title: 'تعذر بدء المحادثة',
+          message: 'معلومات الخدمة ناقصة في هذا الإشعار. يرجى المحاولة مرة أخرى.'
         });
         return;
       }
@@ -412,7 +427,7 @@ const NotificationsPage = () => {
         currentUid: auth.currentUser?.uid,
         providerUid,
         serviceId,
-        appointmentId,
+        appointmentId: 'direct',
       });
 
       if (acceptedBefore) {
@@ -431,8 +446,8 @@ const NotificationsPage = () => {
     } catch (error) {
       openNoticeModal({
         type: 'warning',
-        title: 'Sohbet Başlatılamıyor',
-        message: error.message || 'Uzmanla sohbet açılamadı.'
+        title: 'تعذر بدء المحادثة',
+        message: error.message || 'تعذر فتح المحادثة مع الخبير.'
       });
     }
   };
@@ -448,20 +463,19 @@ const NotificationsPage = () => {
       }));
 
       const chatData = getNotificationChatData(notification);
-      const { providerUid, serviceId, serviceTitle, appointmentId } = chatData;
+      const { providerUid, serviceId, serviceTitle } = chatData;
 
       const result = await getOrCreateConversation(
         providerUid,
         serviceId,
-        serviceTitle,
-        appointmentId
+        serviceTitle
       );
 
       saveChatTermsAccepted({
         currentUid: auth.currentUser?.uid,
         providerUid,
         serviceId,
-        appointmentId,
+        appointmentId: 'direct',
       });
 
       markAsRead(notification.id);
@@ -480,8 +494,8 @@ const NotificationsPage = () => {
 
       openNoticeModal({
         type: 'warning',
-        title: 'Sohbet Başlatılamıyor',
-        message: error.message || 'Uzmanla sohbet açılamadı.'
+        title: 'تعذر بدء المحادثة',
+        message: error.message || 'تعذر فتح المحادثة مع الخبير.'
       });
     }
   };
@@ -498,7 +512,7 @@ const NotificationsPage = () => {
       <PageTransition>
         <div className="notifications-page">
           <Navbar />
-          <LoadingSpinner text="Bildirimler yükleniyor..." />
+          <LoadingSpinner text="جاري تحميل الإشعارات..." />
         </div>
       </PageTransition>
     );
@@ -511,11 +525,11 @@ const NotificationsPage = () => {
           <Navbar />
           <div className="notifications-error">
             <i className="fas fa-exclamation-circle error-icon"></i>
-            <h3>Bir Hata Oluştu</h3>
+            <h3>حدث خطأ</h3>
             <p>{error}</p>
             <button onClick={refreshNotifications} className="retry-btn">
               <i className="fas fa-sync-alt"></i>
-              Tekrar Dene
+              حاول مرة أخرى
             </button>
           </div>
         </div>
@@ -533,10 +547,10 @@ const NotificationsPage = () => {
             <div className="notifications-title-section">
               <div className="title-with-icon">
                 <i className="fas fa-bell"></i>
-                <h1>Bildirimler</h1>
+                <h1>الإشعارات</h1>
               </div>
               {unreadCount > 0 && (
-                <span className="unread-badge">{unreadCount} okunmamış</span>
+                <span className="unread-badge">{unreadCount} غير مقروء</span>
               )}
             </div>
 
@@ -546,19 +560,19 @@ const NotificationsPage = () => {
                   className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
                   onClick={() => setFilter('all')}
                 >
-                  Tümü <span className="filter-count">{notifications.length}</span>
+                  الكل <span className="filter-count">{notifications.length}</span>
                 </button>
                 <button 
                   className={`filter-btn ${filter === 'unread' ? 'active' : ''}`}
                   onClick={() => setFilter('unread')}
                 >
-                  Okunmamış <span className="filter-count">{unreadCount}</span>
+                  غير مقروء <span className="filter-count">{unreadCount}</span>
                 </button>
                 <button 
                   className={`filter-btn ${filter === 'read' ? 'active' : ''}`}
                   onClick={() => setFilter('read')}
                 >
-                  Okunmuş <span className="filter-count">{notifications.length - unreadCount}</span>
+                  مقروء <span className="filter-count">{notifications.length - unreadCount}</span>
                 </button>
               </div>
 
@@ -567,17 +581,17 @@ const NotificationsPage = () => {
                   <button 
                     className="mark-all-read-btn"
                     onClick={markAllAsRead}
-                    title="Tümünü okundu işaretle"
+                    title="تحديد الكل كمقروء"
                   >
                     <i className="fas fa-check-double"></i>
-                    <span className="btn-text">Tümünü Okundu İşaretle</span>
+                    <span className="btn-text">تحديد الكل كمقروء</span>
                   </button>
                 )}
                 
                 <button 
                   className="refresh-btn"
                   onClick={refreshNotifications}
-                  title="Yenile"
+                  title="تحديث"
                 >
                   <i className="fas fa-sync-alt"></i>
                 </button>
@@ -591,18 +605,18 @@ const NotificationsPage = () => {
                 <div className="empty-icon">
                   <i className="fas fa-bell-slash"></i>
                 </div>
-                <h3>Bildirim bulunmuyor</h3>
-                <p>Henüz hiç bildiriminiz yok.</p>
+                <h3>لا توجد إشعارات</h3>
+                <p>لا توجد لديك إشعارات بعد.</p>
                 {filter !== 'all' && (
                   <button 
                     className="clear-filter-btn"
                     onClick={() => setFilter('all')}
                   >
-                    Tüm bildirimleri göster
+                    عرض جميع الإشعارات
                   </button>
                 )}
                 <Link to="/iletisim" className="contact-link">
-                  <i className="fas fa-envelope"></i> Bize Ulaşın
+                  <i className="fas fa-envelope"></i> تواصل معنا
                 </Link>
               </div>
             ) : (
@@ -664,25 +678,25 @@ const NotificationsPage = () => {
                     <div className="notification-header">
                       <div className="notification-title">
                         <h3>{
-                          notification.type === 'reschedule_request' ? `${notification.expertName || 'Uzman'} Vakit Değişikliği İstedi 🕒` :
-                          notification.type === 'appointment_cancelled_by_expert' ? 'Randevunuz İptal Edildi ⚠️' :
-                          notification.type === 'expert_approved' ? 'Uzman Başvurunuz Onaylandı 🎉' :
-                          notification.type === 'expert_rejected' ? 'Uzman Başvurunuz Reddedildi' :
-                          notification.type === 'appointment_approved' ? 'Randevunuz Onaylandı ✅' :
-                          notification.type === 'appointment_rejected' ? 'Randevunuz Reddedildi ❌' :
-                          notification.type === 'reschedule_rejected' ? 'Randevu Tarihi Değişikliği Talebiniz Müşteri Tarafından Reddedildi' :
-                          notification.type === 'reschedule_approved' ? 'Randevu Tarihi Değişikliği Talebiniz Müşteri Tarafından Kabul Edildi' :
-                          notification.type === 'address_change_approved' ? 'Adres Değişiklik Talebiniz Onaylandı ✅' :
-                          notification.type === 'address_change_rejected' ? 'Adres Değişiklik Talebiniz Reddedildi ❌' :
-                          notification.type === 'listing_hidden' ? (notification.title || 'İlanınız yayından kaldırıldı') :
-                          notification.type === 'listing_deleted' ? (notification.title || 'İlanınız kalıcı olarak silindi') :
-                          notification.type === 'listing_restored' ? (notification.title || 'İlanınız tekrar yayına alındı') :
+                          notification.type === 'reschedule_request' ? `${notification.expertName || 'الخبير'} طلب تغيير الوقت 🕒` :
+                          notification.type === 'appointment_cancelled_by_expert' ? 'تم إلغاء موعدك ⚠️' :
+                          notification.type === 'expert_approved' ? 'تمت الموافقة على طلب الخبير 🎉' :
+                          notification.type === 'expert_rejected' ? 'تم رفض طلب الخبير' :
+                          notification.type === 'appointment_approved' ? 'تمت الموافقة على موعدك ✅' :
+                          notification.type === 'appointment_rejected' ? 'تم رفض موعدك ❌' :
+                          notification.type === 'reschedule_rejected' ? 'تم رفض طلب تغيير وقت الموعد من قبل العميل' :
+                          notification.type === 'reschedule_approved' ? 'تم قبول طلب تغيير وقت الموعد من قبل العميل' :
+                          notification.type === 'address_change_approved' ? 'تمت الموافقة على طلب تغيير العنوان ✅' :
+                          notification.type === 'address_change_rejected' ? 'تم رفض طلب تغيير العنوان ❌' :
+                          notification.type === 'listing_hidden' ? (notification.title || 'تم إخفاء إعلانك') :
+                          notification.type === 'listing_deleted' ? (notification.title || 'تم حذف إعلانك نهائياً') :
+                          notification.type === 'listing_restored' ? (notification.title || 'تمت إعادة نشر إعلانك') :
                           notification.type === 'appointment_auto_cancelled' ? notification.title :
                           notification.type === 'appointment_min_lead_blocked' ? notification.title :
-                          (notification.title || 'Bildirim')
+                          (notification.title || 'إشعار')
                         }</h3>
                         {!notification.read && (
-                          <span className="unread-badge-small">Yeni</span>
+                          <span className="unread-badge-small">جديد</span>
                         )}
                       </div>
                       <span className="notification-time">
@@ -693,15 +707,15 @@ const NotificationsPage = () => {
                     
                     <p className="notification-preview">
                       {(!notification.type || notification.type === 'admin_reply') 
-                        ? 'Destek ekibimiz mesajınızı yanıtladı. Detayları okumak için aşağıdaki butona tıklayabilirsiniz.'
-                        : DOMPurify.sanitize(notification.message)
+                        ? 'قام فريق الدعم بالرد على رسالتك. يمكنك قراءة التفاصيل من الزر أدناه.'
+                        : DOMPurify.sanitize(normalizeNotificationText(notification.message))
                       }
                     </p>
 
                     {notification.type === 'appointment_approved' && notification.listingTitle && (
                       <div className="notification-preview-text">
                         <i className="fas fa-briefcase"></i>
-                        <span>Hizmet: {notification.listingTitle}</span>
+                        <span>الخدمة: {notification.listingTitle}</span>
                       </div>
                     )}
 
@@ -713,10 +727,14 @@ const NotificationsPage = () => {
                             style={{ marginTop: '10px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid #6366f1', color: '#6366f1', padding: '5px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px' }}
                             onClick={(e) => {
                               e.stopPropagation();
-                              navigate('/customer-appointments?tab=approved');
+                              openNoticeModal({
+                                type: 'info',
+                                title: 'نظام المواعيد غير مفعل',
+                                message: 'تم تعطيل تفاصيل المواعيد في هذه النسخة. يمكنك التواصل مع الخبير مباشرة من زر المحادثة.'
+                              });
                             }}
                           >
-                            <i className="fas fa-external-link-alt"></i> Randevu Detayına Git
+                            <i className="fas fa-external-link-alt"></i> عرض تفاصيل الموعد
                           </button>
 
                           <button
@@ -727,7 +745,7 @@ const NotificationsPage = () => {
                               handleTalkToExpert(notification);
                             }}
                           >
-                            <i className="fas fa-comments"></i> Uzmana Konuş
+                            <i className="fas fa-comments"></i> تواصل مع الخبير
                           </button>
                         </>
                       )}
@@ -738,21 +756,14 @@ const NotificationsPage = () => {
                           style={{ marginTop: '10px', background: 'rgba(99, 102, 241, 0.1)', border: '1px solid #6366f1', color: '#6366f1', padding: '5px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '5px' }}
                           onClick={(e) => {
                             e.stopPropagation();
-                            
-                            if (!notification.appointmentId) {
-                              openNoticeModal({
-                                type: 'warning',
-                                title: 'Randevu Bilgisi Eksik',
-                                message: "Bu bildirimin içinde randevu ID'si yok. Lütfen yeni bir test yapın."
-                              });
-                              return;
-                            }
-
-                            const targetUrl = `/randevu-takvimi?autoOpenId=${notification.appointmentId}&autoOpenDate=${notification.appointmentDate}`;
-                            navigate(targetUrl);
+                            openNoticeModal({
+                              type: 'info',
+                              title: 'نظام المواعيد غير مفعل',
+                              message: 'تم تعطيل تغيير مواعيد الزيارات في هذه النسخة.'
+                            });
                           }}
                         >
-                          <i className="fas fa-external-link-alt"></i> Randevu Detayına Git
+                          <i className="fas fa-external-link-alt"></i> عرض تفاصيل الموعد
                         </button>
                       )}
                       
@@ -765,7 +776,7 @@ const NotificationsPage = () => {
                             navigate(notification.link);
                           }}
                         >
-                          Talebi İncele ve Yeni Vakit Seç <i className="fas fa-calendar-alt"></i>
+                          مراجعة الطلب واختيار وقت جديد <i className="fas fa-calendar-alt"></i>
                         </button>
                       )}
 
@@ -791,7 +802,7 @@ const NotificationsPage = () => {
                             navigate('/uzman/ilanlarim');
                           }}
                         >
-                          <i className="fas fa-list-alt"></i> İlanlarıma Git
+                          <i className="fas fa-list-alt"></i> الذهاب إلى إعلاناتي
                         </button>
                       )}
                       {notification.type === 'appointment_cancelled_by_expert' && notification.link && (
@@ -803,7 +814,7 @@ const NotificationsPage = () => {
                             navigate(notification.link);
                           }}
                         >
-                          Randevu Detayına Git <i className="fas fa-external-link-alt"></i>
+                          عرض تفاصيل الموعد <i className="fas fa-external-link-alt"></i>
                         </button>
                       )}
 
@@ -813,7 +824,7 @@ const NotificationsPage = () => {
                           style={{ background: '#fbbf24', color: '#111', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', transition: '0.2s', display: 'flex', alignItems: 'center', gap: '6px' }}
                           onClick={() => openModal(notification)}
                         >
-                          Mesajı Oku <i className="fas fa-envelope-open"></i>
+                          قراءة الرسالة <i className="fas fa-envelope-open"></i>
                         </button>
                       )}
                     </div>
@@ -822,7 +833,7 @@ const NotificationsPage = () => {
                   <button 
                     className="delete-notification-btn" 
                     onClick={(e) => confirmDelete(notification, e)}
-                    title="Sil"
+                    title="حذف"
                   >
                     <i className="fas fa-trash-alt"></i>
                   </button>
@@ -871,19 +882,19 @@ const NotificationsPage = () => {
                   </div>
                   <div className="modal-title">
                     <h2>{
-                      selectedNotification.type === 'appointment_auto_cancelled' ? 'Zaman Aşımı / İptal' : 
-                      selectedNotification.type === 'appointment_min_lead_blocked' ? 'Randevu Talebi Oluşturulamadı' :
-                      selectedNotification.type === 'expert_rejected' ? 'Başvuru Reddedildi'
-                      : selectedNotification.type === 'appointment_approved' ? 'Randevu Onaylandı'
-                      : selectedNotification.type === 'appointment_rejected' ? 'Randevu Reddedildi'
-                      : selectedNotification.type === 'address_change_approved' ? 'Adres Değişikliği Onaylandı'
-                      : selectedNotification.type === 'address_change_rejected' ? 'Adres Değişikliği Reddedildi'
-                      : 'Admin Yanıtı'
+                      selectedNotification.type === 'appointment_auto_cancelled' ? 'انتهت المهلة / إلغاء' :
+                      selectedNotification.type === 'appointment_min_lead_blocked' ? 'تعذر إنشاء طلب الموعد' :
+                      selectedNotification.type === 'expert_rejected' ? 'تم رفض الطلب'
+                      : selectedNotification.type === 'appointment_approved' ? 'تمت الموافقة على الموعد'
+                      : selectedNotification.type === 'appointment_rejected' ? 'تم رفض الموعد'
+                      : selectedNotification.type === 'address_change_approved' ? 'تمت الموافقة على تغيير العنوان'
+                      : selectedNotification.type === 'address_change_rejected' ? 'تم رفض تغيير العنوان'
+                      : 'رد الإدارة'
                     }</h2>
                     <div className="modal-meta">
                       <span className="modal-date">
                         <i className="far fa-calendar-alt"></i>
-                        {selectedNotification.createdAt?.toLocaleDateString('tr-TR', {
+                        {selectedNotification.createdAt?.toLocaleDateString('ar-SY', {
                           day: 'numeric',
                           month: 'long',
                           year: 'numeric'
@@ -891,7 +902,7 @@ const NotificationsPage = () => {
                       </span>
                       <span className="modal-time">
                         <i className="far fa-clock"></i>
-                        {selectedNotification.createdAt?.toLocaleTimeString('tr-TR', {
+                        {selectedNotification.createdAt?.toLocaleTimeString('ar-SY', {
                           hour: '2-digit',
                           minute: '2-digit'
                         })}
@@ -910,7 +921,7 @@ const NotificationsPage = () => {
                     <div className="info-row">
                       <div className="info-label">
                         <i className="fas fa-envelope"></i>
-                        <span>E-posta</span>
+                        <span>البريد الإلكتروني</span>
                       </div>
                       <div className="info-value">{selectedNotification.userEmail}</div>
                     </div>
@@ -938,21 +949,21 @@ const NotificationsPage = () => {
                           </div>
                           <div className="sender-info">
                             <span className="sender-name">{
-                              selectedNotification.type === 'appointment_approved' ? 'Onay Bilgisi'
-                              : selectedNotification.type === 'address_change_approved' ? 'Adres Değişiklik Onayı'
-                              : selectedNotification.type === 'address_change_rejected' ? 'Adres Değişiklik Reddi'
-                              : 'Red Nedeni'
+                              selectedNotification.type === 'appointment_approved' ? 'معلومات الموافقة'
+                              : selectedNotification.type === 'address_change_approved' ? 'موافقة تغيير العنوان'
+                              : selectedNotification.type === 'address_change_rejected' ? 'رفض تغيير العنوان'
+                              : 'سبب الرفض'
                             }</span>
                             {(selectedNotification.rejectedAt || selectedNotification.createdAt) && (
                               <span className="sender-time">
-                                {new Date(selectedNotification.rejectedAt || selectedNotification.createdAt).toLocaleString('tr-TR')}
+                                {new Date(selectedNotification.rejectedAt || selectedNotification.createdAt).toLocaleString('ar-SY')}
                               </span>
                             )}
                           </div>
                         </div>
                       </div>
                       <div className="message-card-body admin-message">
-                        <p>{DOMPurify.sanitize(selectedNotification.message)}</p>
+                        <p>{DOMPurify.sanitize(normalizeNotificationText(selectedNotification.message))}</p>
 
                         {selectedNotification.type === 'address_change_approved' && (
                           <button 
@@ -978,7 +989,7 @@ const NotificationsPage = () => {
                               closeModal();
                             }}
                           >
-                            <i className="fas fa-map-marker-alt"></i> Adresimi Güncelle
+                            <i className="fas fa-map-marker-alt"></i> تحديث عنواني
                           </button>
                         )}
 
@@ -1004,31 +1015,21 @@ const NotificationsPage = () => {
                               gap: '8px'
                             }}
                             onClick={() => {
-                              const targetData = { 
-                                autoOpenId: selectedNotification.appointmentId, 
-                                autoOpenDate: selectedNotification.appointmentDate 
-                              };
-
-                              if (!targetData.autoOpenId) {
-                                openNoticeModal({
-                                  type: 'warning',
-                                  title: 'Randevu Bilgisi Eksik',
-                                  message: "Bu bildirimin içinde randevu ID'si yok. Eski bir bildirim olabilir."
-                                });
-                                return;
-                              }
-
-                              navigate('/randevu-takvimi', { state: targetData });
+                              openNoticeModal({
+                                type: 'info',
+                                title: 'نظام المواعيد غير مفعل',
+                                message: 'تم تعطيل تفاصيل المواعيد والتقويم في هذه النسخة. يمكن للعميل والخبير التواصل مباشرة عبر الرسائل.'
+                              });
                             }}
                           >
-                            <i className="fas fa-external-link-alt"></i> Randevuyu Takvimde Göster ve Adrese Git
+                            <i className="fas fa-external-link-alt"></i> عرض الموعد في التقويم والذهاب إلى العنوان
                           </button>
                         )}
 
                         {selectedNotification.appointmentDate && (
                           <p style={{ marginTop: 8, fontSize: 13, opacity: 0.8 }}>
                             <i className="fas fa-calendar-alt"></i> {selectedNotification.appointmentDate}
-                            {selectedNotification.appointmentTime && ` - Saat: ${selectedNotification.appointmentTime}`}
+                            {selectedNotification.appointmentTime && ` - الساعة: ${selectedNotification.appointmentTime}`}
                           </p>
                         )}
                       </div>
@@ -1043,7 +1044,7 @@ const NotificationsPage = () => {
                                 <i className="fas fa-user"></i>
                               </div>
                               <div className="sender-info">
-                                <span className="sender-name">Sizin Mesajınız</span>
+                                <span className="sender-name">رسالتك</span>
                               </div>
                             </div>
                           </div>
@@ -1060,12 +1061,12 @@ const NotificationsPage = () => {
                               <i className="fas fa-shield-alt"></i>
                             </div>
                             <div className="sender-info">
-                              <span className="sender-name">Admin Yanıtı</span>
+                              <span className="sender-name">رد الإدارة</span>
                             </div>
                           </div>
                         </div>
                         <div className="message-card-body admin-message">
-                          <p>{DOMPurify.sanitize(selectedNotification.message)}</p>
+                          <p>{DOMPurify.sanitize(normalizeNotificationText(selectedNotification.message))}</p>
                         </div>
                       </div>
                     </>
@@ -1083,7 +1084,7 @@ const NotificationsPage = () => {
                     }}
                   >
                     <i className="fas fa-trash-alt"></i>
-                    Bildirimi Sil
+                    حذف الإشعار
                   </button>
                 </div>
                 
@@ -1094,14 +1095,14 @@ const NotificationsPage = () => {
                     onClick={closeModal}
                   >
                     <i className="fas fa-reply"></i>
-                    Yeni Mesaj Gönder
+                    إرسال رسالة جديدة
                   </Link>
                   <button 
                     className="footer-btn primary"
                     onClick={closeModal}
                   >
                     <i className="fas fa-check"></i>
-                    Kapat
+                    إغلاق
                   </button>
                 </div>
               </div>
@@ -1118,23 +1119,23 @@ const NotificationsPage = () => {
               <div className="confirm-modal-icon">
                 <i className="fas fa-exclamation-triangle"></i>
               </div>
-              <h3>Bildirimi Sil</h3>
-              <p>Bu bildirimi silmek istediğinize emin misiniz?</p>
-              <p className="confirm-modal-subtext">Bu işlem geri alınamaz.</p>
+              <h3>حذف الإشعار</h3>
+              <p>هل أنت متأكد أنك تريد حذف هذا الإشعار؟</p>
+              <p className="confirm-modal-subtext">لا يمكن التراجع عن هذه العملية.</p>
               
               <div className="confirm-modal-actions">
                 <button 
                   className="confirm-btn cancel"
                   onClick={cancelDelete}
                 >
-                  İptal
+                  إلغاء
                 </button>
                 <button 
                   className="confirm-btn delete"
                   onClick={deleteNotification}
                 >
                   <i className="fas fa-trash-alt"></i>
-                  Sil
+                  حذف
                 </button>
               </div>
             </div>

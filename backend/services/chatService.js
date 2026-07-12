@@ -14,13 +14,16 @@ function buildParticipantKey(uid1, uid2) {
 // 13-05 Edrees solved
 function buildConversationKey(clientUid, providerUid, serviceId, appointmentId) {
   const participantKey = buildParticipantKey(clientUid, providerUid);
-  return `${participantKey}__${serviceId}__${appointmentId}`;
+  // Syria Arabic launch: appointment system disabled, direct chats are keyed by users + listing.
+  // return `${participantKey}__${serviceId}__${appointmentId}`;
+  return `${participantKey}__${serviceId}`;
 }
 
 function normalizeServiceId(value) {
   return String(value || "").trim();
 }
 
+/* Syria Arabic launch: appointment validation helpers disabled.
 function appointmentMatchesConversationService(appointmentData, serviceId) {
   const appointmentServiceId = normalizeServiceId(
     appointmentData?.listingId || appointmentData?.serviceId
@@ -70,7 +73,7 @@ async function loadAndValidateAppointment({
   const finalAppointmentId = String(appointmentId || "").trim();
 
   if (!finalAppointmentId || finalAppointmentId.length > 150) {
-    throw new Error("Geçersiz appointmentId");
+    throw new Error("معلومات الموعد غير صالحة.");
   }
 
   const appointmentDoc = await db
@@ -79,32 +82,32 @@ async function loadAndValidateAppointment({
     .get();
 
   if (!appointmentDoc.exists) {
-    throw new Error("Randevu bulunamadi.");
+    throw new Error("لم يتم العثور على الموعد.");
   }
 
   const appointmentData = appointmentDoc.data() || {};
 
   if (String(appointmentData.clientId || "") !== String(clientUid || "")) {
-    throw new Error("Bu randevu bu müşteriye ait değil.");
+    throw new Error("هذا الموعد لا يخص هذا العميل.");
   }
 
   if (String(appointmentData.expertId || "") !== String(providerUid || "")) {
-    throw new Error("Bu randevu bu uzmana ait değil.");
+    throw new Error("هذا الموعد لا يخص هذا الخبير.");
   }
 
   if (!appointmentMatchesConversationService(appointmentData, serviceId)) {
-    throw new Error("Randevu ile hizmet bilgisi eşleşmiyor.");
+    throw new Error("معلومات الموعد لا تتطابق مع الخدمة.");
   }
 
   const endMs = parseAppointmentEndMs(appointmentData);
 
   if (requireActive) {
     if (!isActiveAppointmentStatus(appointmentData.status)) {
-      throw new Error("Sohbet başlatmak için aktif/onaylanmış randevu gereklidir.");
+      throw new Error("يلزم وجود موعد نشط أو مؤكد لبدء المحادثة.");
     }
 
     if (typeof endMs !== "number" || endMs < Date.now()) {
-      throw new Error("Randevu tarihi geçmiş. Sohbet başlatılamaz.");
+      throw new Error("انتهى وقت الموعد ولا يمكن بدء المحادثة.");
     }
   }
 
@@ -114,6 +117,7 @@ async function loadAndValidateAppointment({
     endMs,
   };
 }
+*/
 
 function getDeletedConversationExpiryTimestamp() {
   const expiresAt = new Date(
@@ -126,7 +130,7 @@ function getMessagePreviewText(messageData) {
   if (!messageData) return "";
 
   if (messageData.isDeleted === true || messageData.type === "deleted") {
-    return "Bu mesaj silindi";
+    return "تم حذف هذه الرسالة";
   }
 
   return String(messageData.text || "").trim();
@@ -178,7 +182,7 @@ async function enforceRateLimit({ conversationId, senderUid }) {
     .get();
 
   if (snapshot.size >= 5) {
-    throw new Error("Cok hizli mesaj gonderiyorsunuz. Lutfen biraz bekleyin.");
+    throw new Error("أنت ترسل الرسائل بسرعة كبيرة. يرجى الانتظار قليلاً.");
   }
 }
 
@@ -189,19 +193,25 @@ async function getOrCreateConversation({
   serviceTitle = "",
   appointmentId = "",
 }) {
-  const normalizedAppointmentId = String(appointmentId || "").trim();
+  // Syria Arabic launch: appointment system disabled; keep legacy normalization commented.
+  const normalizedAppointmentId = "";
+  // const normalizedAppointmentId = String(appointmentId || "").trim();
 
   if (clientUid === providerUid) {
-    throw new Error("Kullanici kendisiyle sohbet baslatamaz.");
+    throw new Error("لا يمكن للمستخدم بدء محادثة مع نفسه.");
   }
 
   if (!serviceId || typeof serviceId !== "string" || serviceId.length > 100) {
-    throw new Error("Geçersiz serviceId");
+    throw new Error("معلومات الخدمة غير صالحة.");
   }
 
-  if (!normalizedAppointmentId || normalizedAppointmentId.length > 150) {
-    throw new Error("Geçersiz appointmentId");
-  }
+  // Syria Arabic launch: appointmentId is optional while direct chat is enabled.
+  // if (!normalizedAppointmentId || normalizedAppointmentId.length > 150) {
+  //   throw new Error("معلومات الموعد غير صالحة.");
+  // }
+  // if (normalizedAppointmentId.length > 150) {
+  //   throw new Error("معلومات الموعد غير صالحة.");
+  // }
 
   const [clientDoc, providerDoc, serviceDoc] = await Promise.all([
     db.collection("users").doc(clientUid).get(),
@@ -210,15 +220,15 @@ async function getOrCreateConversation({
   ]);
 
   if (!clientDoc.exists) {
-    throw new Error("Ilk kullanici bulunamadi.");
+    throw new Error("لم يتم العثور على المستخدم الأول.");
   }
 
   if (!providerDoc.exists) {
-    throw new Error("Ikinci kullanici bulunamadi.");
+    throw new Error("لم يتم العثور على المستخدم الثاني.");
   }
 
   if (!serviceDoc.exists) {
-    throw new Error("Hizmet bulunamadi.");
+    throw new Error("لم يتم العثور على الخدمة.");
   }
 
   const clientData = clientDoc.data() || {};
@@ -248,23 +258,24 @@ async function getOrCreateConversation({
     actualProviderData = providerData;
     isProviderToProvider = true;
   } else {
-    throw new Error("Sohbet baslatabilmek icin uygun kullanici turleri gerekli.");
+    throw new Error("يجب أن تكون أنواع المستخدمين مناسبة لبدء المحادثة.");
   }
 
   if (!["CLIENT", "PROVIDER"].includes(actualClientData.userType)) {
-    throw new Error("Sadece CLIENT veya PROVIDER kullanici sohbet baslatabilir.");
+    throw new Error("يمكن للعميل أو الخبير فقط بدء المحادثة.");
   }
 
   if (actualProviderData.userType !== "PROVIDER") {
-    throw new Error("Secilen kullanici PROVIDER degil.");
+    throw new Error("المستخدم المحدد ليس خبيراً.");
   }
 
   if (String(serviceData.providerId || "") !== String(actualProviderUid || "")) {
-    throw new Error("Bu hizmet secilen uzmana ait degil.");
+    throw new Error("هذه الخدمة لا تخص الخبير المحدد.");
   }
 
   let validatedAppointment = null;
 
+  /* Syria Arabic launch: appointment validation disabled for direct chat.
   if (!isProviderToProvider) {
     validatedAppointment = await loadAndValidateAppointment({
       appointmentId: normalizedAppointmentId,
@@ -274,6 +285,7 @@ async function getOrCreateConversation({
       requireActive: true,
     });
   }
+  */
 
   const participantKey = buildParticipantKey(actualClientUid, actualProviderUid);
 
@@ -333,7 +345,7 @@ async function getOrCreateConversation({
   const resolvedServiceTitle =
     String(serviceData.title || "").trim() ||
     String(serviceTitle || "").trim() ||
-    "Hizmet";
+    "خدمة";
 
   const now = admin.firestore.FieldValue.serverTimestamp();
   const conversationRef = db.collection("conversations").doc();
@@ -395,6 +407,10 @@ async function getUserConversations(uid) {
         return null;
       }
 
+      // Syria Arabic launch: appointment-based chat expiry/archive checks disabled.
+      return conv;
+
+      /* Syria Arabic launch: appointment-based conversation filtering is disabled.
       if (conv.appointmentId) {
   try {
     const validated = await loadAndValidateAppointment({
@@ -464,6 +480,7 @@ async function getUserConversations(uid) {
           : null,
       }).catch(() => {});
       return null;
+      */
     })
   );
 
@@ -483,13 +500,13 @@ async function getConversationMessages({ conversationId, currentUid }) {
   const conversationDoc = await conversationRef.get();
 
   if (!conversationDoc.exists) {
-    throw new Error("Conversation bulunamadi.");
+    throw new Error("لم يتم العثور على المحادثة.");
   }
 
   const conversationData = conversationDoc.data();
 
   if (!conversationData.participants.includes(currentUid)) {
-    throw new Error("Forbidden");
+    throw new Error("لا تملك صلاحية الوصول إلى هذه المحادثة.");
   }
 
   const messagesSnapshot = await conversationRef
@@ -512,24 +529,24 @@ async function sendMessage({
   const trimmedText = String(text || "").trim();
 
   if (!trimmedText) {
-    throw new Error("Mesaj bos olamaz.");
+    throw new Error("لا يمكن إرسال رسالة فارغة.");
   }
 
   const conversationRef = db.collection("conversations").doc(conversationId);
   const conversationDoc = await conversationRef.get();
 
   if (!conversationDoc.exists) {
-    throw new Error("Conversation bulunamadi.");
+    throw new Error("لم يتم العثور على المحادثة.");
   }
 
   const conversationData = conversationDoc.data();
 
   if (!conversationData.participants.includes(senderUid)) {
-    throw new Error("Forbidden");
+    throw new Error("لا تملك صلاحية إرسال رسالة في هذه المحادثة.");
   }
 
   if (String(conversationData.status || "").trim() === "inactive") {
-    throw new Error("Bu sohbet pasif. Mesaj gonderilemez.");
+    throw new Error("هذه المحادثة غير نشطة. لا يمكن إرسال الرسائل.");
   }
 
   const { clientUid: convClientUid, providerUid: convProviderUid } = conversationData;
@@ -539,6 +556,7 @@ async function sendMessage({
   const isProviderToProvider = clientDoc.exists && providerDoc.exists && 
     clientDoc.data()?.userType === "PROVIDER" && providerDoc.data()?.userType === "PROVIDER";
 
+  /* Syria Arabic launch: appointment validation disabled while sending messages.
   if (!isProviderToProvider) {
   if (conversationData.appointmentId) {
     await loadAndValidateAppointment({
@@ -579,11 +597,12 @@ async function sendMessage({
 
     if (!hasActiveAppointment) {
       throw new Error(
-        "Randevu tarihi gecmis veya aktif onaylanmis randevunuz bulunmuyor. Mesaj gonderilemiyor."
+        "انتهى وقت الموعد أو لا يوجد موعد نشط ومؤكد. لا يمكن إرسال الرسالة."
       );
     }
   }
 }
+*/
 
   await enforceRateLimit({ conversationId, senderUid });
 
@@ -598,7 +617,7 @@ async function sendMessage({
       moderation,
     });
 
-    throw new Error(moderation.reason || "Mesaj uygun degil.");
+    throw new Error(moderation.reason || "الرسالة غير مناسبة.");
   }
 
   let replyTo = null;
@@ -608,7 +627,7 @@ async function sendMessage({
     const replyDoc = await replyRef.get();
 
     if (!replyDoc.exists) {
-      throw new Error("Reply yapilacak mesaj bulunamadi.");
+      throw new Error("لم يتم العثور على الرسالة التي تريد الرد عليها.");
     }
 
     const replyData = replyDoc.data() || {};
@@ -695,27 +714,27 @@ async function deleteMessage({ conversationId, messageId, currentUid }) {
   ]);
 
   if (!conversationDoc.exists) {
-    throw new Error("Conversation bulunamadi.");
+    throw new Error("لم يتم العثور على المحادثة.");
   }
 
   const conversationData = conversationDoc.data();
 
   if (!conversationData.participants.includes(currentUid)) {
-    throw new Error("Forbidden");
+    throw new Error("لا تملك صلاحية الوصول إلى هذه المحادثة.");
   }
 
   if (!messageDoc.exists) {
-    throw new Error("Mesaj bulunamadi.");
+    throw new Error("لم يتم العثور على الرسالة.");
   }
 
   const messageData = messageDoc.data() || {};
 
   if (messageData.senderUid !== currentUid) {
-    throw new Error("Forbidden");
+    throw new Error("لا يمكنك حذف رسالة لم ترسلها.");
   }
 
   if (messageData.isDeleted === true || messageData.type === "deleted") {
-    throw new Error("Mesaj zaten silinmis.");
+    throw new Error("تم حذف هذه الرسالة مسبقاً.");
   }
 
   const now = admin.firestore.FieldValue.serverTimestamp();
@@ -768,7 +787,7 @@ async function deleteMessage({ conversationId, messageId, currentUid }) {
     !latestMessageSnapshot.empty &&
     latestMessageSnapshot.docs[0].id === messageId
   ) {
-    conversationUpdate.lastMessage = "Bu mesaj silindi";
+    conversationUpdate.lastMessage = "تم حذف هذه الرسالة";
     conversationUpdate.lastMessageAt = now;
     conversationUpdate.lastSenderUid = messageData.senderUid || null;
   }
@@ -787,13 +806,13 @@ async function markConversationAsRead({ conversationId, currentUid }) {
   const conversationDoc = await conversationRef.get();
 
   if (!conversationDoc.exists) {
-    throw new Error("Conversation bulunamadi.");
+    throw new Error("لم يتم العثور على المحادثة.");
   }
 
   const conversationData = conversationDoc.data();
 
   if (!conversationData.participants.includes(currentUid)) {
-    throw new Error("Forbidden");
+    throw new Error("لا تملك صلاحية الوصول إلى هذه المحادثة.");
   }
 
   const updateData = {};
@@ -813,18 +832,18 @@ async function markConversationAsRead({ conversationId, currentUid }) {
 
 async function closeConversation({ conversationId, currentUid }) {
   const id = String(conversationId || "").trim();
-  if (!id) throw new Error("Geçersiz conversationId.");
+  if (!id) throw new Error("معرف المحادثة غير صالح.");
 
   const conversationRef = db.collection("conversations").doc(id);
   const conversationDoc = await conversationRef.get();
 
   if (!conversationDoc.exists) {
-    throw new Error("Conversation bulunamadi.");
+    throw new Error("لم يتم العثور على المحادثة.");
   }
 
   const data = conversationDoc.data() || {};
   if (!Array.isArray(data.participants) || !data.participants.includes(currentUid)) {
-    throw new Error("Forbidden");
+    throw new Error("لا تملك صلاحية الوصول إلى هذه المحادثة.");
   }
 
   const result = await archiveConversationToInactive({
@@ -834,7 +853,7 @@ async function closeConversation({ conversationId, currentUid }) {
   });
 
   if (!result?.ok) {
-    throw new Error(result?.message || "Sohbet kapatilamadi.");
+    throw new Error(result?.message || "تعذر إغلاق المحادثة.");
   }
 
   return { success: true };

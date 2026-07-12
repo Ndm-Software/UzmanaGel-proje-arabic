@@ -29,7 +29,7 @@ function cleanupRateLimitMiddleware(req, res, next) {
     checkCleanupRateLimit();
     next();
   } catch (error) {
-    return res.status(429).json({ message: "Too many requests. Please try again later." });
+    return res.status(429).json({ message: "طلبات كثيرة جداً. يرجى المحاولة لاحقاً." });
   }
 }
 
@@ -59,7 +59,7 @@ router.post("/cleanup-blocked-google-user", cleanupRateLimitMiddleware, async (r
       return res.status(400).json({
         success: false,
         code: "UID_INVALID",
-        message: "Geçersiz kullanıcı kimliği.",
+        message: "معرف المستخدم غير صالح.",
       });
     }
 
@@ -67,7 +67,7 @@ router.post("/cleanup-blocked-google-user", cleanupRateLimitMiddleware, async (r
       return res.status(400).json({
         success: false,
         code: "EMAIL_MISMATCH",
-        message: "E-posta doğrulaması başarısız oldu.",
+        message: "فشل التحقق من البريد الإلكتروني.",
       });
     }
 
@@ -81,7 +81,7 @@ router.post("/cleanup-blocked-google-user", cleanupRateLimitMiddleware, async (r
         success: true,
         deletedAuthUser: false,
         deletedFirestoreUser: false,
-        message: "Google sağlayıcılı geçici kullanıcı bulunamadı.",
+        message: "لم يتم العثور على مستخدم Google مؤقت.",
       });
     }
 
@@ -109,7 +109,7 @@ router.post("/cleanup-blocked-google-user", cleanupRateLimitMiddleware, async (r
       success: true,
       deletedAuthUser: true,
       deletedFirestoreUser,
-      message: "Engellenen geçici Google kullanıcısı temizlendi.",
+      message: "تم حذف مستخدم Google المؤقت المحظور.",
     });
   } catch (error) {
     if (isDevelopment) console.error("POST /api/auth/cleanup-blocked-google-user failed:", error?.message || error);
@@ -117,7 +117,7 @@ router.post("/cleanup-blocked-google-user", cleanupRateLimitMiddleware, async (r
     return res.status(500).json({
       success: false,
       code: "GOOGLE_CLEANUP_FAILED",
-      message: "Geçici Google kullanıcısı temizlenemedi.",
+      message: "تعذر حذف مستخدم Google المؤقت.",
     });
   }
 });

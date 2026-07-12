@@ -24,7 +24,7 @@ async function extractErrorMessage(response, fallback) {
 
 export async function updateMyDisplayName(user, { firstName, lastName }) {
   if (!user) {
-    throw new Error("No authenticated user.");
+    throw new Error("يرجى تسجيل الدخول أولاً.");
   }
 
   const token = await user.getIdToken();
@@ -38,7 +38,7 @@ export async function updateMyDisplayName(user, { firstName, lastName }) {
   });
 
   if (!response.ok) {
-    throw new Error(await extractErrorMessage(response, "Ad soyad güncellenemedi."));
+    throw new Error(await extractErrorMessage(response, "تعذر تحديث الاسم الكامل."));
   }
 
   return response.json();
@@ -46,7 +46,7 @@ export async function updateMyDisplayName(user, { firstName, lastName }) {
 
 export async function updateMyPhoneNumber(user, { phoneNumber }) {
   if (!user) {
-    throw new Error("No authenticated user.");
+    throw new Error("يرجى تسجيل الدخول أولاً.");
   }
 
   const token = await user.getIdToken();
@@ -60,7 +60,7 @@ export async function updateMyPhoneNumber(user, { phoneNumber }) {
   });
 
   if (!response.ok) {
-    throw new Error(await extractErrorMessage(response, "Telefon güncellenemedi."));
+    throw new Error(await extractErrorMessage(response, "تعذر تحديث رقم الهاتف."));
   }
 
   return response.json();

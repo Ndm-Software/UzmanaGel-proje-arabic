@@ -24,7 +24,7 @@ exports.getMe = async (req, res) => {
 
     if (!userSnap.exists) {
       return res.status(404).json({
-        message: "Token geçerli ama Firestore users koleksiyonunda kullanıcı bulunamadı.",
+        message: "الرمز صالح لكن لم يتم العثور على المستخدم في قاعدة البيانات.",
         authUser: {
           uid: req.userId,
           email: req.userEmail,
@@ -37,7 +37,7 @@ exports.getMe = async (req, res) => {
     }
 
     return res.json({
-      message: "Kullanıcı başarıyla getirildi.",
+      message: "تم جلب بيانات المستخدم بنجاح.",
       authUser: {
         uid: req.userId,
         email: req.userEmail,
@@ -56,7 +56,7 @@ exports.getMe = async (req, res) => {
     }
 
     return res.status(500).json({
-      message: "Kullanıcı bilgileri alınırken hata oluştu.",
+      message: "حدث خطأ أثناء جلب بيانات المستخدم.",
     });
   }
 };
@@ -82,7 +82,7 @@ exports.getRole = async (req, res) => {
     return res.json({ role: "user" });
   } catch (error) {
     if (isDevelopment) console.error("GET /api/auth/role failed:", error.message);
-    return res.status(500).json({ message: "Failed to detect user role." });
+    return res.status(500).json({ message: "تعذر تحديد دور المستخدم." });
   }
 };
 
@@ -92,18 +92,18 @@ exports.updateDisplayName = async (req, res) => {
     const lastName = String(req.body?.lastName || "").trim();
 
     if (!firstName || !lastName) {
-      return res.status(400).json({ message: "Ad ve soyad zorunludur." });
+      return res.status(400).json({ message: "الاسم والكنية مطلوبان." });
     }
 
     if (firstName.length < 2 || lastName.length < 2) {
       return res.status(400).json({
-        message: "Ad ve soyad en az 2 karakter olmalıdır.",
+        message: "يجب أن يتكون الاسم والكنية من حرفين على الأقل.",
       });
     }
 
     if (firstName.length > 50 || lastName.length > 50) {
       return res.status(400).json({
-        message: "Ad ve soyad en fazla 50 karakter olmalıdır.",
+        message: "يجب ألا يتجاوز الاسم والكنية 50 حرفاً.",
       });
     }
 
@@ -111,7 +111,7 @@ exports.updateDisplayName = async (req, res) => {
 
     if (displayName.length > 80) {
       return res.status(400).json({
-        message: "Ad soyad toplamda en fazla 80 karakter olmalıdır.",
+        message: "يجب ألا يتجاوز الاسم الكامل 80 حرفاً.",
       });
     }
 
@@ -139,8 +139,8 @@ exports.updateDisplayName = async (req, res) => {
 
     const message =
       process.env.NODE_ENV === "production"
-        ? "Ad soyad güncellenemedi."
-        : rawMessage || "Ad soyad güncellenemedi.";
+        ? "تعذر تحديث الاسم الكامل."
+        : rawMessage || "تعذر تحديث الاسم الكامل.";
 
     return res.status(500).json({ message, code });
   }
@@ -153,7 +153,7 @@ exports.updatePhone = async (req, res) => {
 
     if (!phoneNumber) {
       return res.status(400).json({
-        message: "Telefon numarası 5xx xxx xx xx formatında olmalıdır.",
+        message: "يجب أن يكون رقم الهاتف بصيغة صحيحة.",
       });
     }
 
@@ -182,29 +182,29 @@ exports.updatePhone = async (req, res) => {
 
     if (code === "auth/phone-number-already-exists") {
       return res.status(409).json({
-        message: "Bu telefon numarası başka bir hesapta kullanılıyor.",
+        message: "رقم الهاتف هذا مستخدم في حساب آخر.",
         code,
       });
     }
 
     if (code === "auth/invalid-phone-number" || code === "auth/invalid-argument") {
       return res.status(400).json({
-        message: "Telefon numarası geçersiz.",
+        message: "رقم الهاتف غير صالح.",
         code,
       });
     }
 
     if (code === "auth/operation-not-allowed") {
       return res.status(400).json({
-        message: "Telefon doğrulama bu projede aktif değil.",
+        message: "التحقق من الهاتف غير مفعل في هذا المشروع.",
         code,
       });
     }
 
     const message =
       process.env.NODE_ENV === "production"
-        ? "Telefon güncellenemedi."
-        : rawMessage || "Telefon güncellenemedi.";
+        ? "تعذر تحديث رقم الهاتف."
+        : rawMessage || "تعذر تحديث رقم الهاتف.";
 
     return res.status(500).json({ message, code });
   }

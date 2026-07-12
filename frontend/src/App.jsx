@@ -26,16 +26,18 @@ import ExpertMyListingsPage from "./pages/ExpertMyListingsPage";
 import PublicExpertProfilePage from "./pages/PublicExpertProfilePage";
 
 import MessagingPage from "./pages/MessagingPage";
-import AppointmentPage from "./pages/AppointmentPage";
+// Syria Arabic launch: appointment system routes disabled.
+// import AppointmentPage from "./pages/AppointmentPage";
 import NotificationsPage from "./pages/NotificationsPage";
-import MyAppointments from "./pages/MyAppointments";
-import CustomerAppointmentPage from "./pages/CustomerAppointmentPage";
-import CustomerRequests from "./pages/CustomerRequests";
-import RequestDetailPage from "./pages/RequestDetailPage";
-import RequestForecastPage from "./pages/RequestForecastPage";
+// import MyAppointments from "./pages/MyAppointments";
+// import CustomerAppointmentPage from "./pages/CustomerAppointmentPage";
+// import CustomerRequests from "./pages/CustomerRequests";
+// import RequestDetailPage from "./pages/RequestDetailPage";
+// import RequestForecastPage from "./pages/RequestForecastPage";
 
-import LiveOperationCenter from "./pages/LiveOperationCenter";
-import LiveServiceTracking from "./pages/LiveServiceTracking";
+// Syria Arabic launch: live operation pages are appointment-based, so they are disabled.
+// import LiveOperationCenter from "./pages/LiveOperationCenter";
+// import LiveServiceTracking from "./pages/LiveServiceTracking";
 
 import AdminPage from "./pages/admin/AdminPage";
 import AdminExpertDetailPage from "./pages/admin/AdminExpertDetailPage";
@@ -99,7 +101,7 @@ function AppRoutes() {
             element={<PublicExpertProfilePage />}
           />
 
-          {/* Randevular */}
+          {/* Syria Arabic launch: appointment system routes disabled.
           <Route
             path="/randevu-takvimi"
             element={expertOnly(<AppointmentPage />)}
@@ -126,11 +128,12 @@ function AppRoutes() {
             path="/customer-appointment/:expertId"
             element={<CustomerAppointmentPage />}
           />
+          */}
 
           {/* Bildirimler */}
           <Route path="/bildirimler" element={<NotificationsPage />} />
 
-          {/* Canlı Servisler */}
+          {/* Syria Arabic launch: live service tracking routes disabled with appointment system.
           <Route
             path="/canli-isbasi-merkezi"
             element={expertOnly(<LiveOperationCenter />)}
@@ -140,6 +143,7 @@ function AppRoutes() {
             path="/canli-hizmet-takibi"
             element={<LiveServiceTracking />}
           />
+          */}
 
           {/* Telefon ile Giriş/Kayıt */}
           <Route path="/register-phone" element={<RegisterPhonePage />} />

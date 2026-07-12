@@ -261,12 +261,30 @@ function applyFilters(items, query) {
 
 function applySort(items, sort) {
   const sorted = [...items];
+  const addressText = (item) =>
+    [item.city, item.serviceSubcategory, item.title]
+      .map((part) => String(part || "").trim())
+      .filter(Boolean)
+      .join(" ");
+
   switch (sort) {
     case "price_asc":
       sorted.sort((a, b) => Number(a.price) - Number(b.price));
       break;
     case "price_desc":
       sorted.sort((a, b) => Number(b.price) - Number(a.price));
+      break;
+    case "created_asc":
+      sorted.sort((a, b) => Number(a._createdAtMs || 0) - Number(b._createdAtMs || 0));
+      break;
+    case "created_desc":
+      sorted.sort((a, b) => Number(b._createdAtMs || 0) - Number(a._createdAtMs || 0));
+      break;
+    case "address_az":
+      sorted.sort((a, b) => addressText(a).localeCompare(addressText(b), "ar"));
+      break;
+    case "address_za":
+      sorted.sort((a, b) => addressText(b).localeCompare(addressText(a), "ar"));
       break;
     case "rating_desc":
       sorted.sort((a, b) => Number(b.rating) - Number(a.rating));

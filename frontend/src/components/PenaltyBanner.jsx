@@ -51,7 +51,7 @@ const PenaltyBanner = () => {
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        setTimeLeft(`${hours}s ${minutes}d ${seconds}sn`);
+        setTimeLeft(`${hours}س ${minutes}د ${seconds}ث`);
         setIsVisible(true);
       }
     }, 1000);
@@ -86,12 +86,12 @@ const PenaltyBanner = () => {
           boxShadow: '0 0 15px rgba(239, 68, 68, 0.3)',
           whiteSpace: 'nowrap'
         }}>
-          HESABINIZ GEÇİCİ OLARAK KISITLANDI
+          تم تقييد حسابك مؤقتاً
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
           <span style={{ color: '#eceff2', fontSize: '15px', fontWeight: '600', textAlign: 'center' }}>
-            Yeniden randevu oluşturabilmeniz ve Kısıtlamanın bitmesi için kalan vakit
+            الوقت المتبقي حتى انتهاء التقييد وإعادة تفعيل إنشاء المواعيد
           </span>
           
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -141,7 +141,7 @@ const PenaltyBanner = () => {
           }}
         >
           <i className="fas fa-info-circle" style={{ marginRight: '8px' }}></i>
-          Neden kısıtlandım? Ne yapmam gerekiyor?
+          لماذا تم تقييدي؟ ماذا يجب أن أفعل؟
         </button>
       </div>
 
@@ -155,32 +155,32 @@ const PenaltyBanner = () => {
               </div>
             </div>
 
-            <h2 style={{ color: '#a73838', marginBottom: '15px', fontSize: '26px', fontWeight: '700' }}>Kısıtlama Bilgilendirmesi</h2>
+            <h2 style={{ color: '#a73838', marginBottom: '15px', fontSize: '26px', fontWeight: '700' }}>معلومات التقييد</h2>
             
             <p style={{ color: '#94a3b8', fontSize: '15px', marginBottom: '25px', lineHeight: '1.6', textAlign: 'center' }}>
-              Hesabınız, sistem kuralları gereği son dakikada yapılan randevu iptali nedeniyle kısıtlanmıştır.
+              تم تقييد حسابك وفق قواعد النظام بسبب إلغاء موعد في اللحظات الأخيرة.
             </p>
 
             <div style={{ background: 'rgba(15, 23, 42, 0.7)', padding: '20px', borderRadius: '12px', textAlign: 'left', border: '1px solid rgba(255,255,255,0.05)' }}>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 <li style={{ marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14.5px', color: '#e2e8f0' }}>
-                  <span style={{ color: '#4ade80', fontSize: '12px' }}>●</span> <strong>Randevuya 24 saatten fazla zaman varken İptal için:</strong> Hiçbir ceza uygulanmaz.
+                  <span style={{ color: '#4ade80', fontSize: '12px' }}>●</span> <strong>عند الإلغاء قبل الموعد بأكثر من 24 ساعة:</strong> لا يتم تطبيق أي عقوبة.
                 </li>
                 <li style={{ marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14.5px', color: '#e2e8f0' }}>
-                  <span style={{ color: '#fbbf24', fontSize: '12px' }}>●</span> <strong>Randevuya Son 24 ile 2 saat arasında İptal için:</strong> 24 saat kısıtlama uygulanır.
+                  <span style={{ color: '#fbbf24', fontSize: '12px' }}>●</span> <strong>عند الإلغاء بين آخر 24 ساعة وساعتين قبل الموعد:</strong> يتم تطبيق تقييد لمدة 24 ساعة.
                 </li>
                 <li style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '14.5px', color: '#e2e8f0' }}>
-                  <span style={{ color: '#ef4444', fontSize: '12px' }}>●</span> <strong>Randevuya Son 2 Saat Kala İptal için:</strong> Uzman mağduriyeti nedeniyle 3 gün kısıtlama uygulanır.
+                  <span style={{ color: '#ef4444', fontSize: '12px' }}>●</span> <strong>عند الإلغاء خلال آخر ساعتين قبل الموعد:</strong> يتم تطبيق تقييد لمدة 3 أيام بسبب تضرر الخبير.
                 </li>
               </ul>
             </div>
 
             <div style={{ marginTop: '20px', textAlign: 'left' }}>
               <h4 style={{ color: '#a73838', marginBottom: '8px', fontSize: '16px', fontWeight: '600' }}>
-                Şimdi ne yapmalıyım?
+                ماذا يجب أن أفعل الآن؟
               </h4>
               <p style={{ color: '#94a3b8', fontSize: '14px', lineHeight: '1.5' }}>
-                Şu an yeni randevu oluşturamazsınız ancak mevcut randevularınızı görüntüleyebilir ve uzmanlarla mesajlaşmaya devam edebilirsiniz. Kısıtlama süresi bittiğinde tüm özellikler otomatik olarak açılacaktır.
+                لا يمكنك إنشاء موعد جديد حالياً، لكن يمكنك عرض مواعيدك الحالية ومتابعة المحادثة مع الخبراء. عند انتهاء مدة التقييد ستُفتح الميزات تلقائياً.
               </p>
             </div>
 
@@ -192,7 +192,7 @@ const PenaltyBanner = () => {
                 onMouseEnter={(e) => e.target.style.background = 'rgba(255,255,255,0.12)'}
                 onMouseLeave={(e) => e.target.style.background = 'rgba(255,255,255,0.08)'}
               >
-                Anladım
+                فهمت
               </button>
             </div>
           </div>

@@ -54,7 +54,7 @@ const ListingCard = ({ listing, onLocationClick }) => {
           <div className="listing-price">
             {listing.price} TL
           </div>
-          <a href="#" className="view-details">İncele</a>
+          <a href="#" className="view-details">عرض التفاصيل</a>
         </div>
         <div className="listing-footer">
           <div className="expert-info">

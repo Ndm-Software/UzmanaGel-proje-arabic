@@ -11,7 +11,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 async function authHeaders(userArg) {
   const user = userArg || auth.currentUser;
   if (!user) {
-    throw new Error("No authenticated user.");
+    throw new Error("يرجى تسجيل الدخول أولاً.");
   }
 
   const token = await user.getIdToken();
@@ -45,14 +45,14 @@ export async function fetchFavorites(user) {
     });
     if (!retry.ok) {
       const payload = await safeJson(retry);
-      throw new Error(payload?.message || "Failed to fetch favorites.");
+      throw new Error(payload?.message || "تعذر تحميل المفضلة.");
     }
     return retry.json();
   }
 
   if (!response.ok) {
     const payload = await safeJson(response);
-    throw new Error(payload?.message || "Failed to fetch favorites.");
+    throw new Error(payload?.message || "تعذر تحميل المفضلة.");
   }
 
   return response.json();
@@ -66,7 +66,7 @@ export async function addFavorite(id, user) {
 
   if (!response.ok) {
     const payload = await safeJson(response);
-    throw new Error(payload?.message || "Failed to add favorite.");
+    throw new Error(payload?.message || "تعذر إضافة الإعلان إلى المفضلة.");
   }
 }
 
@@ -78,6 +78,6 @@ export async function removeFavorite(id, user) {
 
   if (!response.ok) {
     const payload = await safeJson(response);
-    throw new Error(payload?.message || "Failed to remove favorite.");
+    throw new Error(payload?.message || "تعذر إزالة الإعلان من المفضلة.");
   }
 }

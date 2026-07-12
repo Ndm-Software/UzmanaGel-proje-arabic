@@ -9,11 +9,33 @@ const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const SORT_OPTIONS = [
-  { value: 'newest', label: 'En yeni' },
-  { value: 'oldest', label: 'En eski' },
-  { value: 'rating_desc', label: 'En yüksek yıldız' },
-  { value: 'rating_asc', label: 'En düşük yıldız' },
+  { value: 'newest', label: 'الأحدث' },
+  { value: 'oldest', label: 'الأقدم' },
+  { value: 'rating_desc', label: 'الأعلى تقييماً' },
+  { value: 'rating_asc', label: 'الأقل تقييماً' },
 ];
+
+const REVIEW_ALREADY_SUBMITTED_MESSAGE = "تم تقييم هذه الخدمة بالفعل.";
+
+const normalizeReviewErrorMessage = (message) => {
+  const text = String(message || "").trim();
+  if (!text) return "فشل إرسال التقييم.";
+  const lower = text.toLowerCase();
+
+  if (
+    lower.includes("bu, şu anda geçerli olan bir durumdur") ||
+    lower.includes("bu, su anda gecerli olan bir durumdur") ||
+    lower.includes("şu anda geçerli") ||
+    lower.includes("su anda gecerli") ||
+    lower.includes("zaten değerlendirildi") ||
+    lower.includes("değerlendirme") && lower.includes("zaten") ||
+    lower.includes("already") && lower.includes("review")
+  ) {
+    return REVIEW_ALREADY_SUBMITTED_MESSAGE;
+  }
+
+  return text;
+};
 
 const getReviewTimeMs = (ts) => {
   if (!ts) return 0;
@@ -120,6 +142,10 @@ const ReviewSystem = ({
         throw new Error("لم يتم العثور على معلومات الخبير.");
       }
 
+      // Syria Arabic launch: appointment system disabled, reviews no longer create appointment records.
+      const apptId = [currentUser.uid, expertId, listingId || 'expert'].filter(Boolean).join('_');
+
+      /*
       // Check if an appointment exists
       const appointmentsRef = collection(db, 'appointments');
       let q;
@@ -188,6 +214,7 @@ const ReviewSystem = ({
         const newApptDoc = await addDoc(collection(db, 'appointments'), dummyAppointment);
         apptId = newApptDoc.id;
       }
+      */
 
       // Execute Firebase transaction for review and stats updates
       await runTransaction(db, async (transaction) => {
@@ -197,7 +224,7 @@ const ReviewSystem = ({
 
         const existingReview = await transaction.get(reviewRef);
         if (existingReview.exists()) {
-          throw new Error('تم تقييم هذا الموعد/الخدمة بالفعل.');
+          throw new Error(REVIEW_ALREADY_SUBMITTED_MESSAGE);
         }
 
         const expertSnap = await transaction.get(expertRef);
@@ -246,14 +273,14 @@ const ReviewSystem = ({
       setIsModalOpen(false);
     } catch (error) {
       if (isDev) console.error("Değerlendirme hatası:", error);
-      showAppToast(error.message || "فشل إرسال التقييم.", "error");
+      showAppToast(normalizeReviewErrorMessage(error.message), "error");
     } finally {
       setSubmitting(false);
     }
   };
 
   const maskName = (fullName) => {
-    if (!fullName) return "Gizli Kullanıcı";
+    if (!fullName) return "مستخدم مخفي";
     return fullName
       .trim()
       .split(/\s+/)
@@ -273,20 +300,20 @@ const ReviewSystem = ({
     const diffTime = Math.abs(now - past);
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return "(Bugün)";
-    if (diffDays < 30) return `(${diffDays} Gün önce)`;
+    if (diffDays === 0) return "(اليوم)";
+    if (diffDays < 30) return `(${diffDays} يوم مضى)`;
 
     const months = Math.floor(diffDays / 30);
     const remainingDays = diffDays % 30;
 
-    if (remainingDays === 0) return `(${months} Ay önce)`;
-    return `(${months} Ay ${remainingDays} Gün önce)`;
+    if (remainingDays === 0) return `(${months} شهر مضى)`;
+    return `(${months} شهر و ${remainingDays} يوم مضى)`;
   };
 
   const formatDate = (ts) => {
     if (!ts) return "--.--.----";
     const date = ts.toDate ? ts.toDate() : new Date(ts);
-    return new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+    return new Intl.DateTimeFormat('ar-SY', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
   };
 
   useEffect(() => {
@@ -314,7 +341,7 @@ const ReviewSystem = ({
           if (userDoc.exists()) {
             newUserMap[rev.clientId] = maskName(userDoc.data().displayName);
           } else {
-            newUserMap[rev.clientId] = "Kullanıcı";
+            newUserMap[rev.clientId] = "مستخدم";
           }
         }
       }
@@ -356,7 +383,7 @@ const ReviewSystem = ({
             // ignore
           }
 
-          nextTitles[id] = `İlan (${id})`;
+          nextTitles[id] = `إعلان (${id})`;
         }
         setListingTitles(nextTitles);
       }
@@ -464,7 +491,7 @@ const ReviewSystem = ({
   if (loading) return <div className="review-loading">جاري تحميل التعليقات...</div>;
 
   return (
-    <div className="review-section-wrapper">
+    <div className="review-section-wrapper" dir="rtl" lang="ar" translate="no">
       <div className="ld-reviews-header-wrapper">
         <div className="review-section-title-wrap">
           <h2 className="review-section-title">تقييمات العملاء</h2>
@@ -502,7 +529,7 @@ const ReviewSystem = ({
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
-                  {opt.label === "En yeni" ? "الأحدث" : opt.label === "En eski" ? "الأقدم" : opt.label === "En yüksek yıldız" ? "الأعلى تقييماً" : "الأقل تقييماً"}
+                  {opt.label}
                 </option>
               ))}
             </select>
@@ -544,7 +571,7 @@ const ReviewSystem = ({
                   <strong className="review-label">تاريخ التقييم:</strong>
                   <span className="review-value">
                     {formatDate(rev.createdAt)}{" "}
-                    <span className="review-date-sub">{timeAgo(rev.createdAt).replace("Bugün", "اليوم").replace("Gün önce", "أيام مضت").replace("Ay önce", "أشهر مضت")}</span>
+                    <span className="review-date-sub">{timeAgo(rev.createdAt)}</span>
                   </span>
                 </div>
               </div>
@@ -570,7 +597,7 @@ const ReviewSystem = ({
             </motion.div>
           ))
         ) : (
-          <div className="review-empty">Henüz değerlendirme yapılmamış.</div>
+          <div className="review-empty">لم يتم إضافة أي تقييم بعد.</div>
         )}
 
         {paginationMode === 'pages' ? (

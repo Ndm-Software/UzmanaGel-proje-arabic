@@ -4,8 +4,9 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/firebaseClient';
 
 import brandImage from '../assets/pictures/Logo.png';
-import appleLogo from '../assets/pictures/apple-logo.png';
-import googlePlayLogo from '../assets/pictures/google-play.png';
+// Syria Arabic launch: store download buttons are disabled, assets kept for future use.
+// import appleLogo from '../assets/pictures/apple-logo.png';
+// import googlePlayLogo from '../assets/pictures/google-play.png';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -115,6 +116,7 @@ function Footer() {
               خبيرك المناسب لكل خدمة، وحل أسرع لكل مشكلة.
             </p>
 
+            {/* Syria Arabic launch: Google Play / App Store footer links disabled by request.
             <div className="store-buttons" style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', marginTop: '18px' }}>
               <a
                 className="store-button"
@@ -172,6 +174,7 @@ function Footer() {
                 </span>
               </a>
             </div>
+            */}
           </div>
 
           <div className="footer-columns">

@@ -67,7 +67,7 @@ async function maintenanceMiddleware(req, res, next) {
     const maintenanceMode = await getMaintenanceMode();
     if (maintenanceMode) {
       return res.status(503).json({
-        error: "Sistem bakım modundadır. Lütfen daha sonra tekrar deneyin.",
+        error: "النظام في وضع الصيانة. يرجى المحاولة لاحقاً.",
         code: "MAINTENANCE_MODE",
       });
     }

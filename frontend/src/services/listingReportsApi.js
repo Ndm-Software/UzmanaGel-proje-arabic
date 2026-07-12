@@ -8,14 +8,14 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000
 export async function submitListingReport({ listingId, reasons, description }) {
   const user = auth.currentUser;
   if (!user) {
-    throw new Error("Giriş yapmalısınız.");
+    throw new Error("يجب تسجيل الدخول أولاً.");
   }
 
   let idToken;
   try {
     idToken = await user.getIdToken();
   } catch {
-    throw new Error("Oturum doğrulanamadı. Lütfen tekrar giriş yapın.");
+    throw new Error("تعذر التحقق من الجلسة. يرجى تسجيل الدخول مرة أخرى.");
   }
 
   let res;
@@ -34,7 +34,7 @@ export async function submitListingReport({ listingId, reasons, description }) {
     });
   } catch {
     throw new Error(
-      "Sunucuya ulaşılamadı. Backend (ör. localhost:5000) çalışıyor mu ve VITE_API_BASE_URL doğru mu kontrol edin."
+      "تعذر الوصول إلى الخادم. يرجى التأكد من تشغيل الخادم وصحة إعداد VITE_API_BASE_URL."
     );
   }
 
@@ -49,8 +49,8 @@ export async function submitListingReport({ listingId, reasons, description }) {
     const msg =
       (data && typeof data.message === "string" && data.message) ||
       (res.status === 401
-        ? "Oturum süresi dolmuş olabilir. Tekrar giriş yapın."
-        : "Gönderilemedi. Bağlantınızı kontrol edip tekrar deneyin.");
+        ? "قد تكون الجلسة منتهية. يرجى تسجيل الدخول مرة أخرى."
+        : "تعذر الإرسال. يرجى التحقق من الاتصال والمحاولة مرة أخرى.");
     throw new Error(msg);
   }
 

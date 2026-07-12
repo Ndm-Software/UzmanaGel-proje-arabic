@@ -498,7 +498,7 @@ const MessagingPage = () => {
     (value) => {
       const date = parseAnyDate(value);
       if (!date) return "";
-      return date.toLocaleTimeString("tr-TR", {
+      return date.toLocaleTimeString("ar-SY", {
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -517,12 +517,12 @@ const MessagingPage = () => {
         date.getFullYear() === now.getFullYear();
 
       if (sameDay) {
-        return date.toLocaleTimeString("tr-TR", {
+        return date.toLocaleTimeString("ar-SY", {
           hour: "2-digit",
           minute: "2-digit",
         });
       }
-      return date.toLocaleDateString("tr-TR", {
+      return date.toLocaleDateString("ar-SY", {
         day: "2-digit",
         month: "2-digit",
       });
@@ -543,10 +543,10 @@ const MessagingPage = () => {
         a.getMonth() === b.getMonth() &&
         a.getFullYear() === b.getFullYear();
 
-      if (isSameDate(date, today)) return "Bugün";
-      if (isSameDate(date, yesterday)) return "Dün";
+      if (isSameDate(date, today)) return "اليوم";
+      if (isSameDate(date, yesterday)) return "أمس";
 
-      return date.toLocaleDateString("tr-TR", {
+      return date.toLocaleDateString("ar-SY", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -577,11 +577,11 @@ const MessagingPage = () => {
 
   const getConversationOtherName = useCallback(
     (conversation) => {
-      if (!conversation) return "Uzman";
+      if (!conversation) return "خبير";
       if (conversation.otherUserName) return conversation.otherUserName;
       return conversation.clientUid === currentUid
-        ? conversation.providerName || "Uzman"
-        : conversation.clientName || "Müşteri";
+        ? conversation.providerName || "خبير"
+        : conversation.clientName || "عميل";
     },
     [currentUid]
   );
@@ -649,8 +649,8 @@ const MessagingPage = () => {
       if (!message) return "";
       if (message.isDeleted || message.type === "deleted") {
         return message.senderUid === currentUid
-          ? "Bu mesajı sildiniz"
-          : "Bu mesaj silindi";
+          ? "لقد حذفت هذه الرسالة"
+          : "تم حذف هذه الرسالة";
       }
       return message.text || "";
     },
@@ -661,8 +661,8 @@ const MessagingPage = () => {
     (replyMessage) => {
       if (!replyMessage) return "";
       return replyMessage.senderUid === currentUid
-        ? "Siz"
-        : selectedChatName || "Kullanici";
+        ? "أنت"
+        : selectedChatName || "مستخدم";
     },
     [currentUid, selectedChatName]
   );
@@ -670,7 +670,7 @@ const MessagingPage = () => {
   const getReplyPreviewText = useCallback((replyMessage) => {
     if (!replyMessage) return "";
     return replyMessage.isDeleted || replyMessage.type === "deleted"
-      ? "Bu mesaj silindi"
+      ? "تم حذف هذه الرسالة"
       : replyMessage.text || "";
   }, []);
 
@@ -737,6 +737,10 @@ const MessagingPage = () => {
         return conversationList || [];
       }
 
+      // Syria Arabic launch: appointment-based conversation filtering disabled.
+      return conversationList;
+
+      /* Syria Arabic launch: old appointment-based filtering disabled.
       const [clientAppointmentsSnap, providerAppointmentsSnap] = await Promise.all([
         getDocs(query(collection(db, "appointments"), where("clientId", "==", currentUid))),
         getDocs(query(collection(db, "appointments"), where("expertId", "==", currentUid))),
@@ -783,6 +787,7 @@ const MessagingPage = () => {
         if (appointmentState.hasNonCompleted) return true;
         return !appointmentState.hasCompleted;
       });
+      */
     },
     [buildAppointmentConversationKey, currentUid]
   );
@@ -850,7 +855,7 @@ const MessagingPage = () => {
       await refreshConversationData();
     } catch (error) {
       if (isDevelopment) console.error("Failed to delete message:", error.message);
-      showAppToast("Mesaj silinirken hata oluştu. Lütfen daha sonra tekrar deneyin.", "error");
+      showAppToast("حدث خطأ أثناء حذف الرسالة. يرجى المحاولة لاحقاً.", "error");
     } finally {
       setShowDeleteConfirm(false);
       setMessageToDelete(null);
@@ -874,7 +879,7 @@ const MessagingPage = () => {
 
       if (!finalText) return false;
       if (findMatchedLoveWords(finalText).length > 0) {
-        showAppToast("Aşk / romantik ifadeler kullanılamaz.", "error");
+        showAppToast("لا يمكن استخدام عبارات رومانسية في المحادثة.", "error");
         return false;
       }
 
@@ -893,7 +898,7 @@ const MessagingPage = () => {
         if (isDevelopment) console.error("Failed to send message:", error.message);
         setSendError(
           error?.message ||
-            "Mesaj gönderilirken hata oluştu. Lütfen daha sonra tekrar deneyin."
+            "حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة لاحقاً."
         );
 
         try {
@@ -939,7 +944,7 @@ const MessagingPage = () => {
       await refreshConversationData();
     } catch (e) {
       showAppToast(
-        e?.message || "Sohbet kapatılamadı. Lütfen daha sonra tekrar deneyin.",
+        e?.message || "تعذر إغلاق المحادثة. يرجى المحاولة لاحقاً.",
         "error"
       );
     } finally {
@@ -993,6 +998,12 @@ const MessagingPage = () => {
       setChatDeadline(null);
       return;
     }
+
+    // Syria Arabic launch: appointment deadline tracking disabled for direct chat.
+    setChatDeadline(null);
+    return;
+
+    /* Syria Arabic launch: old appointment deadline tracking disabled.
     const { clientUid, providerUid } = selectedConversation;
     if (!clientUid || !providerUid) return;
 
@@ -1019,6 +1030,7 @@ const MessagingPage = () => {
         setChatDeadline(latest);
       })
       .catch(() => setChatDeadline(null));
+    */
   }, [selectedConversation, currentUid]);
 
   useEffect(() => {
@@ -1495,7 +1507,7 @@ const MessagingPage = () => {
                         <button
                           type="button"
                           className="action-btn"
-                          title="Sohbet Menüsü"
+                          title="قائمة المحادثة"
                           onClick={(e) => {
                             e.stopPropagation();
                             setHeaderMenuOpen((prev) => !prev);
@@ -1560,7 +1572,7 @@ const MessagingPage = () => {
                 >
                   {isMessagesLoading ? (
                     <div className="no-chat-selected">
-                      <LoadingSpinner text="Sohbet yükleniyor..." />
+                      <LoadingSpinner text="جاري تحميل المحادثة..." />
                     </div>
                   ) : messages.length > 0 ? (
                     messages.map((msg, index) => {

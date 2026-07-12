@@ -5,7 +5,8 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/firebaseClient";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
-import ListingReportButton from "../components/ListingReportButton";
+// Syria Arabic launch: listing report actions are disabled on listing cards.
+// import ListingReportButton from "../components/ListingReportButton";
 import categoryImages from "../data/categoryImages";
 import "../styles/AdPage.css";
 import {
@@ -25,14 +26,15 @@ const isDevelopment = process.env.NODE_ENV === "development";
 
 const ALL_CATEGORIES = "جميع الفئات";
 const ALL_SPECIALTIES = "جميع التخصصات";
-const DEFAULT_SORT = "الافتراضي";
+const DEFAULT_SORT = "السعر: الأعلى أولاً";
 
 const SORT_OPTIONS = [
-  { label: DEFAULT_SORT, value: "default" },
-  { label: "السعر: من الأقل إلى الأعلى", value: "price_asc" },
-  { label: "السعر: من الأعلى إلى الأقل", value: "price_desc" },
-  { label: "حسب التقييم (الأعلى)", value: "rating_desc" },
-  { label: "حسب عدد التعليقات (الأكثر)", value: "reviews_desc" },
+  { label: DEFAULT_SORT, value: "price_desc" },
+  { label: "السعر: الأقل أولاً", value: "price_asc" },
+  { label: "تاريخ نشر الإعلان: الأحدث أولاً", value: "created_desc" },
+  { label: "تاريخ نشر الإعلان: الأقدم أولاً", value: "created_asc" },
+  { label: "العنوان: من أ إلى ي", value: "address_az" },
+  { label: "العنوان: من ي إلى أ", value: "address_za" },
 ];
 
 const FILTER_SENTINEL_LABELS = new Set([
@@ -883,10 +885,12 @@ const AdPage = () => {
                         ></i>
                       </button>
 
+                      {/* Syria Arabic launch: listing report/exclamation button disabled.
                       <ListingReportButton
                         listingId={item.id}
                         listingTitle={item.title}
                       />
+                      */}
                     </div>
 
                     <div className="price">

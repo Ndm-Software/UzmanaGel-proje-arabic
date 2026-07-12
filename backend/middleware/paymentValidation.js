@@ -7,13 +7,13 @@ function validateTokenCheckout(req, res, next) {
 
   if (!Number.isInteger(tokenAmount)) {
     return res.status(400).json({
-      message: "Jeton miktarı tam sayı olmalıdır.",
+      message: "يجب أن تكون كمية الرصيد رقماً صحيحاً.",
     });
   }
 
   if (tokenAmount < 1 || tokenAmount > MAX_TOKEN_AMOUNT) {
     return res.status(400).json({
-      message: `Jeton miktarı 1-${MAX_TOKEN_AMOUNT} arasında olmalıdır.`,
+      message: `يجب أن تكون كمية الرصيد بين 1 و ${MAX_TOKEN_AMOUNT}.`,
     });
   }
 

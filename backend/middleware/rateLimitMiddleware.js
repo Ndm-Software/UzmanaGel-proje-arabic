@@ -44,7 +44,7 @@ function globalRateLimitMiddleware(req, res, next) {
     next();
   } catch (error) {
     return res.status(429).json({
-      message: "Too many requests. Please try again later.",
+      message: "تم تنفيذ محاولات كثيرة. يرجى المحاولة لاحقاً.",
     });
   }
 }

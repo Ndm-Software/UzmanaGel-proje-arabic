@@ -22,7 +22,8 @@ import badgeImage from "../assets/pictures/badge.png";
 import completedImage from "../assets/pictures/completed.png";
 import turkiyeImage from "../assets/pictures/Turkiye.png";
 import { fetchReviewCountsForListings } from "../services/reviewsApi";
-import ListingReportButton from "../components/ListingReportButton";
+// Syria Arabic launch: listing report actions are disabled on listing cards.
+// import ListingReportButton from "../components/ListingReportButton";
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -310,28 +311,14 @@ export default function HomePage() {
               </p>
 
               <div className="app-banner-actions">
+                <span className="app-banner-coming-soon">قريباً على هذه المنصات</span>
                 <a
                   className="app-banner-button app-banner-button--apple"
                   href="#"
-                  aria-label="تنزيل من App Store"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
+                  aria-label="قريباً على App Store"
+                  onClick={(event) => event.preventDefault()}
                 >
-                  <span
-                    className="app-banner-button-icon"
-                    aria-hidden="true"
-                    style={{
-                      width: "22px",
-                      height: "22px",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
+                  <span className="app-banner-button-icon" aria-hidden="true">
                     <img
                       src={appleLogo}
                       alt=""
@@ -344,31 +331,16 @@ export default function HomePage() {
                       }}
                     />
                   </span>
-                  <span>تنزيل من App Store</span>
+                  <span>App Store</span>
                 </a>
 
                 <a
                   className="app-banner-button app-banner-button--google"
                   href="#"
-                  aria-label="تنزيل من Google Play"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
+                  aria-label="قريباً على Google Play"
+                  onClick={(event) => event.preventDefault()}
                 >
-                  <span
-                    className="app-banner-button-icon"
-                    aria-hidden="true"
-                    style={{
-                      width: "22px",
-                      height: "22px",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
+                  <span className="app-banner-button-icon" aria-hidden="true">
                     <img
                       src={googlePlayLogo}
                       alt=""
@@ -380,7 +352,7 @@ export default function HomePage() {
                       }}
                     />
                   </span>
-                  <span>تنزيل من Google Play</span>
+                  <span>Google Play</span>
                 </a>
               </div>
             </div>
@@ -461,6 +433,7 @@ export default function HomePage() {
           </section>
         </section>
 
+        {/* Syria Arabic launch: homepage videos disabled by request, original block kept for later.
         <section className="section-band section-band--plain" id="video-showcase">
           <div className="videos-container">
             <div className="videos-header">
@@ -523,6 +496,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        */}
 
         <section className="section-band section-band--plain" id="featured-listings">
           <section className="listings-section">
@@ -576,11 +550,13 @@ export default function HomePage() {
                           className="armut-hero"
                           style={getListingBackgroundStyle(listing, imageSrc)}
                         >
+                          {/* Syria Arabic launch: listing report/exclamation button disabled.
                           <ListingReportButton
                             listingId={listing.id}
                             listingTitle={listing.title}
                             className="btn-listing-report--on-hero"
                           />
+                          */}
                           <button
                             type="button"
                             className="reserve-btn"

@@ -76,17 +76,17 @@ function getGoogleEmailFromUser(user) {
 
 async function reauthenticateWithPassword(currentUser, password) {
   if (!currentUser) {
-    throw new Error("Oturum bulunamadı.");
+    throw new Error("لم يتم العثور على جلسة نشطة.");
   }
 
   if (!currentUser.email) {
-    throw new Error("Bu hesap için şifre doğrulaması kullanılamıyor.");
+    throw new Error("لا يمكن استخدام التحقق بكلمة المرور لهذا الحساب.");
   }
 
   const cleanPassword = String(password || "").trim();
 
   if (!cleanPassword) {
-    throw new Error("Şifre zorunludur.");
+    throw new Error("كلمة المرور مطلوبة.");
   }
 
   try {
@@ -100,20 +100,20 @@ async function reauthenticateWithPassword(currentUser, password) {
       error?.code === "auth/wrong-password" ||
       error?.code === "auth/invalid-credential"
     ) {
-      throw new Error("Şifre hatalı.");
+      throw new Error("كلمة المرور غير صحيحة.");
     }
 
     if (error?.code === "auth/too-many-requests") {
       throw new Error(
-        "Çok fazla başarısız deneme yapıldı. Lütfen biraz sonra tekrar deneyin."
+        "تم إجراء محاولات كثيرة غير ناجحة. يرجى المحاولة بعد قليل."
       );
     }
 
     if (error?.code === "auth/requires-recent-login") {
-      throw new Error("Güvenlik nedeniyle lütfen tekrar giriş yapın.");
+      throw new Error("لأسباب أمنية يرجى تسجيل الدخول مرة أخرى.");
     }
 
-    throw new Error("Şifre doğrulaması başarısız oldu.");
+    throw new Error("فشل التحقق من كلمة المرور.");
   }
 
   return currentUser;
@@ -121,12 +121,12 @@ async function reauthenticateWithPassword(currentUser, password) {
 
 async function reauthenticateWithGoogle(currentUser) {
   if (!currentUser) {
-    throw new Error("Oturum bulunamadı.");
+    throw new Error("لم يتم العثور على جلسة نشطة.");
   }
 
   const currentEmail = normalizeEmail(currentUser.email || "");
   if (!currentEmail) {
-    throw new Error("Bu hesap için geçerli bir e-posta bulunamadı.");
+    throw new Error("لم يتم العثور على بريد إلكتروني صالح لهذا الحساب.");
   }
 
   const provider = new GoogleAuthProvider();
@@ -143,7 +143,7 @@ async function reauthenticateWithGoogle(currentUser) {
 
     if (!selectedGoogleEmail) {
       const err = new Error(
-        "Seçilen Google hesabının e-posta bilgisi alınamadı."
+        "تعذر الحصول على بريد حساب Google المحدد."
       );
       err.code = "GOOGLE_EMAIL_NOT_RESOLVED";
       throw err;
@@ -151,7 +151,7 @@ async function reauthenticateWithGoogle(currentUser) {
 
     if (!isSameGoogleIdentity(currentEmail, selectedGoogleEmail)) {
       const err = new Error(
-        `Sadece ${currentEmail} adresine ait Google hesabı kullanılabilir. Seçilen hesap: ${selectedGoogleEmail}`
+        `يمكن استخدام حساب Google المرتبط بالبريد ${currentEmail} فقط. الحساب المحدد: ${selectedGoogleEmail}`
       );
       err.code = "GOOGLE_ACCOUNT_EMAIL_MISMATCH";
       throw err;
@@ -160,25 +160,25 @@ async function reauthenticateWithGoogle(currentUser) {
     return reauthedUser;
   } catch (error) {
     if (error?.code === "auth/popup-closed-by-user") {
-      throw new Error("Google doğrulama penceresi kapatıldı.");
+      throw new Error("تم إغلاق نافذة التحقق من Google.");
     }
 
     if (error?.code === "auth/popup-blocked") {
       throw new Error(
-        "Google doğrulama penceresi tarayıcı tarafından engellendi."
+        "منع المتصفح نافذة التحقق من Google."
       );
     }
 
     if (error?.code === "auth/cancelled-popup-request") {
-      throw new Error("Google doğrulama isteği iptal edildi.");
+      throw new Error("تم إلغاء طلب التحقق من Google.");
     }
 
     if (error?.code === "auth/user-mismatch") {
-      throw new Error("Seçilen Google hesabı mevcut oturumla eşleşmiyor.");
+      throw new Error("حساب Google المحدد لا يطابق الجلسة الحالية.");
     }
 
     if (error?.code === "auth/requires-recent-login") {
-      throw new Error("Güvenlik nedeniyle lütfen tekrar giriş yapın.");
+      throw new Error("لأسباب أمنية يرجى تسجيل الدخول مرة أخرى.");
     }
 
     if (error?.code === "GOOGLE_ACCOUNT_EMAIL_MISMATCH") {
@@ -189,7 +189,7 @@ async function reauthenticateWithGoogle(currentUser) {
       throw error;
     }
 
-    throw new Error("Google ile yeniden doğrulama başarısız oldu.");
+    throw new Error("فشل إعادة التحقق باستخدام Google.");
   }
 }
 
@@ -197,7 +197,7 @@ async function reauthenticateCurrentUser(passwordOrOptions) {
   const currentUser = auth.currentUser;
 
   if (!currentUser) {
-    throw new Error("Oturum bulunamadı.");
+    throw new Error("لم يتم العثور على جلسة نشطة.");
   }
 
   const options = normalizeDeleteOptions(passwordOrOptions);
@@ -208,7 +208,7 @@ async function reauthenticateCurrentUser(passwordOrOptions) {
 
   if (options.useGoogle) {
     if (!hasGoogle) {
-      throw new Error("Bu hesap için Google doğrulaması kullanılamıyor.");
+      throw new Error("لا يمكن استخدام التحقق عبر Google لهذا الحساب.");
     }
 
     return reauthenticateWithGoogle(currentUser);
@@ -216,7 +216,7 @@ async function reauthenticateCurrentUser(passwordOrOptions) {
 
   if (options.password) {
     if (!hasPassword) {
-      throw new Error("Bu hesap için şifre doğrulaması kullanılamıyor.");
+      throw new Error("لا يمكن استخدام التحقق بكلمة المرور لهذا الحساب.");
     }
 
     return reauthenticateWithPassword(currentUser, options.password);
@@ -227,16 +227,16 @@ async function reauthenticateCurrentUser(passwordOrOptions) {
   }
 
   if (hasPassword) {
-    throw new Error("Şifre zorunludur.");
+    throw new Error("كلمة المرور مطلوبة.");
   }
 
   if (hasPhone && !hasGoogle && !hasPassword) {
     throw new Error(
-      "Bu hesap telefon ile giriş yapıyor. Bu akış için ayrıca telefon doğrulama desteği eklenmelidir."
+      "هذا الحساب يستخدم تسجيل الدخول عبر الهاتف. يجب إضافة دعم تحقق الهاتف لهذا الإجراء."
     );
   }
 
-  throw new Error("Bu hesap için uygun bir doğrulama yöntemi bulunamadı.");
+  throw new Error("لم يتم العثور على طريقة تحقق مناسبة لهذا الحساب.");
 }
 
 async function deleteAccountRequest(endpoint, passwordOrOptions) {
@@ -255,7 +255,7 @@ async function deleteAccountRequest(endpoint, passwordOrOptions) {
 
   if (!response.ok) {
     throw new Error(
-      data?.message || "Hesap devre dışı bırakma işlemi başarısız oldu."
+      data?.message || "فشلت عملية تعطيل الحساب."
     );
   }
 

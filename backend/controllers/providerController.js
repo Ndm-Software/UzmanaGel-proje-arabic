@@ -11,7 +11,7 @@ exports.getProviderById = async (req, res) => {
     const providerId = String(req.params.id || "").trim();
 
     if (!providerId) {
-      return res.status(400).json({ message: "Provider id is required." });
+      return res.status(400).json({ message: "معرف الخبير مطلوب." });
     }
 
     const [userSnap, providerSnap] = await Promise.all([
@@ -57,7 +57,7 @@ exports.getProviderById = async (req, res) => {
     }
 
     if (!userSnap.exists && !providerSnap.exists && !authUser && !listingFallback) {
-      return res.status(404).json({ message: "Provider not found." });
+      return res.status(404).json({ message: "لم يتم العثور على الخبير." });
     }
 
     const userData = userSnap.exists ? userSnap.data() || {} : {};
@@ -107,7 +107,7 @@ exports.getProviderById = async (req, res) => {
     }
 
     return res.status(500).json({
-      message: "Failed to load provider details.",
+      message: "تعذر تحميل تفاصيل الخبير.",
     });
   }
 };

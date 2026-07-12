@@ -6,28 +6,28 @@ import "../styles/ChatTermsModal.css";
 const chatRules = [
   {
     icon: "fa-ban",
-    title: "Yasaklı kelimeler ve uygunsuz ifadeler",
-    text: "Küfür, hakaret, tehdit, aşağılayıcı ifadeler, romantik veya aşk içerikli mesajlar ve rahatsız edici kelimeler kullanılamaz.",
+    title: "الكلمات المحظورة والعبارات غير المناسبة",
+    text: "لا يمكن استخدام الشتائم أو الإهانات أو التهديدات أو العبارات المهينة أو الرسائل الرومانسية أو كلمات الإزعاج.",
   },
   {
     icon: "fa-user-shield",
-    title: "Güvenli iletişim",
-    text: "Sohbet yalnızca randevu alınan hizmetin detaylarını netleştirmek için kullanılmalıdır.",
+    title: "تواصل آمن",
+    text: "يجب استخدام المحادثة فقط لتوضيح تفاصيل الخدمة المطلوبة.",
   },
   {
     icon: "fa-phone-slash",
-    title: "Platform dışına yönlendirme",
-    text: "Telefon, sosyal medya veya farklı bir platform üzerinden iletişime geçmeye zorlamak uygun değildir.",
+    title: "عدم إجبار الطرف الآخر على الخروج من المنصة",
+    text: "لا يجوز إجبار الطرف الآخر على التواصل عبر الهاتف أو وسائل التواصل الاجتماعي أو منصة أخرى.",
   },
   {
     icon: "fa-file-contract",
-    title: "Kayıt ve denetim",
-    text: "Güvenlik ve hizmet kalitesi için uygunsuz mesajlar sistem tarafından engellenebilir veya incelenebilir.",
+    title: "التسجيل والمراجعة",
+    text: "لأمان المستخدمين وجودة الخدمة، قد يتم حظر الرسائل غير المناسبة أو مراجعتها من قبل النظام.",
   },
   {
     icon: "fa-circle-exclamation",
-    title: "İhlal durumunda",
-    text: "Kurallara aykırı kullanım durumunda sohbet özelliği kısıtlanabilir veya hesap hakkında işlem yapılabilir.",
+    title: "في حال المخالفة",
+    text: "عند استخدام المحادثة بشكل مخالف للقواعد، قد يتم تقييد ميزة المحادثة أو اتخاذ إجراء بحق الحساب.",
   },
 ];
 
@@ -50,10 +50,9 @@ const ChatTermsModal = ({
           </div>
 
           <div>
-            <h2>Sohbet Kullanım Kuralları</h2>
+            <h2>قواعد استخدام المحادثة</h2>
             <p>
-              Uzmanla konuşmaya başlamadan önce lütfen aşağıdaki sohbet
-              kurallarını okuyup onaylayın.
+              قبل بدء المحادثة مع الخبير، يرجى قراءة قواعد المحادثة أدناه والموافقة عليها.
             </p>
           </div>
 
@@ -62,7 +61,7 @@ const ChatTermsModal = ({
             className="chat-terms-close"
             onClick={onCancel}
             disabled={loading}
-            title="Kapat"
+            title="إغلاق"
           >
             <i className="fas fa-times"></i>
           </button>
@@ -72,8 +71,7 @@ const ChatTermsModal = ({
           <div className="chat-terms-warning">
             <i className="fas fa-triangle-exclamation"></i>
             <span>
-              Uygunsuz kelimeler, rahatsız edici ifadeler ve hizmet dışı
-              konuşmalar engellenebilir.
+              قد يتم حظر الكلمات غير المناسبة والعبارات المزعجة والمحادثات الخارجة عن نطاق الخدمة.
             </span>
           </div>
 
@@ -99,7 +97,7 @@ const ChatTermsModal = ({
               onChange={(e) => onAcceptedChange(e.target.checked)}
               disabled={loading}
             />
-            <span>Sohbet kullanım koşullarını okudum ve kabul ediyorum.</span>
+            <span>قرأت شروط استخدام المحادثة وأوافق عليها.</span>
           </label>
         </div>
 
@@ -110,7 +108,7 @@ const ChatTermsModal = ({
             onClick={onCancel}
             disabled={loading}
           >
-            Vazgeç
+            إلغاء
           </button>
 
           <button
@@ -122,12 +120,12 @@ const ChatTermsModal = ({
             {loading ? (
               <>
                 <i className="fas fa-spinner fa-spin"></i>
-                Sohbet Açılıyor...
+                جاري فتح المحادثة...
               </>
             ) : (
               <>
                 <i className="fas fa-check"></i>
-                Kabul Et ve Sohbete Geç
+                أوافق وانتقل إلى المحادثة
               </>
             )}
           </button>

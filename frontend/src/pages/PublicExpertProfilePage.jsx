@@ -416,7 +416,7 @@ const PublicExpertProfilePage = () => {
                   ))}
                 </div>
               ) : (
-                <span className="specialties-empty">Belirtilmemiş</span>
+                <span className="specialties-empty">غير محدد</span>
               )}
             </div>
           )}

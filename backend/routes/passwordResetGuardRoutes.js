@@ -32,7 +32,7 @@ function resetRateLimitMiddleware(req, res, next) {
     checkResetRateLimit();
     next();
   } catch (error) {
-    return res.status(429).json({ message: "Too many requests. Please try again later." });
+    return res.status(429).json({ message: "طلبات كثيرة جداً. يرجى المحاولة لاحقاً." });
   }
 }
 
@@ -116,7 +116,7 @@ router.post("/check-password-reset-eligibility", resetRateLimitMiddleware, async
       return res.status(400).json({
         allowed: false,
         code: "INVALID_EMAIL",
-        message: "Geçerli bir e-posta adresi gereklidir.",
+        message: "يرجى إدخال بريد إلكتروني صالح.",
       });
     }
 
@@ -126,7 +126,7 @@ router.post("/check-password-reset-eligibility", resetRateLimitMiddleware, async
         allowed: false,
         code: "DELETED_ACCOUNT_IN_RETENTION",
         message:
-          "Eğer bu e-posta adresi sistemde aktif bir hesaba aitse, şifre sıfırlama bağlantısı gönderilecektir.",
+          "إذا كان هذا البريد الإلكتروني مرتبطاً بحساب نشط، فسيتم إرسال رابط إعادة تعيين كلمة المرور.",
       });
     }
 
@@ -136,7 +136,7 @@ router.post("/check-password-reset-eligibility", resetRateLimitMiddleware, async
         allowed: false,
         code: "ACTIVE_ACCOUNT_NOT_FOUND_IN_USERS",
         message:
-          "Eğer bu e-posta adresi sistemde aktif bir hesaba aitse, şifre sıfırlama bağlantısı gönderilecektir.",
+          "إذا كان هذا البريد الإلكتروني مرتبطاً بحساب نشط، فسيتم إرسال رابط إعادة تعيين كلمة المرور.",
       });
     }
 
@@ -144,7 +144,7 @@ router.post("/check-password-reset-eligibility", resetRateLimitMiddleware, async
       allowed: true,
       code: "RESET_ALLOWED",
       message:
-        "Eğer bu e-posta adresi sistemde aktif bir hesaba aitse, şifre sıfırlama bağlantısı gönderilecektir.",
+        "إذا كان هذا البريد الإلكتروني مرتبطاً بحساب نشط، فسيتم إرسال رابط إعادة تعيين كلمة المرور.",
     });
   } catch (error) {
     if (isDevelopment) console.error(
@@ -155,7 +155,7 @@ router.post("/check-password-reset-eligibility", resetRateLimitMiddleware, async
     return res.status(500).json({
       allowed: false,
       code: "PASSWORD_RESET_ELIGIBILITY_FAILED",
-      message: "Şifre sıfırlama uygunluğu kontrol edilirken bir hata oluştu.",
+      message: "حدث خطأ أثناء التحقق من إمكانية إعادة تعيين كلمة المرور.",
     });
   }
 });

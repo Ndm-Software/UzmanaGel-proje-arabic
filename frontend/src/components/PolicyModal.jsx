@@ -25,7 +25,7 @@ export default function PolicyModal({ open, title, children, onClose }) {
       <div className="policy-modal" onClick={(e) => e.stopPropagation()}>
         <div className="policy-header">
           <h3 className="policy-title">{title}</h3>
-          <button className="policy-close" type="button" onClick={onClose} aria-label="Kapat">
+          <button className="policy-close" type="button" onClick={onClose} aria-label="إغلاق">
             ×
           </button>
         </div>
@@ -36,7 +36,7 @@ export default function PolicyModal({ open, title, children, onClose }) {
 
         <div className="policy-footer">
           <button className="policy-btn" type="button" onClick={onClose}>
-            Kapat
+            إغلاق
           </button>
         </div>
       </div>

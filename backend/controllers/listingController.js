@@ -29,7 +29,7 @@ exports.getListingsMeta = async (req, res) => {
     if (isDevelopment) {
       console.error("GET /api/listings/meta failed:", error.message);
     }
-    res.status(500).json({ message: "Failed to load listings metadata." });
+    res.status(500).json({ message: "تعذر تحميل بيانات الإعلانات." });
   }
 };
 
@@ -53,7 +53,7 @@ exports.getListingsByIds = async (req, res) => {
     if (isDevelopment) {
       console.error("GET /api/listings/by-ids failed:", error.message);
     }
-    res.status(500).json({ message: "Failed to load listings by ids." });
+    res.status(500).json({ message: "تعذر تحميل الإعلانات المحددة." });
   }
 };
 
@@ -62,14 +62,14 @@ exports.getMyListings = async (req, res) => {
     const userSnap = await db.collection("users").doc(req.userId).get();
 
     if (!userSnap.exists) {
-      return res.status(403).json({ message: "User not found." });
+      return res.status(403).json({ message: "لم يتم العثور على المستخدم." });
     }
 
     const userData = userSnap.data() || {};
 
     if (userData.userType !== "PROVIDER") {
       return res.status(403).json({
-        message: "Only approved experts can view their listings.",
+        message: "يمكن للخبراء الموافق عليهم فقط عرض إعلاناتهم.",
       });
     }
 
@@ -79,7 +79,7 @@ exports.getMyListings = async (req, res) => {
       .get();
 
     if (!providerSnap.exists || providerSnap.data()?.isActive !== true) {
-      return res.status(403).json({ message: "Expert approval is required." });
+      return res.status(403).json({ message: "يجب الموافقة على حساب الخبير أولاً." });
     }
 
     const snap = await db
@@ -129,7 +129,7 @@ exports.getMyListings = async (req, res) => {
     if (isDevelopment) {
       console.error("GET /api/listings/my-listings failed:", error.message);
     }
-    return res.status(500).json({ message: "Failed to load expert listings." });
+    return res.status(500).json({ message: "تعذر تحميل إعلانات الخبير." });
   }
 };
 
@@ -144,7 +144,7 @@ exports.getListings = async (req, res) => {
     res.json(payload);
   } catch (error) {
     if (isDevelopment) console.error("GET /api/listings failed:", error.message);
-    res.status(500).json({ message: "Failed to load listings." });
+    res.status(500).json({ message: "تعذر تحميل الإعلانات." });
   }
 };
 
@@ -153,14 +153,14 @@ exports.createListing = async (req, res) => {
     const userSnap = await db.collection("users").doc(req.userId).get();
 
     if (!userSnap.exists) {
-      return res.status(403).json({ message: "User not found." });
+      return res.status(403).json({ message: "لم يتم العثور على المستخدم." });
     }
 
     const userData = userSnap.data() || {};
 
     if (userData.userType !== "PROVIDER") {
       return res.status(403).json({
-        message: "Only approved experts can create listings.",
+        message: "يمكن للخبراء الموافق عليهم فقط إنشاء الإعلانات.",
       });
     }
 
@@ -170,7 +170,7 @@ exports.createListing = async (req, res) => {
       .get();
 
     if (!providerSnap.exists || providerSnap.data()?.isActive !== true) {
-      return res.status(403).json({ message: "Expert approval is required." });
+      return res.status(403).json({ message: "يجب الموافقة على حساب الخبير أولاً." });
     }
 
     const body = req.body || {};
@@ -192,25 +192,25 @@ exports.createListing = async (req, res) => {
     // INPUT VALIDATION
     if (title.length < 3 || title.length > 100) {
       return res.status(400).json({
-        message: "Başlık 3-100 karakter olmalıdır.",
+        message: "يجب أن يكون العنوان بين 3 و100 حرف.",
       });
     }
 
     if (description.length < 10 || description.length > 2000) {
       return res.status(400).json({
-        message: "Açıklama 10-2000 karakter olmalıdır.",
+        message: "يجب أن يكون الوصف بين 10 و2000 حرف.",
       });
     }
 
     if (!title || !category || !serviceSubcategory || !description || !city) {
       return res.status(400).json({
-        message: "Missing required listing fields.",
+        message: "بعض حقول الإعلان المطلوبة ناقصة.",
       });
     }
 
     if (!Number.isFinite(price) || price <= 0) {
       return res.status(400).json({
-        message: "Price must be a positive number.",
+        message: "يجب أن يكون السعر رقماً موجباً.",
       });
     }
 
@@ -224,14 +224,14 @@ exports.createListing = async (req, res) => {
 
       if (activeCount >= activeLimit) {
         return res.status(400).json({
-          message: `Yayındaki ilan limitine ulaşıldı (${activeLimit}/${activeLimit}). Yayındaki bir ilanı yayından kaldırmadan yeni ilan veremezsiniz.`,
+          message: `تم الوصول إلى حد الإعلانات المنشورة (${activeLimit}/${activeLimit}). يجب إلغاء نشر إعلان منشور قبل إضافة إعلان جديد.`,
           code: "TOTAL_LISTING_LIMIT_REACHED",
           limit: activeLimit,
         });
       }
     } catch (error) {
       if (isDevelopment) console.error("Listing active limit check failed:", error.message);
-      return res.status(500).json({ message: "Failed to validate listing limits." });
+      return res.status(500).json({ message: "تعذر التحقق من حدود الإعلانات." });
     }
 
     try {
@@ -245,7 +245,7 @@ exports.createListing = async (req, res) => {
 
       if (matchedCount >= limitPerCategory) {
         return res.status(400).json({
-          message: `Bu kategoride en fazla ${limitPerCategory} ilan yayınlayabilirsiniz.`,
+          message: `يمكنك نشر ${limitPerCategory} إعلان كحد أقصى في هذه الفئة.`,
           code: "CATEGORY_LIMIT_REACHED",
           limit: limitPerCategory,
           category,
@@ -256,14 +256,14 @@ exports.createListing = async (req, res) => {
         console.error("Category limit check failed:", error.message);
       }
       return res.status(500).json({
-        message: "Failed to validate listing limits.",
+        message: "تعذر التحقق من حدود الإعلانات.",
       });
     }
 
     const expertName =
       String(userData.displayName || "").trim() ||
       String(providerSnap.data()?.businessName || "").trim() ||
-      "Uzman";
+      "خبير";
 
     const docRef = await db.collection("services").add({
       title,
@@ -316,8 +316,8 @@ exports.createListing = async (req, res) => {
     return res.status(201).json({
       id: docRef.id,
       message: imageUrl
-        ? "Listing created."
-        : "Listing created (image upload failed).",
+        ? "تم إنشاء الإعلان."
+        : "تم إنشاء الإعلان، لكن فشل رفع الصورة.",
       ...(isProd || !imageUploadError ? null : { imageUploadError }),
     });
   } catch (error) {
@@ -326,7 +326,7 @@ exports.createListing = async (req, res) => {
     const isProd = String(process.env.NODE_ENV || "").toLowerCase() === "production";
 
     return res.status(500).json({
-      message: "Failed to create listing.",
+      message: "تعذر إنشاء الإعلان.",
       ...(isProd ? null : { details: error?.message || String(error) }),
     });
   }
@@ -337,7 +337,7 @@ exports.getListingById = async (req, res) => {
     const item = await getListingById(db, req.params.id);
 
     if (!item) {
-      return res.status(404).json({ message: "Listing not found." });
+      return res.status(404).json({ message: "لم يتم العثور على الإعلان." });
     }
 
     res.json(item);
@@ -345,7 +345,7 @@ exports.getListingById = async (req, res) => {
     if (isDevelopment) {
       console.error("GET /api/listings/:id failed:", error.message);
     }
-    res.status(500).json({ message: "Failed to load listing details." });
+    res.status(500).json({ message: "تعذر تحميل تفاصيل الإعلان." });
   }
 };
 
@@ -353,12 +353,12 @@ exports.updateListingStatus = async (req, res) => {
   const listingId = String(req.params.id || "").trim();
 
   if (!listingId) {
-    return res.status(400).json({ message: "Listing id is required." });
+    return res.status(400).json({ message: "معرف الإعلان مطلوب." });
   }
 
   if (/^\d+$/.test(listingId)) {
     return res.status(400).json({
-      message: "Static listings cannot be updated.",
+      message: "لا يمكن تحديث الإعلانات الثابتة.",
     });
   }
 
@@ -367,20 +367,20 @@ exports.updateListingStatus = async (req, res) => {
     const allowedStatuses = ["ACTIVE", "UNPUBLISHED", "DELETED"];
 
     if (!allowedStatuses.includes(nextStatus)) {
-      return res.status(400).json({ message: "Invalid listing status." });
+      return res.status(400).json({ message: "حالة الإعلان غير صالحة." });
     }
 
     const userSnap = await db.collection("users").doc(req.userId).get();
 
     if (!userSnap.exists) {
-      return res.status(403).json({ message: "User not found." });
+      return res.status(403).json({ message: "لم يتم العثور على المستخدم." });
     }
 
     const userData = userSnap.data() || {};
 
     if (userData.userType !== "PROVIDER") {
       return res.status(403).json({
-        message: "Only approved experts can update listing status.",
+        message: "يمكن للخبراء الموافق عليهم فقط تحديث حالة الإعلان.",
       });
     }
 
@@ -390,21 +390,21 @@ exports.updateListingStatus = async (req, res) => {
       .get();
 
     if (!providerSnap.exists || providerSnap.data()?.isActive !== true) {
-      return res.status(403).json({ message: "Expert approval is required." });
+      return res.status(403).json({ message: "يجب الموافقة على حساب الخبير أولاً." });
     }
 
     const listingRef = db.collection("services").doc(listingId);
     const listingSnap = await listingRef.get();
 
     if (!listingSnap.exists) {
-      return res.status(404).json({ message: "Listing not found." });
+      return res.status(404).json({ message: "لم يتم العثور على الإعلان." });
     }
 
     const listingData = listingSnap.data() || {};
 
     if (String(listingData.providerId || "") !== String(req.userId || "")) {
       return res.status(403).json({
-        message: "You can only update your own listings.",
+        message: "يمكنك تحديث إعلاناتك فقط.",
       });
     }
 
@@ -428,7 +428,7 @@ exports.updateListingStatus = async (req, res) => {
 
       if (activeCount >= activeLimit) {
         return res.status(400).json({
-          message: `Yayındaki ilan limitine ulaşıldı (${activeLimit}/${activeLimit}). Yayına almak için önce bir ilanı yayından kaldırmalısınız.`,
+          message: `تم الوصول إلى حد الإعلانات المنشورة (${activeLimit}/${activeLimit}). يجب إلغاء نشر إعلان أولاً قبل نشر إعلان جديد.`,
           code: "TOTAL_LISTING_LIMIT_REACHED",
           limit: activeLimit,
         });
@@ -450,7 +450,7 @@ exports.updateListingStatus = async (req, res) => {
 
           if (matchedCount >= limitPerCategory) {
             return res.status(400).json({
-              message: `Bu kategoride en fazla ${limitPerCategory} ilan yayınlayabilirsiniz.`,
+              message: `يمكنك نشر ${limitPerCategory} إعلان كحد أقصى في هذه الفئة.`,
               code: "SPECIALTY_LIMIT_REACHED",
               limit: limitPerCategory,
               category,
@@ -460,7 +460,7 @@ exports.updateListingStatus = async (req, res) => {
         }
       } catch (error) {
         if (isDevelopment) console.error("Specialty limit check (republish) failed:", error.message);
-        return res.status(500).json({ message: "Failed to validate listing limits." });
+        return res.status(500).json({ message: "تعذر التحقق من حدود الإعلانات." });
       }
 
       updates.republishedAt = FieldValue.serverTimestamp();
@@ -473,7 +473,7 @@ exports.updateListingStatus = async (req, res) => {
     await listingRef.update(updates);
 
     return res.json({
-      message: "Listing status updated.",
+      message: "تم تحديث حالة الإعلان.",
       id: listingId,
       status: nextStatus,
     });
@@ -481,7 +481,7 @@ exports.updateListingStatus = async (req, res) => {
     if (isDevelopment) {
       console.error("PATCH /api/listings/:id/status failed:", error.message);
     }
-    return res.status(500).json({ message: "Failed to update listing status." });
+    return res.status(500).json({ message: "تعذر تحديث حالة الإعلان." });
   }
 };
 
@@ -489,12 +489,12 @@ exports.updateListing = async (req, res) => {
   const listingId = String(req.params.id || "").trim();
 
   if (!listingId) {
-    return res.status(400).json({ message: "Listing id is required." });
+    return res.status(400).json({ message: "معرف الإعلان مطلوب." });
   }
 
   if (/^\d+$/.test(listingId)) {
     return res.status(400).json({
-      message: "Static listings cannot be updated.",
+      message: "لا يمكن تحديث الإعلانات الثابتة.",
     });
   }
 
@@ -502,14 +502,14 @@ exports.updateListing = async (req, res) => {
     const userSnap = await db.collection("users").doc(req.userId).get();
 
     if (!userSnap.exists) {
-      return res.status(403).json({ message: "User not found." });
+      return res.status(403).json({ message: "لم يتم العثور على المستخدم." });
     }
 
     const userData = userSnap.data() || {};
 
     if (userData.userType !== "PROVIDER") {
       return res.status(403).json({
-        message: "Only approved experts can update listings.",
+        message: "يمكن للخبراء الموافق عليهم فقط تحديث الإعلانات.",
       });
     }
 
@@ -519,21 +519,21 @@ exports.updateListing = async (req, res) => {
       .get();
 
     if (!providerSnap.exists || providerSnap.data()?.isActive !== true) {
-      return res.status(403).json({ message: "Expert approval is required." });
+      return res.status(403).json({ message: "يجب الموافقة على حساب الخبير أولاً." });
     }
 
     const listingRef = db.collection("services").doc(listingId);
     const listingSnap = await listingRef.get();
 
     if (!listingSnap.exists) {
-      return res.status(404).json({ message: "Listing not found." });
+      return res.status(404).json({ message: "لم يتم العثور على الإعلان." });
     }
 
     const listingData = listingSnap.data() || {};
 
     if (String(listingData.providerId || "") !== String(req.userId || "")) {
       return res.status(403).json({
-        message: "You can only update your own listings.",
+        message: "يمكنك تحديث إعلاناتك فقط.",
       });
     }
 
@@ -576,7 +576,7 @@ exports.updateListing = async (req, res) => {
       const allowedStatuses = ["ACTIVE", "UNPUBLISHED", "DELETED"];
 
       if (!allowedStatuses.includes(nextStatus)) {
-        return res.status(400).json({ message: "Invalid listing status." });
+        return res.status(400).json({ message: "حالة الإعلان غير صالحة." });
       }
 
       updates.status = nextStatus;
@@ -599,7 +599,7 @@ exports.updateListing = async (req, res) => {
 
       if (!Number.isFinite(price) || price <= 0) {
         return res.status(400).json({
-          message: "Price must be a positive number.",
+          message: "يجب أن يكون السعر رقماً موجباً.",
         });
       }
 
@@ -642,7 +642,7 @@ exports.updateListing = async (req, res) => {
 
           if (matchedCount >= limitPerCategory) {
             return res.status(400).json({
-              message: `Bu kategoride en fazla ${limitPerCategory} ilan yayınlayabilirsiniz.`,
+              message: `يمكنك نشر ${limitPerCategory} إعلان كحد أقصى في هذه الفئة.`,
               code: "CATEGORY_LIMIT_REACHED",
               limit: limitPerCategory,
               category: nextCategory,
@@ -657,7 +657,7 @@ exports.updateListing = async (req, res) => {
           }
 
           return res.status(500).json({
-            message: "Failed to validate listing limits.",
+            message: "تعذر التحقق من حدود الإعلانات.",
           });
         }
       }
@@ -674,19 +674,19 @@ exports.updateListing = async (req, res) => {
 
         if (!dataUrl) {
           return res.status(400).json({
-            message: "Image must be a data url string or null.",
+            message: "يجب أن تكون الصورة بصيغة data URL أو فارغة.",
           });
         }
 
         if (!/^data:image\/\w+;base64,/.test(dataUrl)) {
           return res.status(400).json({
-            message: "Image must be a base64 data url.",
+            message: "يجب أن تكون الصورة بصيغة base64 data URL.",
           });
         }
 
         if (dataUrl.length > 5000000) {
           return res.status(413).json({
-            message: "Request payload too large. Please use a smaller image.",
+            message: "حجم الطلب كبير جداً. يرجى استخدام صورة أصغر.",
           });
         }
       }
@@ -694,7 +694,7 @@ exports.updateListing = async (req, res) => {
 
     if (!Object.keys(updates).length) {
       return res.status(400).json({
-        message: "No valid fields to update.",
+        message: "لا توجد حقول صالحة للتحديث.",
       });
     }
 
@@ -717,7 +717,7 @@ exports.updateListing = async (req, res) => {
         }
 
         return res.status(500).json({
-          message: "Image upload failed.",
+          message: "فشل رفع الصورة.",
         });
       }
     } else if (imageFieldPresent && imageValue === null) {
@@ -727,7 +727,7 @@ exports.updateListing = async (req, res) => {
     await listingRef.update(updates);
 
     return res.json({
-      message: "Listing updated.",
+      message: "تم تحديث الإعلان.",
       id: listingId,
       ...(Object.prototype.hasOwnProperty.call(updates, "imageCrop")
         ? { imageCrop: updates.imageCrop }
@@ -740,7 +740,7 @@ exports.updateListing = async (req, res) => {
     if (isDevelopment) {
       console.error("PUT /api/listings/:id failed:", error.message);
     }
-    return res.status(500).json({ message: "Failed to update listing." });
+    return res.status(500).json({ message: "تعذر تحديث الإعلان." });
   }
 };
 
@@ -748,12 +748,12 @@ exports.deleteListing = async (req, res) => {
   const listingId = String(req.params.id || "").trim();
 
   if (!listingId) {
-    return res.status(400).json({ message: "Listing id is required." });
+    return res.status(400).json({ message: "معرف الإعلان مطلوب." });
   }
 
   if (/^\d+$/.test(listingId)) {
     return res.status(400).json({
-      message: "Static listings cannot be deleted.",
+      message: "لا يمكن حذف الإعلانات الثابتة.",
     });
   }
 
@@ -761,14 +761,14 @@ exports.deleteListing = async (req, res) => {
     const userSnap = await db.collection("users").doc(req.userId).get();
 
     if (!userSnap.exists) {
-      return res.status(403).json({ message: "User not found." });
+      return res.status(403).json({ message: "لم يتم العثور على المستخدم." });
     }
 
     const userData = userSnap.data() || {};
 
     if (userData.userType !== "PROVIDER") {
       return res.status(403).json({
-        message: "Only approved experts can delete listings.",
+        message: "يمكن للخبراء الموافق عليهم فقط حذف الإعلانات.",
       });
     }
 
@@ -778,21 +778,21 @@ exports.deleteListing = async (req, res) => {
       .get();
 
     if (!providerSnap.exists || providerSnap.data()?.isActive !== true) {
-      return res.status(403).json({ message: "Expert approval is required." });
+      return res.status(403).json({ message: "يجب الموافقة على حساب الخبير أولاً." });
     }
 
     const listingRef = db.collection("services").doc(listingId);
     const listingSnap = await listingRef.get();
 
     if (!listingSnap.exists) {
-      return res.status(404).json({ message: "Listing not found." });
+      return res.status(404).json({ message: "لم يتم العثور على الإعلان." });
     }
 
     const listingData = listingSnap.data() || {};
 
     if (String(listingData.providerId || "") !== String(req.userId || "")) {
       return res.status(403).json({
-        message: "You can only delete your own listings.",
+        message: "يمكنك حذف إعلاناتك فقط.",
       });
     }
 
@@ -810,7 +810,7 @@ exports.deleteListing = async (req, res) => {
       const currentCount = Number(limitSnap.exists ? limitSnap.data()?.count : 0) || 0;
 
       if (currentCount >= DAILY_DELETE_LIMIT) {
-        const error = new Error("Günlük silme limitine ulaştınız. (3/3)");
+        const error = new Error("تم الوصول إلى حد الحذف اليومي. (3/3)");
         error.code = "DAILY_DELETE_LIMIT_REACHED";
         throw error;
       }
@@ -835,7 +835,7 @@ exports.deleteListing = async (req, res) => {
     });
 
     return res.json({
-      message: "Listing moved to deleted.",
+      message: "تم نقل الإعلان إلى المحذوفات.",
       id: listingId,
       status: "DELETED",
     });
@@ -846,12 +846,12 @@ exports.deleteListing = async (req, res) => {
 
     if (error?.code === "DAILY_DELETE_LIMIT_REACHED") {
       return res.status(400).json({
-        message: error.message || "Günlük silme limitine ulaşıldı.",
+        message: error.message || "تم الوصول إلى حد الحذف اليومي.",
         code: "DAILY_DELETE_LIMIT_REACHED",
         limit: 3,
       });
     }
 
-    return res.status(500).json({ message: "Failed to delete listing." });
+    return res.status(500).json({ message: "تعذر حذف الإعلان." });
   }
 };

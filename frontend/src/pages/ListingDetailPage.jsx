@@ -10,6 +10,8 @@ import { getOrCreateConversation } from "../services/chatApi";
 import { useAuthGuard } from "../hooks/useAuthGuard";
 import { getProfilePhoto } from "../services/updateService";
 import { getListingImageStyle } from "../utils/listingImagePresentation";
+import { toArabicServiceLabel } from "../utils/arabicLabels";
+import { formatLatinNumber } from "../utils/localeFormat";
 import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebase/firebaseClient";
 import DOMPurify from 'dompurify';
@@ -386,7 +388,7 @@ export default function ListingDetailPage() {
 
   const imageSrc = listing.image || categoryImages[listing.category] || "/default-listing.svg";
   const canOpenProfile = !!listing.providerId;
-  const formatPrice = (p) => new Intl.NumberFormat("tr-TR").format(Number(p) || 0);
+  const formatPrice = (p) => formatLatinNumber(p);
   const reviewSummary = computeRatingSummary(reviews);
   const effectiveReviewCount = Number(reviewStats?.count || listing?.reviews || reviewSummary.count || 0);
 
@@ -416,15 +418,15 @@ export default function ListingDetailPage() {
             <div className="ld-title-row">
               <h1 className="ld-title">{sanitizeText(listing.title)}</h1>
               <span className="ld-category-tag">
-                <i className="fas fa-tag"></i> {sanitizeText(listing.category)}
+                <i className="fas fa-tag"></i> {sanitizeText(toArabicServiceLabel(listing.category))}
               </span>
             </div>
             <div className="ld-meta">
               <span><i className="fas fa-user-tie"></i> {sanitizeText(listing.expertName || "خبير")}</span>
               <span><i className="fas fa-map-marker-alt"></i> {sanitizeText(listing.city || "غير محدد")}</span>
               <span className="ld-rating">
-                <i className="fas fa-star"></i> {listing.rating ?? 0}
-                <em>({effectiveReviewCount} تقييم)</em>
+                <i className="fas fa-star"></i> {formatLatinNumber(listing.rating ?? 0)}
+                <em>({formatLatinNumber(effectiveReviewCount)} تقييم)</em>
               </span>
             </div>
           </div>
@@ -453,12 +455,12 @@ export default function ListingDetailPage() {
               <div className="ld-details">
                 <div className="ld-detail-item">
                   <span className="ld-detail-label">الفئة</span>
-                  <span className="ld-detail-value">{sanitizeText(listing.category)}</span>
+                  <span className="ld-detail-value">{sanitizeText(toArabicServiceLabel(listing.category))}</span>
                 </div>
                 {String(listing.serviceSubcategory || "").trim() ? (
                   <div className="ld-detail-item">
                     <span className="ld-detail-label">التخصص</span>
-                    <span className="ld-detail-value">{sanitizeText(String(listing.serviceSubcategory).trim())}</span>
+                    <span className="ld-detail-value">{sanitizeText(toArabicServiceLabel(String(listing.serviceSubcategory).trim()))}</span>
                   </div>
                 ) : null}
                 {String(listing.serviceSubcategoryDetails || "").trim() ? (
@@ -473,7 +475,7 @@ export default function ListingDetailPage() {
                 </div>
                 <div className="ld-detail-item">
                   <span className="ld-detail-label">السعر</span>
-                  <span className="ld-detail-value ld-price">₺{formatPrice(listing.price)}</span>
+                  <span className="ld-detail-value ld-price">{formatPrice(listing.price)} ل.س</span>
                 </div>
                 <div className="ld-detail-item">
                   <span className="ld-detail-label">نوع الخدمة</span>
@@ -521,6 +523,7 @@ export default function ListingDetailPage() {
                 </div>
               </div>
 
+              {/* Syria Arabic launch: secondary service message button disabled.
               <button
                 className="ld-profile-btn"
                 onClick={handleStartChat}
@@ -530,6 +533,7 @@ export default function ListingDetailPage() {
                 <i className="fas fa-message"></i>{" "}
                 {chatLoading ? "جاري فتح الرسالة..." : "أرسل رسالة لهذه الخدمة"}
               </button>
+              */}
 
               <button
                 className="ld-profile-btn"

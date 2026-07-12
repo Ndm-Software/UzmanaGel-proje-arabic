@@ -9,6 +9,8 @@ import ReviewSystem from '../components/ReviewSystem';
 import Navbar from '../components/Navbar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DOMPurify from 'dompurify';
+import { toArabicServiceLabel } from '../utils/arabicLabels';
+import { formatLatinNumber } from '../utils/localeFormat';
 import '../styles/ExpertProfilePage.css';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -315,7 +317,7 @@ const PublicExpertProfilePage = () => {
                   </span>
                 ) : String(expertData?.category || '').trim() ? (
                   <span className="profile-header-sub profile-header-sub--profession">
-                    {sanitizeText(String(expertData.category).split(',')[0].trim())}
+                    {sanitizeText(toArabicServiceLabel(String(expertData.category).split(',')[0].trim()))}
                   </span>
                 ) : null}
                 <span className="profile-header-sub">{getDisplayName()}</span>
@@ -323,7 +325,7 @@ const PublicExpertProfilePage = () => {
 
               <div className="profile-header-contact">
                 <span><i className="fas fa-map-marker-alt"></i> {sanitizeText(expertData?.city || 'غير محدد')}</span>
-                <span><i className="fas fa-briefcase"></i> {sanitizeText(expertData?.category || 'غير محدد')}</span>
+                <span><i className="fas fa-briefcase"></i> {sanitizeText(toArabicServiceLabel(expertData?.category || 'غير محدد'))}</span>
               </div>
 
               <div className="profile-header-meta">
@@ -406,9 +408,9 @@ const PublicExpertProfilePage = () => {
                   </div>
                   {normalizeSpecialties(expertData?.specialties).map((s, i) => (
                     <div key={`${s.name}-${i}`} className="specialties-price-row">
-                      <div className="specialties-price-name">{sanitizeText(s.name)}</div>
+                      <div className="specialties-price-name">{sanitizeText(toArabicServiceLabel(s.name))}</div>
                       <div className="specialties-price-price">
-                        {Number(s.startingPrice || 0).toLocaleString("tr-TR")} ل.س{" "}
+                        {formatLatinNumber(s.startingPrice)} ل.س{" "}
                         <span className="specialties-price-muted">تبدأ من</span>
                       </div>
                       <div></div>

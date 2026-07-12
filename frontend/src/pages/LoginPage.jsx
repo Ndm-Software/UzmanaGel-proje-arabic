@@ -635,12 +635,12 @@ export default function LoginPage() {
           <Link
             to="/"
             className="lp-login-topbrand-link"
-            aria-label="UzmanaGel Home"
+            aria-label="خبير"
           >
             <img
               className="lp-login-topbrand-logo"
               src={brandImage}
-              alt="UzmanaGel"
+              alt="خبير"
             />
             <span className="lp-login-topbrand-text">
               Uzmana<span className="highlight">Gel</span>
@@ -885,7 +885,7 @@ export default function LoginPage() {
                 عن الخدمة التي تحتاجها، <br />
                 وحل مشكلتك بسرعة.
               </p>
-              <span className="lp-login-quote-author">– UzmanaGel</span>
+              <span className="lp-login-quote-author">- خبير</span>
             </div>
           </section>
         </div>

@@ -22,6 +22,7 @@ import {
   hasAcceptedChatTerms,
   saveChatTermsAccepted
 } from '../utils/chatTermsStorage';
+import { ARABIC_LATIN_LOCALE, formatLatinNumber } from '../utils/localeFormat';
 
 const NotificationsPage = () => {
   const [user, setUser] = useState(null);
@@ -314,12 +315,12 @@ const NotificationsPage = () => {
     const diffDays = Math.floor(diff / (1000 * 60 * 60 * 24));
 
     if (diffMinutes < 1) return 'الآن';
-    if (diffMinutes < 60) return `منذ ${diffMinutes} دقيقة`;
-    if (diffHours < 24) return `منذ ${diffHours} ساعة`;
+    if (diffMinutes < 60) return `منذ ${formatLatinNumber(diffMinutes)} دقيقة`;
+    if (diffHours < 24) return `منذ ${formatLatinNumber(diffHours)} ساعة`;
     if (diffDays === 1) return 'أمس';
-    if (diffDays < 7) return `منذ ${diffDays} أيام`;
+    if (diffDays < 7) return `منذ ${formatLatinNumber(diffDays)} أيام`;
     
-    return date.toLocaleDateString('ar-SY', {
+    return date.toLocaleDateString(ARABIC_LATIN_LOCALE, {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -894,7 +895,7 @@ const NotificationsPage = () => {
                     <div className="modal-meta">
                       <span className="modal-date">
                         <i className="far fa-calendar-alt"></i>
-                        {selectedNotification.createdAt?.toLocaleDateString('ar-SY', {
+                        {selectedNotification.createdAt?.toLocaleDateString(ARABIC_LATIN_LOCALE, {
                           day: 'numeric',
                           month: 'long',
                           year: 'numeric'
@@ -902,7 +903,7 @@ const NotificationsPage = () => {
                       </span>
                       <span className="modal-time">
                         <i className="far fa-clock"></i>
-                        {selectedNotification.createdAt?.toLocaleTimeString('ar-SY', {
+                        {selectedNotification.createdAt?.toLocaleTimeString(ARABIC_LATIN_LOCALE, {
                           hour: '2-digit',
                           minute: '2-digit'
                         })}
@@ -956,7 +957,7 @@ const NotificationsPage = () => {
                             }</span>
                             {(selectedNotification.rejectedAt || selectedNotification.createdAt) && (
                               <span className="sender-time">
-                                {new Date(selectedNotification.rejectedAt || selectedNotification.createdAt).toLocaleString('ar-SY')}
+                                {new Date(selectedNotification.rejectedAt || selectedNotification.createdAt).toLocaleString(ARABIC_LATIN_LOCALE)}
                               </span>
                             )}
                           </div>

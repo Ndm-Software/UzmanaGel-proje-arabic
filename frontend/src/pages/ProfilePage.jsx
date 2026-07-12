@@ -43,6 +43,7 @@ import {
   getCurrentUserProviderFlags,
 } from '../firebase/authService';
 import imageCompression from 'browser-image-compression';
+import { ARABIC_LATIN_LOCALE, formatLatinNumber } from '../utils/localeFormat';
 import DOMPurify from 'dompurify';
 import { showAppToast } from '../utils/showAppToast';
 import ConfirmModal from '../components/ConfirmModal';
@@ -935,7 +936,7 @@ const ProfilePage = () => {
     if (!s) return '';
     const d = new Date(s);
     if (Number.isNaN(d.getTime())) return sanitizeText(s);
-    return d.toLocaleDateString('ar-SY', { day: '2-digit', month: 'long', year: 'numeric' });
+    return d.toLocaleDateString(ARABIC_LATIN_LOCALE, { day: '2-digit', month: 'long', year: 'numeric' });
   };
 
   const getSafeAvatar = async (expertId, name) => {
@@ -1989,7 +1990,7 @@ const ProfilePage = () => {
                 </div>
 
                 <span className="order-price">
-                  {typeof order.price === 'number' ? `₺${order.price}` : '—'}
+                  {typeof order.price === 'number' ? `${formatLatinNumber(order.price)} ل.س` : '—'}
                 </span>
               </div>
             ))}

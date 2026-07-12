@@ -7,7 +7,7 @@ const sanitizeText = (text) => {
   return DOMPurify.sanitize(String(text));
 };
 
-const LoadingSpinner = ({ text = 'Sayfa yükleniyor, lütfen bekleyin...' }) => {
+const LoadingSpinner = ({ text = 'جاري التحميل، يرجى الانتظار...' }) => {
   return (
     <div className="loader-container">
       <div className="loader-wrapper">
@@ -15,7 +15,7 @@ const LoadingSpinner = ({ text = 'Sayfa yükleniyor, lütfen bekleyin...' }) => 
           <div className="loader-spinner"></div>
         </div>
         <div className="loader-logo">
-          <span className="loader-logo-text">Uzmana<span>Gel</span></span>
+          <span className="loader-logo-text">خبير</span>
         </div>
       </div>
       <p className="loader-text">{sanitizeText(text)}</p>

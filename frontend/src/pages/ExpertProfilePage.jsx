@@ -29,6 +29,8 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import DOMPurify from 'dompurify';
 import { showAppToast } from '../utils/showAppToast';
 import ConfirmModal from '../components/ConfirmModal';
+import { toArabicServiceLabel } from '../utils/arabicLabels';
+import { ARABIC_LATIN_LOCALE, formatLatinNumber } from '../utils/localeFormat';
 import '../styles/ExpertProfilePage.css';
 import { computeRatingSummary, fetchExpertReviewStats, fetchExpertReviews } from '../services/reviewsApi';
 
@@ -149,7 +151,7 @@ const formatAppointmentDate = (dateStr) => {
   if (!dateStr) return 'غير محدد';
   const parsed = new Date(`${dateStr}T00:00:00`);
   if (Number.isNaN(parsed.getTime())) return sanitizeText(dateStr);
-  return parsed.toLocaleDateString('ar-SY', {
+  return parsed.toLocaleDateString(ARABIC_LATIN_LOCALE, {
     day: '2-digit',
     month: 'long',
     year: 'numeric'
@@ -1285,8 +1287,9 @@ const ExpertProfilePage = () => {
   const [baUploading, setBaUploading] = useState(false);
   const [showBaEditModal, setShowBaEditModal] = useState(false);
   const [editBaForm, setEditBaForm] = useState({ title: '', beforeImage: null, afterImage: null });
-  const [appointments, setAppointments] = useState([]);
-  const [showAllRecentJobs, setShowAllRecentJobs] = useState(false);
+  // Syria Arabic launch: completed jobs counter and its appointment listener are disabled.
+  // const [appointments, setAppointments] = useState([]);
+  // const [showAllRecentJobs, setShowAllRecentJobs] = useState(false);
 
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
@@ -1387,6 +1390,7 @@ const ExpertProfilePage = () => {
     return () => unsubscribe();
   }, [navigate]);
 
+  /* Syria Arabic launch: completed jobs counter operations are disabled.
   useEffect(() => {
     if (!user?.uid || !isExpert) {
       setAppointments([]);
@@ -1417,6 +1421,7 @@ const ExpertProfilePage = () => {
 
     return () => unsubscribe();
   }, [user?.uid, isExpert]);
+  */
 
   useEffect(() => {
     if (!user?.uid || !isExpert) {
@@ -1580,7 +1585,7 @@ const ExpertProfilePage = () => {
       const tooLow = cleaned.find((x) => rangeMin > 0 && x.startingPrice < rangeMin);
       if (tooLow) {
         setSpecialtiesError(
-          `سعر بداية “${tooLow.name}” لا يمكن أن يكون أقل من الحد الأدنى (على الأقل ${rangeMin.toLocaleString("ar-SY")} ₺).`
+          `سعر بداية “${toArabicServiceLabel(tooLow.name)}” لا يمكن أن يكون أقل من الحد الأدنى (على الأقل ${formatLatinNumber(rangeMin)} ل.س).`
         );
         return;
       }
@@ -1588,7 +1593,7 @@ const ExpertProfilePage = () => {
       const tooHigh = cleaned.find((x) => rangeMax > 0 && x.startingPrice > rangeMax);
       if (tooHigh) {
         setSpecialtiesError(
-          `سعر بداية “${tooHigh.name}” لا يمكن أن يكون أعلى من الحد الأعلى (بحد أقصى ${rangeMax.toLocaleString("ar-SY")} ₺).`
+          `سعر بداية “${toArabicServiceLabel(tooHigh.name)}” لا يمكن أن يكون أعلى من الحد الأعلى (بحد أقصى ${formatLatinNumber(rangeMax)} ل.س).`
         );
         return;
       }
@@ -1900,6 +1905,7 @@ const ExpertProfilePage = () => {
   if (!user || !isExpert) return null;
 
   const certificates = expertData?.certificates || [];
+  /* Syria Arabic launch: completed jobs counter calculations are disabled.
   const historyAppointments = appointments
     .map((item) => {
       const historyMeta = getExpertHistoryMeta(item);
@@ -1937,6 +1943,7 @@ const ExpertProfilePage = () => {
       .map((item) => item.clientId || String(item.client || '').trim().toLowerCase())
       .filter(Boolean)
   ).size;
+  */
 
   const fixedAvg = Number(expertData?.rating || 0);
   const activeReviewCount = activeListingReviewStats?.count || 0;
@@ -2130,7 +2137,7 @@ const ExpertProfilePage = () => {
                   </span>
                 ) : String(expertData?.category || '').trim() ? (
                   <span className="profile-header-sub profile-header-sub--profession">
-                    {sanitizeText(String(expertData.category).split(',')[0].trim())}
+                    {sanitizeText(toArabicServiceLabel(String(expertData.category).split(',')[0].trim()))}
                   </span>
                 ) : null}
                 <span className="profile-header-sub">{sanitizeText(getUserDisplayName())}</span>
@@ -2155,10 +2162,12 @@ const ExpertProfilePage = () => {
                 <span className="header-stat-label">تقييم العملاء</span>
                 <span className="profile-stat-sub">({activeReviewCount} تقييم)</span>
               </div>
+              {/* Syria Arabic launch: completed jobs stat card disabled with its operations.
               <div className="header-stat-item">
                 <span className="header-stat-value">{completedAppointments.length}</span>
                 <span className="header-stat-label">الأعمال المنجزة</span>
               </div>
+              */}
             </div>
           </div>
         </div>
@@ -2215,9 +2224,9 @@ const ExpertProfilePage = () => {
                   <div className="expert-price-range-banner__text">
                     <span className="expert-price-range-banner__label">نطاق السعر</span>
                     <span className="expert-price-range-banner__value">
-                      الحد الأدنى {Number(expertData?.minPrice || 0).toLocaleString('ar-SY')} ل.س
+                      الحد الأدنى {formatLatinNumber(expertData?.minPrice || 0)} ل.س
                       {' - '}
-                      الحد الأقصى {Number(expertData?.maxPrice || 0).toLocaleString('ar-SY')} ل.س
+                      الحد الأقصى {formatLatinNumber(expertData?.maxPrice || 0)} ل.س
                     </span>
                   </div>
                 </div>
@@ -2251,9 +2260,9 @@ const ExpertProfilePage = () => {
                   </div>
                   {normalizeSpecialties(expertData?.specialties).map((s, i) => (
                     <div key={`${s.name}-${i}`} className="specialties-price-row">
-                      <div className="specialties-price-name">{sanitizeText(s.name)}</div>
+                      <div className="specialties-price-name">{sanitizeText(toArabicServiceLabel(s.name))}</div>
                       <div className="specialties-price-price">
-                        {Number(s.startingPrice || 0).toLocaleString("ar-SY")} ل.س{" "}
+                        {formatLatinNumber(s.startingPrice)} ل.س{" "}
                         <span className="specialties-price-muted">تبدأ من</span>
                       </div>
                       <div></div>
@@ -2566,7 +2575,7 @@ const ExpertProfilePage = () => {
                           ))}
                         </div>
                         <div className="profile-review-date">
-                          {r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('ar-SY') : ''}
+                          {r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString(ARABIC_LATIN_LOCALE) : ''}
                         </div>
                       </div>
                       <div className="profile-review-comment">

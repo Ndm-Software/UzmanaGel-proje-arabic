@@ -9,6 +9,8 @@ import { auth, db } from "../firebase/firebaseClient";
 import { createListing } from "../services/listingsApi";
 import DOMPurify from 'dompurify';
 import { getListingImageStyle, normalizeListingImageCrop } from "../utils/listingImagePresentation";
+import { toArabicServiceLabel } from "../utils/arabicLabels";
+import { formatLatinNumber } from "../utils/localeFormat";
 import "../styles/ExpertCreateAdPage.css";
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -417,7 +419,7 @@ export default function ExpertCreateAdPage() {
       if (!String(formData.serviceSubcategory || "").trim()) return "يجب عليك اختيار تخصص.";
       if (!formData.price || Number(formData.price) <= 0) return "يرجى إدخال سعر صالح.";
       if (selectedSpecialtyMinPrice > 0 && Number(formData.price) < selectedSpecialtyMinPrice) {
-        return `لا يمكن أن يكون السعر أقل من سعر البداية للتخصص المختار (على الأقل ${Number(selectedSpecialtyMinPrice).toLocaleString("ar-SY")} ل.س).`;
+        return `لا يمكن أن يكون السعر أقل من سعر البداية للتخصص المختار (على الأقل ${formatLatinNumber(selectedSpecialtyMinPrice)} ل.س).`;
       }
       if (Number(formData.price) > 1000000) return "لا يمكن أن يتجاوز السعر 1,000,000 ل.س.";
       if (!formData.city.trim()) return "معلومات المدينة مطلوبة.";
@@ -547,7 +549,7 @@ export default function ExpertCreateAdPage() {
             <option value="">اختر فئة</option>
             {categoriesData.map((category) => (
               <option key={category.id} value={sanitizeText(category.name)}>
-                {sanitizeText(category.name)}
+                {sanitizeText(toArabicServiceLabel(category.name))}
               </option>
             ))}
           </select>
@@ -567,7 +569,7 @@ export default function ExpertCreateAdPage() {
             <option value="">اختر تخصصاً</option>
             {providerSpecialties.map((s) => (
               <option key={s.name} value={s.name}>
-                {sanitizeText(s.name)}
+                {sanitizeText(toArabicServiceLabel(s.name))}
               </option>
             ))}
           </select>
@@ -607,13 +609,13 @@ export default function ExpertCreateAdPage() {
           />
           {selectedSpecialtyMinPrice > 0 && formData.price && Number(formData.price) < selectedSpecialtyMinPrice ? (
             <small className="expert-create-ad-helper expert-create-ad-helper--error">
-              يجب أن يكون على الأقل {Number(selectedSpecialtyMinPrice).toLocaleString("ar-SY")} ل.س (
-              سعر البداية لـ {sanitizeText(String(formData.serviceSubcategory || "").trim())}).
+              يجب أن يكون على الأقل {formatLatinNumber(selectedSpecialtyMinPrice)} ل.س (
+              سعر البداية لـ {sanitizeText(toArabicServiceLabel(String(formData.serviceSubcategory || "").trim()))}).
             </small>
           ) : selectedSpecialtyMinPrice > 0 ? (
             <small className="expert-create-ad-helper">
-              سعر البداية لـ {sanitizeText(String(formData.serviceSubcategory || "").trim())}:{" "}
-              {Number(selectedSpecialtyMinPrice).toLocaleString("ar-SY")} ل.س
+              سعر البداية لـ {sanitizeText(toArabicServiceLabel(String(formData.serviceSubcategory || "").trim()))}:{" "}
+              {formatLatinNumber(selectedSpecialtyMinPrice)} ل.س
             </small>
           ) : (
             <small className="expert-create-ad-helper expert-create-ad-helper--spacer" aria-hidden="true">

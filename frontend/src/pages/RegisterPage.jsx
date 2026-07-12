@@ -666,8 +666,8 @@ export default function RegisterPage() {
     <PageTransition>
       <div className="lp-register">
         <header className="lp-register-topbrand">
-          <Link to="/" className="lp-register-topbrand-link" aria-label="UzmanaGel Home">
-            <img className="lp-register-topbrand-logo" src={brandImage} alt="UzmanaGel" />
+          <Link to="/" className="lp-register-topbrand-link" aria-label="خبير">
+            <img className="lp-register-topbrand-logo" src={brandImage} alt="خبير" />
             <span className="lp-register-topbrand-text">
               Uzmana<span className="highlight">Gel</span>
             </span>

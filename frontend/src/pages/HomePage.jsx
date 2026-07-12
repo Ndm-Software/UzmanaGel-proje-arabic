@@ -9,6 +9,8 @@ import PageTransition from "../components/PageTransition";
 import categoryImages from "../data/categoryImages";
 import { getListingBackgroundStyle } from "../utils/listingImagePresentation";
 import { fetchListings } from "../services/listingsApi";
+import { toArabicServiceLabel } from "../utils/arabicLabels";
+import { formatLatinNumber } from "../utils/localeFormat";
 
 import HomePageLogo from "../assets/pictures/HomePageLogo.png";
 import AppBannerImage from "../assets/pictures/AppBanner1.png";
@@ -19,8 +21,9 @@ import appleLogo from "../assets/pictures/apple-logo.png";
 import googlePlayLogo from "../assets/pictures/google-play.png";
 import happyFaceImage from "../assets/pictures/happy-face.png";
 import badgeImage from "../assets/pictures/badge.png";
-import completedImage from "../assets/pictures/completed.png";
-import turkiyeImage from "../assets/pictures/Turkiye.png";
+// Syria Arabic launch: completed jobs stat card is disabled.
+// import completedImage from "../assets/pictures/completed.png";
+import syriaImage from "../assets/pictures/syria.png";
 import { fetchReviewCountsForListings } from "../services/reviewsApi";
 // Syria Arabic launch: listing report actions are disabled on listing cards.
 // import ListingReportButton from "../components/ListingReportButton";
@@ -65,7 +68,8 @@ export default function HomePage() {
   const [platformStats, setPlatformStats] = useState({
     happyReviewerCount: 0,
     providerCount: 0,
-    completedAppointmentsCount: 0,
+    // Syria Arabic launch: completed jobs stat is disabled with its listener.
+    // completedAppointmentsCount: 0,
   });
 
   useEffect(() => {
@@ -177,6 +181,7 @@ export default function HomePage() {
       }
     );
 
+    /* Syria Arabic launch: completed jobs stat listener is disabled.
     let unsubCompletedAppointments = null;
     
     const setupCompletedListener = async () => {
@@ -203,11 +208,13 @@ export default function HomePage() {
     };
     
     setupCompletedListener();
+    */
 
     return () => {
       unsubHappyReviewers();
       unsubProviders();
-      if (unsubCompletedAppointments) unsubCompletedAppointments();
+      // Syria Arabic launch: completed jobs stat listener is disabled.
+      // if (unsubCompletedAppointments) unsubCompletedAppointments();
     };
   }, []);
 
@@ -221,11 +228,11 @@ export default function HomePage() {
 
   const formatPrice = (value) => {
     const numeric = Number(value) || 0;
-    return `₺ ${new Intl.NumberFormat("ar-SY").format(numeric)}`;
+    return `${formatLatinNumber(numeric)} ل.س`;
   };
 
   const formatCount = (value) =>
-    new Intl.NumberFormat("tr-TR").format(Number(value) || 0);
+    formatLatinNumber(value);
 
   return (
     <PageTransition>
@@ -241,7 +248,7 @@ export default function HomePage() {
               </h1>
 
               <p className="hero-subtitle">
-                تواصل مع خبراء موثقين خلال دقائق عبر منصة UzmanaGel — سريع، آمن وبدون عناء.
+                تواصل مع خبراء موثقين خلال دقائق عبر منصة خبير — سريع، آمن وبدون عناء.
               </p>
 
               {!user && (
@@ -285,7 +292,7 @@ export default function HomePage() {
                 <img
                   className="hero-image"
                   src={HomePageLogo}
-                  alt="UzmanaGel preview"
+                  alt="منصة خبير"
                   loading="lazy"
                 />
               </div>
@@ -298,7 +305,7 @@ export default function HomePage() {
             <div className="app-banner-image-wrap">
               <img
                 src={AppBannerImage}
-                alt="Uzmanagel mobil uygulaması"
+                alt="تطبيق خبير للجوال"
                 className="app-banner-image"
                 loading="lazy"
               />
@@ -307,7 +314,7 @@ export default function HomePage() {
             <div className="app-banner-content">
               <h2 className="app-banner-title">حقيبة الصيانة في جيبك</h2>
               <p className="app-banner-text">
-                مع تطبيق Uzmanagel للجوال، اعثر على معلم صيانة عاجل أينما كنت. التقط صورة للمشكلة وأرسلها، وتتبع وصول المعلم مباشرة من الخريطة.
+                مع تطبيق خبير للجوال، اعثر على معلم صيانة عاجل أينما كنت. التقط صورة للمشكلة وأرسلها، وتتبع وصول المعلم مباشرة من الخريطة.
               </p>
 
               <div className="app-banner-actions">
@@ -571,7 +578,7 @@ export default function HomePage() {
 
                         <div className="armut-main">
                           <div className="armut-top">
-                            <div className="listing-category">{listing.category}</div>
+                            <div className="listing-category">{toArabicServiceLabel(listing.category)}</div>
                             <div className="listing-price">{formatPrice(listing.price)}</div>
                           </div>
 
@@ -588,7 +595,7 @@ export default function HomePage() {
                               <span className="listing-rating">★ {listing.rating}</span>
                             )}
                             <span className="jobs-done">
-                              {Number(listing.reviews) || 0} تقييم
+                              {formatLatinNumber(listing.reviews)} تقييم
                             </span>
                           </div>
                         </div>
@@ -620,6 +627,7 @@ export default function HomePage() {
                   <div className="stats-label">خبير مسجل</div>
                 </article>
 
+                {/* Syria Arabic launch: completed jobs stat card disabled with its operations.
                 <article className="stats-card">
                   <div className="stats-icon" aria-hidden="true">
                     <img src={completedImage} alt="" className="stats-icon-img" />
@@ -627,12 +635,13 @@ export default function HomePage() {
                   <div className="stats-value">{formatCount(platformStats.completedAppointmentsCount)}</div>
                   <div className="stats-label">عمل مكتمل</div>
                 </article>
+                */}
 
                 <article className="stats-card">
                   <div className="stats-icon" aria-hidden="true">
-                    <img src={turkiyeImage} alt="" className="stats-icon-img" />
+                    <img src={syriaImage} alt="" className="stats-icon-img" />
                   </div>
-                  <div className="stats-value">81</div>
+                  <div className="stats-value">14</div>
                   <div className="stats-label">خدمة في المدن</div>
                 </article>
               </div>

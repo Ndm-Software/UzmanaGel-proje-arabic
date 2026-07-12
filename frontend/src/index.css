@@ -99,6 +99,7 @@
 
 html, body, #root {
   font-family: var(--font-main);
+  direction: rtl;
 }
 
 html { scroll-behavior: smooth; }
@@ -107,9 +108,25 @@ body {
   margin: 0;
   background: var(--bg-main);
   color: var(--text-main);
+  text-align: right;
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: none;
+}
+
+input,
+textarea,
+select {
+  direction: rtl;
+  text-align: right;
+}
+
+input[type="number"],
+input[type="tel"],
+input[type="email"],
+input[type="url"] {
+  direction: ltr;
+  text-align: left;
 }
 
 body::-webkit-scrollbar {

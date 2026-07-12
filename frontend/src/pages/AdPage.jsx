@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { auth, db } from "../firebase/firebaseClient";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -21,6 +21,8 @@ import {
 import { fetchReviewCountsForListings } from "../services/reviewsApi";
 import { getListingImageStyle } from "../utils/listingImagePresentation";
 import { showAppToast } from "../utils/showAppToast";
+import { toArabicServiceLabel } from "../utils/arabicLabels";
+import { formatLatinNumber } from "../utils/localeFormat";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -175,6 +177,7 @@ const AdPage = () => {
   const [expertName, setExpertName] = useState("");
   const [favorites, setFavorites] = useState({});
   const [firestoreDisplayName, setFirestoreDisplayName] = useState("");
+  const [customerCity, setCustomerCity] = useState("");
 
   const updateListingsPageParam = useCallback(
     (page) => {
@@ -224,6 +227,49 @@ const AdPage = () => {
               "مستخدم";
 
             setFirestoreDisplayName(finalDisplayName);
+            const isCustomerAccount =
+              userData.userType !== "PROVIDER" &&
+              userData.userType !== "PENDING_PROVIDER";
+            let nextCustomerCity = String(
+              userData.city || userData.mainCity || ""
+            ).trim();
+
+            if (isCustomerAccount && !nextCustomerCity) {
+              try {
+                const addressesSnapshot = await getDocs(
+                  collection(db, "users", currentUser.uid, "addresses")
+                );
+                const addresses = addressesSnapshot.docs
+                  .map((addressDoc) => addressDoc.data() || {})
+                  .sort((a, b) => {
+                    const aTime =
+                      a.createdAt?.toMillis?.() ||
+                      a.updatedAt?.toMillis?.() ||
+                      0;
+                    const bTime =
+                      b.createdAt?.toMillis?.() ||
+                      b.updatedAt?.toMillis?.() ||
+                      0;
+                    return bTime - aTime;
+                  });
+
+                nextCustomerCity =
+                  addresses.find((address) =>
+                    String(address.city || "").trim()
+                  )?.city || "";
+              } catch (addressError) {
+                if (isDevelopment) {
+                  console.error(
+                    "Customer city could not be loaded:",
+                    addressError.message
+                  );
+                }
+              }
+            }
+
+            setCustomerCity(
+              isCustomerAccount ? String(nextCustomerCity || "").trim() : ""
+            );
 
             if (
               userData.userType === "PENDING_PROVIDER" &&
@@ -246,6 +292,7 @@ const AdPage = () => {
             setFirestoreDisplayName(
               currentUser.email?.split("@")[0] || "مستخدم"
             );
+            setCustomerCity("");
             setShowProfileWarning(false);
           }
         } catch (error) {
@@ -259,9 +306,11 @@ const AdPage = () => {
           setFirestoreDisplayName(
             currentUser.email?.split("@")[0] || "مستخدم"
           );
+          setCustomerCity("");
         }
       } else {
         setFirestoreDisplayName("");
+        setCustomerCity("");
         setShowProfileWarning(false);
         setFavorites({});
       }
@@ -381,6 +430,7 @@ const AdPage = () => {
         activeSpecialty !== ALL_SPECIALTIES ? activeSpecialty : undefined,
       minPrice: activeMinPrice || undefined,
       maxPrice: activeMaxPrice || undefined,
+      city: customerCity || undefined,
       sort: sortCodeFromLabel(activeSortBy),
     };
 
@@ -457,6 +507,7 @@ const AdPage = () => {
     activeMinPrice,
     activeMaxPrice,
     activeSortBy,
+    customerCity,
     updateListingsPageParam,
   ]);
 
@@ -584,7 +635,7 @@ const AdPage = () => {
   };
 
   const pageInfo = useMemo(
-    () => `${currentPage}/${totalPages}`,
+    () => `${formatLatinNumber(currentPage)}/${formatLatinNumber(totalPages)}`,
     [currentPage, totalPages]
   );
 
@@ -706,7 +757,7 @@ const AdPage = () => {
             >
               {categoryOptions.map((category) => (
                 <option key={category} value={category}>
-                  {category}
+                  {toArabicServiceLabel(category)}
                 </option>
               ))}
             </select>
@@ -730,7 +781,7 @@ const AdPage = () => {
 
                 return (
                   <option key={specialtyName} value={specialtyName}>
-                    {specialtyName}
+                    {toArabicServiceLabel(specialtyName)}
                   </option>
                 );
               })}
@@ -847,13 +898,15 @@ const AdPage = () => {
                           <span className="category-separator">•</span>
                         )}
 
-                        {item.category && <span>{item.category}</span>}
+                        {item.category && (
+                          <span>{toArabicServiceLabel(item.category)}</span>
+                        )}
 
                         {item.serviceSubcategory && (
                           <>
                             <span className="category-separator">•</span>
                             <span className="expert-specialty-text">
-                              {item.serviceSubcategory}
+                              {toArabicServiceLabel(item.serviceSubcategory)}
                             </span>
                           </>
                         )}
@@ -862,7 +915,7 @@ const AdPage = () => {
                       <div className="expert-stats">
                         <span className="rating">
                           <i className="fa-solid fa-star"></i>{" "}
-                          {item.rating} ({item.reviews} تقييم)
+                          {formatLatinNumber(item.rating)} ({formatLatinNumber(item.reviews)} تقييم)
                         </span>
                       </div>
                     </div>
@@ -894,7 +947,7 @@ const AdPage = () => {
                     </div>
 
                     <div className="price">
-                      <strong>₺{item.price}</strong>
+                      <strong>{formatLatinNumber(item.price)} ل.س</strong>
                       <span className="price-text">تبدأ من</span>
                     </div>
 
@@ -925,7 +978,7 @@ const AdPage = () => {
                     className="btn-apply-filter pagination-info"
                     disabled
                   >
-                    صفحة {pageInfo} - الإجمالي {totalListings}
+                    صفحة {pageInfo} - الإجمالي {formatLatinNumber(totalListings)}
                   </button>
 
                   <button

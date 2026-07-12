@@ -105,10 +105,10 @@ function Footer() {
           <div className="footer-brand">
             <div className="footer-brand-row">
               <span className="footer-brand-badge" aria-hidden="true">
-                <img src={brandImage} alt="UzmanaGel Logo" />
+                <img src={brandImage} alt="شعار خبير" />
               </span>
               <span className="footer-brand-title">
-                Uzmana<span className="highlight">Gel</span>
+                خبير
               </span>
             </div>
 
@@ -234,7 +234,7 @@ function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} UzmanaGel. جميع الحقوق محفوظة.</span>
+          <span>© {new Date().getFullYear()} خبير. جميع الحقوق محفوظة.</span>
         </div>
       </footer>
     </section>

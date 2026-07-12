@@ -415,10 +415,10 @@ const Navbar = () => {
           <div className="navbar-brand">
             <Link to="/" className="navbar-brand-link">
               <div className="brand-badge">
-                <img className="brand-badge-img" src={logo} alt="UzmanaGel" />
+                <img className="brand-badge-img" src={logo} alt="خبير" />
               </div>
               <span className="brand-title">
-                Uzmana<span className="highlight">Gel</span>
+                خبير
               </span>
             </Link>
           </div>

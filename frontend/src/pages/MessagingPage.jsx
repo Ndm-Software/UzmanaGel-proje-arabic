@@ -22,11 +22,13 @@ import {
   sendConversationMessage,
   markConversationAsRead,
   deleteConversationMessage,
-  closeConversation,
+  // Syria Arabic launch: close conversation operation is disabled in the UI.
+  // closeConversation,
 } from "../services/chatApi";
 import { getProfilePhoto } from "../services/updateService";
 import DOMPurify from "dompurify";
 import { showAppToast } from "../utils/showAppToast";
+import { ARABIC_LATIN_LOCALE } from "../utils/localeFormat";
 import ConfirmModal from "../components/ConfirmModal";
 import "../styles/MessagingPage.css";
 
@@ -430,7 +432,8 @@ const MessagingPage = () => {
   const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState(null);
-  const [showCloseConversationConfirm, setShowCloseConversationConfirm] = useState(false);
+  // Syria Arabic launch: close conversation confirmation is disabled.
+  // const [showCloseConversationConfirm, setShowCloseConversationConfirm] = useState(false);
 
   const messagesBodyRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -498,7 +501,7 @@ const MessagingPage = () => {
     (value) => {
       const date = parseAnyDate(value);
       if (!date) return "";
-      return date.toLocaleTimeString("ar-SY", {
+      return date.toLocaleTimeString(ARABIC_LATIN_LOCALE, {
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -517,12 +520,12 @@ const MessagingPage = () => {
         date.getFullYear() === now.getFullYear();
 
       if (sameDay) {
-        return date.toLocaleTimeString("ar-SY", {
+        return date.toLocaleTimeString(ARABIC_LATIN_LOCALE, {
           hour: "2-digit",
           minute: "2-digit",
         });
       }
-      return date.toLocaleDateString("ar-SY", {
+      return date.toLocaleDateString(ARABIC_LATIN_LOCALE, {
         day: "2-digit",
         month: "2-digit",
       });
@@ -546,7 +549,7 @@ const MessagingPage = () => {
       if (isSameDate(date, today)) return "اليوم";
       if (isSameDate(date, yesterday)) return "أمس";
 
-      return date.toLocaleDateString("ar-SY", {
+      return date.toLocaleDateString(ARABIC_LATIN_LOCALE, {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -936,6 +939,7 @@ const MessagingPage = () => {
     [navigate]
   );
 
+  /* Syria Arabic launch: close conversation operation is disabled.
   const confirmCloseConversation = async () => {
     if (!selectedConversationId) return;
 
@@ -951,6 +955,7 @@ const MessagingPage = () => {
       setShowCloseConversationConfirm(false);
     }
   };
+  */
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -1487,11 +1492,11 @@ const MessagingPage = () => {
                               <i className="fas fa-clock"></i>
                               <span>
                                 آخر رسالة:{" "}
-                                {chatDeadline.toLocaleDateString("ar-SY", {
+                                {chatDeadline.toLocaleDateString(ARABIC_LATIN_LOCALE, {
                                   day: "numeric",
                                   month: "long",
                                 })}{" "}
-                                {chatDeadline.toLocaleTimeString("ar-SY", {
+                                {chatDeadline.toLocaleTimeString(ARABIC_LATIN_LOCALE, {
                                   hour: "2-digit",
                                   minute: "2-digit",
                                 })}
@@ -1547,6 +1552,7 @@ const MessagingPage = () => {
                               </button>
                             )}
 
+                            {/* Syria Arabic launch: close conversation button disabled with its operations.
                             <button
                               type="button"
                               className="chat-header-dropdown-item danger"
@@ -1558,6 +1564,7 @@ const MessagingPage = () => {
                               <i className="fas fa-ban"></i>
                               <span>إغلاق المحادثة</span>
                             </button>
+                            */}
                           </div>
                         )}
                       </div>
@@ -1775,6 +1782,7 @@ const MessagingPage = () => {
         type="danger"
       />
 
+      {/* Syria Arabic launch: close conversation modal disabled with its operations.
       <ConfirmModal
         isOpen={showCloseConversationConfirm}
         onClose={() => setShowCloseConversationConfirm(false)}
@@ -1785,6 +1793,7 @@ const MessagingPage = () => {
         cancelText="إلغاء"
         type="warning"
       />
+      */}
     </div>
   );
 };

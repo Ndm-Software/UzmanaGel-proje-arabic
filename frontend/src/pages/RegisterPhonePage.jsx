@@ -292,8 +292,8 @@ export default function RegisterPhonePage() {
     <PageTransition>
       <div className="lp-login lp-login-phone">
         <header className="lp-login-topbrand">
-          <Link to="/" className="lp-login-topbrand-link" aria-label="UzmanaGel Home">
-            <img className="lp-login-topbrand-logo" src={brandImage} alt="UzmanaGel" />
+          <Link to="/" className="lp-login-topbrand-link" aria-label="خبير">
+            <img className="lp-login-topbrand-logo" src={brandImage} alt="خبير" />
             <span className="lp-login-topbrand-text">
               Uzmana<span className="highlight">Gel</span>
             </span>

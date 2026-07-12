@@ -758,7 +758,7 @@ export default function RegisterPage() {
                           alignItems: "center",
                         }}
                       >
-                        +90
+                      963+
                       </span>
                       <input
                         className="lp-register-input lp-register-phone-input"
@@ -855,13 +855,13 @@ export default function RegisterPage() {
 
                   <div className="lp-register-form-group">
                     <label className="lp-register-label">
-                      <i className="fas fa-lock lp-register-icon"></i> Şifre Tekrar
+                      <i className="fas fa-lock lp-register-icon"></i> تأكيد كلمة المرور
                     </label>
                     <div className="lp-register-pass">
                       <input
                         className="lp-register-input"
                         type={showPass2 ? "text" : "password"}
-                        placeholder="Şifre Tekrar"
+                        placeholder="تأكيد كلمة المرور"
                         autoComplete="new-password"
                         required
                         value={password2}
@@ -962,15 +962,7 @@ export default function RegisterPage() {
                       <img src={googleLogo} alt="Google" className="social-icon-img" />
                     </button>
 
-                    <button
-                      className="social-icon phone"
-                      type="button"
-                      onClick={handlePhoneInfo}
-                      aria-label="التسجيل مع رقم الهاتف"
-                      disabled={loading}
-                    >
-                      <img src={phoneLogo} alt="الهاتف" className="social-icon-img phone-icon-img" />
-                    </button>
+                    
                   </div>
                 </div>
               </>

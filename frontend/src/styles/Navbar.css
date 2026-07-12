@@ -7,6 +7,7 @@
     background: var(--nav-bg, rgba(10, 15, 30, 0.55));
     border-bottom: none !important;
     padding: 12px 0;
+    direction: rtl;
 }
 
 .navbar-container {
@@ -131,7 +132,7 @@
 .mobile-menu {
     position: fixed;
     top: 0;
-    left: 0;
+    right: 0;
     width: 280px;
     height: 100vh;
     background: var(--nav-bg, rgba(10, 15, 30, 0.95));
@@ -142,17 +143,17 @@
     flex-direction: column;
     gap: 8px;
     box-shadow: 4px 0 25px rgba(0, 0, 0, 0.3);
-    border-right: 1px solid rgba(214, 178, 94, 0.2);
+    border-left: 1px solid rgba(214, 178, 94, 0.2);
     animation: slideIn 0.3s ease;
 }
 
 [data-theme="light"] .mobile-menu {
     background: rgba(255, 255, 255, 0.98);
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 @keyframes slideIn {
-    from { transform: translateX(-100%); }
+    from { transform: translateX(100%); }
     to { transform: translateX(0); }
 }
 
@@ -370,7 +371,7 @@
 
 .token-plus-icon {
     font-size: 16px;
-    margin-left: 2px;
+    margin-right: 2px;
 }
 
 .token-tooltip-button {
@@ -782,4 +783,30 @@
         right: -12px;
         padding: 0 4px;
     }
+    .brand-title {
+        font-family: 'Georgia', 'Times New Roman', serif !important;
+        font-size: 2.6rem !important;
+        font-weight: 700 !important;
+        display: inline-flex !important; /* Changed to inline-flex to keep the spans tightly connected */
+        align-items: center !important;
+  
+        /* Vertical height scale */
+        transform: scaleY(1.5) !important; 
+        transform-origin: center !important;
+  
+         line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+
+/* Base style for the outer navy/white letters (خ and ر) */
+.outer-letter {
+  color: #1a253c !important; /* Use #ffffff if testing on dark mode */
+  display: inline-block !important;
+}
+
+/* Style for the inner highly-stretched orange section (ب + ي) */
+.inner-letters {
+  color: #ff8c00 !important; /* Your brand orange accent color */
+  display: inline-block !important;
+}
 }

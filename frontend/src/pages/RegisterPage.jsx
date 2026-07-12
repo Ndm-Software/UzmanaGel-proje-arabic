@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/RegisterPage.css";
 import PageTransition from "../components/PageTransition";
-import brandImage from "../assets/pictures/Logo.png";
+import brandImage from "../assets/pictures/LogoArabicNoWriting.png";
 import PolicyModal from "../components/PolicyModal";
 import DOMPurify from 'dompurify';
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -45,7 +45,7 @@ function ExistingAccountModal({
   if (!open) return null;
 
   const isGoogleMode = mode === "google_exists";
-  const title = isGoogleMode ? "Zaten Hesabınız Var" : "Hesap Mevcut";
+  const title = isGoogleMode ? "لديك حساب بالفعل" : "الحساب موجود";
 
   return (
     <div className="lp-modal-overlay" onClick={onClose}>
@@ -56,7 +56,7 @@ function ExistingAccountModal({
             type="button"
             className="lp-modal-close-btn"
             onClick={onClose}
-            aria-label="Kapat"
+            aria-label="إغلاق"
           >
             <i className="fas fa-times"></i>
           </button>
@@ -64,31 +64,32 @@ function ExistingAccountModal({
 
         <div className="lp-modal-body">
           <p className="lp-modal-helper">
-            <strong>{sanitizeText(email)}</strong> adresiyle zaten bir hesap var.
+            <strong>{sanitizeText(email)}</strong> لديك بالفعل حساب باستخدام هذا العنوان.
           </p>
 
           {isGoogleMode ? (
             <>
               <p className="lp-modal-helper">
-                Bu hesap daha önce Google ile oluşturulmuş. Devam etmek için lütfen Google ile giriş yapın.
+                 Google تم إنشاء هذا الحساب سابقًا باستخدام 
+                . Google للمتابعة، يرجى تسجيل الدخول باستخدام .
               </p>
               <div className="lp-modal-actions" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <button type="button" className="lp-modal-secondary-btn" onClick={onGoLogin}>
-                  Giriş Sayfasına Git
+                  الانتقال إلى صفحة تسجيل الدخول
                 </button>
                 <button type="button" className="lp-modal-primary-btn" onClick={onContinueGoogle}>
-                  Google ile Devam Et
+                  المتابعة باستخدام Google
                 </button>
               </div>
             </>
           ) : (
             <>
               <p className="lp-modal-helper">
-                Bu hesap zaten mevcut. Yeni kayıt oluşturmak yerine giriş yapmalısınız.
+                هذا الحساب موجود بالفعل. يجب عليك تسجيل الدخول بدلاً من إنشاء حساب جديد.
               </p>
               <div className="lp-modal-actions" style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 <button type="button" className="lp-modal-primary-btn" onClick={onGoLogin}>
-                  Giriş Yap
+                  تسجيل الدخول
                 </button>
               </div>
             </>
@@ -168,7 +169,7 @@ export default function RegisterPage() {
   }, []);
 
   if (settingsLoading) {
-    return <LoadingSpinner text="Sistem ayarları kontrol ediliyor..." />;
+    return <LoadingSpinner text=" ...يتم فحص إعدادات النظام" />;
   }
 
   if (maintenanceMode) {
@@ -177,8 +178,8 @@ export default function RegisterPage() {
         <div className="maintenance-content">
           <i className="fas fa-tools fa-4x"></i>
           <h1>Bakım Modu</h1>
-          <p>Sitemizde bakım çalışması yapılmaktadır.</p>
-          <p>Lütfen daha sonra tekrar deneyin.</p>
+          <p>.الموقع قيد الصيانة حالية</p>
+          <p>.الرجاءالمحاولة لاحقا</p>
           <Link to="/" className="maintenance-home-btn">
             Ana Sayfaya Dön
           </Link>
@@ -193,14 +194,14 @@ export default function RegisterPage() {
       <div className="registrations-closed-page">
         <div className="registrations-closed-content">
           <i className="fas fa-door-closed fa-4x"></i>
-          <h1>Yeni Kayıtlar Durduruldu</h1>
-          <p>Şu anda yeni kayıtlar geçici olarak durdurulmuştur.</p>
-          <p>Daha sonra tekrar deneyin.</p>
+          <h1>تم إيقاف التسجيلات الجديدة</h1>
+          <p>.التسجيلات الجديدة متوقفة مؤقتًا في الوقت الحالي</p>
+          <p>.يرجى المحاولة مرة أخرى لاحقًا</p>
           <Link to="/" className="registrations-home-btn">
-            Ana Sayfaya Dön
+            العودة إلى الصفحة الرئيسية
           </Link>
           <Link to="/login" className="registrations-login-btn">
-            Giriş Yap
+            تسجيل الدخول
           </Link>
         </div>
       </div>
@@ -253,18 +254,18 @@ export default function RegisterPage() {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (!normalizedValue) {
-      setEmailError("E-posta zorunludur.");
+      setEmailError("حقل البريد الإلكتروني إجباري");
       return false;
     }
 
     if (!emailRegex.test(normalizedValue)) {
-      setEmailError("Lütfen geçerli bir e-posta adresi girin.");
+      setEmailError("الرجاء إدخال بريد إلكتروني صالح");
       return false;
     }
 
     const domain = normalizedValue.split("@")[1]?.toLowerCase();
     if (!validEmailDomains.includes(domain)) {
-      setEmailError("Geçersiz e-posta domaini.");
+      setEmailError("بريد إلكتروني غير صالح");
       return false;
     }
 
@@ -276,22 +277,22 @@ export default function RegisterPage() {
     const cleaned = String(phoneStr || "").replace(/[\s()-]/g, "");
 
     if (!cleaned) {
-      setPhoneError("Telefon numarası zorunludur.");
+      setPhoneError("رقم الهاتف مطلوب.");
       return false;
     }
 
     if (!/^\d+$/.test(cleaned)) {
-      setPhoneError("Telefon sadece rakamlardan oluşmalıdır.");
+      setPhoneError("يجب أن يتكون رقم الهاتف من أرقام فقط.");
       return false;
     }
 
     if (cleaned.length !== 10) {
-      setPhoneError("Telefon numarası 10 haneli olmalıdır (5xx xxx xx xx).");
+      setPhoneError("يجب أن يتكون رقم الهاتف من 10 أرقام (5xx xxx xx xx).");
       return false;
     }
 
     if (!cleaned.startsWith("5")) {
-      setPhoneError("Telefon 5 ile başlamalıdır.");
+      setPhoneError("يجب أن يبدأ رقم الهاتف بالرقم 5.");
       return false;
     }
 
@@ -301,12 +302,12 @@ export default function RegisterPage() {
 
   const validatePassword = (pass) => {
     const errors = [];
-    if (pass.length < 6) errors.push("En az 6 karakter olmalıdır");
-    if (!/[A-Z]/.test(pass)) errors.push("En az 1 büyük harf içermelidir");
-    if (!/[a-z]/.test(pass)) errors.push("En az 1 küçük harf içermelidir");
-    if (!/[0-9]/.test(pass)) errors.push("En az 1 rakam içermelidir");
-    if (hasConsecutiveChars(pass)) errors.push("Ardışık karakterler içermemelidir");
-    if (hasRepeatedChars(pass)) errors.push("Aynı karakteri 3 kez tekrarlamamalıdır");
+    if (pass.length < 6) errors.push("يجب أن تتكون من 6 أحرف على الأقل");
+    if (!/[A-Z]/.test(pass)) errors.push("يجب أن تحتوي على حرف كبير واحد على الأقل");
+    if (!/[a-z]/.test(pass)) errors.push("يجب أن تحتوي على حرف صغير واحد على الأقل");
+    if (!/[0-9]/.test(pass)) errors.push("يجب أن تحتوي على رقم واحد على الأقل");
+    if (hasConsecutiveChars(pass)) errors.push("يجب ألا تحتوي على أحرف متتالية");
+    if (hasRepeatedChars(pass)) errors.push("يجب ألا يتكرر نفس الحرف 3 مرات متتالية");
     return errors;
   };
 
@@ -405,32 +406,32 @@ export default function RegisterPage() {
     setPhoneTouched(true);
 
     if (!fullName || !email || !phone || !password || !password2) {
-      return setError("Lütfen tüm zorunlu alanları doldurun.");
+      return setError(".يرجى إدخال جميع الحقول المطلوبة");
     }
 
     if (!agree) {
-      return setError("Devam etmek için şartları kabul etmelisiniz.");
+      return setError(".يجب عليك قبول الشروط للمتابعة");
     }
 
     if (password !== password2) {
-      return setError("Şifreler eşleşmiyor.");
+      return setError(".كلمات المرور غير متطابقة");
     }
 
     if (!validateEmail(email)) {
-      return setError("Lütfen geçerli bir e-posta adresi girin.");
+      return setError(".يرجى إدخال عنوان بريد إلكتروني صحيح");
     }
 
     if (!validatePhone(phone)) {
-      return setError("Telefon numarası 5xx xxx xx xx formatında olmalıdır.");
+      return setError("يجب أن يكون رقم الهاتف بالصيغة التالية: xxx xx xx xx5 ");
     }
 
     const passwordCheck = validatePassword(password);
     if (passwordCheck.length > 0) {
-      return setError("Şifre gereksinimleri karşılamıyor.");
+      return setError(".كلمة المرور لا تستوفي الشروط المطلوبة");
     }
 
     if (passwordStrength !== 100) {
-      return setError("Şifreniz belirtilen kurallara uygun olmalıdır.");
+      return setError("يجب أن تكون كلمة المرور متوافقة مع القواعد المحددة");
     }
 
     try {
@@ -485,11 +486,11 @@ export default function RegisterPage() {
       setShowOtpScreen(true);
     } catch (err) {
       if (err?.field === "email") {
-        setEmailError("Bu e-posta adresi kullanılamaz.");
+        setEmailError("لا يمكن استخدام هذا البريد الإلكتروني.");
       } else if (err?.field === "phoneNumber") {
-        setPhoneError("Bu telefon numarası kullanılamaz.");
+        setPhoneError("لا يمكن استخدام هذا الرقم.");
       } else {
-        setError("SMS gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
+        setError("حدث خطأ أثناء إرسال الرسالة القصيرة. يرجى المحاولة لاحقًا.");
       }
     } finally {
       setLoading(false);
@@ -503,7 +504,7 @@ export default function RegisterPage() {
 
     try {
       if (!confirmationResult || !pendingUserData) {
-        setError("Doğrulama oturumu bulunamadı. Lütfen tekrar kayıt olun.");
+        setError("لم يتم العثور على جلسة التحقق. يرجى التسجيل مرة أخرى.");
         setLoading(false);
         return;
       }
@@ -536,7 +537,7 @@ export default function RegisterPage() {
         return;
       }
 
-      setError("Kod doğrulanamadı. Lütfen tekrar deneyin.");
+      setError("لم يتم التحقق من الرمز. يرجى المحاولة مرة أخرى.");
     } finally {
       setLoading(false);
     }
@@ -547,13 +548,13 @@ export default function RegisterPage() {
 
     // Bakım modunda Google girişini de engelle
     if (maintenanceMode) {
-      setError("Bakım modu nedeniyle kayıt yapılamıyor.");
+      setError("لا يمكن التسجيل بسبب وضع الصيانة.");
       return;
     }
 
     // Yeni kayıtlar kapalıysa Google ile kaydı da engelle
     if (!registrationsOpen) {
-      setError("Yeni kayıtlar şu anda geçici olarak durdurulmuştur.");
+      setError("تم إيقاف التسجيلات الجديدة مؤقتًا حاليًا.");
       return;
     }
 
@@ -588,7 +589,7 @@ export default function RegisterPage() {
       if (err?.code === "GOOGLE_POPUP_BLOCKED") {
         setError(
           err?.message ||
-            "Google açılır penceresi engellendi. Lütfen tarayıcı ayarlarınızı kontrol edin."
+            "تم حظر نافذة Google المنبثقة. يرجى التحقق من إعدادات المتصفح."
         );
         return;
       }
@@ -599,17 +600,17 @@ export default function RegisterPage() {
       ) {
         setError(
           err?.message ||
-            "Bu hesap silinmiş durumda ve geri yükleme süresi devam ediyor. Lütfen hesabınızı geri yükleyin."
+            "هذا الحساب محذوف حاليًا ومرحلة الاستعادة ما زالت قيد التنفيذ. يرجى استعادة حسابك."
         );
         return;
       }
 
       if (err?.code === "GOOGLE_EMAIL_MISSING") {
-        setError(err?.message || "Google hesabından geçerli bir e-posta alınamadı.");
+        setError(err?.message || "لم يتم الحصول على بريد إلكتروني صالح من حساب Google.");
         return;
       }
 
-      setError("Google ile devam edilemedi. Lütfen daha sonra tekrar deneyin.");
+      setError("تعذر المتابعة باستخدام Google. يرجى المحاولة لاحقًا.");
     } finally {
       setLoading(false);
     }
@@ -632,7 +633,7 @@ export default function RegisterPage() {
       setPendingGoogleCredential(null);
       navigate("/");
     } catch (err) {
-      setError("Hesap birleştirilemedi. Lütfen daha sonra tekrar deneyin.");
+      setError("تعذر دمج الحساب. يرجى المحاولة لاحقًا.");
     } finally {
       setLoading(false);
     }
@@ -664,12 +665,25 @@ export default function RegisterPage() {
 
   return (
     <PageTransition>
-      <div className="lp-register">
-        <header className="lp-register-topbrand">
-          <Link to="/" className="lp-register-topbrand-link" aria-label="UzmanaGel Home">
-            <img className="lp-register-topbrand-logo" src={brandImage} alt="UzmanaGel" />
-            <span className="lp-register-topbrand-text">
-              Uzmana<span className="highlight">Gel</span>
+      <div className="lp-register" >
+        <header className="lp-register-topbrand"dir="rtl">
+          <Link to="/" className="lp-register-topbrand-link" aria-label="خبير Home">
+            <img className="lp-register-topbrand-logo" src={brandImage} alt="خبير" />
+            <span className="lp-register-topbrand-text"style={{ color: '#ff8c00' }}>
+              {/* خ + ب (Plus the long stretch following ب) */}
+      <span className="outer-letter">
+        {"خ\u0640\u0640ب\u0640\u0640\u0640\u200D"}
+      </span>
+
+      {/* ي (Isolated + Its trailing stretch) */}
+      <span className="inner-letters">
+        {"\u200Dي\u0640\u0640\u0640\u0640\u200D"}
+      </span>
+
+      {/* ر (With its leading stretch) */}
+      <span className="outer-letter">
+        {"\u200D\u0640\u0640ر"}
+      </span>
             </span>
           </Link>
         </header>
@@ -677,8 +691,8 @@ export default function RegisterPage() {
         <div className="lp-register-card">
           <section className="lp-register-left">
             <div className="lp-register-header">
-              <h1 className="lp-register-title">Hesap Oluştur</h1>
-              <p className="lp-register-subtitle">Ücretsiz kaydol, hemen başla</p>
+              <h1 className="lp-register-title">إنشاء حساب</h1>
+              <p className="lp-register-subtitle">سجّل مجانًا، وابدأ الآن</p>
             </div>
 
             <div id="recaptcha-container"></div>
@@ -688,12 +702,12 @@ export default function RegisterPage() {
                 <form className="lp-register-form" onSubmit={handleSubmit}>
                   <div className="lp-register-form-group">
                     <label className="lp-register-label">
-                      <i className="fas fa-user lp-register-icon"></i> Ad Soyad
+                      <i className="fas fa-user lp-register-icon"></i> الإسم الكامل
                     </label>
                     <input
                       className="lp-register-input"
                       type="text"
-                      placeholder="Ad Soyad"
+                      placeholder="الإسم الكامل"
                       autoComplete="name"
                       required
                       value={fullName}
@@ -704,12 +718,12 @@ export default function RegisterPage() {
 
                   <div className="lp-register-form-group">
                     <label className="lp-register-label">
-                      <i className="fas fa-envelope lp-register-icon"></i> E-Posta
+                      <i className="fas fa-envelope lp-register-icon"></i> البريد الإلكتروني
                     </label>
                     <input
                       className="lp-register-input"
                       type="email"
-                      placeholder="E-Posta"
+                      placeholder="البريد الإلكتروني"
                       autoComplete="email"
                       required
                       value={email}
@@ -726,7 +740,7 @@ export default function RegisterPage() {
 
                   <div className="lp-register-form-group">
                     <label className="lp-register-label">
-                      <i className="fas fa-phone lp-register-icon"></i> Telefon
+                      <i className="fas fa-phone lp-register-icon"></i> رقم الهاتف
                     </label>
                     <div
                       className="lp-register-phone-wrapper"
@@ -768,13 +782,13 @@ export default function RegisterPage() {
 
                   <div className="lp-register-form-group">
                     <label className="lp-register-label">
-                      <i className="fas fa-lock lp-register-icon"></i> Şifre
+                      <i className="fas fa-lock lp-register-icon"></i> كلمة المرور
                     </label>
                     <div className="lp-register-pass">
                       <input
                         className="lp-register-input"
                         type={showPass ? "text" : "password"}
-                        placeholder="Şifre"
+                        placeholder="كلمة المرور"
                         autoComplete="new-password"
                         required
                         value={password}
@@ -785,7 +799,7 @@ export default function RegisterPage() {
                         type="button"
                         className="lp-register-eye"
                         onClick={() => setShowPass((v) => !v)}
-                        aria-label={showPass ? "Şifreyi gizle" : "Şifreyi göster"}
+                        aria-label={showPass ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
                         disabled={loading}
                       >
                         <i className={showPass ? "fas fa-eye-slash" : "fas fa-eye"}></i>
@@ -835,7 +849,7 @@ export default function RegisterPage() {
                         display: "block",
                       }}
                     >
-                      En az 6 karakter, 1 büyük harf, 1 küçük harf, 1 rakam
+                      يجب أن تحتوي على الأقل على 6 خانات, حرف 1 كبير, حرف 1 صغير, رقم 1, رمز 1 
                     </small>
                   </div>
 
@@ -858,7 +872,7 @@ export default function RegisterPage() {
                         type="button"
                         className="lp-register-eye"
                         onClick={() => setShowPass2((v) => !v)}
-                        aria-label={showPass2 ? "Şifreyi gizle" : "Şifreyi göster"}
+                        aria-label={showPass2 ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
                         disabled={loading}
                       >
                         <i className={showPass2 ? "fas fa-eye-slash" : "fas fa-eye"}></i>
@@ -876,7 +890,7 @@ export default function RegisterPage() {
                         <i
                           className={`fas fa-${passwordsMatch ? "check-circle" : "times-circle"}`}
                         ></i>
-                        {passwordsMatch ? " Şifreler eşleşiyor" : " Şifreler eşleşmiyor"}
+                        {passwordsMatch ? " كلمات المرور تتطابق" : " كلمات المرور لا تتطابق"}
                       </small>
                     )}
                   </div>
@@ -896,13 +910,13 @@ export default function RegisterPage() {
                       />
                       <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
                         <a href="#" className="terms-link" onClick={openTerms}>
-                          Kullanım Koşulları
+                          شروط الإستخدام
                         </a>
-                        {" "}ve{" "}
+                        {" "}و{" "}
                         <a href="#" className="terms-link" onClick={openPrivacy}>
-                          Gizlilik Politikası
+                          سياسة الخصوصية
                         </a>
-                        {" "}okudum, kabul ediyorum.
+                        {" "}لقد قرأت ووافقت 
                       </span>
                     </label>
                   </div>
@@ -929,20 +943,20 @@ export default function RegisterPage() {
 
                   <button className="lp-register-btn" type="submit" disabled={!isFormValid || loading}>
                     <i className="fas fa-user-plus"></i>
-                    {loading ? " İşleniyor..." : " Kaydol"}
+                    {loading ? "...جاري المعالجة" : " تسجيل"}
                   </button>
                 </form>
 
                 <div className="lp-register-social">
                   <div className="lp-register-or">
-                    <span>veya</span>
+                    <span>أو</span>
                   </div>
                   <div className="social-icons">
                     <button
                       className="social-icon google"
                       type="button"
                       onClick={handleGoogle}
-                      aria-label="Google ile devam et"
+                      aria-label="Google المتابعة باستخدام"
                       disabled={loading}
                     >
                       <img src={googleLogo} alt="Google" className="social-icon-img" />
@@ -952,10 +966,10 @@ export default function RegisterPage() {
                       className="social-icon phone"
                       type="button"
                       onClick={handlePhoneInfo}
-                      aria-label="Telefon ile kayıt ol"
+                      aria-label="التسجيل مع رقم الهاتف"
                       disabled={loading}
                     >
-                      <img src={phoneLogo} alt="Telefon" className="social-icon-img phone-icon-img" />
+                      <img src={phoneLogo} alt="الهاتف" className="social-icon-img phone-icon-img" />
                     </button>
                   </div>
                 </div>
@@ -963,9 +977,9 @@ export default function RegisterPage() {
             ) : (
               <form className="lp-register-form" onSubmit={handleVerifyOtp}>
                 <div className="lp-register-header" style={{ marginBottom: "20px" }}>
-                  <h3 className="lp-register-title">SMS Doğrulama</h3>
+                  <h3 className="lp-register-title">SMS التحقق عبر</h3>
                   <p className="lp-register-subtitle">
-                    Telefonunuza gönderilen 6 haneli kodu girin
+                    أدخل الرمز المكون من 6 أرقام المرسل إلى هاتفك
                   </p>
                 </div>
 
@@ -973,7 +987,7 @@ export default function RegisterPage() {
                   <input
                     className="lp-register-input"
                     type="text"
-                    placeholder="Doğrulama Kodu"
+                    placeholder="رمز التحقق"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     required
@@ -1006,24 +1020,24 @@ export default function RegisterPage() {
                   type="submit"
                   disabled={loading || otp.length < 6}
                 >
-                  {loading ? "Doğrulanıyor..." : "Doğrula ve Kaydol"}
+                  {loading ? "جاري التحقق..." : "التحقق والتسجيل"}
                 </button>
               </form>
             )}
 
             <p className="lp-register-bottom">
-              Zaten hesabın var mı? <Link to="/login">Giriş Yap</Link>
+              لديك حساب بالفعل؟ <Link to="/login">تسجيل الدخول</Link>
             </p>
           </section>
 
           <section className="lp-register-right">
             <div className="benefits-list">
-              <h3>Ücretsiz kaydolunca neler kazanacaksın?</h3>
+              <h3>ماذا ستكسب عند التسجيل مجانًا؟</h3>
               <ul>
-                <li><i className="fas fa-check-circle"></i> Binlerce uzmana anında ulaş</li>
-                <li><i className="fas fa-check-circle"></i> Güvenli ödeme sistemi</li>
-                <li><i className="fas fa-check-circle"></i> 7/24 canlı destek</li>
-                <li><i className="fas fa-check-circle"></i> İş takibi ve bildirimler</li>
+                <li><i className="fas fa-check-circle"></i> الوصول الفوري إلى آلاف الخبراء</li>
+                <li><i className="fas fa-check-circle"></i>نظام دفع آمن</li>
+                <li><i className="fas fa-check-circle"></i> دعم مباشر على مدار الساعة 24/7</li>
+                <li><i className="fas fa-check-circle"></i> متابعة العمل والإشعارات</li>
               </ul>
             </div>
           </section>
@@ -1031,14 +1045,14 @@ export default function RegisterPage() {
 
         <PolicyModal
           open={policyOpen}
-          title={policyType === "terms" ? "Kullanım Koşulları" : "Gizlilik Politikası"}
+          title={policyType === "terms" ? "الشروط والأحكام" : "سياسة الخصوصية"}
           onClose={() => setPolicyOpen(false)}
         >
           <div className="policy-placeholder">
             <p style={{ color: "var(--text-muted)" }}>
               {policyType === "terms"
-                ? "Kullanım koşulları içeriği burada yer alacak."
-                : "Gizlilik politikası içeriği burada yer alacak."}
+                ? "ستظهر شروط والأحكام هنا."
+                : "ستظهر سياسة الخصوصية هنا."}
             </p>
           </div>
         </PolicyModal>
@@ -1047,16 +1061,16 @@ export default function RegisterPage() {
           <div className="lp-google-modal-overlay">
             <div className="lp-google-modal-box">
               <div className="lp-google-modal-header">
-                <h3>Hesabı Birleştir</h3>
+                <h3>دمج الحساب</h3>
               </div>
 
               <div className="lp-google-modal-body">
                 <p>
-                  Bu e-posta adresiyle zaten bir hesabınız var.
+                  يوجد لديك بالفعل حساب باستخدام هذا البريد الإلكتروني.
                 </p>
 
                 <p className="lp-google-modal-note">
-                  Mevcut hesabınızı doğruladıktan sonra Google girişini bu hesaba bağlayacağız.
+                  بعد التحقق من الحساب الحالي، سنربط تسجيل Google بهذا الحساب.
                 </p>
 
                 <div className="lp-register-form-group" style={{ marginBottom: 0 }}>
@@ -1073,12 +1087,12 @@ export default function RegisterPage() {
 
                 <div className="lp-register-form-group" style={{ marginBottom: 0 }}>
                   <label className="lp-register-label">
-                    <i className="fas fa-lock lp-register-icon"></i> Mevcut Şifre
+                    <i className="fas fa-lock lp-register-icon"></i> كلمة المرور الحالية
                   </label>
                   <input
                     className="lp-register-input"
                     type="password"
-                    placeholder="Mevcut hesabınızın şifresi"
+                    placeholder="كلمة المرور للحساب الحالي"
                     value={mergePassword}
                     onChange={(e) => setMergePassword(e.target.value)}
                     disabled={loading}
@@ -1099,7 +1113,7 @@ export default function RegisterPage() {
                     }}
                     disabled={loading}
                   >
-                    Şifre ile Giriş Yap
+                    تسجيل الدخول بكلمة المرور
                   </button>
 
                   <button
@@ -1108,7 +1122,7 @@ export default function RegisterPage() {
                     onClick={handleConfirmMerge}
                     disabled={loading || !mergePassword.trim()}
                   >
-                    {loading ? "Bağlanıyor..." : "Google ile Birleştir"}
+                    {loading ? "جارٍ الربط..." : "الربط مع Google"}
                   </button>
                 </div>
               </div>

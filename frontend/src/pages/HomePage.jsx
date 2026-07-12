@@ -10,8 +10,8 @@ import categoryImages from "../data/categoryImages";
 import { getListingBackgroundStyle } from "../utils/listingImagePresentation";
 import { fetchListings } from "../services/listingsApi";
 
-import HomePageLogo from "../assets/pictures/HomePageLogo.png";
-import AppBannerImage from "../assets/pictures/AppBanner1.png";
+import HomePageLogo from "../assets/pictures/HomePageLogoArabic.png";
+import AppBannerImage from "../assets/pictures/AppBanner1Arabic.png";
 import handshakeImage from "../assets/pictures/handshake.png";
 import costumerImage from "../assets/pictures/costumer.png";
 import checkImage from "../assets/pictures/check.png";

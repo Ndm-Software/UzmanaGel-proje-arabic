@@ -7,8 +7,8 @@ import { auth, db } from '../firebase/firebaseClient';
 import ThemeSwitch from './ThemeSwitch';
 import DOMPurify from 'dompurify';
 import '../styles/Navbar.css';
-import logo from '../assets/pictures/logo.png';
-import defaultAvatar from '../assets/pictures/logo.png';
+import logo from '../assets/pictures/LogoArabicNoWriting.png';
+import defaultAvatar from '../assets/pictures/LogoArabicNobackground.png';
 import { fetchMyConversations } from '../services/chatApi';
 import PenaltyBanner from './PenaltyBanner';
 import { showAppToast } from '../utils/showAppToast';
@@ -405,14 +405,27 @@ const Navbar = () => {
   return (
     <>
       <header className="navbar">
-        <div className="navbar-container">
+        <div className="navbar-container" dir="rtl">
           <div className="navbar-brand">
             <Link to="/" className="navbar-brand-link">
               <div className="brand-badge">
-                <img className="brand-badge-img" src={logo} alt="UzmanaGel" />
+                <img className="brand-badge-img " src={logo} alt="خبير" />
               </div>
-              <span className="brand-title">
-                Uzmana<span className="highlight">Gel</span>
+              <span className="brand-title"style={{ color: '#ff8c00' }}>
+                {/* خ + ب (Plus the long stretch following ب) */}
+                <span className="outer-letter">
+                  {"خ\u0640\u0640ب\u0640\u0640\u0640\u200D"}
+                </span>
+  
+                {/* ي (Isolated in Orange + Its trailing stretch) */}
+                <span className="inner-letters">
+                  {"\u200Dي\u0640\u0640\u0640\u0640\u200D"}
+                </span>
+  
+                {/* ر (With its leading stretch) */}
+                <span className="outer-letter">
+                  {"\u200D\u0640\u0640ر"}
+                </span>
               </span>
             </Link>
           </div>

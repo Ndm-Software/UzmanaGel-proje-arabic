@@ -693,3 +693,17 @@
   text-decoration: none;
   font-weight: 600;
 }
+.lp-register-topbrand-text {
+  font-family: 'Georgia', 'Times New Roman', serif !important;
+  font-size: 1.5rem !important; /* Adjust if needed to fit your register header size */
+  font-weight: 700 !important;
+  display: inline-flex !important; 
+  align-items: center !important;
+  
+  /* Vertical height scale to match the main navbar look */
+  transform: scaleY(1.5) !important; 
+  transform-origin: center !important;
+  
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}

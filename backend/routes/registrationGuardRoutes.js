@@ -43,7 +43,7 @@ function registrationRateLimitMiddleware(req, res, next) {
     return res.status(429).json({
       allowed: false,
       code: "RATE_LIMIT_EXCEEDED",
-      message: "Too many requests. Please try again later.",
+      message: "تم تنفيذ محاولات كثيرة. يرجى المحاولة لاحقاً.",
     });
   }
 }
@@ -110,7 +110,7 @@ router.post(
           field: "email",
           code: "INVALID_EMAIL",
           provider,
-          message: "Geçerli bir e-posta adresi gereklidir.",
+          message: "يرجى إدخال بريد إلكتروني صالح.",
         });
       }
 
@@ -124,7 +124,7 @@ router.post(
           code: "DELETED_ACCOUNT_IN_RETENTION",
           provider,
           message:
-            "Bu hesap silinmiş durumda ve geri yükleme süresi devam ediyor. Lütfen hesabınızı geri yükleyin veya destek ile iletişime geçin.",
+            "هذا الحساب محذوف حالياً وما زالت مدة الاستعادة مستمرة. يرجى استعادة الحساب أو التواصل مع الدعم.",
         });
       }
 
@@ -146,7 +146,7 @@ router.post(
       return res.status(500).json({
         allowed: false,
         code: "SOCIAL_LOGIN_ELIGIBILITY_FAILED",
-        message: "Sosyal giriş uygunluk kontrolü sırasında bir hata oluştu.",
+        message: "حدث خطأ أثناء التحقق من إمكانية تسجيل الدخول الاجتماعي.",
       });
     }
   }
@@ -168,7 +168,7 @@ router.post(
           allowed: false,
           field: "email",
           code: "INVALID_EMAIL",
-          message: "Geçerli bir e-posta adresi gereklidir.",
+          message: "يرجى إدخال بريد إلكتروني صالح.",
         });
       }
 
@@ -181,7 +181,7 @@ router.post(
           field: "email",
           code: "DELETED_ACCOUNT_IN_RETENTION",
           message:
-            "Bu hesap silinmiş durumda ve 60 günlük geri yükleme süresi devam ediyor.",
+            "هذا الحساب محذوف حالياً وما زالت مدة الاستعادة البالغة 60 يوماً مستمرة.",
         });
       }
 
@@ -202,7 +202,7 @@ router.post(
       return res.status(500).json({
         allowed: false,
         code: "LOGIN_ELIGIBILITY_FAILED",
-        message: "Giriş uygunluğu kontrol edilirken hata oluştu.",
+        message: "حدث خطأ أثناء التحقق من إمكانية تسجيل الدخول.",
       });
     }
   }
@@ -231,7 +231,7 @@ router.post(
           allowed: false,
           field: "email",
           code: "INVALID_EMAIL",
-          message: "Geçerli bir e-posta adresi gereklidir.",
+          message: "يرجى إدخال بريد إلكتروني صالح.",
         });
       }
 
@@ -240,7 +240,7 @@ router.post(
           allowed: false,
           field: "phoneNumber",
           code: "INVALID_PHONE_NUMBER",
-          message: "Geçerli bir telefon numarası gereklidir.",
+          message: "يرجى إدخال رقم هاتف صالح.",
         });
       }
 
@@ -251,7 +251,7 @@ router.post(
           allowed: false,
           field: "email",
           code: "ACTIVE_EMAIL_IN_USE",
-          message: "Bu e-posta adresi zaten aktif bir hesapta kullanılıyor.",
+          message: "هذا البريد الإلكتروني مستخدم بالفعل في حساب نشط.",
         });
       }
 
@@ -263,7 +263,7 @@ router.post(
           allowed: false,
           field: "phoneNumber",
           code: "ACTIVE_PHONE_IN_USE",
-          message: "Bu telefon numarası zaten aktif bir hesapta kullanılıyor.",
+          message: "رقم الهاتف هذا مستخدم بالفعل في حساب نشط.",
         });
       }
 
@@ -276,7 +276,7 @@ router.post(
           field: "email",
           code: "DELETED_EMAIL_RESERVED",
           message:
-            "Bu e-posta, silinmiş ancak geri yükleme süresi devam eden bir hesaba aittir.",
+            "هذا البريد الإلكتروني يعود إلى حساب محذوف وما زالت مدة الاستعادة مستمرة.",
         });
       }
 
@@ -289,7 +289,7 @@ router.post(
           field: "phoneNumber",
           code: "DELETED_PHONE_RESERVED",
           message:
-            "Bu telefon numarası, silinmiş ancak geri yükleme süresi devam eden bir hesaba aittir.",
+            "رقم الهاتف هذا يعود إلى حساب محذوف وما زالت مدة الاستعادة مستمرة.",
         });
       }
 
@@ -311,7 +311,7 @@ router.post(
       return res.status(500).json({
         allowed: false,
         code: "REGISTRATION_ELIGIBILITY_FAILED",
-        message: "Kayıt uygunluk kontrolü sırasında bir hata oluştu.",
+        message: "حدث خطأ أثناء التحقق من إمكانية إنشاء الحساب.",
       });
     }
   }

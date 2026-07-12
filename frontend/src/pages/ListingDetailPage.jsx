@@ -10,16 +10,85 @@ import { getOrCreateConversation } from "../services/chatApi";
 import { useAuthGuard } from "../hooks/useAuthGuard";
 import { getProfilePhoto } from "../services/updateService";
 import { getListingImageStyle } from "../utils/listingImagePresentation";
-import { doc, getDoc, collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { toArabicServiceLabel } from "../utils/arabicLabels";
+import { formatLatinNumber } from "../utils/localeFormat";
+import { doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebase/firebaseClient";
 import DOMPurify from 'dompurify';
 import "../styles/ListingDetailPage.css";
 
 const isDevelopment = process.env.NODE_ENV === 'development';
+const FIRST_CONTACT_REDIRECT_PREFIX = "khabiir:first-contact-redirect";
 
 const sanitizeText = (text) => {
   if (!text) return '';
   return DOMPurify.sanitize(String(text));
+};
+
+const translateListingToastMessage = (message) => {
+  const text = String(message || "").trim();
+  if (!text) return "";
+
+  const lower = text.toLowerCase();
+
+  if (
+    lower.includes("bu, şu anda geçerli olan bir durumdur") ||
+    lower.includes("bu, su anda gecerli olan bir durumdur") ||
+    lower.includes("şu anda geçerli") ||
+    lower.includes("su anda gecerli")
+  ) {
+    return "تم تقييم هذه الخدمة بالفعل.";
+  }
+
+  if (
+    lower.includes("bu, bir sorundur") ||
+    lower.includes("sorundur") ||
+    lower.includes("uygun randevu")
+  ) {
+    return "لم يتم العثور على موعد مناسب.";
+  }
+
+  if (
+    lower.includes("appointmentid") ||
+    lower.includes("randevu") ||
+    lower.includes("موعد")
+  ) {
+    if (
+      lower.includes("geçersiz") ||
+      lower.includes("gecersiz") ||
+      lower.includes("geã§ersiz") ||
+      lower.includes("invalid") ||
+      lower.includes("غير صالحة")
+    ) {
+      return "معلومات الموعد غير صالحة.";
+    }
+
+    return "معلومات الموعد مطلوبة.";
+  }
+
+  const isTurkishOrGenericError =
+    lower.includes("bu, bir sorundur") ||
+    lower.includes("sorundur") ||
+    lower.includes("sorun") ||
+    lower.includes("problem") ||
+    lower.includes("kullanici") ||
+    lower.includes("kullanıcı") ||
+    lower.includes("sohbet") ||
+    lower.includes("konuşma") ||
+    lower.includes("konusma") ||
+    lower.includes("hizmet") ||
+    lower.includes("sunucu") ||
+    lower.includes("hata") ||
+    lower.includes("bulunamadi") ||
+    lower.includes("bulunamadı") ||
+    lower.includes("provideruid") ||
+    lower.includes("serviceid");
+
+  if (isTurkishOrGenericError) {
+    return "تعذر بدء المحادثة. يرجى المحاولة مرة أخرى لاحقاً.";
+  }
+
+  return text;
 };
 
 export default function ListingDetailPage() {
@@ -138,10 +207,11 @@ export default function ListingDetailPage() {
   }, [listingId]);
 
   const showToast = (message, type = "error") => {
-    setToast({ show: true, message: sanitizeText(message), type });
+    setToast({ show: true, message: sanitizeText(translateListingToastMessage(message)), type });
     setTimeout(() => setToast({ show: false, message: "", type: "error" }), 4000);
   };
 
+  /* Syria Arabic launch: appointment lookup disabled.
   const getApprovedAppointmentIdForListing = async () => {
     const currentUser = auth.currentUser;
     if (!currentUser) return null;
@@ -165,6 +235,7 @@ export default function ListingDetailPage() {
       return null;
     }
   };
+  */
 
   const handleStartChat = async () => {
     if (!isSignedIn) {
@@ -200,11 +271,28 @@ export default function ListingDetailPage() {
       const serviceId = String(listing?.id || listingId || "").trim();
       const serviceTitle = String(listing?.title || "").trim();
 
-      if (!providerUid) { showToast("لم يتم العثور على معلومات الخبير."); return; }
-      if (!serviceId) { showToast("لم يتم العثور على معلومات الخدمة."); return; }
+      if (!providerUid || !serviceId) {
+        navigate("/mesajlar?firstContact=true");
+        return;
+      }
 
       setChatLoading(true);
 
+      const firstRedirectKey = `${FIRST_CONTACT_REDIRECT_PREFIX}:${auth.currentUser?.uid || "guest"}:${serviceId}`;
+      let shouldRedirectToMessages = true;
+      try {
+        shouldRedirectToMessages = localStorage.getItem(firstRedirectKey) !== "done";
+      } catch {
+        shouldRedirectToMessages = true;
+      }
+
+      if (!shouldRedirectToMessages) {
+        navigate("/mesajlar");
+        setChatLoading(false);
+        return;
+      }
+
+      /* Syria Arabic launch: appointment creation/validation disabled for direct chat.
       let approvedAppointmentId = await getApprovedAppointmentIdForListing();
 
       if (!approvedAppointmentId) {
@@ -249,12 +337,19 @@ export default function ListingDetailPage() {
           return;
         }
       }
+      */
 
-      const result = await getOrCreateConversation(providerUid, serviceId, serviceTitle, approvedAppointmentId);
-      navigate(`/mesajlar?conversation=${result.conversationId}&open=true`);
+      const result = await getOrCreateConversation(providerUid, serviceId, serviceTitle);
+      try {
+        localStorage.setItem(firstRedirectKey, "done");
+      } catch {
+        // Tarayıcı depolaması kapalıysa akış normal devam eder.
+      }
+      navigate(`/mesajlar?conversation=${result.conversationId}&open=true&firstContact=true`);
     } catch (error) {
       if (isDevelopment) console.error("Chat baslatma hatasi:", error.message);
-      showToast(error.message || "حدث خطأ أثناء بدء المراسلة.");
+      // Syria Arabic launch: contact button should always take the customer to messages, not show appointment warnings.
+      navigate("/mesajlar?firstContact=true");
     } finally {
       setChatLoading(false);
     }
@@ -293,7 +388,7 @@ export default function ListingDetailPage() {
 
   const imageSrc = listing.image || categoryImages[listing.category] || "/default-listing.svg";
   const canOpenProfile = !!listing.providerId;
-  const formatPrice = (p) => new Intl.NumberFormat("tr-TR").format(Number(p) || 0);
+  const formatPrice = (p) => formatLatinNumber(p);
   const reviewSummary = computeRatingSummary(reviews);
   const effectiveReviewCount = Number(reviewStats?.count || listing?.reviews || reviewSummary.count || 0);
 
@@ -323,15 +418,15 @@ export default function ListingDetailPage() {
             <div className="ld-title-row">
               <h1 className="ld-title">{sanitizeText(listing.title)}</h1>
               <span className="ld-category-tag">
-                <i className="fas fa-tag"></i> {sanitizeText(listing.category)}
+                <i className="fas fa-tag"></i> {sanitizeText(toArabicServiceLabel(listing.category))}
               </span>
             </div>
             <div className="ld-meta">
               <span><i className="fas fa-user-tie"></i> {sanitizeText(listing.expertName || "خبير")}</span>
               <span><i className="fas fa-map-marker-alt"></i> {sanitizeText(listing.city || "غير محدد")}</span>
               <span className="ld-rating">
-                <i className="fas fa-star"></i> {listing.rating ?? 0}
-                <em>({effectiveReviewCount} تقييم)</em>
+                <i className="fas fa-star"></i> {formatLatinNumber(listing.rating ?? 0)}
+                <em>({formatLatinNumber(effectiveReviewCount)} تقييم)</em>
               </span>
             </div>
           </div>
@@ -360,12 +455,12 @@ export default function ListingDetailPage() {
               <div className="ld-details">
                 <div className="ld-detail-item">
                   <span className="ld-detail-label">الفئة</span>
-                  <span className="ld-detail-value">{sanitizeText(listing.category)}</span>
+                  <span className="ld-detail-value">{sanitizeText(toArabicServiceLabel(listing.category))}</span>
                 </div>
                 {String(listing.serviceSubcategory || "").trim() ? (
                   <div className="ld-detail-item">
                     <span className="ld-detail-label">التخصص</span>
-                    <span className="ld-detail-value">{sanitizeText(String(listing.serviceSubcategory).trim())}</span>
+                    <span className="ld-detail-value">{sanitizeText(toArabicServiceLabel(String(listing.serviceSubcategory).trim()))}</span>
                   </div>
                 ) : null}
                 {String(listing.serviceSubcategoryDetails || "").trim() ? (
@@ -380,7 +475,7 @@ export default function ListingDetailPage() {
                 </div>
                 <div className="ld-detail-item">
                   <span className="ld-detail-label">السعر</span>
-                  <span className="ld-detail-value ld-price">₺{formatPrice(listing.price)}</span>
+                  <span className="ld-detail-value ld-price">{formatPrice(listing.price)} ل.س</span>
                 </div>
                 <div className="ld-detail-item">
                   <span className="ld-detail-label">نوع الخدمة</span>
@@ -428,6 +523,7 @@ export default function ListingDetailPage() {
                 </div>
               </div>
 
+              {/* Syria Arabic launch: secondary service message button disabled.
               <button
                 className="ld-profile-btn"
                 onClick={handleStartChat}
@@ -437,6 +533,7 @@ export default function ListingDetailPage() {
                 <i className="fas fa-message"></i>{" "}
                 {chatLoading ? "جاري فتح الرسالة..." : "أرسل رسالة لهذه الخدمة"}
               </button>
+              */}
 
               <button
                 className="ld-profile-btn"

@@ -29,7 +29,7 @@ exports.getFavorites = async (req, res) => {
     }
 
     res.status(500).json({
-      message: "Failed to load favorites.",
+      message: "تعذر تحميل المفضلة.",
     });
   }
 };
@@ -39,7 +39,7 @@ exports.addFavorite = async (req, res) => {
   console.log("NEW favoriteController is running");
 
   if (!id) {
-    return res.status(400).json({ message: "Favorite id is required." });
+    return res.status(400).json({ message: "معرف الإعلان مطلوب." });
   }
 
   try {
@@ -54,7 +54,7 @@ exports.addFavorite = async (req, res) => {
     );
 
     res.status(201).json({
-      message: "Favorite added.",
+      message: "تمت إضافة الإعلان إلى المفضلة.",
       id,
     });
   } catch (error) {
@@ -63,7 +63,7 @@ exports.addFavorite = async (req, res) => {
     }
 
     res.status(500).json({
-      message: "Failed to add favorite.",
+      message: "تعذر إضافة الإعلان إلى المفضلة.",
     });
   }
 };
@@ -72,7 +72,7 @@ exports.removeFavorite = async (req, res) => {
   const id = String(req.params.id || "").trim();
 
   if (!id) {
-    return res.status(400).json({ message: "Favorite id is required." });
+    return res.status(400).json({ message: "معرف الإعلان مطلوب." });
   }
 
   try {
@@ -87,7 +87,7 @@ exports.removeFavorite = async (req, res) => {
     );
 
     res.json({
-      message: "Favorite removed.",
+      message: "تمت إزالة الإعلان من المفضلة.",
       id,
     });
   } catch (error) {
@@ -96,7 +96,7 @@ exports.removeFavorite = async (req, res) => {
     }
 
     res.status(500).json({
-      message: "Failed to remove favorite.",
+      message: "تعذر إزالة الإعلان من المفضلة.",
     });
   }
 };

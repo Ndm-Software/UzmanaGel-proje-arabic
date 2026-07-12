@@ -12,28 +12,32 @@ async function createOrGetConversation(req, res) {
     const { providerUid, serviceId, listingId, serviceTitle, appointmentId } = req.body;
 
     const finalServiceId = String(serviceId || listingId || "").trim();
-    const finalAppointmentId = String(appointmentId || "").trim();
+    // Syria Arabic launch: appointment system disabled; keep legacy parsing commented.
+    // const finalAppointmentId = String(appointmentId || "").trim();
 
     // INPUT VALIDATION
     if (!providerUid || typeof providerUid !== "string" || providerUid.length > 128) {
-      return res.status(400).json({ message: "Geçersiz providerUid." });
+      return res.status(400).json({ message: "معرف الخبير غير صالح." });
     }
 
     if (!finalServiceId || typeof finalServiceId !== "string" || finalServiceId.length > 100) {
-      return res.status(400).json({ message: "Geçersiz serviceId." });
+      return res.status(400).json({ message: "معرف الخدمة غير صالح." });
     }
 
-    // ✅ NEW: appointmentId zorunlu
-    if (
-      !finalAppointmentId ||
-      typeof finalAppointmentId !== "string" ||
-      finalAppointmentId.length > 150
-    ) {
-      return res.status(400).json({ message: "Geçersiz appointmentId." });
-    }
+    // Syria Arabic launch: appointment system disabled, appointmentId is no longer mandatory.
+    // if (
+    //   !finalAppointmentId ||
+    //   typeof finalAppointmentId !== "string" ||
+    //   finalAppointmentId.length > 150
+    // ) {
+    //   return res.status(400).json({ message: "معلومات الموعد غير صالحة." });
+    // }
+    // if (finalAppointmentId && finalAppointmentId.length > 150) {
+    //   return res.status(400).json({ message: "معلومات الموعد غير صالحة." });
+    // }
 
     if (!currentUid || typeof currentUid !== "string" || currentUid.length > 128) {
-      return res.status(401).json({ message: "Geçersiz kullanıcı." });
+      return res.status(401).json({ message: "المستخدم غير صالح." });
     }
 
     const result = await chatService.getOrCreateConversation({
@@ -41,7 +45,7 @@ async function createOrGetConversation(req, res) {
       providerUid,
       serviceId: finalServiceId,
       serviceTitle,
-      appointmentId: finalAppointmentId,
+      // appointmentId: finalAppointmentId,
     });
 
     return res.status(200).json(result);
@@ -49,7 +53,7 @@ async function createOrGetConversation(req, res) {
     if (isDevelopment) console.error("createOrGetConversation error:", error.message);
     return res.status(400).json({
       message:
-        error.message || "Konuşma başlatılamadı. Lütfen daha sonra tekrar deneyin.",
+        error.message || "تعذر بدء المحادثة. يرجى المحاولة لاحقاً.",
     });
   }
 }
@@ -59,14 +63,14 @@ async function getMyConversations(req, res) {
     const currentUid = req.user.uid;
 
     if (!currentUid || typeof currentUid !== "string" || currentUid.length > 128) {
-      return res.status(401).json({ message: "Geçersiz kullanıcı." });
+      return res.status(401).json({ message: "المستخدم غير صالح." });
     }
 
     const conversations = await chatService.getUserConversations(currentUid);
     return res.status(200).json(conversations);
   } catch (error) {
     if (isDevelopment) console.error("getMyConversations error:", error.message);
-    return res.status(500).json({ message: "Konuşmalar yüklenemedi. Lütfen daha sonra tekrar deneyin." });
+    return res.status(500).json({ message: "تعذر تحميل المحادثات. يرجى المحاولة لاحقاً." });
   }
 }
 
@@ -76,11 +80,11 @@ async function getMessages(req, res) {
     const { conversationId } = req.params;
 
     if (!currentUid || typeof currentUid !== "string" || currentUid.length > 128) {
-      return res.status(401).json({ message: "Geçersiz kullanıcı." });
+      return res.status(401).json({ message: "المستخدم غير صالح." });
     }
 
     if (!conversationId || typeof conversationId !== "string" || conversationId.length > 128) {
-      return res.status(400).json({ message: "Geçersiz conversationId." });
+      return res.status(400).json({ message: "معرف المحادثة غير صالح." });
     }
 
     const messages = await chatService.getConversationMessages({
@@ -92,7 +96,7 @@ async function getMessages(req, res) {
   } catch (error) {
     if (isDevelopment) console.error("getMessages error:", error.message);
     const status = error.message === "Forbidden" ? 403 : 400;
-    return res.status(status).json({ message: "Mesajlar yüklenemedi. Lütfen daha sonra tekrar deneyin." });
+    return res.status(status).json({ message: "تعذر تحميل الرسائل. يرجى المحاولة لاحقاً." });
   }
 }
 
@@ -103,19 +107,19 @@ async function createMessage(req, res) {
     const { text, replyToMessageId } = req.body;
 
     if (!senderUid || typeof senderUid !== "string" || senderUid.length > 128) {
-      return res.status(401).json({ message: "Geçersiz kullanıcı." });
+      return res.status(401).json({ message: "المستخدم غير صالح." });
     }
 
     if (!conversationId || typeof conversationId !== "string" || conversationId.length > 128) {
-      return res.status(400).json({ message: "Geçersiz conversationId." });
+      return res.status(400).json({ message: "معرف المحادثة غير صالح." });
     }
 
     if (!text || typeof text !== "string" || text.length > 5000) {
-      return res.status(400).json({ message: "Mesaj çok uzun veya geçersiz." });
+      return res.status(400).json({ message: "الرسالة طويلة جداً أو غير صالحة." });
     }
 
     if (replyToMessageId && (typeof replyToMessageId !== "string" || replyToMessageId.length > 128)) {
-      return res.status(400).json({ message: "Geçersiz replyToMessageId." });
+      return res.status(400).json({ message: "معرف الرسالة المردود عليها غير صالح." });
     }
 
     const result = await chatService.sendMessage({
@@ -130,7 +134,7 @@ async function createMessage(req, res) {
     if (isDevelopment) console.error("createMessage error:", error.message);
     const status = error.message === "Forbidden" ? 403 : 400;
     return res.status(status).json({
-      message: error?.message || "Mesaj gönderilemedi. Lütfen daha sonra tekrar deneyin.",
+      message: error?.message || "تعذر إرسال الرسالة. يرجى المحاولة لاحقاً.",
     });
   }
 }
@@ -141,11 +145,11 @@ async function markAsRead(req, res) {
     const { conversationId } = req.params;
 
     if (!currentUid || typeof currentUid !== "string" || currentUid.length > 128) {
-      return res.status(401).json({ message: "Geçersiz kullanıcı." });
+      return res.status(401).json({ message: "المستخدم غير صالح." });
     }
 
     if (!conversationId || typeof conversationId !== "string" || conversationId.length > 128) {
-      return res.status(400).json({ message: "Geçersiz conversationId." });
+      return res.status(400).json({ message: "معرف المحادثة غير صالح." });
     }
 
     const result = await chatService.markConversationAsRead({
@@ -157,7 +161,7 @@ async function markAsRead(req, res) {
   } catch (error) {
     if (isDevelopment) console.error("markAsRead error:", error.message);
     const status = error.message === "Forbidden" ? 403 : 400;
-    return res.status(status).json({ message: "Mesaj okundu işaretlenemedi. Lütfen daha sonra tekrar deneyin." });
+    return res.status(status).json({ message: "تعذر تعليم الرسالة كمقروءة. يرجى المحاولة لاحقاً." });
   }
 }
 
@@ -167,15 +171,15 @@ async function deleteMessage(req, res) {
     const { conversationId, messageId } = req.params;
 
     if (!currentUid || typeof currentUid !== "string" || currentUid.length > 128) {
-      return res.status(401).json({ message: "Geçersiz kullanıcı." });
+      return res.status(401).json({ message: "المستخدم غير صالح." });
     }
 
     if (!conversationId || typeof conversationId !== "string" || conversationId.length > 128) {
-      return res.status(400).json({ message: "Geçersiz conversationId." });
+      return res.status(400).json({ message: "معرف المحادثة غير صالح." });
     }
 
     if (!messageId || typeof messageId !== "string" || messageId.length > 128) {
-      return res.status(400).json({ message: "Geçersiz messageId." });
+      return res.status(400).json({ message: "معرف الرسالة غير صالح." });
     }
 
     const result = await chatService.deleteMessage({
@@ -188,7 +192,7 @@ async function deleteMessage(req, res) {
   } catch (error) {
     if (isDevelopment) console.error("deleteMessage error:", error.message);
     const status = error.message === "Forbidden" ? 403 : 400;
-    return res.status(status).json({ message: "Mesaj silinemedi. Lütfen daha sonra tekrar deneyin." });
+    return res.status(status).json({ message: "تعذر حذف الرسالة. يرجى المحاولة لاحقاً." });
   }
 }
 
@@ -198,11 +202,11 @@ async function closeConversation(req, res) {
     const { conversationId } = req.params;
 
     if (!currentUid || typeof currentUid !== "string" || currentUid.length > 128) {
-      return res.status(401).json({ message: "Geçersiz kullanıcı." });
+      return res.status(401).json({ message: "المستخدم غير صالح." });
     }
 
     if (!conversationId || typeof conversationId !== "string" || conversationId.length > 128) {
-      return res.status(400).json({ message: "Geçersiz conversationId." });
+      return res.status(400).json({ message: "معرف المحادثة غير صالح." });
     }
 
     const result = await chatService.closeConversation({
@@ -215,7 +219,7 @@ async function closeConversation(req, res) {
     if (isDevelopment) console.error("closeConversation error:", error.message);
     const status = error.message === "Forbidden" ? 403 : 400;
     return res.status(status).json({
-      message: error?.message || "Sohbet kapatilamadi.",
+      message: error?.message || "تعذر إغلاق المحادثة.",
     });
   }
 }

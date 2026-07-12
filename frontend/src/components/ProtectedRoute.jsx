@@ -33,7 +33,7 @@ const ProtectedRoute = ({ children, adminOnly = false, expertOnly = false }) => 
           const userDoc = await getDoc(doc(db, "users", user.uid));
           
           if (!userDoc.exists()) {
-            setErrorMessage('Kullanıcı kaydınız bulunamadı!');
+            setErrorMessage('لم يتم العثور على سجل المستخدم الخاص بك!');
             setTimeout(() => navigate('/'), 3000);
             setLoading(false);
             return;
@@ -46,14 +46,14 @@ const ProtectedRoute = ({ children, adminOnly = false, expertOnly = false }) => 
             setLoading(false);
             return;
           } else {
-            setErrorMessage('Bu sayfaya erişim yetkiniz yok! Sadece adminler erişebilir.');
+            setErrorMessage('ليست لديك صلاحية الوصول إلى هذه الصفحة! الوصول متاح للمسؤولين فقط.');
             setTimeout(() => navigate('/'), 3000);
             setLoading(false);
             return;
           }
         } catch (error) {
           if (isDevelopment) console.error('Admin yetki kontrolü hatası:', error.message);
-          setErrorMessage('Yetki kontrolü sırasında bir hata oluştu.');
+          setErrorMessage('حدث خطأ أثناء التحقق من الصلاحيات.');
           setTimeout(() => navigate('/'), 3000);
           setLoading(false);
           return;
@@ -65,7 +65,7 @@ const ProtectedRoute = ({ children, adminOnly = false, expertOnly = false }) => 
           const userDoc = await getDoc(doc(db, "users", user.uid));
           
           if (!userDoc.exists()) {
-            setErrorMessage('Kullanıcı kaydınız bulunamadı!');
+            setErrorMessage('لم يتم العثور على سجل المستخدم الخاص بك!');
             setTimeout(() => navigate('/'), 3000);
           } else {
             const userData = userDoc.data();
@@ -74,15 +74,15 @@ const ProtectedRoute = ({ children, adminOnly = false, expertOnly = false }) => 
               setIsAuthorized(true);
             } 
             else if (userData.userType === 'PENDING_PROVIDER') {
-              setErrorMessage('Uzman başvurunuz admin onayı bekliyor.');
+              setErrorMessage('طلب انضمامك كخبير بانتظار موافقة المسؤول.');
               setTimeout(() => navigate('/ilanlar'), 3000);  
             }
             else if (userData.userType === 'CLIENT') {
-              setErrorMessage('Bu sayfa sadece uzmanlar içindir!');
+              setErrorMessage('هذه الصفحة مخصصة للخبراء فقط!');
               setTimeout(() => navigate('/ilanlar'), 3000);
             }
             else {
-              setErrorMessage('Bu sayfaya erişim yetkiniz yok!');
+              setErrorMessage('ليست لديك صلاحية الوصول إلى هذه الصفحة!');
               setTimeout(() => navigate('/'), 3000);
             }
           }
@@ -105,7 +105,7 @@ const ProtectedRoute = ({ children, adminOnly = false, expertOnly = false }) => 
     return () => unsubscribe();
   }, [navigate, adminOnly, expertOnly]);
 
-  if (loading) return <LoadingSpinner text="Kontrol ediliyor..." />;
+  if (loading) return <LoadingSpinner text="جاري التحقق..." />;
   
   if (errorMessage) {
     return (
@@ -119,9 +119,9 @@ const ProtectedRoute = ({ children, adminOnly = false, expertOnly = false }) => 
         padding: '20px'
       }}>
         <i className="fas fa-exclamation-circle" style={{ fontSize: '48px', color: '#ef4444', marginBottom: '20px' }}></i>
-        <h2 style={{ color: 'var(--text-main)', marginBottom: '10px' }}>Erişim Engellendi</h2>
+        <h2 style={{ color: 'var(--text-main)', marginBottom: '10px' }}>تم منع الوصول</h2>
         <p style={{ color: 'var(--text-muted)', maxWidth: '500px', marginBottom: '20px' }}>{sanitizeText(errorMessage)}</p>
-        <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Yönlendiriliyorsunuz...</p>
+        <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>جاري تحويلك...</p>
       </div>
     );
   }

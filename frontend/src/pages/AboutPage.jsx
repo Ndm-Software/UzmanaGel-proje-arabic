@@ -148,7 +148,7 @@ export default function AboutPage() {
                   .
                 </h1>
                 <p>
-                  منصة UzmanaGel تجمع بين العملاء الباحثين عن خدمات والخبراء في منصة آمنة واحدة. هدفنا تقليل هدر الوقت، ورفع الجودة، وضمان الشفافية في كل خطوة.
+                  منصة خبير تجمع بين العملاء الباحثين عن خدمات والخبراء في منصة آمنة واحدة. هدفنا تقليل هدر الوقت، ورفع الجودة، وضمان الشفافية في كل خطوة.
                 </p>
                 <div className="about-hero-badges">
                   <span>ملفات شخصية موثقة</span>
@@ -163,7 +163,7 @@ export default function AboutPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.55, delay: 0.1 }}
               >
-                <img className="about-hero-logo" src={logo} alt="UzmanaGel logosu" />
+                <img className="about-hero-logo" src={logo} alt="شعار خبير" />
               </motion.div>
             </motion.div>
           </section>

@@ -499,7 +499,7 @@ const ExpertRegisterPage = () => {
       <div className="expert-register-page">
         <header className="lp-register-topbrand">
           <Link to="/" className="lp-register-topbrand-link" aria-label="الصفحة الرئيسية">
-            <img className="lp-register-topbrand-logo" src={brandImage} alt="UzmanaGel" />
+            <img className="lp-register-topbrand-logo" src={brandImage} alt="خبير" />
             <span className="lp-register-topbrand-text">
               Uzmana<span className="highlight">Gel</span>
             </span>

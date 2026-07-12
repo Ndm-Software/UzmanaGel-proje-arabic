@@ -24,7 +24,7 @@ export async function checkSocialLoginEligibility({ email, provider = "google" }
 
   if (!response.ok) {
     const error = new Error(
-      data?.message || "Sosyal giriş uygunluk kontrolü başarısız oldu."
+      data?.message || "تعذر التحقق من إمكانية تسجيل الدخول الاجتماعي."
     );
     error.code = data?.code || "SOCIAL_LOGIN_ELIGIBILITY_FAILED";
     error.field = data?.field || null;

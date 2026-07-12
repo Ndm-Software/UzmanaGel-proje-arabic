@@ -16,12 +16,12 @@ function errorMiddleware(error, req, res, _next) {
 
   if (error?.type === "entity.too.large") {
     return res.status(413).json({
-      message: "Request payload too large. Please use a smaller image.",
+    message: "حجم الطلب كبير جداً. يرجى استخدام صورة أصغر.",
     });
   }
 
   return res.status(500).json({
-    message: "Unexpected server error.",
+    message: "حدث خطأ غير متوقع في الخادم.",
     details: error?.message || String(error),
   });
 }

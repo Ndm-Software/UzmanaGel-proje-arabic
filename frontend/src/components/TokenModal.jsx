@@ -73,14 +73,14 @@ const appendIframeMode = (paymentPageUrl) => {
 
 const getPaymentFailureMessage = (status) => {
   if (status === "EXPIRED") {
-    return "Ödeme süresi doldu. Lütfen yeni bir ödeme işlemi başlatın.";
+    return "انتهت مدة الدفع. يرجى بدء عملية دفع جديدة.";
   }
 
   if (status === "CANCELLED" || status === "CANCELED") {
-    return "Ödeme işlemi iptal edildi. Dilerseniz tekrar deneyebilirsiniz.";
+    return "تم إلغاء عملية الدفع. يمكنك المحاولة مرة أخرى إذا أردت.";
   }
 
-  return "Ödeme başarısız görünüyor. Lütfen tekrar deneyin.";
+  return "يبدو أن عملية الدفع فشلت. يرجى المحاولة مرة أخرى.";
 };
 
 const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
@@ -191,13 +191,13 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
 
         setPaymentFeedback({
           type: "success",
-          title: "Ödeme Başarılı",
-          message: `${tokenAmount} jeton hesabınıza tanımlandı.`,
+          title: "تم الدفع بنجاح",
+          message: `تمت إضافة ${tokenAmount} رصيد إلى حسابك.`,
         });
 
         if (!toastShownRef.current) {
           showToast(
-            `Başarılı! ${tokenAmount} jeton hesabınıza tanımlandı.`,
+            `تم بنجاح! تمت إضافة ${tokenAmount} رصيد إلى حسابك.`,
             "success"
           );
           toastShownRef.current = true;
@@ -219,7 +219,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
 
         setPaymentFeedback({
           type: "error",
-          title: "Ödeme Tamamlanamadı",
+          title: "تعذر إكمال الدفع",
           message,
         });
 
@@ -262,7 +262,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
         }
 
         showToast(
-          "Jeton fiyatı yüklenemedi, varsayılan fiyat kullanılıyor.",
+          "تعذر تحميل سعر الرصيد، سيتم استخدام السعر الافتراضي.",
           "error"
         );
       } finally {
@@ -309,7 +309,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-          throw new Error(data?.message || "Ödeme durumu okunamadı.");
+          throw new Error(data?.message || "تعذر قراءة حالة الدفع.");
         }
 
         const status = String(data?.payment?.status || "").toUpperCase();
@@ -332,13 +332,13 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
 
           setPaymentFeedback({
             type: "success",
-            title: "Ödeme Başarılı",
-            message: `${tokenAmount} jeton hesabınıza tanımlandı.`,
+            title: "تم الدفع بنجاح",
+            message: `تمت إضافة ${tokenAmount} رصيد إلى حسابك.`,
           });
 
           if (!toastShownRef.current) {
             showToast(
-              `Başarılı! ${tokenAmount} jeton hesabınıza tanımlandı.`,
+              `تم بنجاح! تمت إضافة ${tokenAmount} رصيد إلى حسابك.`,
               "success"
             );
             toastShownRef.current = true;
@@ -364,7 +364,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
 
           setPaymentFeedback({
             type: "error",
-            title: "Ödeme Tamamlanamadı",
+            title: "تعذر إكمال الدفع",
             message,
           });
 
@@ -400,21 +400,21 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
     e.preventDefault();
 
     if (isPaymentRateLimited()) {
-      showToast("Çok fazla ödeme denemesi. Lütfen 1 dakika bekleyin.", "error");
+      showToast("تم إجراء محاولات دفع كثيرة. يرجى الانتظار دقيقة واحدة.", "error");
       return;
     }
 
     if (!Number.isInteger(Number(tokenAmount))) {
-      showToast("Jeton miktarı tam sayı olmalıdır.", "error");
+      showToast("يجب أن تكون كمية الرصيد رقماً صحيحاً.", "error");
       recordPaymentAttempt();
       return;
     }
 
     if (tokenAmount < 1 || tokenAmount > maxTokenAmount) {
       showToast(
-        `Jeton miktarı 1-${maxTokenAmount.toLocaleString(
+        `يجب أن تكون كمية الرصيد بين 1 و ${maxTokenAmount.toLocaleString(
           "tr-TR"
-        )} arasında olmalıdır.`,
+        )}.`,
         "error"
       );
       recordPaymentAttempt();
@@ -424,7 +424,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
     const currentUser = auth.currentUser;
 
     if (!currentUser) {
-      showToast("Oturum bulunamadı. Lütfen tekrar giriş yapın.", "error");
+      showToast("لم يتم العثور على جلسة نشطة. يرجى تسجيل الدخول مرة أخرى.", "error");
       recordPaymentAttempt();
       return;
     }
@@ -479,7 +479,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
       }
 
       showToast(
-        error.message || "Ödeme başlatılırken bir hata oluştu.",
+        error.message || "حدث خطأ أثناء بدء عملية الدفع.",
         "error"
       );
 
@@ -537,7 +537,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
       <div className="token-modal" onClick={(e) => e.stopPropagation()}>
         <div className="token-modal-header">
           <h2>
-            <i className="fas fa-wallet"></i> Jeton Merkezi
+            <i className="fas fa-wallet"></i> مركز الرصيد
           </h2>
 
           <button className="close-btn" onClick={handleClose} type="button">
@@ -561,8 +561,8 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
                     }`}
                   ></i>
                   {showInfo
-                    ? "Bilgiyi Gizle"
-                    : "Neden Jeton Almalıyım? Jetonlar Ne İşe Yarar?"}
+                    ? "إخفاء المعلومات"
+                    : "لماذا أحتاج إلى الرصيد؟ وكيف يتم استخدامه؟"}
                 </div>
 
                 {showInfo && (
@@ -570,29 +570,27 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
                     <div className="info-item">
                       <i className="fas fa-check-circle"></i>
                       <span>
-                        Uzmanlar, müşteriler tarafından gönderilen randevu
-                        taleplerini kabul etmek için jeton kullanır.
+                        يستخدم الخبراء الرصيد لقبول طلبات الخدمة المرسلة من العملاء.
                       </span>
                     </div>
 
                     <div className="info-item">
                       <i className="fas fa-check-circle"></i>
                       <span>
-                        Her randevu onayı için bakiyenizden 1 jeton düşülür.
+                        يتم خصم رصيد واحد من حسابك عند تأكيد كل طلب خدمة.
                       </span>
                     </div>
 
                     <div className="info-item">
                       <i className="fas fa-undo-alt"></i>
                       <span>
-                        Müşteri iptal ederse jetonlar hesabınıza geri iade
-                        edilir.
+                        إذا ألغى العميل الطلب، يتم إرجاع الرصيد إلى حسابك.
                       </span>
                     </div>
 
                     <div className="info-item">
                       <i className="fas fa-infinity"></i>
-                      <span>Jetonlarınızın kullanım süresi yoktur.</span>
+                      <span>لا توجد مدة انتهاء لاستخدام رصيدك.</span>
                     </div>
                   </div>
                 )}
@@ -601,7 +599,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
               <form onSubmit={handleCreateIyzicoIframe} className="payment-form">
                 <div className="token-selection">
                   <label>
-                    Yüklenecek Jeton Miktarı Max{" "}
+                    الحد الأقصى للرصيد المراد شحنه{" "}
                     {maxTokenAmount.toLocaleString("tr-TR")}
                   </label>
 
@@ -638,7 +636,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
 
                 {!priceLoading && (
                   <div className="price-display">
-                    <span>1 Jeton = </span>
+                    <span>1 رصيد = </span>
                     <strong>{unitPrice.toLocaleString("tr-TR")} TL</strong>
                   </div>
                 )}
@@ -667,18 +665,17 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
                     }}
                   >
                     <i className="fas fa-shield-alt"></i>
-                    Güvenli iyzico Ödemesi
+                    دفع آمن عبر iyzico
                   </div>
 
                   <div>
-                    Kart bilgileriniz UzmanaGel tarafından alınmaz, saklanmaz
-                    veya işlenmez. Ödeme işlemi iyzico güvenli ödeme altyapısı
-                    üzerinden bu pencere içinde tamamlanır.
+                    لا يتم جمع أو حفظ أو معالجة معلومات بطاقتك من قبل UzmanaGel.
+                    تتم عملية الدفع داخل هذه النافذة عبر بنية iyzico الآمنة.
                   </div>
                 </div>
 
                 <div className="price-display">
-                  <span>Mevcut Jeton Bakiyeniz: </span>
+                  <span>رصيدك الحالي: </span>
                   <strong>
                     {Number(tokenBalance || 0).toLocaleString("tr-TR")}
                   </strong>
@@ -687,13 +684,13 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
                 <button type="submit" className="pay-btn" disabled={loading}>
                   {loading ? (
                     <>
-                      <i className="fas fa-spinner fa-spin"></i> Ödeme Sayfası
-                      Hazırlanıyor...
+                      <i className="fas fa-spinner fa-spin"></i> صفحة الدفع
+                      جاري التجهيز...
                     </>
                   ) : (
                     <>
-                      {totalPrice.toLocaleString("tr-TR")} TL Güvenli Ödemeye
-                      Geç
+                      {totalPrice.toLocaleString("tr-TR")} TL إلى الدفع الآمن
+                      انتقال
                     </>
                   )}
                 </button>
@@ -712,7 +709,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
               >
                 <div>
                   <h3 style={{ marginBottom: "4px" }}>
-                    <i className="fas fa-lock"></i> iyzico Güvenli Ödeme
+                    <i className="fas fa-lock"></i> دفع آمن عبر iyzico
                   </h3>
 
                   <p
@@ -722,8 +719,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
                       margin: 0,
                     }}
                   >
-                    {tokenAmount} jeton için{" "}
-                    {totalPrice.toLocaleString("tr-TR")} TL ödeme yapıyorsunuz.
+                    ستدفع {totalPrice.toLocaleString("tr-TR")} TL مقابل {tokenAmount} رصيد.
                   </p>
                 </div>
 
@@ -742,7 +738,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
                     fontWeight: 700,
                   }}
                 >
-                  <i className="fas fa-arrow-left"></i> Geri
+                  <i className="fas fa-arrow-left"></i> رجوع
                 </button>
               </div>
 
@@ -799,15 +795,15 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
                       className="fas fa-spinner fa-spin"
                       style={{ fontSize: "28px" }}
                     ></i>
-                    <strong>Ödeme sonucu kontrol ediliyor...</strong>
+                    <strong>جاري التحقق من نتيجة الدفع...</strong>
                     <span style={{ color: "#9ca3af", fontSize: "13px" }}>
-                      Lütfen bekleyin, pencere birazdan güncellenecek.
+                      يرجى الانتظار، سيتم تحديث النافذة بعد قليل.
                     </span>
                   </div>
                 )}
 
                 <iframe
-                  title="iyzico Güvenli Ödeme"
+                  title="دفع آمن عبر iyzico"
                   src={iframeUrl}
                   onLoad={() => setIframeLoading(false)}
                   style={{
@@ -834,12 +830,12 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
               >
                 {checkingStatus ? (
                   <span>
-                    <i className="fas fa-spinner fa-spin"></i> Ödeme durumu
+                    <i className="fas fa-spinner fa-spin"></i> حالة الدفع
                     kontrol ediliyor...
                   </span>
                 ) : (
                   <span>
-                    Ödeme tamamlandığında jeton bakiyeniz otomatik olarak
+                    عند اكتمال الدفع سيتم تحديث رصيدك تلقائياً
                     güncellenecektir.
                   </span>
                 )}
@@ -859,7 +855,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
                       textDecoration: "underline",
                     }}
                   >
-                    Ödeme sayfası açılmadıysa yeni sekmede aç
+                    إذا لم تفتح صفحة الدفع، افتحها في تبويب جديد
                   </button>
                 )}
               </div>

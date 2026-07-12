@@ -296,7 +296,7 @@ const RequestForecastPage = () => {
           <div className="forecast-empty-state">
             <i className="fas fa-calendar-check" style={{fontSize: '3rem', color: '#10b981', marginBottom: '15px'}}></i>
             <h3>Gününüz Müsait</h3>
-            <p className="forecast-empty-text">Bu randevudan önce veya sonra çakışacak başka bir randevunuz bulunmuyor.</p>
+            <p className="forecast-empty-text">لا يوجد موعد آخر قد يتعارض قبل هذا الموعد أو بعده.</p>
           </div>
         )}
 

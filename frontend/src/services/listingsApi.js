@@ -64,7 +64,7 @@ export async function fetchListings(params = {}) {
   });
 
   if (!response.ok) {
-    throw new Error(await extractErrorMessage(response, "Failed to fetch listings."));
+    throw new Error(await extractErrorMessage(response, "تعذر تحميل الإعلانات."));
   }
 
   return response.json();
@@ -77,7 +77,7 @@ export async function fetchListingById(id) {
   });
 
   if (!response.ok) {
-    throw new Error(await extractErrorMessage(response, "Failed to fetch listing details."));
+    throw new Error(await extractErrorMessage(response, "تعذر تحميل تفاصيل الإعلان."));
   }
 
   return response.json();
@@ -95,7 +95,7 @@ export async function fetchListingsByIds(ids = []) {
   );
 
   if (!response.ok) {
-    throw new Error(await extractErrorMessage(response, "Failed to fetch listings by ids."));
+    throw new Error(await extractErrorMessage(response, "تعذر تحميل الإعلانات المحددة."));
   }
 
   return response.json();
@@ -108,7 +108,7 @@ export async function fetchListingsMeta() {
   });
 
   if (!response.ok) {
-    throw new Error(await extractErrorMessage(response, "Failed to fetch listings metadata."));
+    throw new Error(await extractErrorMessage(response, "تعذر تحميل بيانات الإعلانات."));
   }
 
   return response.json();
@@ -116,7 +116,7 @@ export async function fetchListingsMeta() {
 
 export async function updateListing(user, id, payload = {}) {
   if (!user) {
-    throw new Error("No authenticated user.");
+    throw new Error("يرجى تسجيل الدخول أولاً.");
   }
 
   const token = await user.getIdToken();
@@ -130,7 +130,7 @@ export async function updateListing(user, id, payload = {}) {
   });
 
   if (!response.ok) {
-    const err = await extractErrorPayload(response, "İlan güncellenemedi.");
+    const err = await extractErrorPayload(response, "تعذر تحديث الإعلان.");
     throw Object.assign(new Error(err.message), err);
   }
 
@@ -139,7 +139,7 @@ export async function updateListing(user, id, payload = {}) {
 
 export async function createListing(user, payload = {}) {
   if (!user) {
-    throw new Error("No authenticated user.");
+    throw new Error("يرجى تسجيل الدخول أولاً.");
   }
 
   const token = await user.getIdToken();
@@ -153,7 +153,7 @@ export async function createListing(user, payload = {}) {
   });
 
   if (!response.ok) {
-    const err = await extractErrorPayload(response, "İlan oluşturulamadı.");
+    const err = await extractErrorPayload(response, "تعذر إنشاء الإعلان.");
     throw Object.assign(new Error(err.message), err);
   }
 
@@ -167,7 +167,7 @@ export async function fetchProviderById(id) {
   });
 
   if (!response.ok) {
-    throw new Error(await extractErrorMessage(response, "Failed to fetch provider details."));
+    throw new Error(await extractErrorMessage(response, "تعذر تحميل معلومات الخبير."));
   }
 
   return response.json();
@@ -175,7 +175,7 @@ export async function fetchProviderById(id) {
 
 export async function deleteListing(user, id) {
   if (!user) {
-    throw new Error("No authenticated user.");
+    throw new Error("يرجى تسجيل الدخول أولاً.");
   }
 
   const token = await user.getIdToken();
@@ -189,7 +189,7 @@ export async function deleteListing(user, id) {
   });
 
   if (!response.ok) {
-    const err = await extractErrorPayload(response, "Failed to delete listing.");
+    const err = await extractErrorPayload(response, "تعذر حذف الإعلان.");
     throw Object.assign(new Error(err.message), err);
   }
 
@@ -236,7 +236,7 @@ export async function deleteListing(user, id) {
 
 export async function updateListingStatus(user, id, status) {
   if (!user) {
-    throw new Error("No authenticated user.");
+    throw new Error("يرجى تسجيل الدخول أولاً.");
   }
 
   const token = await user.getIdToken();
@@ -251,7 +251,7 @@ export async function updateListingStatus(user, id, status) {
   });
 
   if (!response.ok) {
-    const err = await extractErrorPayload(response, "İlan durumu güncellenemedi.");
+    const err = await extractErrorPayload(response, "تعذر تحديث حالة الإعلان.");
     throw Object.assign(new Error(err.message), err);
   }
 
@@ -299,7 +299,7 @@ export async function updateListingStatus(user, id, status) {
 
 export async function fetchMyListings(user) {
   if (!user) {
-    throw new Error("No authenticated user.");
+    throw new Error("يرجى تسجيل الدخول أولاً.");
   }
 
   const token = await user.getIdToken();
@@ -313,7 +313,7 @@ export async function fetchMyListings(user) {
   });
 
   if (!response.ok) {
-    throw new Error(await extractErrorMessage(response, "Uzman ilanları yüklenemedi."));
+    throw new Error(await extractErrorMessage(response, "تعذر تحميل إعلانات الخبير."));
   }
 
   return response.json();

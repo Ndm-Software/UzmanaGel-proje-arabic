@@ -14,6 +14,80 @@ if (!API_BASE_URL && import.meta.env.PROD) {
 
 const isDevelopment = import.meta.env.DEV;
 
+const INVALID_APPOINTMENT_MESSAGE = "معلومات الموعد غير صالحة.";
+const NO_SUITABLE_APPOINTMENT_MESSAGE = "لم يتم العثور على موعد مناسب.";
+const GENERIC_CHAT_ERROR_MESSAGE = "تعذر بدء المحادثة. يرجى المحاولة مرة أخرى لاحقاً.";
+
+function translateChatErrorMessage(message) {
+  const text = String(message || "").trim();
+  if (!text) return "";
+
+  const lower = text.toLowerCase();
+  const isAppointmentError =
+    lower.includes("appointmentid") ||
+    lower.includes("randevu") ||
+    lower.includes("geçersiz") ||
+    lower.includes("gecersiz") ||
+    lower.includes("geã§ersiz");
+
+  if (
+    lower.includes("bu, bir sorundur") ||
+    lower.includes("sorundur") ||
+    lower.includes("uygun randevu")
+  ) {
+    return NO_SUITABLE_APPOINTMENT_MESSAGE;
+  }
+
+  if (
+    isAppointmentError &&
+    lower.includes("geçersiz") ||
+    lower.includes("gecersiz") ||
+    lower.includes("geã§ersiz") ||
+    lower.includes("invalid")
+  ) {
+    return INVALID_APPOINTMENT_MESSAGE;
+  }
+
+  if (
+    isAppointmentError &&
+    lower.includes("gereklidir") ||
+    lower.includes("eksik") ||
+    lower.includes("missing") ||
+    lower.includes("required")
+  ) {
+    return "معلومات الموعد مطلوبة.";
+  }
+
+  if (isAppointmentError && lower.includes("bulunamad")) {
+    return NO_SUITABLE_APPOINTMENT_MESSAGE;
+  }
+
+  const isTurkishOrGenericChatError =
+    lower.includes("bu, bir sorundur") ||
+    lower.includes("sorundur") ||
+    lower.includes("sorun") ||
+    lower.includes("problem") ||
+    lower.includes("kullanici") ||
+    lower.includes("kullanıcı") ||
+    lower.includes("sohbet") ||
+    lower.includes("konuşma") ||
+    lower.includes("konusma") ||
+    lower.includes("hizmet") ||
+    lower.includes("sunucu") ||
+    lower.includes("hata") ||
+    lower.includes("bulunamadi") ||
+    lower.includes("bulunamadı") ||
+    lower.includes("gereklidir") ||
+    lower.includes("provideruid") ||
+    lower.includes("serviceid");
+
+  if (isTurkishOrGenericChatError) {
+    return GENERIC_CHAT_ERROR_MESSAGE;
+  }
+
+  return text;
+}
+
 async function waitForCurrentUser(timeoutMs = 3000) {
   if (auth.currentUser) {
     return auth.currentUser;
@@ -47,7 +121,7 @@ async function getAuthToken() {
   const user = auth.currentUser || (await waitForCurrentUser());
 
   if (!user) {
-    throw new Error("Kullanici girisi bulunamadi.");
+    throw new Error("يرجى تسجيل الدخول أولاً.");
   }
 
   return await user.getIdToken();
@@ -65,11 +139,14 @@ async function parseJsonResponse(response) {
         `Server JSON yerine bunu dondurdu: ${text.slice(0, 200)}`
       );
     }
-    throw new Error("Sunucu hatasi. Lütfen daha sonra tekrar deneyin.");
+    throw new Error("حدث خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً.");
   }
 
   if (!response.ok) {
-    throw new Error(data.message || "Sunucu hatasi. Lütfen daha sonra tekrar deneyin.");
+    throw new Error(
+      translateChatErrorMessage(data.message) ||
+        "حدث خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً."
+    );
   }
 
   return data;
@@ -83,22 +160,36 @@ export async function getOrCreateConversation(
   appointmentId = ""
 ) {
   const finalServiceId = String(serviceId || "").trim();
-  // 13-05 Edrees solved
-  const finalAppointmentId = String(appointmentId || "").trim();
+  // Syria Arabic launch: appointment system disabled; keep legacy value commented.
+  // const finalAppointmentId = String(appointmentId || "").trim();
 
-  if (!finalAppointmentId) {
-  throw new Error("appointmentId gereklidir.");
-  }
+  // Syria Arabic launch: appointment system disabled, direct chat no longer needs appointmentId.
+  // if (!finalAppointmentId) {
+  //   throw new Error("معلومات الموعد مطلوبة.");
+  // }
 
   if (!providerUid) {
-    throw new Error("providerUid gereklidir.");
+    throw new Error("لم يتم العثور على معلومات الخبير.");
   }
 
   if (!finalServiceId) {
-    throw new Error("serviceId gereklidir.");
+    throw new Error("لم يتم العثور على معلومات الخدمة.");
   }
 
   const token = await getAuthToken();
+
+  const payload = {
+    providerUid,
+    serviceId: finalServiceId,
+    listingId: finalServiceId,
+    serviceTitle,
+  };
+
+  /* Syria Arabic launch: appointmentId must not be sent for direct chat.
+  if (finalAppointmentId) {
+    payload.appointmentId = finalAppointmentId;
+  }
+  */
 
   const response = await fetch(`${API_BASE}/conversations/get-or-create`, {
     method: "POST",
@@ -106,14 +197,7 @@ export async function getOrCreateConversation(
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      providerUid,
-      serviceId: finalServiceId,
-      listingId: finalServiceId,
-      serviceTitle,
-      // 13-05 Edrees solved
-      appointmentId: finalAppointmentId,
-    }),
+    body: JSON.stringify(payload),
   });
 
   return await parseJsonResponse(response);

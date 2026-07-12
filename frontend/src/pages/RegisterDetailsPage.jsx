@@ -183,7 +183,7 @@ export default function RegisterDetailsPage() {
             <div className="lp-register">
                 <header className="lp-register-topbrand">
                     <Link to="/" onClick={handleCancelRegistration} className="lp-register-topbrand-link">
-                        <img className="lp-register-topbrand-logo" src={brandImage} alt="UzmanaGel" />
+                        <img className="lp-register-topbrand-logo" src={brandImage} alt="خبير" />
                         <span className="lp-register-topbrand-text">
                             Uzmana<span className="highlight">Gel</span>
                         </span>

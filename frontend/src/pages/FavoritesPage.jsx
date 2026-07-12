@@ -9,6 +9,8 @@ import { fetchFavorites, addFavorite, removeFavorite } from "../services/favorit
 import { fetchListingsByIds } from "../services/listingsApi";
 import DOMPurify from 'dompurify';
 import { getListingImageStyle } from "../utils/listingImagePresentation";
+import { toArabicServiceLabel } from "../utils/arabicLabels";
+import { formatLatinNumber } from "../utils/localeFormat";
 import "../styles/AdPage.css";
 import "../styles/FavoritesPage.css";
 
@@ -167,17 +169,17 @@ export default function FavoritesPage() {
                     <p className="expert-category">
                       <span className="expert-name-badge">{sanitizeText(item.expertName)}</span>
                       {item.category && <span className="category-separator">•</span>}
-                      {item.category && <span>{sanitizeText(item.category)}</span>}
+                      {item.category && <span>{sanitizeText(toArabicServiceLabel(item.category))}</span>}
                       {item.serviceSubcategory && (
                         <>
                           <span className="category-separator">•</span>
-                          <span className="expert-specialty-text">{sanitizeText(item.serviceSubcategory)}</span>
+                          <span className="expert-specialty-text">{sanitizeText(toArabicServiceLabel(item.serviceSubcategory))}</span>
                         </>
                       )}
                     </p>
                     <div className="expert-stats">
                       <span className="rating">
-                        <i className="fa-solid fa-star"></i> {item.rating ?? 0} ({item.reviews ?? 0} تقييم)
+                        <i className="fa-solid fa-star"></i> {formatLatinNumber(item.rating ?? 0)} ({formatLatinNumber(item.reviews ?? 0)} تقييم)
                       </span>
                       {item.distanceKm != null && (
                         <span className="distance">
@@ -201,7 +203,7 @@ export default function FavoritesPage() {
                     </button>
                   </div>
                   <div className="price">
-                    <strong>₺{item.price}</strong>
+                    <strong>{formatLatinNumber(item.price)} ل.س</strong>
                     <span className="price-text">تبدأ من</span>
                   </div>
                   <button type="button" className="btn-view-profile" onClick={() => navigate(`/ilan/${item.id}`)}>

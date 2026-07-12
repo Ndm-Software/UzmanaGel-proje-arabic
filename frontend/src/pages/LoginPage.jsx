@@ -91,14 +91,14 @@ function ForgotPasswordModal({ isOpen, onClose, initialEmail = "" }) {
     const cleanEmail = normalizeEmail(resetEmail);
 
     if (!cleanEmail) {
-      setResetError("Lütfen e-posta adresinizi girin.");
+      setResetError("يرجى إدخال بريدك الإلكتروني.");
       setResetLoading(false);
       return;
     }
 
     if (!isValidAllowedEmail(cleanEmail)) {
       setResetError(
-        "Lütfen geçerli ve izin verilen bir e-posta adresi girin."
+        "يرجى إدخال بريد إلكتروني صالح ومسموح."
       );
       setResetLoading(false);
       return;
@@ -110,17 +110,17 @@ function ForgotPasswordModal({ isOpen, onClose, initialEmail = "" }) {
       if (result?.status === "deleted_reserved") {
         setResetError(
           result?.message ||
-            "Bu hesap silinmiş durumda ve geri yükleme süresi devam ediyor."
+            "هذا الحساب محذوف وما زالت مدة الاستعادة مستمرة."
         );
         return;
       }
 
       setResetSuccess(
         result?.message ||
-          "Eğer bu e-posta adresi sistemde aktif bir hesaba aitse, şifre sıfırlama bağlantısı gönderilecektir."
+          "إذا كان هذا البريد الإلكتروني مرتبطاً بحساب نشط، فسيتم إرسال رابط إعادة تعيين كلمة المرور."
       );
     } catch (err) {
-      setResetError("Bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
+      setResetError("حدث خطأ. يرجى المحاولة لاحقاً.");
     } finally {
       setResetLoading(false);
     }
@@ -130,12 +130,12 @@ function ForgotPasswordModal({ isOpen, onClose, initialEmail = "" }) {
     <div className="lp-modal-overlay" onClick={onClose}>
       <div className="lp-modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="lp-modal-header">
-          <h3>Şifremi Unuttum</h3>
+          <h3>نسيت كلمة المرور</h3>
           <button
             type="button"
             className="lp-modal-close-btn"
             onClick={onClose}
-            aria-label="Kapat"
+            aria-label="إغلاق"
           >
             <i className="fas fa-times"></i>
           </button>
@@ -144,12 +144,11 @@ function ForgotPasswordModal({ isOpen, onClose, initialEmail = "" }) {
         <div className="lp-modal-body">
           <form onSubmit={handleResetSubmit} className="lp-modal-form">
             <p className="lp-modal-helper">
-              Hesabınıza bağlı e-posta adresini girin. Size şifre sıfırlama
-              bağlantısı gönderelim.
+              أدخل البريد الإلكتروني المرتبط بحسابك ليتم إرسال رابط إعادة تعيين كلمة المرور.
             </p>
 
             <div className="lp-modal-field">
-              <label>E-posta Adresi</label>
+              <label>البريد الإلكتروني</label>
               <input
                 type="email"
                 value={resetEmail}
@@ -171,7 +170,7 @@ function ForgotPasswordModal({ isOpen, onClose, initialEmail = "" }) {
                 onClick={onClose}
                 disabled={resetLoading}
               >
-                İptal
+                إلغاء
               </button>
 
               <button
@@ -179,7 +178,7 @@ function ForgotPasswordModal({ isOpen, onClose, initialEmail = "" }) {
                 className="lp-modal-primary-btn"
                 disabled={resetLoading || !isAllowedEmail}
               >
-                {resetLoading ? "Gönderiliyor..." : "Bağlantıyı Gönder"}
+                {resetLoading ? "جاري الإرسال..." : "إرسال الرابط"}
               </button>
             </div>
           </form>
@@ -207,12 +206,12 @@ function GoogleConflictModal({
     <div className="lp-modal-overlay" onClick={onClose}>
       <div className="lp-modal-box" onClick={(e) => e.stopPropagation()}>
         <div className="lp-modal-header">
-          <h3>Hesap Zaten Var</h3>
+          <h3>الحساب موجود بالفعل</h3>
           <button
             type="button"
             className="lp-modal-close-btn"
             onClick={onClose}
-            aria-label="Kapat"
+            aria-label="إغلاق"
           >
             <i className="fas fa-times"></i>
           </button>
@@ -220,7 +219,7 @@ function GoogleConflictModal({
 
         <div className="lp-modal-body">
           <p className="lp-modal-helper">
-            <strong>{sanitizeText(email)}</strong> adresiyle zaten bir hesap var.
+            يوجد حساب بالفعل باستخدام البريد <strong>{sanitizeText(email)}</strong>.
           </p>
 
           {!linkingMode ? (
@@ -234,7 +233,7 @@ function GoogleConflictModal({
                 onClick={onUsePasswordLogin}
                 disabled={loading}
               >
-                Şifre ile Giriş Yap
+                تسجيل الدخول بكلمة المرور
               </button>
 
               <button
@@ -243,18 +242,18 @@ function GoogleConflictModal({
                 onClick={onStartLinking}
                 disabled={loading}
               >
-                Google Hesabını Bağla
+                ربط حساب Google
               </button>
             </div>
           ) : (
             <>
               <div className="lp-modal-field">
-                <label>Mevcut Şifre</label>
+                <label>كلمة المرور الحالية</label>
                 <input
                   type="password"
                   value={mergePassword}
                   onChange={(e) => setMergePassword(e.target.value)}
-                  placeholder="Mevcut hesabınızın şifresi"
+                  placeholder="كلمة مرور حسابك الحالي"
                   disabled={loading}
                 />
               </div>
@@ -269,7 +268,7 @@ function GoogleConflictModal({
                   onClick={onUsePasswordLogin}
                   disabled={loading}
                 >
-                  Şifre ile Giriş Yap
+                  تسجيل الدخول بكلمة المرور
                 </button>
 
                 <button
@@ -278,7 +277,7 @@ function GoogleConflictModal({
                   onClick={onConfirmLink}
                   disabled={loading || !mergePassword.trim()}
                 >
-                  {loading ? "Bağlanıyor..." : "Hesabı Bağla"}
+                  {loading ? "جاري الربط..." : "ربط الحساب"}
                 </button>
               </div>
             </>
@@ -337,7 +336,7 @@ export default function LoginPage() {
     const legacyProviderHint = location.state?.providerHint;
 
     if (loginNoticeType === "session_expired") {
-      setWarningMessage("Oturum süreniz doldu. Lütfen tekrar giriş yapın.");
+      setWarningMessage("انتهت مدة الجلسة. يرجى تسجيل الدخول مرة أخرى.");
       setWarningVariant("warning");
       setShowWarning(true);
       return;
@@ -345,7 +344,7 @@ export default function LoginPage() {
 
     if (loginNoticeType === "registration_success") {
       setWarningMessage(
-        "Hesabınız başarıyla oluşturuldu. Devam etmek için lütfen giriş yapın."
+        "تم إنشاء حسابك بنجاح. يرجى تسجيل الدخول للمتابعة."
       );
       setWarningVariant("success");
       setShowWarning(true);
@@ -354,7 +353,7 @@ export default function LoginPage() {
 
     if (loginNoticeType === "google_account_exists") {
       setWarningMessage(
-        "Bu e-posta adresi zaten Google ile kayıtlı. Lütfen Google ile devam edin."
+        "هذا البريد الإلكتروني مسجل عبر Google. يرجى المتابعة باستخدام Google."
       );
       setWarningVariant("info");
       setShowWarning(true);
@@ -363,7 +362,7 @@ export default function LoginPage() {
 
     if (legacyProviderHint === "password") {
       setWarningMessage(
-        "Hesabınız başarıyla oluşturuldu. Devam etmek için lütfen giriş yapın."
+        "تم إنشاء حسابك بنجاح. يرجى تسجيل الدخول للمتابعة."
       );
       setWarningVariant("success");
       setShowWarning(true);
@@ -372,7 +371,7 @@ export default function LoginPage() {
 
     if (legacyProviderHint === "google") {
       setWarningMessage(
-        "Bu e-posta adresi zaten Google ile kayıtlı. Lütfen Google ile devam edin."
+        "هذا البريد الإلكتروني مسجل عبر Google. يرجى المتابعة باستخدام Google."
       );
       setWarningVariant("info");
       setShowWarning(true);
@@ -380,7 +379,7 @@ export default function LoginPage() {
   }, [location.state]);
 
   if (settingsLoading) {
-    return <LoadingSpinner text="Sistem ayarları kontrol ediliyor..." />;
+    return <LoadingSpinner text="جاري التحقق من إعدادات النظام..." />;
   }
 
   const checkUserStatus = async (user) => {
@@ -391,7 +390,7 @@ export default function LoginPage() {
         return {
           allowed: false,
           redirect: null,
-          message: "Kullanıcı kaydı bulunamadı.",
+          message: "لم يتم العثور على سجل المستخدم.",
         };
       }
 
@@ -402,7 +401,7 @@ export default function LoginPage() {
         return {
           allowed: false,
           redirect: null,
-          message: "Sistem bakım modundadır. Lütfen daha sonra tekrar deneyin.",
+          message: "النظام في وضع الصيانة. يرجى المحاولة لاحقاً.",
         };
       }
 
@@ -465,7 +464,7 @@ export default function LoginPage() {
       if (code === "DELETED_ACCOUNT_IN_RETENTION") {
         setError(
           err?.message ||
-            "Bu hesap silinmiş durumda ve 60 günlük geri yükleme süresi devam ediyor."
+            "هذا الحساب محذوف وما زالت مدة الاستعادة البالغة 60 يوماً مستمرة."
         );
         setLoading(false);
         return;
@@ -484,13 +483,13 @@ export default function LoginPage() {
         code === "auth/invalid-credential" ||
         code === "auth/invalid-email"
       ) {
-        setError("E-posta veya şifre hatalı. Lütfen tekrar kontrol edin.");
+        setError("البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى التحقق مرة أخرى.");
       } else if (code === "PASSWORD_LOGIN_NOT_ALLOWED") {
         setError(
-          err?.message || "Bu e-posta farklı bir giriş yöntemiyle kayıtlı."
+          err?.message || "هذا البريد الإلكتروني مسجل بطريقة دخول مختلفة."
         );
       } else {
-        setError("Giriş başarısız. Lütfen daha sonra tekrar deneyin.");
+        setError("فشل تسجيل الدخول. يرجى المحاولة لاحقاً.");
       }
     } finally {
       setLoading(false);
@@ -577,12 +576,12 @@ export default function LoginPage() {
       ) {
         setError(
           err?.message ||
-            "Bu hesap silinmiş durumda ve geri yükleme süresi devam ediyor. Lütfen hesabınızı geri yükleyin veya destek ile iletişime geçin."
+            "هذا الحساب محذوف وما زالت مدة الاستعادة مستمرة. يرجى استعادة حسابك أو التواصل مع الدعم."
         );
         return;
       }
 
-      setError("Google ile giriş başarısız. Lütfen daha sonra tekrar deneyin.");
+      setError("فشل تسجيل الدخول عبر Google. يرجى المحاولة لاحقاً.");
     } finally {
       setLoading(false);
     }
@@ -594,7 +593,7 @@ export default function LoginPage() {
     setPassword("");
     setShowWarning(true);
     setWarningMessage(
-      "Hesabınız zaten mevcut. Devam etmek için şifrenizle giriş yapın."
+      "حسابك موجود بالفعل. للمتابعة يرجى تسجيل الدخول بكلمة المرور."
     );
   };
 
@@ -623,7 +622,7 @@ export default function LoginPage() {
 
       navigate(statusCheck.redirect);
     } catch (err) {
-      setError("Google hesabı bağlanamadı. Lütfen daha sonra tekrar deneyin.");
+      setError("تعذر ربط حساب Google. يرجى المحاولة لاحقاً.");
     } finally {
       setLoading(false);
     }
@@ -636,12 +635,12 @@ export default function LoginPage() {
           <Link
             to="/"
             className="lp-login-topbrand-link"
-            aria-label="UzmanaGel Home"
+            aria-label="خبير"
           >
             <img
               className="lp-login-topbrand-logo"
               src={brandImage}
-              alt="UzmanaGel"
+              alt="خبير"
             />
             <span className="lp-login-topbrand-text">
               Uzmana<span className="highlight">Gel</span>
@@ -652,8 +651,8 @@ export default function LoginPage() {
         <div className="lp-login-card">
           <section className="lp-login-left">
             <div className="lp-login-header">
-              <h1 className="lp-login-title">Hoş Geldiniz!</h1>
-              <p className="lp-login-subtitle">Hesabınıza giriş yapın</p>
+              <h1 className="lp-login-title">أهلاً بك!</h1>
+              <p className="lp-login-subtitle">سجّل الدخول إلى حسابك</p>
             </div>
 
             {error && <div className="lp-login-error">{sanitizeText(error)}</div>}
@@ -685,7 +684,7 @@ export default function LoginPage() {
                     margin: "0 0 4px",
                   }}
                 >
-                  Bu hesap Google ile giriş kullanıyor
+                  هذا الحساب يستخدم تسجيل الدخول عبر Google
                 </p>
                 <p
                   style={{
@@ -694,9 +693,8 @@ export default function LoginPage() {
                     margin: "0 0 12px",
                   }}
                 >
-                  <strong>{sanitizeText(googleAutoEmail)}</strong> adresi artık Google ile
-                  giriş yapıyor. Bu hesap için şifre ile giriş kullanılamıyor.
-                  Lütfen Google ile devam edin.
+                  البريد <strong>{sanitizeText(googleAutoEmail)}</strong> يستخدم الآن تسجيل الدخول عبر Google.
+                  لا يمكن استخدام كلمة المرور لهذا الحساب. يرجى المتابعة باستخدام Google.
                 </p>
                 <button
                   type="button"
@@ -716,7 +714,7 @@ export default function LoginPage() {
                   disabled={loading}
                 >
                   <img src={googleLogo} alt="Google" className="lp-login-google-btn-img" />
-                  Google ile Giriş Yap
+                  تسجيل الدخول عبر Google
                 </button>
                 <button
                   type="button"
@@ -730,7 +728,7 @@ export default function LoginPage() {
                   }}
                   onClick={() => setGoogleAutoRedirect(false)}
                 >
-                  İptal
+                  إلغاء
                 </button>
               </div>
             )}
@@ -766,12 +764,12 @@ export default function LoginPage() {
               <div className="lp-login-form-group">
                 <label className="lp-login-label">
                   <i className="fas fa-envelope lp-login-icon"></i>
-                  E-posta Adresi
+                  البريد الإلكتروني
                 </label>
                 <input
                   className="lp-login-input"
                   type="text"
-                  placeholder="E-posta adresiniz"
+                  placeholder="بريدك الإلكتروني"
                   autoComplete="username"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -782,7 +780,7 @@ export default function LoginPage() {
               <div className="lp-login-form-group">
                 <label className="lp-login-label">
                   <i className="fas fa-lock lp-login-icon"></i>
-                  Şifre
+                  كلمة المرور
                 </label>
 
                 <div className="lp-login-pass">
@@ -800,7 +798,7 @@ export default function LoginPage() {
                     type="button"
                     className="lp-login-eye"
                     onClick={() => setShowPass((v) => !v)}
-                    aria-label={showPass ? "Şifreyi gizle" : "Şifreyi göster"}
+                    aria-label={showPass ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
                   >
                     <i
                       className={
@@ -818,7 +816,7 @@ export default function LoginPage() {
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
                   />
-                  <span>Beni Hatırla</span>
+                  <span>تذكرني</span>
                 </label>
 
                 <button
@@ -826,13 +824,13 @@ export default function LoginPage() {
                   className="lp-login-link lp-login-link-btn"
                   onClick={() => setShowForgotModal(true)}
                 >
-                  Şifremi Unuttum
+                  نسيت كلمة المرور
                 </button>
               </div>
 
               <button className="lp-login-btn" type="submit" disabled={loading}>
                 <i className="fas fa-sign-in-alt"></i>
-                {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
+                {loading ? "جاري تسجيل الدخول..." : "تسجيل الدخول"}
               </button>
             </form>
 
@@ -846,7 +844,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={loading}
-                aria-label="Google ile giriş"
+                aria-label="تسجيل الدخول عبر Google"
               >
                 <img src={googleLogo} alt="Google" className="social-icon-img" />
               </button>
@@ -856,25 +854,25 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => navigate("/login-phone")}
                 disabled={loading}
-                aria-label="Telefon ile giriş"
+                aria-label="تسجيل الدخول عبر الهاتف"
               >
-                <img src={phoneLogo} alt="Telefon" className="social-icon-img phone-icon-img" />
+                <img src={phoneLogo} alt="الهاتف" className="social-icon-img phone-icon-img" />
               </button>
             </div>
 
             {registrationsOpen ? (
               <p className="lp-login-bottom">
-                Hesabın yok mu? <Link to="/register">Hemen Kaydol</Link>
+                ليس لديك حساب؟ <Link to="/register">سجّل الآن</Link>
               </p>
             ) : (
               <p className="lp-login-bottom registrations-closed">
-                <i className="fas fa-door-closed"></i> Yeni kayıtlar şu anda geçici olarak durdurulmuştur.
+                <i className="fas fa-door-closed"></i> تم إيقاف التسجيلات الجديدة مؤقتاً.
               </p>
             )}
 
             <div className="lp-login-expert">
               <Link to="/uzman-basvuru" className="lp-login-expert-link">
-                Uzman mısın? Başvuru Yap.
+                هل أنت خبير؟ قدّم طلبك.
               </Link>
             </div>
           </section>
@@ -883,11 +881,11 @@ export default function LoginPage() {
             <div className="lp-login-quote">
               <i className="fas fa-quote-left lp-login-quote-icon"></i>
               <p>
-                Binlerce uzman arasından <br />
-                ihtiyacın olanı bul, <br />
-                sorununu hemen çöz.
+                ابحث بين الخبراء <br />
+                عن الخدمة التي تحتاجها، <br />
+                وحل مشكلتك بسرعة.
               </p>
-              <span className="lp-login-quote-author">– UzmanaGel</span>
+              <span className="lp-login-quote-author">- خبير</span>
             </div>
           </section>
         </div>

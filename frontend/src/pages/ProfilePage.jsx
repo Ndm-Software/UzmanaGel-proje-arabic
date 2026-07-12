@@ -43,6 +43,7 @@ import {
   getCurrentUserProviderFlags,
 } from '../firebase/authService';
 import imageCompression from 'browser-image-compression';
+import { ARABIC_LATIN_LOCALE, formatLatinNumber } from '../utils/localeFormat';
 import DOMPurify from 'dompurify';
 import { showAppToast } from '../utils/showAppToast';
 import ConfirmModal from '../components/ConfirmModal';
@@ -52,7 +53,15 @@ const isDevelopment = import.meta.env.DEV;
 
 const sanitizeText = (text) => {
   if (!text) return '';
-  return DOMPurify.sanitize(String(text));
+  const raw = String(text);
+  const normalized = raw.trim().toLocaleLowerCase('tr-TR');
+  const visibleTextTranslations = {
+    'bu çok önemli bir şey.': 'هذه معلومة مهمة.',
+    'bu, bir mesaj olarak kabul edildi.': 'تم حفظ هذه المعلومة.',
+    'bu bir gerçek': 'هذا صحيح.',
+    "yeni zelanda'nın en iyisi": 'أفضل خبير في المنطقة',
+  };
+  return DOMPurify.sanitize(visibleTextTranslations[normalized] || raw);
 };
 
 const filterAddressChips = (items) =>
@@ -137,13 +146,13 @@ function hasRepeatedChars(str) {
 
 function validatePassword(pass) {
   const errors = [];
-  if (pass.length < 6) errors.push('En az 6 karakter olmalıdır');
-  if (!/[A-Z]/.test(pass)) errors.push('En az 1 büyük harf içermelidir');
-  if (!/[a-z]/.test(pass)) errors.push('En az 1 küçük harf içermelidir');
-  if (!/[0-9]/.test(pass)) errors.push('En az 1 rakam içermelidir');
-  if (!hasSpecialChar(pass)) errors.push('En az 1 özel karakter içermelidir');
-  if (hasConsecutiveChars(pass)) errors.push('Ardışık karakterler içermemelidir (örn. abc, 123)');
-  if (hasRepeatedChars(pass)) errors.push('Aynı karakteri 3 kez tekrarlamamalıdır (örn. aaa)');
+  if (pass.length < 6) errors.push('يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.');
+  if (!/[A-Z]/.test(pass)) errors.push('يجب أن تحتوي على حرف كبير واحد على الأقل.');
+  if (!/[a-z]/.test(pass)) errors.push('يجب أن تحتوي على حرف صغير واحد على الأقل.');
+  if (!/[0-9]/.test(pass)) errors.push('يجب أن تحتوي على رقم واحد على الأقل.');
+  if (!hasSpecialChar(pass)) errors.push('يجب أن تحتوي على رمز خاص واحد على الأقل.');
+  if (hasConsecutiveChars(pass)) errors.push('يجب ألا تحتوي على أحرف متتابعة مثل abc أو 123.');
+  if (hasRepeatedChars(pass)) errors.push('يجب ألا يتكرر نفس الحرف ثلاث مرات مثل aaa.');
   return errors;
 }
 
@@ -169,22 +178,22 @@ function getPasswordStrengthColor(s) {
 }
 
 function getStrengthText(s) {
-  if (s === 0) return 'Şifre gücü: Zayıf';
-  if (s <= 25) return 'Şifre gücü: Çok Zayıf';
-  if (s <= 50) return 'Şifre gücü: Orta';
-  if (s <= 75) return 'Şifre gücü: İyi';
-  if (s < 100) return 'Şifre gücü: Çok İyi';
-  return 'Şifre gücü: Mükemmel ✓';
+  if (s === 0) return 'قوة كلمة المرور: ضعيفة';
+  if (s <= 25) return 'قوة كلمة المرور: ضعيفة جداً';
+  if (s <= 50) return 'قوة كلمة المرور: متوسطة';
+  if (s <= 75) return 'قوة كلمة المرور: جيدة';
+  if (s < 100) return 'قوة كلمة المرور: جيدة جداً';
+  return 'قوة كلمة المرور: ممتازة ✓';
 }
 
 function mapFirebaseAuthError(error) {
   const code = error?.code;
-  if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') return 'Eski şifreniz hatalı.';
-  if (code === 'auth/too-many-requests') return 'Çok fazla deneme yapıldı. Lütfen biraz bekleyip tekrar deneyin.';
-  if (code === 'auth/requires-recent-login') return 'Güvenlik nedeniyle tekrar giriş yapmanız gerekiyor.';
-  if (code === 'auth/network-request-failed') return 'Bağlantı hatası. İnternetinizi kontrol edin.';
-  if (code === 'auth/weak-password') return 'Yeni şifre çok zayıf.';
-  return 'Şifre güncellenemedi. Lütfen daha sonra tekrar deneyin.';
+  if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') return 'كلمة المرور الحالية غير صحيحة.';
+  if (code === 'auth/too-many-requests') return 'تم إجراء محاولات كثيرة. يرجى الانتظار قليلاً ثم المحاولة مرة أخرى.';
+  if (code === 'auth/requires-recent-login') return 'لأسباب أمنية، يرجى تسجيل الدخول مرة أخرى.';
+  if (code === 'auth/network-request-failed') return 'حدث خطأ في الاتصال. يرجى التحقق من الإنترنت.';
+  if (code === 'auth/weak-password') return 'كلمة المرور الجديدة ضعيفة جداً.';
+  return 'تعذر تحديث كلمة المرور. يرجى المحاولة لاحقاً.';
 }
 
 const Modal = ({ title, onClose, children }) => (
@@ -225,7 +234,7 @@ const NameModal = ({ user, currentName, onClose, onSuccess }) => {
     e.preventDefault();
 
     if (!firstName.trim() || !lastName.trim()) {
-      setError('Ad ve soyad zorunludur.');
+      setError('الاسم والكنية مطلوبان.');
       return;
     }
 
@@ -247,22 +256,22 @@ const NameModal = ({ user, currentName, onClose, onSuccess }) => {
         /* ignore */
       }
 
-      setSuccess('Ad soyad güncellendi.');
+      setSuccess('تم تحديث الاسم الكامل.');
       onSuccess(displayName);
       setTimeout(onClose, 1200);
     } catch (err) {
       if (isDevelopment) console.error("Ad soyad güncellenemedi:", err.message);
-      setError('Ad soyad güncellenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+      setError('حدث خطأ أثناء تحديث الاسم الكامل. يرجى المحاولة لاحقاً.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal title="Ad Soyad Güncelle" onClose={onClose}>
+    <Modal title="تحديث الاسم الكامل" onClose={onClose}>
       <form onSubmit={handleSubmit} className="modal-form">
         <div className="modal-field">
-          <label>Ad</label>
+          <label>الاسم</label>
           <input
             type="text"
             value={firstName}
@@ -275,7 +284,7 @@ const NameModal = ({ user, currentName, onClose, onSuccess }) => {
         </div>
 
         <div className="modal-field">
-          <label>Soyad</label>
+          <label>الكنية</label>
           <input
             type="text"
             value={lastName}
@@ -296,10 +305,10 @@ const NameModal = ({ user, currentName, onClose, onSuccess }) => {
             onClick={onClose}
             disabled={loading}
           >
-            İptal
+            إلغاء
           </button>
           <button type="submit" className="settings-primary-button" disabled={loading}>
-            {loading ? 'Kaydediliyor...' : 'Kaydet'}
+            {loading ? 'جاري الحفظ...' : 'حفظ'}
           </button>
         </div>
       </form>
@@ -358,7 +367,7 @@ const PhoneModal = ({ onClose, onSuccess }) => {
   const validatePhone = () => {
     const d = normalize(digits);
     if (d.length !== 10 || !d.startsWith('5')) {
-      setError('5xx xxx xx xx formatında geçerli bir numara girin.');
+      setError('يرجى إدخال رقم صالح بصيغة 5xx xxx xx xx.');
       return null;
     }
     return `+90${d}`;
@@ -379,10 +388,10 @@ const PhoneModal = ({ onClose, onSuccess }) => {
       const result = await startPhoneLinking(phoneNumber);
       setConfirmationResult(result);
       setStep('otp');
-      setSuccess('SMS kodu gönderildi. Lütfen telefonunu kontrol et.');
+      setSuccess('تم إرسال رمز SMS. يرجى التحقق من هاتفك.');
     } catch (err) {
       if (isDevelopment) console.error("Kod gönderme hatası:", err.message);
-      setError('Kod gönderilemedi. Lütfen daha sonra tekrar deneyin.');
+      setError('تعذر إرسال الرمز. يرجى المحاولة لاحقاً.');
     } finally {
       setSendingOtp(false);
     }
@@ -394,12 +403,12 @@ const PhoneModal = ({ onClose, onSuccess }) => {
     setSuccess('');
 
     if (!confirmationResult) {
-      setError('Doğrulama oturumu bulunamadı. Lütfen yeniden kod gönder.');
+      setError('لم يتم العثور على جلسة التحقق. يرجى إرسال الرمز مرة أخرى.');
       return;
     }
 
     if (!String(otpCode).trim() || String(otpCode).trim().length < 6) {
-      setError('Lütfen 6 haneli doğrulama kodunu girin.');
+      setError('يرجى إدخال رمز التحقق المكون من 6 أرقام.');
       return;
     }
 
@@ -408,7 +417,7 @@ const PhoneModal = ({ onClose, onSuccess }) => {
     try {
       const result = await confirmPhoneLinking(confirmationResult, otpCode);
       const finalPhone = result?.user?.phoneNumber || `+90${normalize(digits)}`;
-      setSuccess('Telefon numarası başarıyla doğrulandı ve kaydedildi.');
+      setSuccess('تم التحقق من رقم الهاتف وحفظه بنجاح.');
       onSuccess(finalPhone);
       setTimeout(() => {
         clearRecaptcha();
@@ -416,7 +425,7 @@ const PhoneModal = ({ onClose, onSuccess }) => {
       }, 1200);
     } catch (err) {
       if (isDevelopment) console.error("Doğrulama hatası:", err.message);
-      setError('Doğrulama başarısız oldu. Lütfen daha sonra tekrar deneyin.');
+      setError('فشل التحقق. يرجى المحاولة لاحقاً.');
     } finally {
       setLoading(false);
     }
@@ -436,22 +445,22 @@ const PhoneModal = ({ onClose, onSuccess }) => {
       initRecaptcha('profile-phone-recaptcha', { size: 'invisible' });
       const result = await startPhoneLinking(phoneNumber);
       setConfirmationResult(result);
-      setSuccess('Yeni SMS kodu gönderildi.');
+      setSuccess('تم إرسال رمز SMS جديد.');
     } catch (err) {
       if (isDevelopment) console.error("Kod gönderme hatası:", err.message);
-      setError('Kod tekrar gönderilemedi. Lütfen daha sonra tekrar deneyin.');
+      setError('تعذر إرسال الرمز مرة أخرى. يرجى المحاولة لاحقاً.');
     } finally {
       setSendingOtp(false);
     }
   };
 
   return (
-    <Modal title="Telefon Numarasını Güncelle" onClose={onClose}>
+    <Modal title="تحديث رقم الهاتف" onClose={onClose}>
       <form onSubmit={step === 'phone' ? handleSendOtp : handleVerifyAndSave} className="modal-form">
         <div className="phone-verify-shell">
           <div className="phone-verify-step">
             <div className={`phone-step-badge ${step === 'phone' ? 'active' : 'done'}`}>1</div>
-            <span>Numara</span>
+            <span>الرقم</span>
           </div>
           <div className="phone-step-line"></div>
           <div className="phone-verify-step">
@@ -461,7 +470,7 @@ const PhoneModal = ({ onClose, onSuccess }) => {
         </div>
 
         <div className="modal-field">
-          <label>Yeni Telefon (+90)</label>
+          <label>الهاتف الجديد (+90)</label>
           <input
             type="tel"
             value={format(digits)}
@@ -474,13 +483,13 @@ const PhoneModal = ({ onClose, onSuccess }) => {
 
         {step === 'otp' && (
           <div className="modal-field">
-            <label>OTP Kodu</label>
+            <label>رمز OTP</label>
             <input
               type="text"
               inputMode="numeric"
               value={otpCode}
               onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="6 haneli kod"
+              placeholder="رمز من 6 أرقام"
               required
               disabled={loading}
             />
@@ -500,7 +509,7 @@ const PhoneModal = ({ onClose, onSuccess }) => {
             disabled={sendingOtp || loading}
           >
             <i className="fas fa-rotate-right"></i>
-            {sendingOtp ? 'Kod gönderiliyor...' : 'Kodu tekrar gönder'}
+            {sendingOtp ? 'جاري إرسال الرمز...' : 'إرسال الرمز مرة أخرى'}
           </button>
         )}
 
@@ -511,16 +520,16 @@ const PhoneModal = ({ onClose, onSuccess }) => {
             onClick={onClose}
             disabled={loading || sendingOtp}
           >
-            İptal
+            إلغاء
           </button>
 
           {step === 'phone' ? (
             <button type="submit" className="settings-primary-button" disabled={sendingOtp || loading}>
-              {sendingOtp ? 'Kod Gönderiliyor...' : 'Kod Gönder'}
+              {sendingOtp ? 'جاري إرسال الرمز...' : 'إرسال الرمز'}
             </button>
           ) : (
             <button type="submit" className="settings-primary-button" disabled={loading}>
-              {loading ? 'Doğrulanıyor...' : 'Doğrula ve Kaydet'}
+              {loading ? 'جاري التحقق...' : 'تحقق واحفظ'}
             </button>
           )}
         </div>
@@ -553,23 +562,23 @@ const PasswordModal = ({ onClose, onSuccess }) => {
     e.preventDefault();
 
     if (errors.length > 0) {
-      setError('Şifre gereksinimleri karşılanmıyor.');
+      setError('متطلبات كلمة المرور غير مكتملة.');
       return;
     }
 
     if (strength !== 100) {
-      setError(`Şifre yeterince güçlü değil. Güç: ${Math.round(strength)}% (100% gerekli)`);
+      setError(`كلمة المرور ليست قوية بما يكفي. القوة: ${Math.round(strength)}% (المطلوب 100%)`);
       return;
     }
 
     if (form.newPass !== form.confirm) {
-      setError('Yeni şifreler eşleşmiyor.');
+      setError('كلمتا المرور الجديدتان غير متطابقتين.');
       return;
     }
 
     const authUser = auth.currentUser;
     if (!authUser) {
-      setError('Oturum bulunamadı.');
+      setError('لم يتم العثور على جلسة تسجيل الدخول.');
       return;
     }
 
@@ -578,7 +587,7 @@ const PasswordModal = ({ onClose, onSuccess }) => {
       authUser.providerData.some((p) => p?.providerId === 'password');
 
     if (!hasPass || !authUser.email) {
-      setError('Bu hesap şifre ile giriş yapmıyor.');
+      setError('هذا الحساب لا يستخدم تسجيل الدخول بكلمة مرور.');
       return;
     }
 
@@ -589,7 +598,7 @@ const PasswordModal = ({ onClose, onSuccess }) => {
       const credential = EmailAuthProvider.credential(authUser.email, form.current);
       await reauthenticateWithCredential(authUser, credential);
       await updatePassword(authUser, form.newPass);
-      setSuccess('Şifreniz başarıyla güncellendi.');
+      setSuccess('تم تحديث كلمة المرور بنجاح.');
       setTimeout(() => {
         onSuccess?.();
       }, 1500);
@@ -603,10 +612,10 @@ const PasswordModal = ({ onClose, onSuccess }) => {
   const color = getPasswordStrengthColor(strength);
 
   return (
-    <Modal title="Şifre Değiştir" onClose={onClose}>
+    <Modal title="تغيير كلمة المرور" onClose={onClose}>
       <form onSubmit={handleSubmit} className="modal-form">
         <div className="modal-field">
-          <label>Mevcut Şifre</label>
+          <label>كلمة المرور الحالية</label>
           <div className="modal-input-wrapper">
             <input
               type={show.current ? 'text' : 'password'}
@@ -626,7 +635,7 @@ const PasswordModal = ({ onClose, onSuccess }) => {
         </div>
 
         <div className="modal-field">
-          <label>Yeni Şifre</label>
+          <label>كلمة المرور الجديدة</label>
           <div className="modal-input-wrapper">
             <input
               type={show.newPass ? 'text' : 'password'}
@@ -698,12 +707,12 @@ const PasswordModal = ({ onClose, onSuccess }) => {
               display: 'block',
             }}
           >
-            ✓ Min 6 karakter ✓ Büyük harf ✓ Küçük harf ✓ Rakam ✓ Özel karakter
+            ✓ 6 أحرف على الأقل ✓ حرف كبير ✓ حرف صغير ✓ رقم ✓ رمز خاص
           </small>
         </div>
 
         <div className="modal-field">
-          <label>Yeni Şifre (Tekrar)</label>
+          <label>كلمة المرور الجديدة (تأكيد)</label>
           <div className="modal-input-wrapper">
             <input
               type={show.confirm ? 'text' : 'password'}
@@ -732,14 +741,14 @@ const PasswordModal = ({ onClose, onSuccess }) => {
             onClick={onClose}
             disabled={loading}
           >
-            İptal
+            إلغاء
           </button>
           <button
             type="submit"
             className="settings-primary-button"
             disabled={loading || strength !== 100 || form.newPass !== form.confirm}
           >
-            {loading ? 'Kaydediliyor...' : 'Kaydet'}
+            {loading ? 'جاري الحفظ...' : 'حفظ'}
           </button>
         </div>
       </form>
@@ -760,7 +769,7 @@ const DeleteAccountModal = ({
   const [success, setSuccess] = useState('');
 
   const finishDeactivateFlow = () => {
-    setSuccess('Hesabınız devre dışı bırakıldı. 60 gün içinde tekrar aktif edebilirsiniz.');
+    setSuccess('تم تعطيل حسابك. يمكنك إعادة تفعيله خلال 60 يوماً.');
     setTimeout(() => {
       onDeleted();
     }, 1400);
@@ -770,7 +779,7 @@ const DeleteAccountModal = ({
     e.preventDefault();
 
     if (!password.trim()) {
-      setError('Lütfen şifrenizi girin.');
+      setError('يرجى إدخال كلمة المرور.');
       return;
     }
 
@@ -783,7 +792,7 @@ const DeleteAccountModal = ({
       finishDeactivateFlow();
     } catch (err) {
       if (isDevelopment) console.error("Hesap silme hatası:", err.message);
-      setError('Hesabı devre dışı bırakma işlemi sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+      setError('حدث خطأ أثناء تعطيل الحساب. يرجى المحاولة لاحقاً.');
     } finally {
       setLoading(false);
     }
@@ -799,32 +808,32 @@ const DeleteAccountModal = ({
       finishDeactivateFlow();
     } catch (err) {
       if (isDevelopment) console.error("Google doğrulama hatası:", err.message);
-      setError('Google ile doğrulama sırasında bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+      setError('حدث خطأ أثناء التحقق بواسطة Google. يرجى المحاولة لاحقاً.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal title="Hesabı Devre Dışı Bırak" onClose={onClose}>
+    <Modal title="تعطيل الحساب" onClose={onClose}>
       <form
         onSubmit={hasPasswordProvider ? handlePasswordSubmit : (e) => e.preventDefault()}
         className="modal-form"
       >
         <p className="modal-info-text">
-          Hesabınız hemen kalıcı olarak silinmez. Hesabınız devre dışı bırakılır ve 60 gün boyunca geri açılabilir.
-          Bu süre sonunda hesabınız kalıcı olarak silinir.
+          لن يتم حذف حسابك نهائياً على الفور. سيتم تعطيل حسابك ويمكنك إعادة تفعيله خلال 60 يوماً.
+          بعد انتهاء هذه المدة سيتم حذف الحساب نهائياً.
         </p>
 
         {hasPasswordProvider ? (
           <div className="modal-field">
-            <label>Şifrenizi Girin</label>
+            <label>أدخل كلمة المرور</label>
             <div className="modal-input-wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mevcut şifrenizi girin"
+                placeholder="أدخل كلمة المرور الحالية"
                 required
                 disabled={loading}
               />
@@ -842,15 +851,15 @@ const DeleteAccountModal = ({
           <div className="delete-auth-box">
             <div className="delete-auth-title">
               <i className="fab fa-google"></i>
-              Google ile doğrulama gerekli
+              التحقق بواسطة Google مطلوب
             </div>
             <p className="delete-auth-subtitle">
-              Bu hesap Google ile giriş yapıyor. Devam etmek için Google hesabınızla yeniden doğrulama yapın.
+              هذا الحساب يسجل الدخول عبر Google. للمتابعة، يرجى إعادة التحقق باستخدام حساب Google الخاص بك.
             </p>
           </div>
         ) : (
           <div className="modal-error">
-            Bu hesap için uygun bir doğrulama yöntemi bulunamadı. Lütfen destek ekibiyle iletişime geçin.
+            لم يتم العثور على طريقة تحقق مناسبة لهذا الحساب. يرجى التواصل مع فريق الدعم.
           </div>
         )}
 
@@ -864,12 +873,12 @@ const DeleteAccountModal = ({
             onClick={onClose}
             disabled={loading}
           >
-            İptal
+            إلغاء
           </button>
 
           {hasPasswordProvider ? (
             <button type="submit" className="settings-danger-button" disabled={loading}>
-              {loading ? 'İşleniyor...' : 'Hesabımı Devre Dışı Bırak'}
+              {loading ? 'جاري المعالجة...' : 'تعطيل حسابي'}
             </button>
           ) : hasGoogleProvider ? (
             <button
@@ -879,7 +888,7 @@ const DeleteAccountModal = ({
               disabled={loading}
             >
               <i className="fab fa-google"></i>
-              {loading ? 'Google Doğrulanıyor...' : 'Google ile Doğrula ve Devre Dışı Bırak'}
+              {loading ? 'جاري التحقق من Google...' : 'التحقق بواسطة Google وتعطيل الحساب'}
             </button>
           ) : null}
         </div>
@@ -914,9 +923,10 @@ const ProfilePage = () => {
 
   const [emailVerified, setEmailVerified] = useState(false);
 
-  const [orders, setOrders] = useState([]);
-  const [completedOrderCount, setCompletedOrderCount] = useState(0);
-  const [experts, setExperts] = useState([]);
+  // Syria Arabic launch: appointment history widgets disabled.
+  // const [orders, setOrders] = useState([]);
+  // const [completedOrderCount, setCompletedOrderCount] = useState(0);
+  // const [experts, setExperts] = useState([]);
 
   const [showDeleteAddressConfirm, setShowDeleteAddressConfirm] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState(null);
@@ -926,7 +936,7 @@ const ProfilePage = () => {
     if (!s) return '';
     const d = new Date(s);
     if (Number.isNaN(d.getTime())) return sanitizeText(s);
-    return d.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' });
+    return d.toLocaleDateString(ARABIC_LATIN_LOCALE, { day: '2-digit', month: 'long', year: 'numeric' });
   };
 
   const getSafeAvatar = async (expertId, name) => {
@@ -941,7 +951,7 @@ const ProfilePage = () => {
   };
 
   const openCompletedAppointments = (focusId) => {
-    navigate('/customer-appointments?tab=completed', focusId ? { state: { focusId } } : undefined);
+    showAppToast('تم تعطيل صفحة المواعيد في هذه النسخة. يمكنك التواصل مع الخبير مباشرة عبر الرسائل.', 'info');
   };
 
   const confirmDeleteAddress = async () => {
@@ -951,10 +961,10 @@ const ProfilePage = () => {
     try {
       const addressDocRef = doc(db, 'users', user.uid, 'addresses', String(addressId));
       await deleteDoc(addressDocRef);
-      showAppToast('Adres başarıyla silindi.', 'success');
+      showAppToast('تم حذف العنوان بنجاح.', 'success');
     } catch (error) {
       if (isDevelopment) console.error('Silme hatası:', error.message);
-      showAppToast('Adres silinirken bir hata oluştu.', 'error');
+      showAppToast('حدث خطأ أثناء حذف العنوان.', 'error');
     } finally {
       setShowDeleteAddressConfirm(false);
       setAddressToDelete(null);
@@ -986,16 +996,16 @@ const ProfilePage = () => {
         if (!cancelled) {
           const data = snap.exists() ? snap.data() : null;
           setProfileDisplayName(
-            data?.displayName ||
+              data?.displayName ||
               data?.email?.split('@')[0] ||
               currentUser.email?.split('@')[0] ||
-              'Kullanıcı'
+              'مستخدم'
           );
           setProfilePhoneNumber(data?.phoneNumber || currentUser.phoneNumber || '');
         }
       } catch {
         if (!cancelled) {
-          setProfileDisplayName(currentUser.email?.split('@')[0] || 'Kullanıcı');
+          setProfileDisplayName(currentUser.email?.split('@')[0] || 'مستخدم');
           setProfilePhoneNumber(currentUser.phoneNumber || '');
         }
       }
@@ -1052,6 +1062,7 @@ const ProfilePage = () => {
     return () => unsubscribe();
   }, [user?.uid]);
 
+  /* Syria Arabic launch: appointment history listener disabled.
   useEffect(() => {
     if (!user?.uid) return;
 
@@ -1121,7 +1132,7 @@ const ProfilePage = () => {
                 category = String(d.category || '').split(',')[0]?.trim() || '';
               }
             } catch {
-              /* ignore */
+              ignore
             }
 
             return {
@@ -1146,6 +1157,7 @@ const ProfilePage = () => {
 
     return () => unsubscribe();
   }, [user?.uid]);
+  */
 
   const handleLinkGoogle = async () => {
     setGoogleLinkError('');
@@ -1155,7 +1167,7 @@ const ProfilePage = () => {
     try {
       const result = await linkGoogleToCurrentUser();
       setGoogleLinked(true);
-      setGoogleLinkMessage(result?.message || 'Google hesabı başarıyla bağlandı.');
+      setGoogleLinkMessage(result?.message || 'تم ربط حساب Google بنجاح.');
     } catch (err) {
       if (
         err?.code === 'GOOGLE_ACCOUNT_EMAIL_MISMATCH' ||
@@ -1163,21 +1175,21 @@ const ProfilePage = () => {
       ) {
         setGoogleLinkError(
           err?.message ||
-            'Seçilen Google hesabı mevcut hesap e-postasıyla eşleşmiyor.'
+            'حساب Google المحدد لا يطابق البريد الإلكتروني الحالي.'
         );
         return;
       }
 
       if (err?.code === 'GOOGLE_CREDENTIAL_ALREADY_IN_USE') {
         setGoogleLinkError(
-          err?.message || 'Bu Google hesabı başka bir kullanıcıya bağlı.'
+          err?.message || 'حساب Google هذا مرتبط بمستخدم آخر.'
         );
         return;
       }
 
       if (err?.code === 'GOOGLE_ALREADY_LINKED') {
         setGoogleLinked(true);
-        setGoogleLinkMessage('Google hesabı zaten bağlı.');
+        setGoogleLinkMessage('حساب Google مرتبط بالفعل.');
         return;
       }
 
@@ -1188,12 +1200,12 @@ const ProfilePage = () => {
       if (err?.code === 'GOOGLE_POPUP_BLOCKED') {
         setGoogleLinkError(
           err?.message ||
-            'Google açılır penceresi engellendi. Lütfen pop-up izni verin.'
+            'تم حظر نافذة Google. يرجى السماح بالنوافذ المنبثقة.'
         );
         return;
       }
 
-      setGoogleLinkError(err?.message || 'Google hesabı bağlanamadı.');
+      setGoogleLinkError(err?.message || 'تعذر ربط حساب Google.');
     } finally {
       setGoogleLinkLoading(false);
     }
@@ -1205,14 +1217,14 @@ const ProfilePage = () => {
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      showAppToast('Sadece JPEG, PNG veya WEBP formatında resim yükleyebilirsiniz!', 'error');
+      showAppToast('يمكنك رفع صور بصيغة JPEG أو PNG أو WEBP فقط.', 'error');
       e.target.value = '';
       return;
     }
 
     const maxSize = 2 * 1024 * 1024;
     if (file.size > maxSize) {
-      showAppToast('Dosya boyutu 2MB\'dan küçük olmalıdır!', 'error');
+      showAppToast('يجب أن يكون حجم الملف أقل من 2MB.', 'error');
       e.target.value = '';
       return;
     }
@@ -1249,7 +1261,7 @@ const ProfilePage = () => {
       if (isDevelopment) {
         console.error('Profil fotoğrafı yüklenemedi veya sohbetlere aktarılamadı:', err.message);
       }
-      showAppToast('Fotoğraf yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.', 'error');
+      showAppToast('حدث خطأ أثناء رفع الصورة. يرجى المحاولة لاحقاً.', 'error');
     } finally {
       setPhotoUploading(false);
       e.target.value = '';
@@ -1457,7 +1469,7 @@ const ProfilePage = () => {
   };
 
   const getUserDisplayName = () =>
-    sanitizeText(profileDisplayName || user?.email?.split('@')[0] || 'Kullanıcı');
+    sanitizeText(profileDisplayName || user?.email?.split('@')[0] || 'مستخدم');
 
   const getUserInitials = () => {
     const parts = getUserDisplayName().trim().split(/\s+/);
@@ -1512,7 +1524,7 @@ const ProfilePage = () => {
           onClose={() => setActiveModal(null)}
           onSuccess={() => {
             setActiveModal(null);
-            setPasswordToast('Şifre güncellendi.');
+            setPasswordToast('تم تحديث كلمة المرور.');
             setTimeout(() => setPasswordToast(''), 4000);
           }}
         />
@@ -1592,21 +1604,23 @@ const ProfilePage = () => {
               </p>
               <div className="profile-header-contact">
                 <span>
-                  <i className="fas fa-envelope"></i> {sanitizeText(user.email || 'E-posta yok')}
+                  <i className="fas fa-envelope"></i> {sanitizeText(user.email || 'لا يوجد بريد إلكتروني')}
                 </span>
                 <span>
-                  <i className="fas fa-phone"></i> {sanitizeText(profilePhoneNumber || 'Telefon yok')}
+                  <i className="fas fa-phone"></i> {sanitizeText(profilePhoneNumber || 'لا يوجد رقم هاتف')}
                 </span>
               </div>
             </div>
           </div>
 
+          {/* Syria Arabic launch: appointment-based completed order counter disabled.
           <div className="profile-header-right">
             <div className="header-stat-item">
               <span className="header-stat-value">{completedOrderCount}</span>
               <span className="header-stat-label">الطلبات المكتملة</span>
             </div>
           </div>
+          */}
         </div>
 
         <div className="expert-tabs">
@@ -1916,6 +1930,7 @@ const ProfilePage = () => {
           )}
         </section>
 
+        {/* Syria Arabic launch: appointment history sections disabled.
         <section className="profile-card-section">
           <div className="section-header">
             <h3><i className="fas fa-box"></i> طلباتي الأخيرة</h3>
@@ -1975,7 +1990,7 @@ const ProfilePage = () => {
                 </div>
 
                 <span className="order-price">
-                  {typeof order.price === 'number' ? `₺${order.price}` : '—'}
+                  {typeof order.price === 'number' ? `${formatLatinNumber(order.price)} ل.س` : '—'}
                 </span>
               </div>
             ))}
@@ -2029,6 +2044,7 @@ const ProfilePage = () => {
             ))}
           </div>
         </section>
+        */}
 
         <AddressModal
           isOpen={showAddAddressModal}

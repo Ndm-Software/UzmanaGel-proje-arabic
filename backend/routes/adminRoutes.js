@@ -33,7 +33,7 @@ function rateLimitMiddleware(req, res, next) {
     checkAdminRateLimit();
     next();
   } catch (error) {
-    return res.status(429).json({ message: "Too many requests. Please try again later." });
+    return res.status(429).json({ message: "طلبات كثيرة جداً. يرجى المحاولة لاحقاً." });
   }
 }
 
@@ -44,7 +44,7 @@ function requireAuth(req, res, next) {
     : "";
 
   if (!token) {
-    return res.status(401).json({ message: "Missing bearer token." });
+    return res.status(401).json({ message: "رمز تسجيل الدخول مفقود." });
   }
 
   admin
@@ -57,7 +57,7 @@ function requireAuth(req, res, next) {
     })
     .catch((error) => {
       if (isDevelopment) console.error("Auth verify failed:", error?.message || error);
-      res.status(401).json({ message: "Invalid token." });
+      res.status(401).json({ message: "رمز تسجيل الدخول غير صالح." });
     });
 }
 
@@ -67,10 +67,10 @@ async function requireAdmin(req, res, next) {
     if (snap.exists && snap.data()?.userType === "ADMIN") {
       return next();
     }
-    return res.status(403).json({ message: "Admin yetkisi gerekli." });
+    return res.status(403).json({ message: "صلاحية المدير مطلوبة." });
   } catch (error) {
     if (isDevelopment) console.error("Admin check failed:", error?.message || error);
-    return res.status(500).json({ message: "Yetki kontrolü başarısız." });
+    return res.status(500).json({ message: "فشل التحقق من الصلاحيات." });
   }
 }
 
@@ -220,7 +220,7 @@ router.get("/listing-reports/count", requireAuth, requireAdmin, async (req, res)
       }
       return res.json({ count: unseen, total: snap.size, unseen });
     } catch (e2) {
-      return res.status(500).json({ message: "Bildirim sayısı alınamadı." });
+      return res.status(500).json({ message: "تعذر جلب عدد الإشعارات." });
     }
   }
 });
@@ -304,7 +304,7 @@ router.get("/listing-reports", requireAuth, requireAdmin, async (req, res) => {
     return res.json({ reports: merged });
   } catch (error) {
     if (isDevelopment) console.error("GET /api/admin/listing-reports:", error?.message || error);
-    return res.status(500).json({ message: "Bildirimler yüklenemedi." });
+    return res.status(500).json({ message: "تعذر تحميل الإشعارات." });
   }
 });
 
@@ -315,13 +315,13 @@ router.post(
   async (req, res) => {
     const reportId = String(req.params.reportId || "").trim();
     if (!reportId) {
-      return res.status(400).json({ message: "Bildirim kimliği gerekli." });
+      return res.status(400).json({ message: "معرف الإشعار مطلوب." });
     }
     try {
       const ref = db.collection("listing_reports").doc(reportId);
       const snap = await ref.get();
       if (!snap.exists) {
-        return res.status(404).json({ message: "Bildirim bulunamadı." });
+        return res.status(404).json({ message: "لم يتم العثور على الإشعار." });
       }
       await ref.update({
         adminSeen: true,
@@ -330,7 +330,7 @@ router.post(
       return res.json({ success: true });
     } catch (error) {
       if (isDevelopment) console.error("mark-seen:", error?.message || error);
-      return res.status(500).json({ message: "İşlem tamamlanamadı." });
+      return res.status(500).json({ message: "تعذر إكمال العملية." });
     }
   }
 );
@@ -342,13 +342,13 @@ router.post(
   async (req, res) => {
     const reportId = String(req.params.reportId || "").trim();
     if (!reportId) {
-      return res.status(400).json({ message: "Bildirim kimliği gerekli." });
+      return res.status(400).json({ message: "معرف الإشعار مطلوب." });
     }
     try {
       const ref = db.collection("listing_reports").doc(reportId);
       const snap = await ref.get();
       if (!snap.exists) {
-        return res.status(404).json({ message: "Bildirim bulunamadı." });
+        return res.status(404).json({ message: "لم يتم العثور على الإشعار." });
       }
       await ref.update({
         adminSeen: true,
@@ -358,7 +358,7 @@ router.post(
       return res.json({ success: true });
     } catch (error) {
       if (isDevelopment) console.error("mark-action:", error?.message || error);
-      return res.status(500).json({ message: "İşlem tamamlanamadı." });
+      return res.status(500).json({ message: "تعذر إكمال العملية." });
     }
   }
 );
@@ -381,7 +381,7 @@ router.get("/experts/pending", requireAuth, requireAdmin, async (req, res) => {
     return res.json(result);
   } catch (error) {
     if (isDevelopment) console.error("GET /api/admin/experts/pending failed:", error.message);
-    return res.status(500).json({ message: "Onay bekleyenler yüklenemedi." });
+    return res.status(500).json({ message: "تعذر تحميل طلبات الموافقة المعلقة." });
   }
 });
 
@@ -403,7 +403,7 @@ router.get("/experts/approved", requireAuth, requireAdmin, async (req, res) => {
     return res.json(result);
   } catch (error) {
     if (isDevelopment) console.error("GET /api/admin/experts/approved failed:", error.message);
-    return res.status(500).json({ message: "Onaylı uzmanlar yüklenemedi." });
+    return res.status(500).json({ message: "تعذر تحميل الخبراء الموافق عليهم." });
   }
 });
 
@@ -422,14 +422,14 @@ router.get("/experts/rejected", requireAuth, requireAdmin, async (req, res) => {
     return res.json(rejectedExperts);
   } catch (error) {
     if (isDevelopment) console.error("GET /api/admin/experts/rejected failed:", error.message);
-    return res.status(500).json({ message: "Reddedilen uzmanlar yüklenemedi." });
+    return res.status(500).json({ message: "تعذر تحميل الخبراء المرفوضين." });
   }
 });
 
 router.get("/experts/:id", requireAuth, requireAdmin, async (req, res) => {
   const expertId = String(req.params.id || "").trim();
   if (!expertId) {
-    return res.status(400).json({ message: "Uzman id gerekli." });
+    return res.status(400).json({ message: "معرف الخبير مطلوب." });
   }
 
   try {
@@ -454,7 +454,7 @@ router.get("/experts/:id", requireAuth, requireAdmin, async (req, res) => {
     ]);
 
     if (!providerSnap.exists && !userSnap.exists) {
-      return res.status(404).json({ message: "Uzman bulunamadı." });
+      return res.status(404).json({ message: "لم يتم العثور على الخبير." });
     }
 
     const providerData = providerSnap.exists ? providerSnap.data() : {};
@@ -565,7 +565,7 @@ router.get("/experts/:id", requireAuth, requireAdmin, async (req, res) => {
     });
   } catch (error) {
     if (isDevelopment) console.error("GET /api/admin/experts/:id failed:", error.message);
-    return res.status(500).json({ message: "Uzman detayı yüklenemedi." });
+    return res.status(500).json({ message: "تعذر تحميل تفاصيل الخبير." });
   }
 });
 
@@ -614,14 +614,14 @@ router.get("/clients", requireAuth, requireAdmin, async (req, res) => {
     return res.json(result);
   } catch (error) {
     if (isDevelopment) console.error("GET /api/admin/clients failed:", error.message);
-    return res.status(500).json({ message: "Kullanıcılar yüklenemedi." });
+    return res.status(500).json({ message: "تعذر تحميل المستخدمين." });
   }
 });
 
 router.post("/experts/:id/approve", requireAuth, requireAdmin, async (req, res) => {
   const providerId = String(req.params.id || "").trim();
   if (!providerId) {
-    return res.status(400).json({ message: "Provider id gerekli." });
+    return res.status(400).json({ message: "معرف الخبير مطلوب." });
   }
 
   try {
@@ -644,16 +644,16 @@ router.post("/experts/:id/approve", requireAuth, requireAdmin, async (req, res) 
       userId: providerId,
       userEmail: userData.email || "",
       type: "expert_approved",
-      title: "Uzman Başvurunuz Onaylandı! 🎉",
-      message: "Tebrikler! Uzman başvurunuz onaylanmıştır. Artık ilanlarınızı yayınlayabilir ve hizmet vermeye başlayabilirsiniz.",
+      title: "تمت الموافقة على طلب الخبير! 🎉",
+      message: "تهانينا! تمت الموافقة على طلبك كخبير. يمكنك الآن نشر إعلاناتك وبدء تقديم الخدمات.",
       read: false,
       createdAt: new Date().toISOString(),
     });
 
-    return res.json({ success: true, message: "Uzman onaylandı ve bildirim gönderildi!" });
+    return res.json({ success: true, message: "تمت الموافقة على الخبير وإرسال الإشعار." });
   } catch (error) {
     if (isDevelopment) console.error("POST /api/admin/experts/:id/approve failed:", error.message);
-    return res.status(500).json({ message: "Uzman onaylanamadı." });
+    return res.status(500).json({ message: "تعذرت الموافقة على الخبير." });
   }
 });
 
@@ -662,7 +662,7 @@ router.post("/experts/:id/reject", requireAuth, requireAdmin, async (req, res) =
   const reason = String(req.body?.reason || "").trim();
 
   if (!providerId) {
-    return res.status(400).json({ message: "Provider id gerekli." });
+    return res.status(400).json({ message: "معرف الخبير مطلوب." });
   }
 
   if (!reason) {
@@ -845,7 +845,7 @@ router.post("/experts/:id/reject", requireAuth, requireAdmin, async (req, res) =
         userId: providerId,
         userEmail: userData.email || "",
         type: "expert_rejected",
-        title: "Uzman Başvurunuz Reddedildi",
+        title: "تم رفض طلب الخبير",
         message: reason,
         rejectedAt: rejectedAt,
         read: false,
@@ -867,7 +867,7 @@ router.post("/experts/:id/reject", requireAuth, requireAdmin, async (req, res) =
 
     return res.json({
       success: true,
-      message: "Başvuru reddedildi ve reddedilen uzmanlar arşivine kaydedildi!",
+      message: "تم رفض الطلب وحفظه في أرشيف الخبراء المرفوضين.",
       reason,
       deleted: deletedItems,
       failed: failedItems.length > 0 ? failedItems : undefined,
@@ -876,7 +876,7 @@ router.post("/experts/:id/reject", requireAuth, requireAdmin, async (req, res) =
     if (isDevelopment) console.error("POST /api/admin/experts/:id/reject failed:", error.message);
     return res.status(500).json({
       success: false,
-      message: "Başvuru reddedilemedi.",
+      message: "تعذر رفض الطلب.",
       error: error.message,
       deleted: deletedItems,
       failed: failedItems,
@@ -1154,12 +1154,12 @@ router.delete("/experts/:id", requireAuth, requireAdmin, async (req, res) => {
   const providerId = String(req.params.id || "").trim();
 
   if (!providerId) {
-    return res.status(400).json({ message: "Provider id gerekli." });
+    return res.status(400).json({ message: "معرف الخبير مطلوب." });
   }
 
   if (providerId === req.userId) {
     return res.status(400).json({
-      message: "Admin kendi hesabını bu işlemle silemez.",
+      message: "لا يمكن للمدير حذف حسابه بهذه العملية.",
     });
   }
 
@@ -1180,7 +1180,7 @@ router.delete("/experts/:id", requireAuth, requireAdmin, async (req, res) => {
     if (!userSnap.exists && !providerSnap.exists) {
       return res.status(404).json({
         success: false,
-        message: "Uzman hesabı bulunamadı.",
+        message: "لم يتم العثور على حساب الخبير.",
       });
     }
 
@@ -1195,7 +1195,7 @@ router.delete("/experts/:id", requireAuth, requireAdmin, async (req, res) => {
     if (!isExpert) {
       return res.status(400).json({
         success: false,
-        message: "Seçilen hesap uzman/provider hesabı değil.",
+        message: "الحساب المحدد ليس حساب خبير.",
       });
     }
 
@@ -1773,7 +1773,7 @@ router.delete("/experts/:id", requireAuth, requireAdmin, async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Uzman ve uzmanla ilişkili tüm veriler kalıcı olarak silindi.",
+      message: "تم حذف الخبير وجميع البيانات المرتبطة به نهائياً.",
       summary: {
         deletedListingsCount: listingIds.length,
         deletedAppointmentsCount: appointmentRefs.size,
@@ -1804,7 +1804,7 @@ router.delete("/experts/:id", requireAuth, requireAdmin, async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Uzman kalıcı olarak silinemedi.",
+      message: "تعذر حذف الخبير نهائياً.",
       error: error?.message || String(error),
       deleted: deletedItems,
       failed: failedItems,
@@ -1818,12 +1818,12 @@ router.delete("/clients/:id", requireAuth, requireAdmin, async (req, res) => {
   const clientId = String(req.params.id || "").trim();
 
   if (!clientId) {
-    return res.status(400).json({ message: "User id gerekli." });
+    return res.status(400).json({ message: "معرف المستخدم مطلوب." });
   }
 
   if (clientId === req.userId) {
     return res.status(400).json({
-      message: "Admin kendi hesabını bu işlemle silemez.",
+      message: "لا يمكن للمدير حذف حسابه بهذه العملية.",
     });
   }
 
@@ -1844,7 +1844,7 @@ router.delete("/clients/:id", requireAuth, requireAdmin, async (req, res) => {
     if (!userSnap.exists) {
       return res.status(404).json({
         success: false,
-        message: "Kullanıcı hesabı bulunamadı.",
+        message: "لم يتم العثور على حساب المستخدم.",
       });
     }
 
@@ -1860,7 +1860,7 @@ router.delete("/clients/:id", requireAuth, requireAdmin, async (req, res) => {
       return res.status(400).json({
         success: false,
         message:
-          "Bu hesap provider/uzman hesabıdır. Lütfen uzman silme endpointini kullanın.",
+          "هذا الحساب حساب خبير. يرجى استخدام عملية حذف الخبراء.",
       });
     }
 
@@ -2439,7 +2439,7 @@ router.delete("/clients/:id", requireAuth, requireAdmin, async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Kullanıcı ve kullanıcıyla ilişkili tüm veriler kalıcı olarak silindi.",
+      message: "تم حذف المستخدم وجميع البيانات المرتبطة به نهائياً.",
       summary: {
         deletedAppointmentsCount: appointmentRefs.size,
         deletedConversationsCount:
@@ -2470,7 +2470,7 @@ router.delete("/clients/:id", requireAuth, requireAdmin, async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Kullanıcı kalıcı olarak silinemedi.",
+      message: "تعذر حذف المستخدم نهائياً.",
       error: error?.message || String(error),
       deleted: deletedItems,
       failed: failedItems,
@@ -2492,7 +2492,7 @@ router.get("/deleted-accounts/providers", requireAuth, requireAdmin, async (req,
     return res.json(result);
   } catch (error) {
     if (isDevelopment) console.error("GET /api/admin/deleted-accounts/providers failed:", error.message);
-    return res.status(500).json({ message: "Silinen uzman hesapları yüklenemedi." });
+    return res.status(500).json({ message: "تعذر تحميل حسابات الخبراء المحذوفة." });
   }
 });
 
@@ -2510,7 +2510,7 @@ router.get("/deleted-accounts/clients", requireAuth, requireAdmin, async (req, r
     return res.json(result);
   } catch (error) {
     if (isDevelopment) console.error("GET /api/admin/deleted-accounts/clients failed:", error.message);
-    return res.status(500).json({ message: "Silinen kullanıcı hesapları yüklenemedi." });
+    return res.status(500).json({ message: "تعذر تحميل حسابات المستخدمين المحذوفة." });
   }
 });
 
@@ -2518,7 +2518,7 @@ router.post("/deleted-accounts/:id/restore-provider", requireAuth, requireAdmin,
   const providerId = String(req.params.id || "").trim();
 
   if (!providerId) {
-    return res.status(400).json({ message: "Provider id gerekli." });
+    return res.status(400).json({ message: "معرف الخبير مطلوب." });
   }
 
   try {
@@ -2526,13 +2526,13 @@ router.post("/deleted-accounts/:id/restore-provider", requireAuth, requireAdmin,
     const deletedSnap = await deletedRef.get();
 
     if (!deletedSnap.exists) {
-      return res.status(404).json({ message: "Arşivlenmiş provider hesabı bulunamadı." });
+      return res.status(404).json({ message: "لم يتم العثور على حساب خبير مؤرشف." });
     }
 
     const deletedData = deletedSnap.data() || {};
 
     if (deletedData.userType !== "PROVIDER") {
-      return res.status(400).json({ message: "Bu kayıt provider hesabı değil." });
+      return res.status(400).json({ message: "هذا السجل ليس حساب خبير." });
     }
 
     const userData = deletedData.userData || {};
@@ -2554,7 +2554,7 @@ router.post("/deleted-accounts/:id/restore-provider", requireAuth, requireAdmin,
 
     if (existingUserSnap.exists || existingProviderSnap.exists) {
       return res.status(409).json({
-        message: "Bu uid ile aktif kullanıcı veya provider kaydı zaten mevcut.",
+        message: "يوجد بالفعل مستخدم أو خبير نشط بهذا المعرف.",
       });
     }
 
@@ -2594,7 +2594,7 @@ router.post("/deleted-accounts/:id/restore-provider", requireAuth, requireAdmin,
     if (gmailBasedRestore) {
       if (!authExists) {
         return res.status(409).json({
-          message: "Bu Gmail hesabı için yeni geçici şifre oluşturulmayacak şekilde ayarlandı; ancak mevcut auth kaydı bulunamadı. Lütfen destek ekibi ile manuel geri yükleme yapın.",
+          message: "تم ضبط حساب Gmail هذا بدون إنشاء كلمة مرور مؤقتة جديدة، لكن لم يتم العثور على سجل المصادقة الحالي. يرجى استعادته يدوياً عبر الدعم.",
         });
       }
 
@@ -2709,7 +2709,7 @@ router.post("/deleted-accounts/:id/restore-provider", requireAuth, requireAdmin,
 
     return res.json({
       success: true,
-      message: "Provider hesabı başarıyla geri yüklendi.",
+      message: "تمت استعادة حساب الخبير بنجاح.",
       restoredListingsCount: deletedListings.length,
       tempPassword,
       restoredLoginMethod,
@@ -2718,7 +2718,7 @@ router.post("/deleted-accounts/:id/restore-provider", requireAuth, requireAdmin,
   } catch (error) {
     if (isDevelopment) console.error("POST /api/admin/deleted-accounts/:id/restore-provider failed:", error.message);
     return res.status(500).json({
-      message: "Provider hesabı geri yüklenemedi.",
+      message: "تعذرت استعادة حساب الخبير.",
     });
   }
 });
@@ -2727,7 +2727,7 @@ router.post("/deleted-accounts/:id/restore-client", requireAuth, requireAdmin, a
   const clientId = String(req.params.id || "").trim();
 
   if (!clientId) {
-    return res.status(400).json({ message: "Client id gerekli." });
+    return res.status(400).json({ message: "معرف العميل مطلوب." });
   }
 
   try {
@@ -2735,13 +2735,13 @@ router.post("/deleted-accounts/:id/restore-client", requireAuth, requireAdmin, a
     const deletedSnap = await deletedRef.get();
 
     if (!deletedSnap.exists) {
-      return res.status(404).json({ message: "Arşivlenmiş kullanıcı hesabı bulunamadı." });
+      return res.status(404).json({ message: "لم يتم العثور على حساب مستخدم مؤرشف." });
     }
 
     const deletedData = deletedSnap.data() || {};
 
     if (deletedData.userType !== "CLIENT") {
-      return res.status(400).json({ message: "Bu kayıt client hesabı değil." });
+      return res.status(400).json({ message: "هذا السجل ليس حساب عميل." });
     }
 
     const userData = deletedData.userData || {};
@@ -2754,7 +2754,7 @@ router.post("/deleted-accounts/:id/restore-client", requireAuth, requireAdmin, a
 
     if (existingUserSnap.exists) {
       return res.status(409).json({
-        message: "Bu uid ile aktif kullanıcı kaydı zaten mevcut.",
+        message: "يوجد بالفعل مستخدم نشط بهذا المعرف.",
       });
     }
 
@@ -2793,7 +2793,7 @@ router.post("/deleted-accounts/:id/restore-client", requireAuth, requireAdmin, a
     if (gmailBasedRestore) {
       if (!authExists) {
         return res.status(409).json({
-          message: "Bu Gmail hesabı için yeni geçici şifre oluşturulmayacak şekilde ayarlandı; ancak mevcut auth kaydı bulunamadı. Lütfen destek ekibi ile manuel geri yükleme yapın.",
+          message: "تم ضبط حساب Gmail هذا بدون إنشاء كلمة مرور مؤقتة جديدة، لكن لم يتم العثور على سجل المصادقة الحالي. يرجى استعادته يدوياً عبر الدعم.",
         });
       }
 
@@ -2868,7 +2868,7 @@ router.post("/deleted-accounts/:id/restore-client", requireAuth, requireAdmin, a
 
     return res.json({
       success: true,
-      message: "Kullanıcı hesabı başarıyla geri yüklendi.",
+      message: "تمت استعادة حساب المستخدم بنجاح.",
       restoredListingsCount: 0,
       tempPassword,
       restoredLoginMethod,
@@ -2877,7 +2877,7 @@ router.post("/deleted-accounts/:id/restore-client", requireAuth, requireAdmin, a
   } catch (error) {
     if (isDevelopment) console.error("POST /api/admin/deleted-accounts/:id/restore-client failed:", error.message);
     return res.status(500).json({
-      message: "Kullanıcı hesabı geri yüklenemedi.",
+      message: "تعذرت استعادة حساب المستخدم.",
     });
   }
 });
@@ -2888,7 +2888,7 @@ router.post("/address-requests/:id/approve", requireAuth, requireAdmin, async (r
   const requestId = String(req.params.id || "").trim();
   
   if (!requestId) {
-    return res.status(400).json({ message: "Request id gerekli." });
+    return res.status(400).json({ message: "معرف الطلب مطلوب." });
   }
 
   try {
@@ -2896,13 +2896,13 @@ router.post("/address-requests/:id/approve", requireAuth, requireAdmin, async (r
     const requestSnap = await requestRef.get();
 
     if (!requestSnap.exists) {
-      return res.status(404).json({ message: "Talep bulunamadı." });
+      return res.status(404).json({ message: "لم يتم العثور على الطلب." });
     }
 
     const requestData = requestSnap.data();
 
     if (requestData.status !== "PENDING") {
-      return res.status(400).json({ message: "Bu talep zaten işleme alınmış." });
+      return res.status(400).json({ message: "تمت معالجة هذا الطلب مسبقاً." });
     }
 
     await requestRef.update({
@@ -2916,17 +2916,17 @@ router.post("/address-requests/:id/approve", requireAuth, requireAdmin, async (r
       userId: requestData.expertId,
       userEmail: requestData.userEmail || "",
       type: "address_change_approved",
-      title: "Adres Değişiklik Talebiniz Onaylandı",
-      message: "Adres değişiklik talebiniz admin tarafından onaylandı. Profilinizden yeni adresinizi güncelleyebilirsiniz.",
+      title: "تمت الموافقة على طلب تغيير العنوان",
+      message: "تمت الموافقة على طلب تغيير العنوان من الإدارة. يمكنك تحديث عنوانك الجديد من ملفك الشخصي.",
       requestId: requestId,
       read: false,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    return res.json({ success: true, message: "Talep onaylandı." });
+    return res.json({ success: true, message: "تمت الموافقة على الطلب." });
   } catch (error) {
     if (isDevelopment) console.error("Onaylama hatası:", error);
-    return res.status(500).json({ message: "Onaylama sırasında hata oluştu." });
+    return res.status(500).json({ message: "حدث خطأ أثناء الموافقة." });
   }
 });
 
@@ -2935,11 +2935,11 @@ router.post("/address-requests/:id/reject", requireAuth, requireAdmin, async (re
   const { reason } = req.body;
 
   if (!requestId) {
-    return res.status(400).json({ message: "Request id gerekli." });
+    return res.status(400).json({ message: "معرف الطلب مطلوب." });
   }
 
   if (!reason || reason.trim().length < 3) {
-    return res.status(400).json({ message: "Red sebebi en az 3 karakter olmalıdır." });
+    return res.status(400).json({ message: "يجب أن يكون سبب الرفض 3 أحرف على الأقل." });
   }
 
   try {
@@ -2947,13 +2947,13 @@ router.post("/address-requests/:id/reject", requireAuth, requireAdmin, async (re
     const requestSnap = await requestRef.get();
 
     if (!requestSnap.exists) {
-      return res.status(404).json({ message: "Talep bulunamadı." });
+      return res.status(404).json({ message: "لم يتم العثور على الطلب." });
     }
 
     const requestData = requestSnap.data();
 
     if (requestData.status !== "PENDING") {
-      return res.status(400).json({ message: "Bu talep zaten işleme alınmış." });
+      return res.status(400).json({ message: "تمت معالجة هذا الطلب مسبقاً." });
     }
 
     await requestRef.update({
@@ -2968,8 +2968,8 @@ router.post("/address-requests/:id/reject", requireAuth, requireAdmin, async (re
       userId: requestData.expertId,
       userEmail: requestData.userEmail || "",
       type: "address_change_rejected",
-      title: "Adres Değişiklik Talebiniz Reddedildi",
-      message: `Adres değişiklik talebiniz reddedildi. Red sebebi: ${reason}`,
+      title: "تم رفض طلب تغيير العنوان",
+      message: `تم رفض طلب تغيير العنوان. سبب الرفض: ${reason}`,
       requestId: requestId,
       read: false,
       createdAt: admin.firestore.FieldValue.serverTimestamp()
@@ -2978,7 +2978,7 @@ router.post("/address-requests/:id/reject", requireAuth, requireAdmin, async (re
     return res.json({ success: true, message: "Talep reddedildi." });
   } catch (error) {
     if (isDevelopment) console.error("Reddetme hatası:", error);
-    return res.status(500).json({ message: "Reddetme sırasında hata oluştu." });
+    return res.status(500).json({ message: "حدث خطأ أثناء الرفض." });
   }
 });
 

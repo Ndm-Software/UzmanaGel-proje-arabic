@@ -16,7 +16,7 @@ async function safeJson(response) {
 
 export async function fetchUserRole(user) {
   if (!user) {
-    throw new Error("No authenticated user.");
+    throw new Error("يرجى تسجيل الدخول أولاً.");
   }
 
   const token = await user.getIdToken();
@@ -30,7 +30,7 @@ export async function fetchUserRole(user) {
 
   if (!response.ok) {
     const payload = await safeJson(response);
-    throw new Error(payload?.message || "Failed to fetch user role.");
+    throw new Error(payload?.message || "تعذر جلب دور المستخدم.");
   }
 
   return response.json();

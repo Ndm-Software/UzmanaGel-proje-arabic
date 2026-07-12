@@ -10,7 +10,8 @@ import '../styles/Navbar.css';
 import logo from '../assets/pictures/LogoArabicNoWriting.png';
 import defaultAvatar from '../assets/pictures/LogoArabicNobackground.png';
 import { fetchMyConversations } from '../services/chatApi';
-import PenaltyBanner from './PenaltyBanner';
+// Syria Arabic launch: appointment penalty banner disabled.
+// import PenaltyBanner from './PenaltyBanner';
 import { showAppToast } from '../utils/showAppToast';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -27,7 +28,8 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
-  const [pendingAppointmentsCount, setPendingAppointmentsCount] = useState(0);
+  // Syria Arabic launch: appointment counters disabled.
+  // const [pendingAppointmentsCount, setPendingAppointmentsCount] = useState(0);
   const [userType, setUserType] = useState(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
   const [tokenBalance, setTokenBalance] = useState(0);
@@ -35,7 +37,7 @@ const Navbar = () => {
   const [isTokenPanelOpen, setIsTokenPanelOpen] = useState(false);
   const [profileCompleted, setProfileCompleted] = useState(false);
   const [firestoreDisplayName, setFirestoreDisplayName] = useState('');
-  const [hasTodayAppointment, setHasTodayAppointment] = useState(false);
+  // const [hasTodayAppointment, setHasTodayAppointment] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -90,7 +92,7 @@ const Navbar = () => {
         setProfileCompleted(false);
         setProfilePhotoUrl(null);
         setFirestoreDisplayName('');
-        setHasTodayAppointment(false);
+        // setHasTodayAppointment(false);
         setLoading(false);
       }
     });
@@ -172,7 +174,7 @@ const Navbar = () => {
           if (data?.type === 'appointment_auto_cancelled') {
             showAppToast(
               data.message ||
-                'Randevu talebiniz, başlangıç saatine 30 dakikadan az süre kaldığı için iptal edildi. Lütfen en az 30 dakika sonrası için yeni bir talep oluşturun.',
+                'تم إلغاء طلبك لأن موعد البداية أقل من 30 دقيقة. يرجى إنشاء طلب جديد بعد 30 دقيقة على الأقل.',
               'error'
             );
           }
@@ -190,6 +192,7 @@ const Navbar = () => {
     };
   }, [user?.uid]);
 
+  /* Syria Arabic launch: appointment pending-count listener disabled.
   useEffect(() => {
     if (!user?.uid || userType !== 'PROVIDER') {
       setPendingAppointmentsCount(0);
@@ -214,7 +217,9 @@ const Navbar = () => {
 
     return () => unsub();
   }, [user?.uid, userType]);
+  */
 
+  /* Syria Arabic launch: today's appointment listener disabled.
   useEffect(() => {
     if (!user?.uid || userType !== 'PROVIDER') {
       setHasTodayAppointment(false);
@@ -240,6 +245,7 @@ const Navbar = () => {
 
     return () => unsub();
   }, [user?.uid, userType]);
+  */
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -314,7 +320,7 @@ const Navbar = () => {
 
           {/* Notification bell removed for Syria Launch */}
 
-          <Link to="/mesajlar" className="navbar-icon-link" title="Mesajlar">
+          <Link to="/mesajlar" className="navbar-icon-link" title="الرسائل">
             <i className="fas fa-envelope"></i>
             {unreadCount > 0 && (
               <span className="notification-badge">
@@ -529,7 +535,9 @@ const Navbar = () => {
         </div>
       </header>
 
+      {/* Syria Arabic launch: appointment penalty banner disabled.
       <PenaltyBanner />
+      */}
 
       <TokenModal 
         isOpen={isTokenPanelOpen} 

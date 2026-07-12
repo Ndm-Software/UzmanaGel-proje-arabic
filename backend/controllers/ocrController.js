@@ -13,14 +13,14 @@ const isDevelopment = process.env.NODE_ENV === "development";
 exports.analyzeSingle = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: "Dosya bulunamadi" });
+      return res.status(400).json({ error: "لم يتم العثور على الملف." });
     }
 
     const isHealthy = await checkOcrServiceHealth();
     if (!isHealthy) {
       if (isDevelopment) console.log("OCR servisi çalışmıyor, 503 döndürülüyor.");
       return res.status(503).json({
-        error: "Belge doğrulama servisi şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
+        error: "خدمة التحقق من المستندات غير متاحة حالياً. يرجى المحاولة لاحقاً.",
         code: "OCR_SERVICE_UNAVAILABLE",
       });
     }
@@ -30,7 +30,7 @@ exports.analyzeSingle = async (req, res) => {
   } catch (error) {
     if (isDevelopment) console.error("OCR analyze hatası:", error.message);
     res.status(500).json({
-      error: "Belge analiz edilemedi",
+      error: "تعذر تحليل المستند.",
     });
   }
 };
@@ -41,7 +41,7 @@ exports.analyzeBatch = async (req, res) => {
     if (!isHealthy) {
       if (isDevelopment) console.log("OCR servisi çalışmıyor, 503 döndürülüyor.");
       return res.status(503).json({
-        error: "Belge doğrulama servisi şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
+        error: "خدمة التحقق من المستندات غير متاحة حالياً. يرجى المحاولة لاحقاً.",
         code: "OCR_SERVICE_UNAVAILABLE",
       });
     }
@@ -73,7 +73,7 @@ exports.analyzeBatch = async (req, res) => {
   } catch (error) {
     if (isDevelopment) console.error("Toplu OCR hatası:", error.message);
     res.status(500).json({
-      error: "Belgeler analiz edilemedi",
+      error: "تعذر تحليل المستندات.",
     });
   }
 };

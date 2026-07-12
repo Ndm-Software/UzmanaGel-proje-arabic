@@ -37,7 +37,7 @@ async function requireAuth(req, res, next) {
       : "";
 
     if (!token) {
-      return res.status(401).json({ message: "Missing bearer token." });
+      return res.status(401).json({ message: "جلسة الدخول غير موجودة. يرجى تسجيل الدخول مرة أخرى." });
     }
 
     const decoded = await admin.auth().verifyIdToken(token);
@@ -50,7 +50,7 @@ async function requireAuth(req, res, next) {
     next();
   } catch (error) {
     if (isDevelopment) console.error("Auth verify failed:", error.message);
-    return res.status(401).json({ message: "Invalid token." });
+    return res.status(401).json({ message: "جلسة الدخول غير صالحة. يرجى تسجيل الدخول مرة أخرى." });
   }
 }
 

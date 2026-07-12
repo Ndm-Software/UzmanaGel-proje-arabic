@@ -18,7 +18,7 @@ export async function checkLoginEligibility(email) {
 
   if (!response.ok) {
     const error = new Error(
-      data?.message || "Giriş uygunluk kontrolü başarısız oldu."
+      data?.message || "تعذر التحقق من إمكانية تسجيل الدخول."
     );
     error.code = data?.code || "LOGIN_ELIGIBILITY_FAILED";
     error.field = data?.field || null;

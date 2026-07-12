@@ -22,11 +22,13 @@ import {
   sendConversationMessage,
   markConversationAsRead,
   deleteConversationMessage,
-  closeConversation,
+  // Syria Arabic launch: close conversation operation is disabled in the UI.
+  // closeConversation,
 } from "../services/chatApi";
 import { getProfilePhoto } from "../services/updateService";
 import DOMPurify from "dompurify";
 import { showAppToast } from "../utils/showAppToast";
+import { ARABIC_LATIN_LOCALE } from "../utils/localeFormat";
 import ConfirmModal from "../components/ConfirmModal";
 import "../styles/MessagingPage.css";
 
@@ -430,7 +432,8 @@ const MessagingPage = () => {
   const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState(null);
-  const [showCloseConversationConfirm, setShowCloseConversationConfirm] = useState(false);
+  // Syria Arabic launch: close conversation confirmation is disabled.
+  // const [showCloseConversationConfirm, setShowCloseConversationConfirm] = useState(false);
 
   const messagesBodyRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -498,7 +501,7 @@ const MessagingPage = () => {
     (value) => {
       const date = parseAnyDate(value);
       if (!date) return "";
-      return date.toLocaleTimeString("tr-TR", {
+      return date.toLocaleTimeString(ARABIC_LATIN_LOCALE, {
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -517,12 +520,12 @@ const MessagingPage = () => {
         date.getFullYear() === now.getFullYear();
 
       if (sameDay) {
-        return date.toLocaleTimeString("tr-TR", {
+        return date.toLocaleTimeString(ARABIC_LATIN_LOCALE, {
           hour: "2-digit",
           minute: "2-digit",
         });
       }
-      return date.toLocaleDateString("tr-TR", {
+      return date.toLocaleDateString(ARABIC_LATIN_LOCALE, {
         day: "2-digit",
         month: "2-digit",
       });
@@ -543,10 +546,10 @@ const MessagingPage = () => {
         a.getMonth() === b.getMonth() &&
         a.getFullYear() === b.getFullYear();
 
-      if (isSameDate(date, today)) return "Bugün";
-      if (isSameDate(date, yesterday)) return "Dün";
+      if (isSameDate(date, today)) return "اليوم";
+      if (isSameDate(date, yesterday)) return "أمس";
 
-      return date.toLocaleDateString("tr-TR", {
+      return date.toLocaleDateString(ARABIC_LATIN_LOCALE, {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -577,11 +580,11 @@ const MessagingPage = () => {
 
   const getConversationOtherName = useCallback(
     (conversation) => {
-      if (!conversation) return "Uzman";
+      if (!conversation) return "خبير";
       if (conversation.otherUserName) return conversation.otherUserName;
       return conversation.clientUid === currentUid
-        ? conversation.providerName || "Uzman"
-        : conversation.clientName || "Müşteri";
+        ? conversation.providerName || "خبير"
+        : conversation.clientName || "عميل";
     },
     [currentUid]
   );
@@ -649,8 +652,8 @@ const MessagingPage = () => {
       if (!message) return "";
       if (message.isDeleted || message.type === "deleted") {
         return message.senderUid === currentUid
-          ? "Bu mesajı sildiniz"
-          : "Bu mesaj silindi";
+          ? "لقد حذفت هذه الرسالة"
+          : "تم حذف هذه الرسالة";
       }
       return message.text || "";
     },
@@ -661,8 +664,8 @@ const MessagingPage = () => {
     (replyMessage) => {
       if (!replyMessage) return "";
       return replyMessage.senderUid === currentUid
-        ? "Siz"
-        : selectedChatName || "Kullanici";
+        ? "أنت"
+        : selectedChatName || "مستخدم";
     },
     [currentUid, selectedChatName]
   );
@@ -670,7 +673,7 @@ const MessagingPage = () => {
   const getReplyPreviewText = useCallback((replyMessage) => {
     if (!replyMessage) return "";
     return replyMessage.isDeleted || replyMessage.type === "deleted"
-      ? "Bu mesaj silindi"
+      ? "تم حذف هذه الرسالة"
       : replyMessage.text || "";
   }, []);
 
@@ -737,6 +740,10 @@ const MessagingPage = () => {
         return conversationList || [];
       }
 
+      // Syria Arabic launch: appointment-based conversation filtering disabled.
+      return conversationList;
+
+      /* Syria Arabic launch: old appointment-based filtering disabled.
       const [clientAppointmentsSnap, providerAppointmentsSnap] = await Promise.all([
         getDocs(query(collection(db, "appointments"), where("clientId", "==", currentUid))),
         getDocs(query(collection(db, "appointments"), where("expertId", "==", currentUid))),
@@ -783,6 +790,7 @@ const MessagingPage = () => {
         if (appointmentState.hasNonCompleted) return true;
         return !appointmentState.hasCompleted;
       });
+      */
     },
     [buildAppointmentConversationKey, currentUid]
   );
@@ -850,7 +858,7 @@ const MessagingPage = () => {
       await refreshConversationData();
     } catch (error) {
       if (isDevelopment) console.error("Failed to delete message:", error.message);
-      showAppToast("Mesaj silinirken hata oluştu. Lütfen daha sonra tekrar deneyin.", "error");
+      showAppToast("حدث خطأ أثناء حذف الرسالة. يرجى المحاولة لاحقاً.", "error");
     } finally {
       setShowDeleteConfirm(false);
       setMessageToDelete(null);
@@ -874,7 +882,7 @@ const MessagingPage = () => {
 
       if (!finalText) return false;
       if (findMatchedLoveWords(finalText).length > 0) {
-        showAppToast("Aşk / romantik ifadeler kullanılamaz.", "error");
+        showAppToast("لا يمكن استخدام عبارات رومانسية في المحادثة.", "error");
         return false;
       }
 
@@ -893,7 +901,7 @@ const MessagingPage = () => {
         if (isDevelopment) console.error("Failed to send message:", error.message);
         setSendError(
           error?.message ||
-            "Mesaj gönderilirken hata oluştu. Lütfen daha sonra tekrar deneyin."
+            "حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة لاحقاً."
         );
 
         try {
@@ -931,6 +939,7 @@ const MessagingPage = () => {
     [navigate]
   );
 
+  /* Syria Arabic launch: close conversation operation is disabled.
   const confirmCloseConversation = async () => {
     if (!selectedConversationId) return;
 
@@ -939,13 +948,14 @@ const MessagingPage = () => {
       await refreshConversationData();
     } catch (e) {
       showAppToast(
-        e?.message || "Sohbet kapatılamadı. Lütfen daha sonra tekrar deneyin.",
+        e?.message || "تعذر إغلاق المحادثة. يرجى المحاولة لاحقاً.",
         "error"
       );
     } finally {
       setShowCloseConversationConfirm(false);
     }
   };
+  */
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -993,6 +1003,12 @@ const MessagingPage = () => {
       setChatDeadline(null);
       return;
     }
+
+    // Syria Arabic launch: appointment deadline tracking disabled for direct chat.
+    setChatDeadline(null);
+    return;
+
+    /* Syria Arabic launch: old appointment deadline tracking disabled.
     const { clientUid, providerUid } = selectedConversation;
     if (!clientUid || !providerUid) return;
 
@@ -1019,6 +1035,7 @@ const MessagingPage = () => {
         setChatDeadline(latest);
       })
       .catch(() => setChatDeadline(null));
+    */
   }, [selectedConversation, currentUid]);
 
   useEffect(() => {
@@ -1475,11 +1492,11 @@ const MessagingPage = () => {
                               <i className="fas fa-clock"></i>
                               <span>
                                 آخر رسالة:{" "}
-                                {chatDeadline.toLocaleDateString("ar-SY", {
+                                {chatDeadline.toLocaleDateString(ARABIC_LATIN_LOCALE, {
                                   day: "numeric",
                                   month: "long",
                                 })}{" "}
-                                {chatDeadline.toLocaleTimeString("ar-SY", {
+                                {chatDeadline.toLocaleTimeString(ARABIC_LATIN_LOCALE, {
                                   hour: "2-digit",
                                   minute: "2-digit",
                                 })}
@@ -1495,7 +1512,7 @@ const MessagingPage = () => {
                         <button
                           type="button"
                           className="action-btn"
-                          title="Sohbet Menüsü"
+                          title="قائمة المحادثة"
                           onClick={(e) => {
                             e.stopPropagation();
                             setHeaderMenuOpen((prev) => !prev);
@@ -1535,6 +1552,7 @@ const MessagingPage = () => {
                               </button>
                             )}
 
+                            {/* Syria Arabic launch: close conversation button disabled with its operations.
                             <button
                               type="button"
                               className="chat-header-dropdown-item danger"
@@ -1546,6 +1564,7 @@ const MessagingPage = () => {
                               <i className="fas fa-ban"></i>
                               <span>إغلاق المحادثة</span>
                             </button>
+                            */}
                           </div>
                         )}
                       </div>
@@ -1560,7 +1579,7 @@ const MessagingPage = () => {
                 >
                   {isMessagesLoading ? (
                     <div className="no-chat-selected">
-                      <LoadingSpinner text="Sohbet yükleniyor..." />
+                      <LoadingSpinner text="جاري تحميل المحادثة..." />
                     </div>
                   ) : messages.length > 0 ? (
                     messages.map((msg, index) => {
@@ -1763,6 +1782,7 @@ const MessagingPage = () => {
         type="danger"
       />
 
+      {/* Syria Arabic launch: close conversation modal disabled with its operations.
       <ConfirmModal
         isOpen={showCloseConversationConfirm}
         onClose={() => setShowCloseConversationConfirm(false)}
@@ -1773,6 +1793,7 @@ const MessagingPage = () => {
         cancelText="إلغاء"
         type="warning"
       />
+      */}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import categoryImages from '../data/categoryImages';
 import DOMPurify from 'dompurify';
 import { getListingImageStyle } from '../utils/listingImagePresentation';
+import { formatLatinNumber } from '../utils/localeFormat';
 
 const sanitizeText = (text) => {
   if (!text) return '';
@@ -52,9 +53,9 @@ const ListingCard = ({ listing, onLocationClick }) => {
         </div>
         <div className="listing-price-row">
           <div className="listing-price">
-            {listing.price} TL
+            {formatLatinNumber(listing.price)} ل.س
           </div>
-          <a href="#" className="view-details">İncele</a>
+          <a href="#" className="view-details">عرض التفاصيل</a>
         </div>
         <div className="listing-footer">
           <div className="expert-info">

@@ -9,6 +9,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { completeExpertProfile } from '../firebase/authService';
 import AddressModal from '../components/AddressModal';
 import DOMPurify from 'dompurify';
+import { toArabicServiceLabel } from '../utils/arabicLabels';
 import '../styles/ExpertCompleteProfilePage.css';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
@@ -971,7 +972,7 @@ const ExpertCompleteProfilePage = () => {
                         <div key={category.id}
                           className={`category-item ${formData.selectedCategories.some(c => c.name === category.name && !c.isCustom) ? 'selected' : ''}`}
                           onClick={() => toggleCategory(category.name)}>
-                          {category.name}
+                          {toArabicServiceLabel(category.name)}
                         </div>
                       ))}
                       <div className={`category-item other-category ${formData.showCustomCategoryInput ? 'selected' : ''}`}
@@ -1004,7 +1005,7 @@ const ExpertCompleteProfilePage = () => {
                         <div className="custom-items-tags">
                           {formData.selectedCategories.filter(c => c.isCustom).map((category, index) => (
                             <div key={index} className="custom-item-tag">
-                              <span>{category.name}</span>
+                              <span>{toArabicServiceLabel(category.name)}</span>
                               <button type="button" onClick={() => removeCustomCategory(category.name)} disabled={loading || analyzing}>
                                 <i className="fas fa-times"></i>
                               </button>
@@ -1103,7 +1104,7 @@ const ExpertCompleteProfilePage = () => {
                           <div key={index}
                             className={`category-item ${formData.selectedExpertise.some(e => e.name === expertise && !e.isCustom) ? 'selected' : ''}`}
                             onClick={() => toggleExpertise(expertise)}>
-                            {expertise}
+                            {toArabicServiceLabel(expertise)}
                           </div>
                         ))}
                         <div className={`category-item other-category ${formData.showCustomExpertiseInput ? 'selected' : ''}`}
@@ -1137,7 +1138,7 @@ const ExpertCompleteProfilePage = () => {
                         <div className="custom-items-tags">
                           {formData.selectedExpertise.filter(e => e.isCustom).map((expertise, index) => (
                             <div key={index} className="custom-item-tag">
-                              <span>{expertise.name}</span>
+                              <span>{toArabicServiceLabel(expertise.name)}</span>
                               <button type="button" onClick={() => removeCustomExpertise(expertise.name)} disabled={loading || analyzing}>
                                 <i className="fas fa-times"></i>
                               </button>

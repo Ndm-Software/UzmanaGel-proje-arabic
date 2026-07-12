@@ -13,28 +13,28 @@ router.post("/", authMiddleware, async (req, res) => {
     const uid = req.user.uid;
 
     if (!listingId || typeof listingId !== "string" || listingId.length > 200) {
-      return res.status(400).json({ message: "Geçersiz ilan bilgisi." });
+      return res.status(400).json({ message: "معلومات الإعلان غير صالحة." });
     }
     if (!Array.isArray(reasons) || reasons.length === 0) {
-      return res.status(400).json({ message: "En az bir bildirim nedeni seçin." });
+      return res.status(400).json({ message: "يرجى اختيار سبب واحد على الأقل للبلاغ." });
     }
 
     const filtered = [...new Set(reasons.map((r) => String(r)))].filter((r) =>
       ALLOWED_REASONS.has(r)
     );
     if (filtered.length === 0) {
-      return res.status(400).json({ message: "Geçersiz bildirim nedeni." });
+      return res.status(400).json({ message: "سبب البلاغ غير صالح." });
     }
 
     const hasOther = filtered.includes("other");
     const desc = typeof description === "string" ? description.trim() : "";
     if (hasOther && desc.length < 5) {
       return res.status(400).json({
-        message: "“Diğer” için en az 5 karakterlik açıklama gerekli.",
+        message: "عند اختيار \"أخرى\" يجب كتابة وصف لا يقل عن 5 أحرف.",
       });
     }
     if (desc.length > 2000) {
-      return res.status(400).json({ message: "Açıklama en fazla 2000 karakter olabilir." });
+      return res.status(400).json({ message: "يمكن أن يكون الوصف 2000 حرف كحد أقصى." });
     }
 
     const email = req.user.email || null;
@@ -56,7 +56,7 @@ router.post("/", authMiddleware, async (req, res) => {
     return res.status(201).json({ success: true });
   } catch (err) {
     if (isDevelopment) console.error("POST /api/listing-reports:", err);
-    return res.status(500).json({ message: "Kayıt sırasında sunucu hatası oluştu." });
+    return res.status(500).json({ message: "حدث خطأ في الخادم أثناء الحفظ." });
   }
 });
 

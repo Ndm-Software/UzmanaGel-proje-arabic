@@ -17,6 +17,8 @@ import categoryImages from "../data/categoryImages";
 import DOMPurify from "dompurify";
 import { getListingImageStyle } from "../utils/listingImagePresentation";
 import { showAppToast } from "../utils/showAppToast";
+import { toArabicServiceLabel } from "../utils/arabicLabels";
+import { formatLatinNumber } from "../utils/localeFormat";
 import "../styles/ExpertMyListingsPage.css";
 
 const isDevelopment = import.meta.env.DEV;
@@ -552,7 +554,7 @@ export default function ExpertMyListingsPage() {
         String(editingItem.serviceSubcategory || editForm.serviceSubcategory || "").trim()
       ).slice(0, 100);
       if (!specialty) {
-        throw new Error("Uzmanlık seçmelisiniz.");
+        throw new Error("يجب اختيار التخصص.");
       }
 
       const priceNum = Number(editForm.price);
@@ -561,11 +563,11 @@ export default function ExpertMyListingsPage() {
       }
       if (selectedSpecialtyMinPrice > 0 && priceNum < selectedSpecialtyMinPrice) {
         throw new Error(
-          `Ücret, seçtiğiniz uzmanlığın başlangıç fiyatından düşük olamaz (en az ${Number(selectedSpecialtyMinPrice).toLocaleString("tr-TR")} TL).`
+          `لا يمكن أن يكون السعر أقل من سعر البداية للتخصص المختار (على الأقل ${formatLatinNumber(selectedSpecialtyMinPrice)} ل.س).`
         );
       }
       if (priceNum > 1000000) {
-        throw new Error("Ücret 1.000.000 TL'den büyük olamaz.");
+        throw new Error("لا يمكن أن يكون السعر أكبر من 1,000,000 ل.س.");
       }
 
       const payload = {
@@ -621,7 +623,7 @@ export default function ExpertMyListingsPage() {
       if (code === "TOTAL_LISTING_LIMIT_REACHED") {
         msg = "Toplam ilan limitine ulaşıldı (10/10).";
       } else if (code === "SPECIALTY_LIMIT_REACHED") {
-        msg = "Bu uzmanlık için limit dolu. Aynı uzmanlıktan en fazla 2 ilan verebilirsiniz.";
+        msg = "اكتمل الحد لهذا التخصص. يمكنك نشر إعلانين كحد أقصى لنفس التخصص.";
       }
 
       setEditError(msg);
@@ -635,7 +637,7 @@ export default function ExpertMyListingsPage() {
     return (
       <div className="expert-my-listings-page">
         <Navbar />
-        <LoadingSpinner text="Uzman paneli yukleniyor..." />
+        <LoadingSpinner text="جاري تحميل لوحة الخبير..." />
       </div>
     );
   }
@@ -748,7 +750,7 @@ export default function ExpertMyListingsPage() {
                   <div className="expert-my-listings-card-body">
                     <div className="expert-my-listings-badges-row">
                       <span className="expert-my-listings-category">
-                        {sanitizeText(item.category)}
+                        {sanitizeText(toArabicServiceLabel(item.category))}
                       </span>
 
                       <span className={`expert-my-listings-status-badge status-${item.normalizedStatus.toLowerCase()}`}>
@@ -762,7 +764,7 @@ export default function ExpertMyListingsPage() {
                       <p className="expert-my-listings-specialty">
                         <span className="expert-my-listings-specialty-label">التخصص</span>
                         {": "}
-                        {sanitizeText(String(item.serviceSubcategory).trim())}
+                        {sanitizeText(toArabicServiceLabel(String(item.serviceSubcategory).trim()))}
                       </p>
                     ) : null}
 
@@ -770,7 +772,7 @@ export default function ExpertMyListingsPage() {
 
                     <div className="expert-my-listings-card-footer">
                       <div className="expert-my-listings-card-footer-top">
-                        <strong>{item.price} ل.س</strong>
+                        <strong>{formatLatinNumber(item.price)} ل.س</strong>
 
                         {item.normalizedStatus !== LISTING_STATUS.DELETED ? (
                           <button type="button" onClick={() => openEditModal(item)}>
@@ -993,14 +995,14 @@ export default function ExpertMyListingsPage() {
 
                       {categoriesData.map((category) => (
                         <option key={category.id} value={sanitizeText(category.name)}>
-                          {sanitizeText(category.name)}
+                          {sanitizeText(toArabicServiceLabel(category.name))}
                         </option>
                       ))}
 
                       {editForm.category &&
                         !categoriesData.some((c) => c.name === editForm.category) && (
                           <option value={sanitizeText(editForm.category)}>
-                            {sanitizeText(editForm.category)}
+                            {sanitizeText(toArabicServiceLabel(editForm.category))}
                           </option>
                         )}
                     </select>
@@ -1020,14 +1022,14 @@ export default function ExpertMyListingsPage() {
 
                       {providerSpecialties.map((s) => (
                         <option key={s.name} value={s.name}>
-                          {sanitizeText(s.name)}
+                          {sanitizeText(toArabicServiceLabel(s.name))}
                         </option>
                       ))}
 
                       {editForm.serviceSubcategory &&
                         !providerSpecialties.some((s) => s.name === editForm.serviceSubcategory) && (
                           <option value={sanitizeText(editForm.serviceSubcategory)}>
-                            {sanitizeText(editForm.serviceSubcategory)}
+                            {sanitizeText(toArabicServiceLabel(editForm.serviceSubcategory))}
                           </option>
                         )}
                     </select>
@@ -1076,13 +1078,13 @@ export default function ExpertMyListingsPage() {
                     editForm.price &&
                     Number(editForm.price) < selectedSpecialtyMinPrice ? (
                       <small className="expert-my-listings-edit-helper expert-my-listings-edit-helper--error">
-                        يجب أن يكون على الأقل {Number(selectedSpecialtyMinPrice).toLocaleString("ar-SY")} ل.س (
-                        سعر البداية لـ {sanitizeText(String(editForm.serviceSubcategory || "").trim())}).
+                        يجب أن يكون على الأقل {formatLatinNumber(selectedSpecialtyMinPrice)} ل.س (
+                        سعر البداية لـ {sanitizeText(toArabicServiceLabel(String(editForm.serviceSubcategory || "").trim()))}).
                       </small>
                     ) : selectedSpecialtyMinPrice > 0 ? (
                       <small className="expert-my-listings-edit-helper">
-                        سعر البداية لـ {sanitizeText(String(editForm.serviceSubcategory || "").trim())}:{" "}
-                        {Number(selectedSpecialtyMinPrice).toLocaleString("ar-SY")} ل.س
+                        سعر البداية لـ {sanitizeText(toArabicServiceLabel(String(editForm.serviceSubcategory || "").trim()))}:{" "}
+                        {formatLatinNumber(selectedSpecialtyMinPrice)} ل.س
                       </small>
                     ) : (
                       <small className="expert-my-listings-edit-helper expert-my-listings-edit-helper--spacer" aria-hidden="true">

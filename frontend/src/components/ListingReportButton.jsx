@@ -9,18 +9,18 @@ import "./ListingReportButton.css";
 const REASON_OPTIONS = [
   {
     value: "inappropriate_photo",
-    label: "Uygunsuz görsel",
-    hint: "İlan fotoğrafı veya görsel içeriği rahatsız edici veya yanıltıcı.",
+    label: "صورة غير مناسبة",
+    hint: "صورة الإعلان أو المحتوى المرئي مزعج أو مضلل.",
   },
   {
     value: "inappropriate_name",
-    label: "Uygunsuz isim",
-    hint: "Başlık veya ilanda geçen isim / ifade uygunsuz.",
+    label: "اسم غير مناسب",
+    hint: "العنوان أو الاسم أو العبارة المستخدمة في الإعلان غير مناسبة.",
   },
   {
     value: "other",
-    label: "Diğer",
-    hint: "Kısa açıklama yazmanız gerekir.",
+    label: "أخرى",
+    hint: "يجب كتابة وصف قصير.",
   },
 ];
 
@@ -62,8 +62,8 @@ export default function ListingReportButton({ listingId, listingTitle, className
   }, [open, submitting]);
 
   const label = listingTitle?.trim()
-    ? `Bu ilanı bildir: ${listingTitle.trim()}`
-    : "İlanı bildir";
+    ? `الإبلاغ عن هذا الإعلان: ${listingTitle.trim()}`
+    : "الإبلاغ عن الإعلان";
 
   const handleOpen = (e) => {
     e.preventDefault();
@@ -71,7 +71,7 @@ export default function ListingReportButton({ listingId, listingTitle, className
     if (!listingId) return;
     const user = auth.currentUser;
     if (!user) {
-      showAppToast("Bildirim göndermek için giriş yapmalısınız.", "error");
+      showAppToast("يجب تسجيل الدخول لإرسال البلاغ.", "error");
       navigate("/login");
       return;
     }
@@ -109,19 +109,19 @@ export default function ListingReportButton({ listingId, listingTitle, className
 
     const reasons = REASON_OPTIONS.map((o) => o.value).filter((k) => flags[k]);
     if (reasons.length === 0) {
-      setFormError("Lütfen en az bir bildirim nedeni seçin.");
+      setFormError("يرجى اختيار سبب واحد على الأقل للبلاغ.");
       return;
     }
 
     const desc = description.trim();
     if (flags.other) {
       if (desc.length < 5) {
-        setFormError("“Diğer” seçiliyken lütfen en az 5 karakterlik bir açıklama yazın.");
+        setFormError("عند اختيار \"أخرى\" يرجى كتابة وصف لا يقل عن 5 أحرف.");
         return;
       }
     }
     if (desc.length > 2000) {
-      setFormError("Açıklama en fazla 2000 karakter olabilir.");
+      setFormError("يمكن أن يكون الوصف 2000 حرف كحد أقصى.");
       return;
     }
 
@@ -136,13 +136,13 @@ export default function ListingReportButton({ listingId, listingTitle, className
       setOpen(false);
       setFlags(emptyFlags());
       setDescription("");
-      showAppToast("Bildiriminiz alındı. İnceleme için teşekkür ederiz.", "success");
+      showAppToast("تم استلام بلاغك. شكراً لمساعدتك.", "success");
     } catch (err) {
       if (import.meta.env.DEV) console.error("listing_reports:", err);
       const msg =
         err && typeof err.message === "string" && err.message.trim()
           ? err.message.trim()
-          : "Gönderilemedi. Bağlantınızı kontrol edip tekrar deneyin.";
+          : "تعذر الإرسال. يرجى التحقق من الاتصال والمحاولة مرة أخرى.";
       setFormError(msg);
       showAppToast(msg, "error");
     } finally {
@@ -171,28 +171,27 @@ export default function ListingReportButton({ listingId, listingTitle, className
               className="listing-report-modal__close"
               onClick={close}
               disabled={submitting}
-              aria-label="Kapat"
+              aria-label="إغلاق"
             >
               <i className="fas fa-times" aria-hidden="true" />
             </button>
 
             <h2 id="listing-report-title" className="listing-report-modal__title">
-              İlanı bildir
+              الإبلاغ عن الإعلان
             </h2>
             {listingTitle?.trim() && (
               <p className="listing-report-modal__subtitle">
-                <span className="listing-report-modal__subtitle-kicker">İlan başlığı:</span>{" "}
+                <span className="listing-report-modal__subtitle-kicker">عنوان الإعلان:</span>{" "}
                 <span className="listing-report-modal__subtitle-title">{listingTitle.trim()}</span>
               </p>
             )}
             <p className="listing-report-modal__hint">
-              Birden fazla seçenek işaretleyebilirsiniz. İnceleme seçimlerinize göre yapılır; kötü niyetli
-              bildirimler hesabınızı etkileyebilir.
+              يمكنك اختيار أكثر من سبب. ستتم المراجعة حسب اختياراتك، وقد تؤثر البلاغات المسيئة على حسابك.
             </p>
 
             <fieldset className="listing-report-fieldset">
-              <legend className="listing-report-legend">Bildirim nedenleri</legend>
-              <p className="listing-report-legend-sub">Uygun olanların tümünü işaretleyin.</p>
+              <legend className="listing-report-legend">أسباب البلاغ</legend>
+              <p className="listing-report-legend-sub">حدد كل الأسباب المناسبة.</p>
               <div className="listing-report-options">
                 {REASON_OPTIONS.map((opt) => {
                   const checked = flags[opt.value];
@@ -218,12 +217,12 @@ export default function ListingReportButton({ listingId, listingTitle, className
 
             {flags.other && (
               <div className="listing-report-textarea-wrap">
-                <label htmlFor="listing-report-desc">Diğer — açıklama</label>
+                <label htmlFor="listing-report-desc">أخرى - الوصف</label>
                 <textarea
                   id="listing-report-desc"
                   value={description}
                   onChange={(ev) => setDescription(ev.target.value.slice(0, 2000))}
-                  placeholder="Kısaca neyi bildirdiğinizi yazın (zorunlu)"
+                  placeholder="اكتب باختصار ما الذي تريد الإبلاغ عنه (إلزامي)"
                   rows={4}
                   maxLength={2000}
                 />
@@ -233,7 +232,7 @@ export default function ListingReportButton({ listingId, listingTitle, className
 
             {selectedCount > 0 && (
               <p className="listing-report-summary">
-                <i className="fas fa-check-double" aria-hidden="true" /> {selectedCount} seçim
+                <i className="fas fa-check-double" aria-hidden="true" /> {selectedCount} اختيار
               </p>
             )}
 
@@ -245,7 +244,7 @@ export default function ListingReportButton({ listingId, listingTitle, className
 
             <div className="listing-report-actions">
               <button type="button" className="listing-report-btn secondary" onClick={close} disabled={submitting}>
-                İptal
+                إلغاء
               </button>
               <button
                 type="button"
@@ -253,7 +252,7 @@ export default function ListingReportButton({ listingId, listingTitle, className
                 onClick={handleSubmit}
                 disabled={submitting}
               >
-                {submitting ? "Gönderiliyor…" : "Gönder"}
+                {submitting ? "جاري الإرسال..." : "إرسال"}
               </button>
             </div>
           </div>
@@ -268,7 +267,7 @@ export default function ListingReportButton({ listingId, listingTitle, className
         type="button"
         className={`btn-listing-report ${className}`.trim()}
         aria-label={label}
-        title="Uygunsuz içerik bildir"
+        title="الإبلاغ عن محتوى غير مناسب"
         data-listing-id={listingId ?? ""}
         onClick={handleOpen}
       >

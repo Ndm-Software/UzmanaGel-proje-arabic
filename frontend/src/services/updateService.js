@@ -36,32 +36,32 @@ async function extractErrorMessage(response, fallback) {
 }
 
 export async function updateMyDisplayName(user, { firstName, lastName }) {
-  if (!user) throw new Error("No authenticated user.");
+  if (!user) throw new Error("يرجى تسجيل الدخول أولاً.");
   const token = await user.getIdToken();
   const response = await fetch(`${API_BASE_URL}/api/users/me/display-name`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({ firstName, lastName }),
   });
-  if (!response.ok) throw new Error(await extractErrorMessage(response, "Ad soyad güncellenemedi."));
+  if (!response.ok) throw new Error(await extractErrorMessage(response, "تعذر تحديث الاسم الكامل."));
   return response.json();
 }
 
 export async function updateMyPhoneNumber(user, { phoneNumber }) {
-  if (!user) throw new Error("No authenticated user.");
+  if (!user) throw new Error("يرجى تسجيل الدخول أولاً.");
   const token = await user.getIdToken();
   const response = await fetch(`${API_BASE_URL}/api/users/me/phone`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({ phoneNumber }),
   });
-  if (!response.ok) throw new Error(await extractErrorMessage(response, "Telefon güncellenemedi."));
+  if (!response.ok) throw new Error(await extractErrorMessage(response, "تعذر تحديث رقم الهاتف."));
   return response.json();
 }
 
 export async function updateUserPassword({ currentPassword, newPassword }) {
   const user = auth.currentUser;
-  if (!user) throw new Error("Oturum bulunamadı.");
+  if (!user) throw new Error("لم يتم العثور على جلسة نشطة.");
   const credential = EmailAuthProvider.credential(user.email, currentPassword);
   await reauthenticateWithCredential(user, credential);
   await updatePassword(user, newPassword);
@@ -70,7 +70,7 @@ export async function updateUserPassword({ currentPassword, newPassword }) {
 
 export async function updatePhoneNumber({ uid, phoneNumber }) {
   const normalized = String(phoneNumber || "").replace(/[^\d+]/g, "");
-  if (!normalized) throw new Error("Geçerli bir telefon numarası giriniz.");
+  if (!normalized) throw new Error("يرجى إدخال رقم هاتف صالح.");
   await updateDoc(doc(db, "users", uid), { phoneNumber: normalized, updatedAt: nowIso() });
   return { success: true };
 }

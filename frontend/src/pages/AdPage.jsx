@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { auth, db } from "../firebase/firebaseClient";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
-import ListingReportButton from "../components/ListingReportButton";
+// Syria Arabic launch: listing report actions are disabled on listing cards.
+// import ListingReportButton from "../components/ListingReportButton";
 import categoryImages from "../data/categoryImages";
 import "../styles/AdPage.css";
 import {
@@ -20,19 +21,22 @@ import {
 import { fetchReviewCountsForListings } from "../services/reviewsApi";
 import { getListingImageStyle } from "../utils/listingImagePresentation";
 import { showAppToast } from "../utils/showAppToast";
+import { toArabicServiceLabel } from "../utils/arabicLabels";
+import { formatLatinNumber } from "../utils/localeFormat";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
 const ALL_CATEGORIES = "جميع الفئات";
 const ALL_SPECIALTIES = "جميع التخصصات";
-const DEFAULT_SORT = "الافتراضي";
+const DEFAULT_SORT = "السعر: الأعلى أولاً";
 
 const SORT_OPTIONS = [
-  { label: DEFAULT_SORT, value: "default" },
-  { label: "السعر: من الأقل إلى الأعلى", value: "price_asc" },
-  { label: "السعر: من الأعلى إلى الأقل", value: "price_desc" },
-  { label: "حسب التقييم (الأعلى)", value: "rating_desc" },
-  { label: "حسب عدد التعليقات (الأكثر)", value: "reviews_desc" },
+  { label: DEFAULT_SORT, value: "price_desc" },
+  { label: "السعر: الأقل أولاً", value: "price_asc" },
+  { label: "تاريخ نشر الإعلان: الأحدث أولاً", value: "created_desc" },
+  { label: "تاريخ نشر الإعلان: الأقدم أولاً", value: "created_asc" },
+  { label: "العنوان: من أ إلى ي", value: "address_az" },
+  { label: "العنوان: من ي إلى أ", value: "address_za" },
 ];
 
 const FILTER_SENTINEL_LABELS = new Set([
@@ -173,6 +177,7 @@ const AdPage = () => {
   const [expertName, setExpertName] = useState("");
   const [favorites, setFavorites] = useState({});
   const [firestoreDisplayName, setFirestoreDisplayName] = useState("");
+  const [customerCity, setCustomerCity] = useState("");
 
   const updateListingsPageParam = useCallback(
     (page) => {
@@ -222,6 +227,49 @@ const AdPage = () => {
               "مستخدم";
 
             setFirestoreDisplayName(finalDisplayName);
+            const isCustomerAccount =
+              userData.userType !== "PROVIDER" &&
+              userData.userType !== "PENDING_PROVIDER";
+            let nextCustomerCity = String(
+              userData.city || userData.mainCity || ""
+            ).trim();
+
+            if (isCustomerAccount && !nextCustomerCity) {
+              try {
+                const addressesSnapshot = await getDocs(
+                  collection(db, "users", currentUser.uid, "addresses")
+                );
+                const addresses = addressesSnapshot.docs
+                  .map((addressDoc) => addressDoc.data() || {})
+                  .sort((a, b) => {
+                    const aTime =
+                      a.createdAt?.toMillis?.() ||
+                      a.updatedAt?.toMillis?.() ||
+                      0;
+                    const bTime =
+                      b.createdAt?.toMillis?.() ||
+                      b.updatedAt?.toMillis?.() ||
+                      0;
+                    return bTime - aTime;
+                  });
+
+                nextCustomerCity =
+                  addresses.find((address) =>
+                    String(address.city || "").trim()
+                  )?.city || "";
+              } catch (addressError) {
+                if (isDevelopment) {
+                  console.error(
+                    "Customer city could not be loaded:",
+                    addressError.message
+                  );
+                }
+              }
+            }
+
+            setCustomerCity(
+              isCustomerAccount ? String(nextCustomerCity || "").trim() : ""
+            );
 
             if (
               userData.userType === "PENDING_PROVIDER" &&
@@ -244,6 +292,7 @@ const AdPage = () => {
             setFirestoreDisplayName(
               currentUser.email?.split("@")[0] || "مستخدم"
             );
+            setCustomerCity("");
             setShowProfileWarning(false);
           }
         } catch (error) {
@@ -257,9 +306,11 @@ const AdPage = () => {
           setFirestoreDisplayName(
             currentUser.email?.split("@")[0] || "مستخدم"
           );
+          setCustomerCity("");
         }
       } else {
         setFirestoreDisplayName("");
+        setCustomerCity("");
         setShowProfileWarning(false);
         setFavorites({});
       }
@@ -379,6 +430,7 @@ const AdPage = () => {
         activeSpecialty !== ALL_SPECIALTIES ? activeSpecialty : undefined,
       minPrice: activeMinPrice || undefined,
       maxPrice: activeMaxPrice || undefined,
+      city: customerCity || undefined,
       sort: sortCodeFromLabel(activeSortBy),
     };
 
@@ -455,6 +507,7 @@ const AdPage = () => {
     activeMinPrice,
     activeMaxPrice,
     activeSortBy,
+    customerCity,
     updateListingsPageParam,
   ]);
 
@@ -582,7 +635,7 @@ const AdPage = () => {
   };
 
   const pageInfo = useMemo(
-    () => `${currentPage}/${totalPages}`,
+    () => `${formatLatinNumber(currentPage)}/${formatLatinNumber(totalPages)}`,
     [currentPage, totalPages]
   );
 
@@ -704,7 +757,7 @@ const AdPage = () => {
             >
               {categoryOptions.map((category) => (
                 <option key={category} value={category}>
-                  {category}
+                  {toArabicServiceLabel(category)}
                 </option>
               ))}
             </select>
@@ -728,7 +781,7 @@ const AdPage = () => {
 
                 return (
                   <option key={specialtyName} value={specialtyName}>
-                    {specialtyName}
+                    {toArabicServiceLabel(specialtyName)}
                   </option>
                 );
               })}
@@ -845,13 +898,15 @@ const AdPage = () => {
                           <span className="category-separator">•</span>
                         )}
 
-                        {item.category && <span>{item.category}</span>}
+                        {item.category && (
+                          <span>{toArabicServiceLabel(item.category)}</span>
+                        )}
 
                         {item.serviceSubcategory && (
                           <>
                             <span className="category-separator">•</span>
                             <span className="expert-specialty-text">
-                              {item.serviceSubcategory}
+                              {toArabicServiceLabel(item.serviceSubcategory)}
                             </span>
                           </>
                         )}
@@ -860,7 +915,7 @@ const AdPage = () => {
                       <div className="expert-stats">
                         <span className="rating">
                           <i className="fa-solid fa-star"></i>{" "}
-                          {item.rating} ({item.reviews} تقييم)
+                          {formatLatinNumber(item.rating)} ({formatLatinNumber(item.reviews)} تقييم)
                         </span>
                       </div>
                     </div>
@@ -883,14 +938,16 @@ const AdPage = () => {
                         ></i>
                       </button>
 
+                      {/* Syria Arabic launch: listing report/exclamation button disabled.
                       <ListingReportButton
                         listingId={item.id}
                         listingTitle={item.title}
                       />
+                      */}
                     </div>
 
                     <div className="price">
-                      <strong>₺{item.price}</strong>
+                      <strong>{formatLatinNumber(item.price)} ل.س</strong>
                       <span className="price-text">تبدأ من</span>
                     </div>
 
@@ -921,7 +978,7 @@ const AdPage = () => {
                     className="btn-apply-filter pagination-info"
                     disabled
                   >
-                    صفحة {pageInfo} - الإجمالي {totalListings}
+                    صفحة {pageInfo} - الإجمالي {formatLatinNumber(totalListings)}
                   </button>
 
                   <button

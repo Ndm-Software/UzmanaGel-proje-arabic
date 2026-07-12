@@ -35,7 +35,7 @@ function accountRateLimitMiddleware(req, res, next) {
     checkAccountRateLimit();
     next();
   } catch (error) {
-    return res.status(429).json({ message: "Too many requests. Please try again later." });
+    return res.status(429).json({ message: "طلبات كثيرة جداً. يرجى المحاولة لاحقاً." });
   }
 }
 
@@ -113,7 +113,7 @@ router.post("/delete-provider", authMiddleware, accountRateLimitMiddleware, asyn
   const uid = String(req.user?.uid || "").trim();
 
   if (!uid) {
-    return res.status(401).json({ message: "Unauthorized." });
+    return res.status(401).json({ message: "غير مصرح." });
   }
 
   try {
@@ -127,7 +127,7 @@ router.post("/delete-provider", authMiddleware, accountRateLimitMiddleware, asyn
     ]);
 
     if (!userSnap.exists) {
-      return res.status(404).json({ message: "Kullanıcı verisi bulunamadı." });
+      return res.status(404).json({ message: "لم يتم العثور على بيانات المستخدم." });
     }
 
     const userData = userSnap.data() || {};
@@ -135,7 +135,7 @@ router.post("/delete-provider", authMiddleware, accountRateLimitMiddleware, asyn
 
     if (userData.userType !== "PROVIDER") {
       return res.status(403).json({
-        message: "Bu işlem sadece provider hesaplar için geçerlidir.",
+        message: "هذه العملية مخصصة لحسابات الخبراء فقط.",
       });
     }
 
@@ -196,19 +196,19 @@ router.post("/delete-provider", authMiddleware, accountRateLimitMiddleware, asyn
       await disableAuthUserAndMarkDeletedRef(uid, deletedRef, "Provider");
     } catch (error) {
       return res.status(500).json({
-        message: "Veriler taşındı ancak auth hesabı devre dışı bırakılamadı.",
+        message: "تم نقل البيانات لكن تعذر تعطيل حساب المصادقة.",
       });
     }
 
     return res.json({
       success: true,
-      message: "Provider hesabı başarıyla devre dışı bırakıldı.",
+      message: "تم تعطيل حساب الخبير بنجاح.",
       deletedListingsCount: providerListings.length,
     });
   } catch (error) {
     if (isDevelopment) console.error("POST /api/account/delete-provider failed:", error?.message || error);
     return res.status(500).json({
-      message: "Provider hesabı devre dışı bırakılırken bir hata oluştu.",
+      message: "حدث خطأ أثناء تعطيل حساب الخبير.",
     });
   }
 });
@@ -217,7 +217,7 @@ router.post("/delete-client", authMiddleware, accountRateLimitMiddleware, async 
   const uid = String(req.user?.uid || "").trim();
 
   if (!uid) {
-    return res.status(401).json({ message: "Unauthorized." });
+    return res.status(401).json({ message: "غير مصرح." });
   }
 
   try {
@@ -227,14 +227,14 @@ router.post("/delete-client", authMiddleware, accountRateLimitMiddleware, async 
     const userSnap = await userRef.get();
 
     if (!userSnap.exists) {
-      return res.status(404).json({ message: "Kullanıcı verisi bulunamadı." });
+      return res.status(404).json({ message: "لم يتم العثور على بيانات المستخدم." });
     }
 
     const userData = userSnap.data() || {};
 
     if (userData.userType === "PROVIDER") {
       return res.status(403).json({
-        message: "Provider hesaplar bu endpoint üzerinden devre dışı bırakılamaz.",
+        message: "لا يمكن تعطيل حسابات الخبراء من هذا المسار.",
       });
     }
 
@@ -274,19 +274,19 @@ router.post("/delete-client", authMiddleware, accountRateLimitMiddleware, async 
       await disableAuthUserAndMarkDeletedRef(uid, deletedRef, "Client");
     } catch (error) {
       return res.status(500).json({
-        message: "Veriler taşındı ancak auth hesabı devre dışı bırakılamadı.",
+        message: "تم نقل البيانات لكن تعذر تعطيل حساب المصادقة.",
       });
     }
 
     return res.json({
       success: true,
-      message: "Kullanıcı hesabı başarıyla devre dışı bırakıldı.",
+      message: "تم تعطيل حساب المستخدم بنجاح.",
       deletedListingsCount: 0,
     });
   } catch (error) {
     if (isDevelopment) console.error("POST /api/account/delete-client failed:", error?.message || error);
     return res.status(500).json({
-      message: "Kullanıcı hesabı devre dışı bırakılırken bir hata oluştu.",
+      message: "حدث خطأ أثناء تعطيل حساب المستخدم.",
     });
   }
 });

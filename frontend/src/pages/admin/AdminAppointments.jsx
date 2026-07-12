@@ -272,7 +272,7 @@ const AdminAppointments = ({ initialFilter = null }) => {
     }
     
     if (!selectedAppointment?.id) {
-      showToast('Geçersiz randevu seçildi', 'error');
+      showToast('تم اختيار موعد غير صالح.', 'error');
       setShowRejectModal(false);
       return;
     }

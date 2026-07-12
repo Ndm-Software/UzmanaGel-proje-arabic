@@ -29,6 +29,8 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import DOMPurify from 'dompurify';
 import { showAppToast } from '../utils/showAppToast';
 import ConfirmModal from '../components/ConfirmModal';
+import { toArabicServiceLabel } from '../utils/arabicLabels';
+import { ARABIC_LATIN_LOCALE, formatLatinNumber } from '../utils/localeFormat';
 import '../styles/ExpertProfilePage.css';
 import { computeRatingSummary, fetchExpertReviewStats, fetchExpertReviews } from '../services/reviewsApi';
 
@@ -77,7 +79,7 @@ const Lightbox = ({ images, startIndex, onClose }) => {
           <i className="fas fa-chevron-left"></i>
         </button>
       )}
-      <img className="lightbox-image" src={images[current]} alt={`Görsel ${current + 1}`} onClick={e => e.stopPropagation()} />
+      <img className="lightbox-image" src={images[current]} alt={`صورة ${current + 1}`} onClick={e => e.stopPropagation()} />
       {images.length > 1 && (
         <button className="lightbox-next" onClick={e => { e.stopPropagation(); next(); }}>
           <i className="fas fa-chevron-right"></i>
@@ -149,7 +151,7 @@ const formatAppointmentDate = (dateStr) => {
   if (!dateStr) return 'غير محدد';
   const parsed = new Date(`${dateStr}T00:00:00`);
   if (Number.isNaN(parsed.getTime())) return sanitizeText(dateStr);
-  return parsed.toLocaleDateString('ar-SY', {
+  return parsed.toLocaleDateString(ARABIC_LATIN_LOCALE, {
     day: '2-digit',
     month: 'long',
     year: 'numeric'
@@ -258,7 +260,7 @@ const PhotoThumb = ({ url, index, allUrls, onDelete, size = 120, height = 120 })
           </div>
         ) : (
           <>
-            <img className="photo-thumb__img" src={url} alt={`Görsel ${index + 1}`} onClick={() => setLightbox(true)} />
+            <img className="photo-thumb__img" src={url} alt={`صورة ${index + 1}`} onClick={() => setLightbox(true)} />
             <div className="photo-thumb__overlay" onClick={() => setLightbox(true)}>
               <i className="fas fa-search-plus photo-thumb__zoom-icon"></i>
             </div>
@@ -1016,7 +1018,7 @@ const DeleteAccountModal = ({ onClose, onDeleted, hasPasswordProvider = false, h
           </div>
         ) : (
           <div className="modal-error">
-            Bu hesap için uygun bir doğrulama yöntemi bulunamadı. Lütfen destek ekibiyle iletişime geçin.
+            لم يتم العثور على طريقة تحقق مناسبة لهذا الحساب. يرجى التواصل مع فريق الدعم.
           </div>
         )}
 
@@ -1025,12 +1027,12 @@ const DeleteAccountModal = ({ onClose, onDeleted, hasPasswordProvider = false, h
 
         <div className="modal-actions">
           <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>
-            İptal
+            إلغاء
           </button>
 
           {hasPasswordProvider ? (
             <button type="submit" className="settings-danger-button" disabled={loading}>
-              {loading ? 'İşleniyor...' : 'Hesabımı Devre Dışı Bırak'}
+              {loading ? 'جاري المعالجة...' : 'تعطيل حسابي'}
             </button>
           ) : hasGoogleProvider ? (
             <button
@@ -1040,7 +1042,7 @@ const DeleteAccountModal = ({ onClose, onDeleted, hasPasswordProvider = false, h
               disabled={loading}
             >
               <i className="fab fa-google"></i>
-              {loading ? 'Google Doğrulanıyor...' : 'Google ile Doğrula ve Devre Dışı Bırak'}
+              {loading ? 'جاري التحقق من Google...' : 'التحقق بواسطة Google وتعطيل الحساب'}
             </button>
           ) : null}
         </div>
@@ -1059,7 +1061,7 @@ const AddressRequestModal = ({ user, onClose, onSuccess }) => {
   const handleFileChange = (e, setter) => {
     const file = e.target.files[0];
     if (file && file.size > 5 * 1024 * 1024) {
-      showAppToast("Dosya boyutu 5MB'dan küçük olmalıdır.", "error");
+      showAppToast("يجب أن يكون حجم الملف أقل من 5MB.", "error");
       e.target.value = null;
       return;
     }
@@ -1069,11 +1071,11 @@ const AddressRequestModal = ({ user, onClose, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!taxPlate && !inspectionReport) {
-      setError('Lütfen en az bir gerekli belgeyi (Vergi Levhası veya Yoklama Fişi) yükleyin.');
+      setError('يرجى رفع مستند مطلوب واحد على الأقل (اللوحة الضريبية أو إيصال التحقق).');
       return;
     }
     if (!reason.trim()) {
-      setError('Lütfen adres değişikliği sebebini yazınız.');
+      setError('يرجى كتابة سبب تغيير العنوان.');
       return;
     }
 
@@ -1096,7 +1098,7 @@ const AddressRequestModal = ({ user, onClose, onSuccess }) => {
         inspectionReportUrl = await getDownloadURL(inspRef);
       }
 
-      const userDisplayName = user.displayName || userData?.displayName || expertData?.businessName || "Belirtilmemiş";
+      const userDisplayName = user.displayName || userData?.displayName || expertData?.businessName || "غير محدد";
       const userEmail = user.email || userData?.email;
 
       await addDoc(collection(db, "address_change_requests"), {
@@ -1111,40 +1113,40 @@ const AddressRequestModal = ({ user, onClose, onSuccess }) => {
         createdAt: new Date().toISOString()
       });
 
-      showAppToast('Talebiniz başarıyla iletildi. Değerlendirme aşamasını bu sekmeden takip edebilirsiniz.', 'success');
+      showAppToast('تم إرسال طلبك بنجاح. يمكنك متابعة مرحلة المراجعة من هذا القسم.', 'success');
       onSuccess();
     } catch (err) {
       if (isDevelopment) console.error("Talep gönderme hatası:", err);
-      setError('Talep gönderilirken bir hata oluştu. Lütfen tekrar deneyin.');
+      setError('حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal title="Adres Değişikliği Talebi" onClose={onClose}>
+    <Modal title="طلب تغيير العنوان" onClose={onClose}>
       <form onSubmit={handleSubmit} className="modal-form">
         <p className="modal-info-text" style={{ color: '#ffcc00', fontWeight: 'bold', marginBottom: '15px' }}>
-          <i className="fas fa-info-circle"></i> En az bir gerekli belgeyi yükleyin
+          <i className="fas fa-info-circle"></i> يرجى رفع مستند مطلوب واحد على الأقل
         </p>
 
         <div className="modal-field">
-          <label>Vergi Levhası (Opsiyonel)</label>
+          <label>اللوحة الضريبية (اختياري)</label>
           <input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, setTaxPlate)} disabled={loading} />
         </div>
 
         <div className="modal-field">
-          <label>Yoklama Fişi (Opsiyonel)</label>
+          <label>إيصال التحقق (اختياري)</label>
           <input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, setInspectionReport)} disabled={loading} />
         </div>
 
         <div className="modal-field">
-          <label>Adres Değişikliği Sebebini Yazınız:</label>
+          <label>اكتب سبب تغيير العنوان:</label>
           <textarea 
             className="modal-textarea"
             value={reason}
             onChange={(e) => setReason(e.target.value)}
-            placeholder="Örn: İş yerimi daha geniş bir alana taşıdım..."
+            placeholder="مثال: نقلت مكان عملي إلى مساحة أوسع..."
             rows="4"
             disabled={loading}
           />
@@ -1153,9 +1155,9 @@ const AddressRequestModal = ({ user, onClose, onSuccess }) => {
         {error && <p className="modal-error">{sanitizeText(error)}</p>}
 
         <div className="modal-actions">
-          <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>İptal</button>
+          <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>إلغاء</button>
           <button type="submit" className="settings-primary-button" disabled={loading}>
-            {loading ? <><i className="fas fa-spinner fa-spin"></i> Gönderiliyor...</> : 'Talebi Gönder'}
+            {loading ? <><i className="fas fa-spinner fa-spin"></i> جاري الإرسال...</> : 'إرسال الطلب'}
           </button>
         </div>
       </form>
@@ -1214,11 +1216,11 @@ const FinalAddressUpdateFlow = ({ user, requestId, mainAddressId, onClose, onSuc
       batch.update(reqRef, { status: 'COMPLETED' });
 
       await batch.commit();
-      showAppToast('İş yeri adresiniz başarıyla kaydedildi.', 'success');
+      showAppToast('تم حفظ عنوان مكان العمل بنجاح.', 'success');
       onSuccess();
     } catch (err) {
       console.error("Kaydetme hatası:", err);
-      showAppToast('Güncelleme sırasında bir hata oluştu.', 'error');
+      showAppToast('حدث خطأ أثناء التحديث.', 'error');
     } finally {
       setLoading(false);
     }
@@ -1226,17 +1228,17 @@ const FinalAddressUpdateFlow = ({ user, requestId, mainAddressId, onClose, onSuc
 
   if (step === 'warning') {
     return (
-      <Modal title="⚠️ Kritik Uyarı" onClose={onClose}>
+      <Modal title="⚠️ تنبيه مهم" onClose={onClose}>
         <div className="modal-form">
           <div className="rejection-alert-box" style={{ background: 'rgba(255, 204, 0, 0.1)', border: '1px solid #ffcc00' }}>
             <p style={{ color: '#ffcc00', fontSize: '15px', lineHeight: '1.6' }}>
-              <strong>Lütfen iş yerinizi doğru girdiğinizden emin olun.</strong> Bu işlem geri alınamaz. 
-              Yanlış veya hata yaparsanız bir daha talep oluşturmak zorunda kalırsınız.
+              <strong>يرجى التأكد من إدخال عنوان مكان العمل بشكل صحيح.</strong> لا يمكن التراجع عن هذا الإجراء.
+              إذا أدخلت معلومات خاطئة فستحتاج إلى إنشاء طلب جديد.
             </p>
           </div>
           <div className="modal-actions" style={{ marginTop: '20px' }}>
-            <button className="settings-secondary-button" onClick={onClose}>Geri Dön</button>
-            <button className="settings-primary-button" onClick={() => setStep('form')}>Okudum, Kabul Ediyorum</button>
+            <button className="settings-secondary-button" onClick={onClose}>رجوع</button>
+            <button className="settings-primary-button" onClick={() => setStep('form')}>قرأت وأوافق</button>
           </div>
         </div>
       </Modal>
@@ -1285,8 +1287,9 @@ const ExpertProfilePage = () => {
   const [baUploading, setBaUploading] = useState(false);
   const [showBaEditModal, setShowBaEditModal] = useState(false);
   const [editBaForm, setEditBaForm] = useState({ title: '', beforeImage: null, afterImage: null });
-  const [appointments, setAppointments] = useState([]);
-  const [showAllRecentJobs, setShowAllRecentJobs] = useState(false);
+  // Syria Arabic launch: completed jobs counter and its appointment listener are disabled.
+  // const [appointments, setAppointments] = useState([]);
+  // const [showAllRecentJobs, setShowAllRecentJobs] = useState(false);
 
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
@@ -1387,6 +1390,7 @@ const ExpertProfilePage = () => {
     return () => unsubscribe();
   }, [navigate]);
 
+  /* Syria Arabic launch: completed jobs counter operations are disabled.
   useEffect(() => {
     if (!user?.uid || !isExpert) {
       setAppointments([]);
@@ -1417,6 +1421,7 @@ const ExpertProfilePage = () => {
 
     return () => unsubscribe();
   }, [user?.uid, isExpert]);
+  */
 
   useEffect(() => {
     if (!user?.uid || !isExpert) {
@@ -1457,21 +1462,21 @@ const ExpertProfilePage = () => {
     try {
       const result = await linkGoogleToCurrentUser();
       setGoogleLinked(true);
-      setGoogleLinkMessage(result?.message || 'Google hesabı başarıyla bağlandı.');
+      setGoogleLinkMessage(result?.message || 'تم ربط حساب Google بنجاح.');
     } catch (err) {
       if (err?.code === 'GOOGLE_ACCOUNT_EMAIL_MISMATCH' || err?.code === 'GOOGLE_EMAIL_NOT_RESOLVED') {
-        setGoogleLinkError(err?.message || 'Seçilen Google hesabı mevcut hesap e-postasıyla eşleşmiyor.');
+        setGoogleLinkError(err?.message || 'حساب Google المحدد لا يطابق البريد الإلكتروني للحساب الحالي.');
         return;
       }
 
       if (err?.code === 'GOOGLE_CREDENTIAL_ALREADY_IN_USE') {
-        setGoogleLinkError(err?.message || 'Bu Google hesabı başka bir kullanıcıya bağlı.');
+        setGoogleLinkError(err?.message || 'حساب Google هذا مرتبط بمستخدم آخر.');
         return;
       }
 
       if (err?.code === 'GOOGLE_ALREADY_LINKED') {
         setGoogleLinked(true);
-        setGoogleLinkMessage('Google hesabı zaten bağlı.');
+        setGoogleLinkMessage('حساب Google مرتبط بالفعل.');
         return;
       }
 
@@ -1480,11 +1485,11 @@ const ExpertProfilePage = () => {
       }
 
       if (err?.code === 'GOOGLE_POPUP_BLOCKED') {
-        setGoogleLinkError(err?.message || 'Google açılır penceresi engellendi. Lütfen pop-up izni verin.');
+        setGoogleLinkError(err?.message || 'تم حظر نافذة Google المنبثقة. يرجى السماح بالنوافذ المنبثقة.');
         return;
       }
 
-      setGoogleLinkError(err?.message || 'Google hesabı bağlanamadı.');
+      setGoogleLinkError(err?.message || 'تعذر ربط حساب Google.');
     } finally {
       setGoogleLinkLoading(false);
     }
@@ -1517,10 +1522,10 @@ const ExpertProfilePage = () => {
   };
 
   const getUserDisplayName = () => userData?.displayName || '';
-  const getFirstName = () => getUserDisplayName().split(' ')[0] || 'Belirtilmemiş';
+  const getFirstName = () => getUserDisplayName().split(' ')[0] || 'غير محدد';
   const getLastName = () => {
     const p = getUserDisplayName().split(' ');
-    return p.length > 1 ? p.slice(1).join(' ') : 'Belirtilmemiş';
+    return p.length > 1 ? p.slice(1).join(' ') : 'غير محدد';
   };
   const getUserInitials = () => (userData?.displayName || expertData?.businessName || '').substring(0, 2).toUpperCase();
 
@@ -1563,24 +1568,24 @@ const ExpertProfilePage = () => {
       .filter((x) => x.name);
 
     if (!cleaned.length) {
-      setSpecialtiesError("En az 1 uzmanlık eklemelisiniz.");
+      setSpecialtiesError("يجب إضافة تخصص واحد على الأقل.");
       return;
     }
     if (cleaned.some((x) => x.startingPrice <= 0)) {
-      setSpecialtiesError("Her uzmanlık için başlangıç fiyatı girin (0'dan büyük).");
+      setSpecialtiesError("يرجى إدخال سعر بداية لكل تخصص ويجب أن يكون أكبر من 0.");
       return;
     }
 
     if (hasRange) {
       if (rangeMax > 0 && rangeMin > rangeMax) {
-        setSpecialtiesError("Fiyat aralığı geçersiz: Min fiyat, max fiyattan büyük olamaz.");
+        setSpecialtiesError("نطاق السعر غير صالح: لا يمكن أن يكون الحد الأدنى أكبر من الحد الأعلى.");
         return;
       }
 
       const tooLow = cleaned.find((x) => rangeMin > 0 && x.startingPrice < rangeMin);
       if (tooLow) {
         setSpecialtiesError(
-          `“${tooLow.name}” başlangıç fiyatı min fiyattan düşük olamaz (en az ${rangeMin.toLocaleString("tr-TR")} TL).`
+          `سعر بداية “${toArabicServiceLabel(tooLow.name)}” لا يمكن أن يكون أقل من الحد الأدنى (على الأقل ${formatLatinNumber(rangeMin)} ل.س).`
         );
         return;
       }
@@ -1588,7 +1593,7 @@ const ExpertProfilePage = () => {
       const tooHigh = cleaned.find((x) => rangeMax > 0 && x.startingPrice > rangeMax);
       if (tooHigh) {
         setSpecialtiesError(
-          `“${tooHigh.name}” başlangıç fiyatı max fiyattan yüksek olamaz (en fazla ${rangeMax.toLocaleString("tr-TR")} TL).`
+          `سعر بداية “${toArabicServiceLabel(tooHigh.name)}” لا يمكن أن يكون أعلى من الحد الأعلى (بحد أقصى ${formatLatinNumber(rangeMax)} ل.س).`
         );
         return;
       }
@@ -1606,7 +1611,7 @@ const ExpertProfilePage = () => {
       setShowSpecialtiesModal(false);
     } catch (err) {
       if (isDevelopment) console.error("Uzmanlık fiyatları kaydedilemedi:", err.message);
-      setSpecialtiesError("Kaydedilemedi. Lütfen tekrar deneyin.");
+      setSpecialtiesError("تعذر الحفظ. يرجى المحاولة مرة أخرى.");
     } finally {
       setSpecialtiesSaving(false);
     }
@@ -1623,7 +1628,7 @@ const ExpertProfilePage = () => {
       setPortfolioUrls(prev => prev.filter(u => u !== url));
     } catch (err) {
       if (isDevelopment) console.error("Portfolyo silme hatası:", err.message);
-      setPortfolioError("Fotoğraf silinirken bir hata oluştu.");
+      setPortfolioError("حدث خطأ أثناء حذف الصورة.");
     } finally {
       setShowPortfolioDeleteConfirm(false);
       setPortfolioUrlToDelete(null);
@@ -1669,7 +1674,7 @@ const ExpertProfilePage = () => {
       setShowBaViewModal(false);
     } catch (error) {
       if (isDevelopment) console.error("Silme işlemi sırasında hata:", error?.message || error);
-      showAppToast('Silme sırasında bir hata oluştu.', 'error');
+      showAppToast('حدث خطأ أثناء الحذف.', 'error');
     } finally {
       setShowBaDeleteConfirm(false);
       setBaIdToDelete(null);
@@ -1687,14 +1692,14 @@ const ExpertProfilePage = () => {
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      showAppToast('Sadece JPEG, PNG veya WEBP formatında resim yükleyebilirsiniz!', 'error');
+      showAppToast('يمكنك رفع الصور بصيغ JPEG أو PNG أو WEBP فقط!', 'error');
       e.target.value = '';
       return;
     }
 
     const maxSize = 2 * 1024 * 1024;
     if (file.size > maxSize) {
-      showAppToast('Dosya boyutu 2MB\'dan küçük olmalıdır!', 'error');
+      showAppToast('يجب أن يكون حجم الملف أقل من 2MB!', 'error');
       e.target.value = '';
       return;
     }
@@ -1724,7 +1729,7 @@ const ExpertProfilePage = () => {
       if (hasUpdates) await batch.commit();
     } catch (err) {
       if (isDevelopment) console.error('Profil fotoğrafı yüklenemedi veya sohbetlere aktarılamadı:', err?.message || err);
-      showAppToast('Fotoğraf yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.', 'error');
+      showAppToast('حدث خطأ أثناء رفع الصورة. يرجى المحاولة لاحقاً.', 'error');
     } finally {
       setPhotoUploading(false);
       e.target.value = '';
@@ -1745,7 +1750,7 @@ const ExpertProfilePage = () => {
       setPortfolioUrls(prev => [...prev, ...uploadedUrls]);
     } catch (err) {
       if (isDevelopment) console.error("Portfolyo yükleme hatası:", err.message);
-      setPortfolioError("Fotoğraf yüklenirken bir hata oluştu.");
+      setPortfolioError("حدث خطأ أثناء رفع الصورة.");
     } finally {
       setPortfolioUploading(false);
       e.target.value = '';
@@ -1754,7 +1759,7 @@ const ExpertProfilePage = () => {
 
   const handleBAUpload = async () => {
     if (!baForm.title || !baForm.beforeImage || !baForm.afterImage) {
-      showAppToast('Lütfen başlık girin ve her iki fotoğrafı da seçin.', 'error');
+      showAppToast('يرجى إدخال عنوان واختيار الصورتين.', 'error');
       return;
     }
 
@@ -1776,13 +1781,13 @@ const ExpertProfilePage = () => {
         createdAt: new Date().toISOString()
       });
 
-      showAppToast('Galeri başarıyla eklendi!', 'success');
+      showAppToast('تمت إضافة المعرض بنجاح!', 'success');
       setBaForm({ title: '', beforeImage: null, afterImage: null });
       setShowBaAddModal(false);
       await loadBaGallery(user.uid);
     } catch (error) {
       if (isDevelopment) console.error("Yükleme hatası:", error?.message || error);
-      showAppToast('Yükleme sırasında bir hata oluştu.', 'error');
+      showAppToast('حدث خطأ أثناء الرفع.', 'error');
     } finally {
       setBaUploading(false);
     }
@@ -1790,7 +1795,7 @@ const ExpertProfilePage = () => {
 
   const handleBAUpdate = async () => {
     if (!editBaForm.title) {
-      showAppToast('Başlık gerekli.', 'error');
+      showAppToast('العنوان مطلوب.', 'error');
       return;
     }
 
@@ -1826,7 +1831,7 @@ const ExpertProfilePage = () => {
       await loadBaGallery(user.uid);
     } catch (error) {
       if (isDevelopment) console.error(error);
-      showAppToast('Güncelleme sırasında bir hata oluştu.', 'error');
+      showAppToast('حدث خطأ أثناء التحديث.', 'error');
     } finally {
       setBaUploading(false);
     }
@@ -1896,10 +1901,11 @@ const ExpertProfilePage = () => {
     });
   }, [showBaViewModal]);
 
-  if (loading) return <div className="profile-page"><Navbar /><LoadingSpinner text="Yükleniyor..." /></div>;
+  if (loading) return <div className="profile-page"><Navbar /><LoadingSpinner text="جاري التحميل..." /></div>;
   if (!user || !isExpert) return null;
 
   const certificates = expertData?.certificates || [];
+  /* Syria Arabic launch: completed jobs counter calculations are disabled.
   const historyAppointments = appointments
     .map((item) => {
       const historyMeta = getExpertHistoryMeta(item);
@@ -1920,13 +1926,13 @@ const ExpertProfilePage = () => {
   const completedAppointments = historyAppointments.filter((item) => item.historyMeta?.key === 'completed');
   const recentJobs = completedAppointments.map((item) => ({
     id: item.id,
-    title: item.listingTitle || item.note || 'Hizmet işlemi',
+    title: item.listingTitle || item.note || 'عملية الخدمة',
     date: formatAppointmentDate(item.date),
     time: item.start || '',
     city: item.city || '',
     district: item.district || '',
-    client: item.client || item.clientName || 'Belirtilmemiş',
-    address: item.fullAddress || item.address || 'Adres belirtilmemiş',
+    client: item.client || item.clientName || 'غير محدد',
+    address: item.fullAddress || item.address || 'لم يتم تحديد العنوان',
     statusLabel: item.historyMeta?.label || '',
     statusIcon: item.historyMeta?.icon || 'fa-clock',
     statusBadgeClass: item.historyMeta?.badgeClass || '',
@@ -1937,6 +1943,7 @@ const ExpertProfilePage = () => {
       .map((item) => item.clientId || String(item.client || '').trim().toLowerCase())
       .filter(Boolean)
   ).size;
+  */
 
   const fixedAvg = Number(expertData?.rating || 0);
   const activeReviewCount = activeListingReviewStats?.count || 0;
@@ -2054,7 +2061,7 @@ const ExpertProfilePage = () => {
         <ChangePasswordModal
           onClose={() => setActiveModal(null)}
           onSuccess={() => {
-            setPasswordToast('Şifre güncellendi.');
+            setPasswordToast('تم تحديث كلمة المرور.');
             setTimeout(() => setPasswordToast(''), 4000);
           }}
         />
@@ -2130,7 +2137,7 @@ const ExpertProfilePage = () => {
                   </span>
                 ) : String(expertData?.category || '').trim() ? (
                   <span className="profile-header-sub profile-header-sub--profession">
-                    {sanitizeText(String(expertData.category).split(',')[0].trim())}
+                    {sanitizeText(toArabicServiceLabel(String(expertData.category).split(',')[0].trim()))}
                   </span>
                 ) : null}
                 <span className="profile-header-sub">{sanitizeText(getUserDisplayName())}</span>
@@ -2155,10 +2162,12 @@ const ExpertProfilePage = () => {
                 <span className="header-stat-label">تقييم العملاء</span>
                 <span className="profile-stat-sub">({activeReviewCount} تقييم)</span>
               </div>
+              {/* Syria Arabic launch: completed jobs stat card disabled with its operations.
               <div className="header-stat-item">
                 <span className="header-stat-value">{completedAppointments.length}</span>
                 <span className="header-stat-label">الأعمال المنجزة</span>
               </div>
+              */}
             </div>
           </div>
         </div>
@@ -2215,9 +2224,9 @@ const ExpertProfilePage = () => {
                   <div className="expert-price-range-banner__text">
                     <span className="expert-price-range-banner__label">نطاق السعر</span>
                     <span className="expert-price-range-banner__value">
-                      الحد الأدنى {Number(expertData?.minPrice || 0).toLocaleString('ar-SY')} ل.س
+                      الحد الأدنى {formatLatinNumber(expertData?.minPrice || 0)} ل.س
                       {' - '}
-                      الحد الأقصى {Number(expertData?.maxPrice || 0).toLocaleString('ar-SY')} ل.س
+                      الحد الأقصى {formatLatinNumber(expertData?.maxPrice || 0)} ل.س
                     </span>
                   </div>
                 </div>
@@ -2251,9 +2260,9 @@ const ExpertProfilePage = () => {
                   </div>
                   {normalizeSpecialties(expertData?.specialties).map((s, i) => (
                     <div key={`${s.name}-${i}`} className="specialties-price-row">
-                      <div className="specialties-price-name">{sanitizeText(s.name)}</div>
+                      <div className="specialties-price-name">{sanitizeText(toArabicServiceLabel(s.name))}</div>
                       <div className="specialties-price-price">
-                        {Number(s.startingPrice || 0).toLocaleString("ar-SY")} ل.س{" "}
+                        {formatLatinNumber(s.startingPrice)} ل.س{" "}
                         <span className="specialties-price-muted">تبدأ من</span>
                       </div>
                       <div></div>
@@ -2560,13 +2569,13 @@ const ExpertProfilePage = () => {
                   <div key={r.id} className="order-item job-item profile-review-item">
                     <div className="profile-review-item__body">
                       <div className="profile-review-item__head">
-                        <div className="profile-review-stars" aria-label={`${r.rating || 0} yıldız`}>
+                        <div className="profile-review-stars" aria-label={`${r.rating || 0} نجوم`}>
                           {Array.from({ length: 5 }).map((_, i) => (
                             <i key={i} className="fas fa-star" style={{ opacity: i < Number(r.rating || 0) ? 1 : 0.25 }}></i>
                           ))}
                         </div>
                         <div className="profile-review-date">
-                          {r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString('ar-SY') : ''}
+                          {r.createdAt?.toDate ? r.createdAt.toDate().toLocaleDateString(ARABIC_LATIN_LOCALE) : ''}
                         </div>
                       </div>
                       <div className="profile-review-comment">
@@ -2590,13 +2599,13 @@ const ExpertProfilePage = () => {
       </main>
 
       {showBaAddModal && (
-        <Modal title="Öncesi ve Sonrası Ekle" onClose={() => setShowBaAddModal(false)}>
+        <Modal title="إضافة قبل وبعد" onClose={() => setShowBaAddModal(false)}>
           <div className="ba-modal-content">
             <div className="modal-field">
-              <label>İşlem Başlığı</label>
+              <label>عنوان العملية</label>
               <input
                 type="text"
-                placeholder="Örn: Mutfak Tezgah Yenileme"
+                placeholder="مثال: تجديد سطح المطبخ"
                 value={baForm.title}
                 onChange={(e) => setBaForm({ ...baForm, title: e.target.value })}
               />
@@ -2604,7 +2613,7 @@ const ExpertProfilePage = () => {
 
             <div className="ba-upload-grid">
               <div className="ba-upload-item before">
-                <span className="ba-upload-label" style={{ color: '#ef4444' }}>İŞLEM ÖNCESİ</span>
+                <span className="ba-upload-label" style={{ color: '#ef4444' }}>قبل العملية</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -2613,7 +2622,7 @@ const ExpertProfilePage = () => {
                 />
               </div>
               <div className="ba-upload-item after">
-                <span className="ba-upload-label" style={{ color: '#22c55e' }}>İŞLEM SONRASI</span>
+                <span className="ba-upload-label" style={{ color: '#22c55e' }}>بعد العملية</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -2624,9 +2633,9 @@ const ExpertProfilePage = () => {
             </div>
 
             <div className="modal-actions" style={{ marginTop: '30px' }}>
-              <button className="settings-secondary-button" onClick={() => setShowBaAddModal(false)} disabled={baUploading}>İptal</button>
+              <button className="settings-secondary-button" onClick={() => setShowBaAddModal(false)} disabled={baUploading}>إلغاء</button>
               <button className="settings-primary-button" onClick={handleBAUpload} disabled={baUploading}>
-                {baUploading ? <><i className="fas fa-spinner fa-spin"></i> Kaydediliyor...</> : 'Galeriyi Kaydet'}
+                {baUploading ? <><i className="fas fa-spinner fa-spin"></i> جاري الحفظ...</> : 'حفظ المعرض'}
               </button>
             </div>
           </div>
@@ -2634,10 +2643,10 @@ const ExpertProfilePage = () => {
       )}
 
       {showBaEditModal && (
-        <Modal title="Galeriyi Düzenle" onClose={() => setShowBaEditModal(false)}>
+        <Modal title="تعديل المعرض" onClose={() => setShowBaEditModal(false)}>
           <div className="ba-modal-content ba-wider-modal">
             <div className="modal-field">
-              <label>İşlem Başlığı</label>
+              <label>عنوان العملية</label>
               <input
                 type="text"
                 value={editBaForm.title}
@@ -2647,31 +2656,31 @@ const ExpertProfilePage = () => {
 
             <div className="ba-upload-grid">
               <div className="ba-upload-item before">
-                <span className="ba-upload-label" style={{ color: '#ef4444' }}>ESKİ HALİ (DEĞİŞTİR)</span>
+                <span className="ba-upload-label" style={{ color: '#ef4444' }}>الحالة السابقة (تغيير)</span>
                 <input
                   type="file"
                   accept="image/*"
                   className="ba-upload-input"
                   onChange={(e) => setEditBaForm({ ...editBaForm, beforeImage: e.target.files[0] })}
                 />
-                <span style={{ fontSize: '10px', marginTop: '5px', color: '#94a3b8' }}>Değiştirmek istemiyorsanız boş bırakın</span>
+                <span style={{ fontSize: '10px', marginTop: '5px', color: '#94a3b8' }}>اتركه فارغاً إذا كنت لا تريد التغيير</span>
               </div>
               <div className="ba-upload-item after">
-                <span className="ba-upload-label" style={{ color: '#22c55e' }}>YENİ HALİ (DEĞİŞTİR)</span>
+                <span className="ba-upload-label" style={{ color: '#22c55e' }}>الحالة الجديدة (تغيير)</span>
                 <input
                   type="file"
                   accept="image/*"
                   className="ba-upload-input"
                   onChange={(e) => setEditBaForm({ ...editBaForm, afterImage: e.target.files[0] })}
                 />
-                <span style={{ fontSize: '10px', marginTop: '5px', color: '#94a3b8' }}>Değiştirmek istemiyorsanız boş bırakın</span>
+                <span style={{ fontSize: '10px', marginTop: '5px', color: '#94a3b8' }}>اتركه فارغاً إذا كنت لا تريد التغيير</span>
               </div>
             </div>
 
             <div className="modal-actions" style={{ marginTop: '30px' }}>
-              <button className="settings-secondary-button" onClick={() => setShowBaEditModal(false)} disabled={baUploading}>İptal</button>
+              <button className="settings-secondary-button" onClick={() => setShowBaEditModal(false)} disabled={baUploading}>إلغاء</button>
               <button className="settings-primary-button" onClick={handleBAUpdate} disabled={baUploading}>
-                {baUploading ? <><i className="fas fa-spinner fa-spin"></i> Güncelleniyor...</> : 'Değişiklikleri Kaydet'}
+                {baUploading ? <><i className="fas fa-spinner fa-spin"></i> جاري التحديث...</> : 'حفظ التغييرات'}
               </button>
             </div>
           </div>
@@ -2687,7 +2696,7 @@ const ExpertProfilePage = () => {
               </div>
               <div className="ba-view-header-right">
                 <button className="ba-btn-action ba-btn-delete" onClick={() => handleBADelete(selectedBaPair.id)}>
-                  <i className="fas fa-trash mr-1"></i> Sil
+                  <i className="fas fa-trash mr-1"></i> حذف
                 </button>
                 <button
                   className="ba-btn-action ba-btn-edit"
@@ -2697,7 +2706,7 @@ const ExpertProfilePage = () => {
                     setShowBaViewModal(false);
                   }}
                 >
-                  <i className="fas fa-edit mr-1"></i> Düzenle
+                  <i className="fas fa-edit mr-1"></i> تعديل
                 </button>
                 <button className="ba-btn-close-circle" onClick={() => setShowBaViewModal(false)}>
                   <i className="fas fa-times"></i>
@@ -2707,7 +2716,7 @@ const ExpertProfilePage = () => {
 
             <div className="ba-view-content">
               <div className="ba-view-side">
-                <div className="ba-view-label-large label-eski-bg">ESKİ HALİ</div>
+                <div className="ba-view-label-large label-eski-bg">الحالة السابقة</div>
                 <div
                   className="ba-zoom-wrapper"
                   onWheel={(e) => handleWheelZoom(e, 'before')}
@@ -2726,7 +2735,7 @@ const ExpertProfilePage = () => {
               </div>
 
               <div className="ba-view-side">
-                <div className="ba-view-label-large label-yeni-bg">YENİ HALİ</div>
+                <div className="ba-view-label-large label-yeni-bg">الحالة الجديدة</div>
                 <div
                   className="ba-zoom-wrapper"
                   onWheel={(e) => handleWheelZoom(e, 'after')}
@@ -2746,7 +2755,7 @@ const ExpertProfilePage = () => {
             </div>
 
             <div className="ba-view-footer-hint">
-              <i className="fas fa-mouse mr-2"></i> Tekerlek ile yakınlaşın, basılı tutup sürükleyin.
+              <i className="fas fa-mouse mr-2"></i> استخدم عجلة الفأرة للتكبير واسحب للتحريك.
             </div>
           </div>
         </div>
@@ -2759,10 +2768,10 @@ const ExpertProfilePage = () => {
           setPortfolioUrlToDelete(null);
         }}
         onConfirm={confirmPortfolioDelete}
-        title="Fotoğrafı Sil"
-        message="Bu fotoğrafı silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
-        confirmText="Evet, Sil"
-        cancelText="Vazgeç"
+        title="حذف الصورة"
+        message="هل أنت متأكد أنك تريد حذف هذه الصورة؟ لا يمكن التراجع عن هذه العملية."
+        confirmText="نعم، احذف"
+        cancelText="تراجع"
         type="danger"
       />
 
@@ -2773,10 +2782,10 @@ const ExpertProfilePage = () => {
           setBaIdToDelete(null);
         }}
         onConfirm={confirmBaDelete}
-        title="Galeriyi Sil"
-        message="Bu galeriyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
-        confirmText="Evet, Sil"
-        cancelText="Vazgeç"
+        title="حذف المعرض"
+        message="هل أنت متأكد أنك تريد حذف هذا المعرض؟ لا يمكن التراجع عن هذه العملية."
+        confirmText="نعم، احذف"
+        cancelText="تراجع"
         type="danger"
       />
     </div>

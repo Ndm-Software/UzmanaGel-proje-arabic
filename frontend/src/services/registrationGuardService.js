@@ -25,7 +25,7 @@ export async function checkRegistrationEligibility({ email, phoneNumber }) {
 
   if (!response.ok) {
     const error = new Error(
-      data?.message || "Kayıt uygunluk kontrolü başarısız oldu."
+      data?.message || "تعذر التحقق من إمكانية إنشاء الحساب."
     );
     error.code = data?.code || "REGISTRATION_ELIGIBILITY_FAILED";
     error.field = data?.field || null;

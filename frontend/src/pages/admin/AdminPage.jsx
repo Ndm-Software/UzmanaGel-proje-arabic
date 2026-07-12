@@ -12,7 +12,8 @@ import AdminDeleted from "./AdminDeleted";
 import AdminMessages from "./AdminMessages";
 import AdminListings from "./AdminListings";
 import AdminReportedListings from "./AdminReportedListings";
-import AdminAppointments from "./AdminAppointments";
+// Syria Arabic launch: appointment admin page disabled.
+// import AdminAppointments from "./AdminAppointments";
 import AdminTokenTransactions from "./AdminTokenTransactions";
 import AdminPaymentReports from "./AdminPaymentReports";
 import AdminSettings from "./AdminSettings";
@@ -47,8 +48,10 @@ const sanitizeUrlParam = (param) => {
 };
 
 const validTabs = [
-  "dashboard", "pending", "experts", "rejected", "users", 
-  "messages", "listings", "reportedListings", "appointments", "deletedProviders", 
+  "dashboard", "pending", "experts", "rejected", "users",
+  "messages", "listings", "reportedListings",
+  // "appointments",
+  "deletedProviders",
   "deletedClients", "tokenTransactions", "paymentReports", "settings",
   "addressRequests"
 ];
@@ -222,8 +225,9 @@ export default function AdminPage() {
         return (
           <AdminReportedListings onSidebarCountsRefresh={refreshListingReportsCount} />
         );
-      case "appointments":
-        return <AdminAppointments initialFilter={appointmentsFilter} />;
+      // Syria Arabic launch: appointment admin page disabled.
+      // case "appointments":
+      //   return <AdminAppointments initialFilter={appointmentsFilter} />;
       case "deletedProviders":
         return <AdminDeleted type="providers" />;
       case "deletedClients":

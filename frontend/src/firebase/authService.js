@@ -459,6 +459,62 @@ export async function registerExpertDraft({ userData }) {
   };
 }
 
+export async function registerWithEmailDirect({ name, email, password, phone, userType = "CLIENT" }) {
+  const cleanEmail = normalizeEmail(email);
+  if (!validateEmail(email)) {
+    throw new Error("Geçerli bir e-posta adresi giriniz.");
+  }
+  if (!validatePassword(password)) {
+    throw new Error("Şifre en az 6 karakter olmalıdır.");
+  }
+  if (name && !validateName(name)) {
+    throw new Error("İsim 2-100 karakter arasında olmalıdır.");
+  }
+
+  await assertRegistrationIdentityAvailable({
+    email: cleanEmail,
+    phone: phone ? normalizePhoneNumber(phone) : "",
+  });
+
+  const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
+  const user = cred.user;
+
+  if (name) {
+    await updateProfile(user, { displayName: name.slice(0, 100) });
+  }
+
+  const finalPhone = phone ? normalizePhoneNumber(phone) : null;
+
+  await setDoc(doc(db, "users", user.uid), {
+    uid: user.uid,
+    displayName: name ? name.slice(0, 100) : cleanEmail.split("@")[0],
+    email: cleanEmail,
+    phoneNumber: finalPhone,
+    isPhoneVerified: true,
+    location: null,
+    addresses: [],
+    userType: userType,
+    ...buildProviderFields("password"),
+    createdAt: nowIso(),
+    updatedAt: nowIso(),
+    lastLoginAt: nowIso(),
+  });
+
+  await syncIdentityDocFromAuthUser(user, {
+    displayName: name ? name.slice(0, 100) : cleanEmail.split("@")[0],
+    email: cleanEmail,
+    phoneNumber: finalPhone,
+    isPhoneVerified: true,
+    location: null,
+    addresses: [],
+    userType: userType,
+    ...(userType !== "CLIENT" && { profileCompleted: false }),
+  });
+
+  return user;
+}
+
+
 export async function finalizeExpertRegistration({
   confirmationResult,
   code,

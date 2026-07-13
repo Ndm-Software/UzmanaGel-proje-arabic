@@ -642,18 +642,14 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
     const d = String(value || '').replace(/\D/g, '');
     let core = d;
     if (core.length === 11 && core.startsWith('0')) core = core.slice(1);
+    if (core.length === 12 && core.startsWith('963')) core = core.slice(3);
     if (core.length === 12 && core.startsWith('90')) core = core.slice(2);
-    return core.slice(0, 10);
+    return core.slice(0, 15);
   };
 
   const format = (value) => {
-    const c = String(value || '').replace(/\D/g, '').slice(0, 10);
-    let f = '';
-    if (c.slice(0, 3)) f += c.slice(0, 3);
-    if (c.slice(3, 6)) f += ' ' + c.slice(3, 6);
-    if (c.slice(6, 8)) f += ' ' + c.slice(6, 8);
-    if (c.slice(8, 10)) f += ' ' + c.slice(8, 10);
-    return f;
+    const c = String(value || '').replace(/\D/g, '').slice(0, 15);
+    return c;
   };
 
   useEffect(() => {
@@ -678,8 +674,8 @@ const PhoneModal = ({ currentPhone, onClose, onSuccess }) => {
 
   const validatePhone = () => {
     const d = normalize(digits);
-    if (d.length !== 10 || !d.startsWith('9')) {
-      setError('يرجى إدخال رقم هاتف صالح بالصيغة 9xx xxx xx xx.');
+    if (d.length < 9 || d.length > 15) {
+      setError('يرجى إدخال رقم هاتف صالح.');
       return null;
     }
     return `+963${d}`;

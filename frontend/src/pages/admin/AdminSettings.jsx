@@ -27,6 +27,12 @@ const isValidEmail = (email) => {
 
 const isValidPhone = (phone) => {
   const cleaned = String(phone || '').replace(/\D/g, '');
+  if (cleaned.length === 12 && cleaned.startsWith('963')) {
+    return true;
+  }
+  if (cleaned.length === 9 && cleaned.startsWith('9')) {
+    return true;
+  }
   if (cleaned.length === 12 && cleaned.startsWith('90')) {
     return true;
   }
@@ -194,7 +200,12 @@ export default function AdminSettings() {
         return;
       }
       let formattedValue = cleanedValue;
-      if (cleanedValue.length === 10) {
+      if (cleanedValue.length === 9) {
+        formattedValue = `+963 ${cleanedValue.slice(0, 3)} ${cleanedValue.slice(3, 6)} ${cleanedValue.slice(6, 9)}`;
+      } else if (cleanedValue.length === 12 && cleanedValue.startsWith('963')) {
+        const national = cleanedValue.slice(3);
+        formattedValue = `+963 ${national.slice(0, 3)} ${national.slice(3, 6)} ${national.slice(6, 9)}`;
+      } else if (cleanedValue.length === 10) {
         formattedValue = `+90 ${cleanedValue.slice(0, 3)} ${cleanedValue.slice(3, 6)} ${cleanedValue.slice(6, 8)} ${cleanedValue.slice(8, 10)}`;
       } else if (cleanedValue.length === 12 && cleanedValue.startsWith('90')) {
         const national = cleanedValue.slice(2);

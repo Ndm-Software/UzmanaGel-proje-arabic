@@ -1,4 +1,4 @@
-﻿// deletedAccountReservationGuard.js file code
+// deletedAccountReservationGuard.js file code
 
 const { db } = require("../config/firebaseAdmin");
 
@@ -10,20 +10,46 @@ function normalizeTrPhoneToE164(value) {
   const digits = String(value || "").replace(/\D/g, "");
   if (!digits) return "";
 
-  let core = digits;
+  // Check if it is a Syrian number format
+  let syrianCore = digits;
+  if (syrianCore.length === 10 && syrianCore.startsWith("0")) {
+    syrianCore = syrianCore.slice(1);
+  }
+  if (syrianCore.length === 12 && syrianCore.startsWith("963")) {
+    syrianCore = syrianCore.slice(3);
+  }
+  if (syrianCore.length === 9 && syrianCore.startsWith("9")) {
+    return `+963${syrianCore}`;
+  }
+  // Check for test number with 10 digits starting with 5 (e.g. +963 5555555555)
+  if (syrianCore.length === 13 && syrianCore.startsWith("963")) {
+    const checkCore = syrianCore.slice(3);
+    if (checkCore.length === 10 && checkCore.startsWith("5")) {
+      return `+963${checkCore}`;
+    }
+  }
+  if (syrianCore.length === 10 && syrianCore.startsWith("5")) {
+    return `+963${syrianCore}`;
+  }
 
+  // Turkey format
+  let core = digits;
   if (core.length === 11 && core.startsWith("0")) {
     core = core.slice(1);
   }
-
   if (core.length === 12 && core.startsWith("90")) {
     core = core.slice(2);
   }
+  if (core.length === 10 && core.startsWith("5")) {
+    return `+90${core}`;
+  }
 
-  if (core.length !== 10) return "";
-  if (!core.startsWith("5")) return "";
+  // Generic fallback if it's already an E.164 phone number
+  if (String(value || "").startsWith("+")) {
+    return `+${digits}`;
+  }
 
-  return `+90${core}`;
+  return "";
 }
 
 function toDate(value) {

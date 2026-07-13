@@ -1,4 +1,4 @@
-﻿// registrationGuardRoutes.js file code
+// registrationGuardRoutes.js file code
 
 const express = require("express");
 const router = express.Router();
@@ -235,15 +235,6 @@ router.post(
         });
       }
 
-      if (!phoneNumber) {
-        return res.status(400).json({
-          allowed: false,
-          field: "phoneNumber",
-          code: "INVALID_PHONE_NUMBER",
-          message: "يرجى إدخال رقم هاتف صالح.",
-        });
-      }
-
       const activeEmailConflict = await findActiveUserConflictByEmail(email);
 
       if (activeEmailConflict) {
@@ -255,16 +246,18 @@ router.post(
         });
       }
 
-      const activePhoneConflict =
-        await findActiveUserConflictByPhone(phoneNumber);
+      if (phoneNumber) {
+        const activePhoneConflict =
+          await findActiveUserConflictByPhone(phoneNumber);
 
-      if (activePhoneConflict) {
-        return res.status(409).json({
-          allowed: false,
-          field: "phoneNumber",
-          code: "ACTIVE_PHONE_IN_USE",
-          message: "رقم الهاتف هذا مستخدم بالفعل في حساب نشط.",
-        });
+        if (activePhoneConflict) {
+          return res.status(409).json({
+            allowed: false,
+            field: "phoneNumber",
+            code: "ACTIVE_PHONE_IN_USE",
+            message: "رقم الهاتف هذا مستخدم بالفعل في حساب نشط.",
+          });
+        }
       }
 
       const deletedEmailConflict =
@@ -280,17 +273,19 @@ router.post(
         });
       }
 
-      const deletedPhoneConflict =
-        await findReservedDeletedAccountByPhone(phoneNumber);
+      if (phoneNumber) {
+        const deletedPhoneConflict =
+          await findReservedDeletedAccountByPhone(phoneNumber);
 
-      if (deletedPhoneConflict) {
-        return res.status(409).json({
-          allowed: false,
-          field: "phoneNumber",
-          code: "DELETED_PHONE_RESERVED",
-          message:
-            "رقم الهاتف هذا يعود إلى حساب محذوف وما زالت مدة الاستعادة مستمرة.",
-        });
+        if (deletedPhoneConflict) {
+          return res.status(409).json({
+            allowed: false,
+            field: "phoneNumber",
+            code: "DELETED_PHONE_RESERVED",
+            message:
+              "رقم الهاتف هذا يعود إلى حساب محذوف وما زالت مدة الاستعادة مستمرة.",
+          });
+        }
       }
 
       return res.json({

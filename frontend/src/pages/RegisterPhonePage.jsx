@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import PageTransition from "../components/PageTransition";
 import brandImage from "../assets/pictures/Logo.png";
@@ -138,13 +138,8 @@ export default function RegisterPhonePage() {
       return false;
     }
 
-    if (cleaned.length !== 10) {
-      setPhoneError("Telefon numarası 10 haneli olmalıdır (5xx xxx xx xx).");
-      return false;
-    }
-
-    if (!cleaned.startsWith("5")) {
-      setPhoneError("Telefon 5 ile başlamalıdır.");
+    if (cleaned.length < 9 || cleaned.length > 15) {
+      setPhoneError("Telefon numarası 9 ila 15 haneli olmalıdır (Örn: 9xx xxx xxx).");
       return false;
     }
 
@@ -196,14 +191,14 @@ export default function RegisterPhonePage() {
     }
 
     if (!validatePhone(phone)) {
-      setError("Telefon numarası 5xx xxx xx xx formatında olmalıdır.");
+      setError("Telefon numarası geçersiz. Örn: 9xx xxx xxx");
       return;
     }
 
     try {
       setLoading(true);
 
-      const normalizedPhone = `+90${phone}`;
+      const normalizedPhone = `+963${phone}`;
       const phoneStatus = await getPhoneIdentityStatus(normalizedPhone);
 
       if (phoneStatus?.existsInUsers) {
@@ -227,7 +222,7 @@ export default function RegisterPhonePage() {
           "Bu telefon numarası mevcut bir hesaba ait. Lütfen giriş yapın veya mevcut hesabınıza telefon numaranızı bağlayın."
         );
       } else if (e?.code === "auth/invalid-phone-number") {
-        setError("Telefon formatı hatalı. Örn: +90 5xx xxx xx xx");
+        setError("Telefon formatı hatalı. Örn: +963 9xx xxx xxx");
       } else if (e?.code === "auth/too-many-requests") {
         setError("Çok fazla deneme yapıldı. Lütfen biraz sonra tekrar deneyin.");
       } else if (e?.code === "auth/invalid-app-credential") {
@@ -250,7 +245,7 @@ export default function RegisterPhonePage() {
       const user = await confirmPhoneOtp(confirmation, code);
 
       sessionStorage.setItem("phoneRegistrationVerified", "true");
-      sessionStorage.setItem("phoneRegistrationNumber", user?.phoneNumber || `+90${phone}`);
+      sessionStorage.setItem("phoneRegistrationNumber", user?.phoneNumber || `+963${phone}`);
 
       navigate("/register-details", { replace: true });
     } catch (e) {
@@ -315,7 +310,7 @@ export default function RegisterPhonePage() {
                 </label>
 
                 <div className="lp-register-phone-wrapper">
-                  <span className="lp-register-phone-prefix">+90</span>
+                  <span className="lp-register-phone-prefix">+963</span>
 
                   <input
                     className="lp-login-input lp-register-phone-input"

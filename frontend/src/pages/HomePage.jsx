@@ -642,7 +642,7 @@ export default function HomePage() {
                     <img src={syriaImage} alt="" className="stats-icon-img" />
                   </div>
                   <div className="stats-value">14</div>
-                  <div className="stats-label">خدمة في المدن</div>
+                  <div className="stats-label">خدمة في محافظة</div>
                 </article>
               </div>
             </div>

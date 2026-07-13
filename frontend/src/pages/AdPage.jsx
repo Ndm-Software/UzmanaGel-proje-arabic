@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/firebaseClient";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -28,7 +28,25 @@ const isDevelopment = process.env.NODE_ENV === "development";
 
 const ALL_CATEGORIES = "جميع الفئات";
 const ALL_SPECIALTIES = "جميع التخصصات";
+const ALL_CITIES = "جميع المحافظات";
 const DEFAULT_SORT = "السعر: الأعلى أولاً";
+
+const SYRIA_GOVERNORATES = [
+  "دمشق",
+  "ريف دمشق",
+  "حلب",
+  "حمص",
+  "حماة",
+  "اللاذقية",
+  "طرطوس",
+  "إدلب",
+  "دير الزور",
+  "الرقة",
+  "الحسكة",
+  "درعا",
+  "السويداء",
+  "القنيطرة",
+];
 
 const SORT_OPTIONS = [
   { label: DEFAULT_SORT, value: "price_desc" },
@@ -42,6 +60,7 @@ const SORT_OPTIONS = [
 const FILTER_SENTINEL_LABELS = new Set([
   ALL_CATEGORIES,
   ALL_SPECIALTIES,
+  ALL_CITIES,
   "جميع المدن",
   "Tüm Kategoriler",
   "Tüm Uzmanlıklar",
@@ -158,17 +177,23 @@ const AdPage = () => {
   const [tempSpecialty, setTempSpecialty] = useState(ALL_SPECIALTIES);
   const [tempMinPrice, setTempMinPrice] = useState("");
   const [tempMaxPrice, setTempMaxPrice] = useState("");
+  const [tempCity, setTempCity] = useState(ALL_CITIES);
   const [tempSortBy, setTempSortBy] = useState(DEFAULT_SORT);
 
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORIES);
   const [activeSpecialty, setActiveSpecialty] = useState(ALL_SPECIALTIES);
   const [activeMinPrice, setActiveMinPrice] = useState("");
   const [activeMaxPrice, setActiveMaxPrice] = useState("");
+  const [activeCity, setActiveCity] = useState(ALL_CITIES);
   const [activeSortBy, setActiveSortBy] = useState(DEFAULT_SORT);
 
   const [categoryOptions, setCategoryOptions] = useState([ALL_CATEGORIES]);
   const [specialtyOptions, setSpecialtyOptions] = useState([
     ALL_SPECIALTIES,
+  ]);
+  const [cityOptions, setCityOptions] = useState([
+    ALL_CITIES,
+    ...SYRIA_GOVERNORATES,
   ]);
   const [specialtiesByCategory, setSpecialtiesByCategory] = useState({});
 
@@ -177,7 +202,6 @@ const AdPage = () => {
   const [expertName, setExpertName] = useState("");
   const [favorites, setFavorites] = useState({});
   const [firestoreDisplayName, setFirestoreDisplayName] = useState("");
-  const [customerCity, setCustomerCity] = useState("");
 
   const updateListingsPageParam = useCallback(
     (page) => {
@@ -227,49 +251,6 @@ const AdPage = () => {
               "مستخدم";
 
             setFirestoreDisplayName(finalDisplayName);
-            const isCustomerAccount =
-              userData.userType !== "PROVIDER" &&
-              userData.userType !== "PENDING_PROVIDER";
-            let nextCustomerCity = String(
-              userData.city || userData.mainCity || ""
-            ).trim();
-
-            if (isCustomerAccount && !nextCustomerCity) {
-              try {
-                const addressesSnapshot = await getDocs(
-                  collection(db, "users", currentUser.uid, "addresses")
-                );
-                const addresses = addressesSnapshot.docs
-                  .map((addressDoc) => addressDoc.data() || {})
-                  .sort((a, b) => {
-                    const aTime =
-                      a.createdAt?.toMillis?.() ||
-                      a.updatedAt?.toMillis?.() ||
-                      0;
-                    const bTime =
-                      b.createdAt?.toMillis?.() ||
-                      b.updatedAt?.toMillis?.() ||
-                      0;
-                    return bTime - aTime;
-                  });
-
-                nextCustomerCity =
-                  addresses.find((address) =>
-                    String(address.city || "").trim()
-                  )?.city || "";
-              } catch (addressError) {
-                if (isDevelopment) {
-                  console.error(
-                    "Customer city could not be loaded:",
-                    addressError.message
-                  );
-                }
-              }
-            }
-
-            setCustomerCity(
-              isCustomerAccount ? String(nextCustomerCity || "").trim() : ""
-            );
 
             if (
               userData.userType === "PENDING_PROVIDER" &&
@@ -292,7 +273,6 @@ const AdPage = () => {
             setFirestoreDisplayName(
               currentUser.email?.split("@")[0] || "مستخدم"
             );
-            setCustomerCity("");
             setShowProfileWarning(false);
           }
         } catch (error) {
@@ -306,11 +286,9 @@ const AdPage = () => {
           setFirestoreDisplayName(
             currentUser.email?.split("@")[0] || "مستخدم"
           );
-          setCustomerCity("");
         }
       } else {
         setFirestoreDisplayName("");
-        setCustomerCity("");
         setShowProfileWarning(false);
         setFavorites({});
       }
@@ -355,6 +333,7 @@ const AdPage = () => {
 
         setCategoryOptions([ALL_CATEGORIES, ...categories]);
         setSpecialtyOptions([ALL_SPECIALTIES, ...specialties]);
+        setCityOptions([ALL_CITIES, ...SYRIA_GOVERNORATES]);
         setSpecialtiesByCategory(
           normalizeSpecialtiesByCategory(meta?.specialtiesByCategory)
         );
@@ -430,7 +409,7 @@ const AdPage = () => {
         activeSpecialty !== ALL_SPECIALTIES ? activeSpecialty : undefined,
       minPrice: activeMinPrice || undefined,
       maxPrice: activeMaxPrice || undefined,
-      city: customerCity || undefined,
+      city: activeCity !== ALL_CITIES ? activeCity : undefined,
       sort: sortCodeFromLabel(activeSortBy),
     };
 
@@ -506,8 +485,8 @@ const AdPage = () => {
     activeSpecialty,
     activeMinPrice,
     activeMaxPrice,
+    activeCity,
     activeSortBy,
-    customerCity,
     updateListingsPageParam,
   ]);
 
@@ -605,6 +584,7 @@ const AdPage = () => {
     setActiveSpecialty(tempSpecialty);
     setActiveMinPrice(tempMinPrice);
     setActiveMaxPrice(tempMaxPrice);
+    setActiveCity(tempCity);
     setActiveSortBy(tempSortBy);
     setCurrentPage(1);
     updateListingsPageParam(1);
@@ -615,12 +595,14 @@ const AdPage = () => {
     setTempSpecialty(ALL_SPECIALTIES);
     setTempMinPrice("");
     setTempMaxPrice("");
+    setTempCity(ALL_CITIES);
     setTempSortBy(DEFAULT_SORT);
 
     setActiveCategory(ALL_CATEGORIES);
     setActiveSpecialty(ALL_SPECIALTIES);
     setActiveMinPrice("");
     setActiveMaxPrice("");
+    setActiveCity(ALL_CITIES);
     setActiveSortBy(DEFAULT_SORT);
 
     setSearchText("");
@@ -785,6 +767,24 @@ const AdPage = () => {
                   </option>
                 );
               })}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="city-filter">
+              <i className="fa-solid fa-location-dot"></i> المحافظة
+            </label>
+
+            <select
+              id="city-filter"
+              value={tempCity}
+              onChange={(event) => setTempCity(event.target.value)}
+            >
+              {cityOptions.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
             </select>
           </div>
 

@@ -41,8 +41,12 @@ service cloud.firestore {
     // İlan bildirimleri yalnızca backend (Admin SDK) ile yazılır; istemci doğrudan erişemez.
     match /listing_reports/{docId} { allow read, write: if false; }
     match /user_favorites/{docId} { allow read, write: if true; }
-    match /users/{docId} { allow read, write: if true; }
+    match /users/{docId}/{document=**} { allow read, write: if true; }
     match /wallet_history/{docId} { allow read, write: if true; }
+    match /deleted_reviews/{docId} { allow read, write: if true; }
+    match /address_change_requests/{docId} { allow read, write: if true; }
+    match /wallet_transactions/{docId} { allow read, write: if true; }
+    match /payments/{docId} { allow read, write: if true; }
   }
 }
 

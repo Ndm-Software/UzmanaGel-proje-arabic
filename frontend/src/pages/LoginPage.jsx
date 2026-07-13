@@ -1,4 +1,4 @@
-﻿// LoginPage.jsx file code 
+// LoginPage.jsx file code 
 
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -848,17 +848,7 @@ export default function LoginPage() {
               >
                 <img src={googleLogo} alt="Google" className="social-icon-img" />
               </button>
-
-              <button
-                className="social-icon phone"
-                type="button"
-                onClick={() => navigate("/login-phone")}
-                disabled={loading}
-                aria-label="تسجيل الدخول عبر الهاتف"
-              >
-                <img src={phoneLogo} alt="الهاتف" className="social-icon-img phone-icon-img" />
-              </button>
-            </div>
+             </div>
 
             {registrationsOpen ? (
               <p className="lp-login-bottom">

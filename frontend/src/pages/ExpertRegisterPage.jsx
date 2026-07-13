@@ -11,6 +11,7 @@ import {
   registerExpertDraft,
   finalizeExpertRegistration,
   logout,
+  registerWithEmailDirect,
 } from "../firebase/authService";
 import DOMPurify from 'dompurify';
 import "../styles/RegisterPage.css";
@@ -213,13 +214,8 @@ const ExpertRegisterPage = () => {
       return false;
     }
 
-    if (cleaned.length !== 10) {
-      setPhoneError("رقم الهاتف يجب أن يتكون من 10 أرقام.");
-      return false;
-    }
-
-    if (!cleaned.startsWith("5")) {
-      setPhoneError("رقم الهاتف يجب أن يبدأ بالرقم 5.");
+    if (cleaned.length < 9 || cleaned.length > 15) {
+      setPhoneError("رقم الهاتف يجب أن يتكون من 9 إلى 15 رقمًا.");
       return false;
     }
 
@@ -345,7 +341,7 @@ const ExpertRegisterPage = () => {
 
     return await checkRegistrationEligibility({
       email: String(email || "").trim().toLowerCase(),
-      phoneNumber: phone,
+      phoneNumber: "",
     });
   };
 
@@ -353,9 +349,8 @@ const ExpertRegisterPage = () => {
     e.preventDefault();
     setError("");
     setEmailError("");
-    setPhoneError("");
 
-    if (!fullName || !email || !phone || !password || !password2) {
+    if (!fullName || !email || !password || !password2) {
       setError("يرجى تعبئة جميع الحقول المطلوبة.");
       return;
     }
@@ -372,11 +367,6 @@ const ExpertRegisterPage = () => {
 
     if (!validateEmail(email)) {
       setError("يرجى إدخال بريد إلكتروني صالح.");
-      return;
-    }
-
-    if (!validatePhone(phone)) {
-      setError("رقم الهاتف يجب أن يكون بصيغة صحيحة.");
       return;
     }
 
@@ -401,30 +391,23 @@ const ExpertRegisterPage = () => {
         return;
       }
 
-      const draft = await registerExpertDraft({
-        userData: {
-          fullName,
-          email: String(email || "").trim().toLowerCase(),
-          password,
-          phone: `+90${phone}`,
+      await registerWithEmailDirect({
+        name: sanitizeText(fullName),
+        email: String(email || "").trim().toLowerCase(),
+        password,
+        phone: "",
+        userType: "PENDING_PROVIDER",
+      });
+
+      await logout();
+
+      navigate("/login", {
+        replace: true,
+        state: {
+          prefillEmail: String(email || "").trim().toLowerCase(),
+          loginNoticeType: "registration_success",
         },
       });
-
-      setPendingUserData(draft);
-
-      clearRecaptcha();
-      const container = document.getElementById("recaptcha-container");
-      if (container) container.innerHTML = "";
-      initRecaptcha("recaptcha-container");
-
-      // 7 mayis modified by Edrees
-      const confirmation = await sendPhoneOtp(draft.phone, {
-        blockExistingPhone: true,
-      });
-
-
-      setConfirmationResult(confirmation);
-      setShowOtpScreen(true);
     } catch (err) {
       if (isDevelopment) console.error("Kayıt hatası:", err.message);
       setError("حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة لاحقاً.");
@@ -484,12 +467,10 @@ const ExpertRegisterPage = () => {
   const isFormValid = () =>
     fullName.trim().length > 0 &&
     email.trim().length > 0 &&
-    phone.length === 10 &&
     password.length > 0 &&
     password2.length > 0 &&
     emailError === "" &&
-    phoneError === "" &&
-    passwordStrength === 100 &&
+    passwordErrors.length === 0 &&
     password === password2 &&
     agree &&
     !loading;
@@ -565,54 +546,6 @@ const ExpertRegisterPage = () => {
                   )}
                 </div>
 
-                <div className="lp-register-form-group">
-                  <label className="lp-register-label">
-                    <i className="fas fa-phone lp-register-icon"></i>
-                    رقم الهاتف <span className="required">*</span>
-                  </label>
-                  <div
-                    className="lp-register-phone-wrapper"
-                    style={{ display: "flex", alignItems: "center", gap: "8px" }}
-                  >
-                    <span
-                      className="lp-register-phone-prefix"
-                      style={{
-                        padding: "0 10px",
-                        background: "var(--bg-secondary)",
-                        borderRadius: "8px",
-                        border: "1px solid var(--border-color)",
-                        height: "45px",
-                        display: "flex",
-                        alignItems: "center",
-                      }}
-                    >
-                      +90
-                    </span>
-                    <input
-                      className="lp-register-input lp-register-phone-input"
-                      type="tel"
-                      placeholder="5xx-xxx-xx-xx"
-                      autoComplete="tel"
-                      required
-                      value={formatPhone(phone)}
-                      onChange={handlePhoneChange}
-                      onBlur={() => phone && validatePhone(phone)}
-                      disabled={loading}
-                      style={{ flex: 1 }}
-                    />
-                  </div>
-                  {phoneError && (
-                    <small
-                      style={{
-                        color: "#ef4444",
-                        display: "block",
-                        marginTop: "4px",
-                      }}
-                    >
-                      <i className="fas fa-times-circle"></i> {sanitizeText(phoneError)}
-                    </small>
-                  )}
-                </div>
 
                 <div className="lp-register-form-group">
                   <label className="lp-register-label">

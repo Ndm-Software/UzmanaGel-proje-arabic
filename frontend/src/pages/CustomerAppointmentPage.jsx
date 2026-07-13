@@ -41,7 +41,7 @@ const validateAndSanitizeInput = (value, maxLength = 500) => {
 
 const validatePhoneNumber = (phone) => {
   const cleaned = String(phone || '').replace(/\s/g, '');
-  const phoneRegex = /^(\+90|0)?[0-9]{10,11}$/;
+  const phoneRegex = /^(\+963|\+90|0)?[0-9]{9,11}$/;
   return phoneRegex.test(cleaned);
 };
 

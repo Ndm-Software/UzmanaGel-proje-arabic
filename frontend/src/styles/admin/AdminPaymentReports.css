@@ -1,0 +1,304 @@
+.admin-payment-reports {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.payment-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.payment-stat-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.payment-stat-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.payment-stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.payment-stat-icon.success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.payment-stat-icon.refunded {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+}
+
+.payment-stat-icon.failed {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.payment-stat-icon.net {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--primary);
+}
+
+.payment-stat-icon.rate {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.payment-stat-info h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.payment-stat-info p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.payment-filter-bar {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.filter-select {
+  padding: 10px 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.payments-table-wrapper {
+  overflow-x: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+}
+
+.payments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payments-table th,
+.payments-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.payments-table th {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.payments-table td {
+  font-size: 14px;
+  color: var(--text-main);
+}
+
+.payments-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.user-info-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-info-cell strong {
+  font-size: 14px;
+}
+
+.user-info-cell small {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.transaction-id {
+  font-family: monospace;
+  font-size: 12px;
+  background: var(--input-bg);
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--primary);
+}
+
+.amount {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.payment-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.payment-status-badge.success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.payment-status-badge.failed {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.payment-status-badge.pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+
+.payment-status-badge.refunded {
+  background: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+}
+
+.payment-status-badge.chargeback {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.btn-refund {
+  padding: 6px 12px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  color: #8b5cf6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-refund:hover {
+  background: #8b5cf6;
+  color: white;
+}
+
+.payment-info {
+  background: var(--input-bg);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.payment-info p {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+}
+
+.payment-info p strong {
+  color: var(--text-main);
+}
+
+.info-box {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #3b82f6;
+  font-size: 13px;
+}
+
+.info-box i {
+  font-size: 18px;
+}
+
+.warning-box {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ef4444;
+  font-size: 13px;
+}
+
+.warning-box i {
+  font-size: 18px;
+}
+
+/* Ref ID */
+.ref-id {
+  font-family: monospace;
+  font-size: 11px;
+  background: var(--input-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--primary);
+}
+
+.btn-refund.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .payment-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-select {
+    width: 100%;
+  }
+  
+  .payments-table th,
+  .payments-table td {
+    padding: 10px;
+    font-size: 12px;
+  }
+  
+  .payment-stat-info h3 {
+    font-size: 22px;
+  }
+}

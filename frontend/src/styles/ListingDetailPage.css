@@ -1,0 +1,714 @@
+/* ── İlan Detay Sayfası ── */
+.ld-page {
+  min-height: 100vh;
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+/* ── Bulunamadı ── */
+.ld-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 14px;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.ld-not-found i {
+  font-size: 52px;
+  color: var(--card-border);
+}
+
+.ld-not-found h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.ld-not-found p {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.ld-not-found button {
+  margin-top: 8px;
+  padding: 11px 22px;
+  background: var(--primary);
+  color: #0b1020;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.ld-not-found button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+/* ── Konteyner ── */
+.ld-container {
+  max-width: 1200px;
+  margin: 30px auto 60px;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Üst Bar (sadece geri butonu) ── */
+.ld-topbar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.ld-back-btn {
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.ld-back-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ── Profil Başlığı ── */
+.ld-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+
+/* Yuvarlak Görsel */
+.ld-avatar-wrap {
+  flex-shrink: 0;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--primary);
+  box-shadow: 0 0 0 4px rgba(214, 178, 94, 0.15);
+}
+
+.ld-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ld-profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Başlık satırı (ilan adı + kategori + buton) ── */
+.ld-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.ld-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ld-category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(214, 178, 94, 0.1);
+  border: 1px solid rgba(214, 178, 94, 0.3);
+  color: var(--primary);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* İlanlara Dön Butonu */
+.ld-listings-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: auto; /* Sağa yaslar */
+}
+
+.ld-listings-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(214, 178, 94, 0.05);
+}
+
+.ld-listings-btn i {
+  font-size: 14px;
+}
+
+.ld-meta {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.ld-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.ld-meta i {
+  color: var(--primary);
+  font-size: 13px;
+}
+
+.ld-rating {
+  font-weight: 600;
+  color: var(--text-main) !important;
+}
+
+.ld-rating i {
+  color: #f1c40f !important;
+}
+
+.ld-rating em {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+/* Randevu Butonu */
+.ld-appointment-btn {
+  flex-shrink: 0;
+  padding: 12px 24px;
+  background: var(--primary);
+  color: #0b1020;
+  border: none;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(214, 178, 94, 0.2);
+}
+
+.ld-appointment-btn:hover:not(:disabled) {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(214, 178, 94, 0.3);
+}
+
+.ld-appointment-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ld-appointment-btn i {
+  font-size: 16px;
+}
+
+/* ── Ana Grid ── */
+.ld-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── Sol Kolon ── */
+.ld-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Kart ── */
+.ld-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s;
+}
+
+.ld-card:hover {
+  border-color: rgba(214, 178, 94, 0.2);
+}
+
+.ld-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ld-card-title i {
+  color: var(--primary);
+}
+
+.ld-desc {
+  font-size: 15px;
+  color: var(--text-soft);
+  line-height: 1.75;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ld-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.ld-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.ld-detail-item:last-child {
+  border-bottom: none;
+}
+
+.ld-detail-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.ld-detail-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.ld-detail-value.ld-price {
+  color: var(--primary);
+  font-size: 16px;
+}
+
+/* ── Sağ Kolon (Uzman Profili) ── */
+.ld-right {
+  position: sticky;
+  top: 88px;
+}
+
+.ld-provider-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ld-provider-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ld-provider-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0b1020;
+  flex-shrink: 0;
+  border: 2px solid var(--card-border);
+}
+
+.ld-provider-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+}
+
+.ld-provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.ld-provider-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--input-bg);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.ld-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.ld-stat-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ld-stat-val i {
+  color: #f1c40f;
+  font-size: 14px;
+}
+
+.ld-stat-lbl {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.ld-stat-sep {
+  width: 1px;
+  height: 28px;
+  background: var(--card-border);
+}
+
+.ld-profile-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--primary);
+  color: #0b1020;
+  border: none;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.ld-profile-btn:hover:not(:disabled) {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(214, 178, 94, 0.3);
+}
+
+.ld-profile-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ld-no-profile {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0;
+}
+
+/* ── Light tema düzeltmeleri ── */
+[data-theme="light"] .ld-profile-header,
+[data-theme="light"] .ld-card,
+[data-theme="light"] .ld-provider-card {
+  background: #ffffff;
+}
+
+[data-theme="light"] .ld-back-btn {
+  background: #ffffff;
+}
+
+[data-theme="light"] .ld-listings-btn {
+  background: #ffffff;
+}
+
+[data-theme="light"] .ld-listings-btn:hover {
+  background: rgba(214, 178, 94, 0.1);
+}
+
+[data-theme="light"] .ld-provider-stats {
+  background: #f1f5f9;
+}
+
+[data-theme="light"] .ld-category-tag {
+  color: #7a5a10;
+  background: rgba(214, 178, 94, 0.14);
+  border-color: rgba(214, 178, 94, 0.35);
+}
+
+[data-theme="light"] .ld-desc {
+  color: #2d3748;
+}
+
+[data-theme="light"] .ld-detail-label {
+  color: #4a5568;
+}
+
+[data-theme="light"] .ld-detail-value {
+  color: #1a2634;
+}
+
+[data-theme="light"] .ld-detail-value.ld-price {
+  color: #7a5a10;
+}
+
+[data-theme="light"] .ld-meta span {
+  color: #4a5568;
+}
+
+[data-theme="light"] .ld-card:hover,
+[data-theme="light"] .ld-profile-header {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .ld-back-btn {
+  color: #4a5568;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .ld-back-btn:hover {
+  color: #7a5a10;
+  border-color: rgba(214, 178, 94, 0.45);
+}
+
+/* ── Responsive ── */
+@media (max-width: 992px) {
+  .ld-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ld-right {
+    position: static;
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .ld-container {
+    margin-top: 20px;
+    padding: 0 16px;
+  }
+
+  .ld-profile-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 22px;
+  }
+
+  .ld-title-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .ld-listings-btn {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ld-meta {
+    justify-content: center;
+  }
+
+  .ld-appointment-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ld-avatar-wrap {
+    width: 110px;
+    height: 110px;
+  }
+
+  .ld-title {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ld-avatar-wrap {
+    width: 90px;
+    height: 90px;
+  }
+
+  .ld-title {
+    font-size: 18px;
+  }
+
+  .ld-card,
+  .ld-provider-card {
+    padding: 16px;
+  }
+
+  .ld-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ld-provider-stats {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ld-stat-sep {
+    display: none;
+  }
+
+  .ld-profile-btn,
+  .ld-appointment-btn,
+  .ld-listings-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(60px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Mobil cihazlarda yorum kartı düzeni */
+@media (max-width: 600px) {
+  /* Yorum kartı ana kapsayıcısı */
+  .review-card-container { 
+    display: flex;
+    flex-direction: column !important;
+    gap: 15px !important;
+    padding: 15px !important;
+  }
+
+  /* Yorum başlık ve puan alanlarını alt alta al */
+  .review-header-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  /* Yorum metni taşmasını engelle */
+  .review-comment-text {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+  }
+}
+
+/* --- MOBİL İÇİN YORUMLAR DÜZENLEMESİ --- */
+
+.review-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .review-header-row {
+    flex-direction: column !important; /* Mobilde alt alta diz */
+    align-items: flex-start !important; /* Sola yasla */
+    gap: 8px !important;
+  }
+  
+  .review-info-item {
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* İsim ve değerin arası açık olsun */
+  }
+
+  /* Puan kısmını mobilde daha düzgün göster */
+  .review-rating-wrapper {
+    justify-content: flex-start !important;
+    gap: 10px !important;
+  }
+}
+/* --- MOBİL YORUMLAR BAŞLIK VE ÖZET DÜZENLEMESİ --- */
+@media (max-width: 600px) {
+  /* Başlık ve toplam değerlendirme kapsayıcısı */
+  .ld-reviews-header-wrapper {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 15px !important;
+  }
+
+  /* "Toplam 1 Değerlendirme" etiketini mobilde tam genişlik yap */
+  .ld-reviews-summary-badge {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}

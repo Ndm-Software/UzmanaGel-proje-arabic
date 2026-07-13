@@ -1,0 +1,356 @@
+:root {
+  --addr-modal-overlay: rgba(0, 0, 0, 0.62);
+}
+
+[data-theme="light"] {
+  --addr-modal-overlay: rgba(15, 23, 42, 0.28);
+}
+
+.address-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: var(--addr-modal-overlay);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.address-modal-container {
+  width: min(560px, 100%);
+  max-height: 92vh;
+}
+
+.address-modal-box {
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+
+  direction: rtl;
+  text-align: right;
+
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-right: 4px solid var(--primary);
+  border-radius: 18px;
+
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+}
+
+.address-modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+
+  padding: 22px 24px;
+
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.address-modal-heading {
+  flex: 1;
+}
+
+.address-modal-header h3 {
+  margin: 0;
+
+  color: var(--primary);
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.address-modal-subtitle {
+  margin: 7px 0 0;
+
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.address-modal-close-btn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  background: var(--input-bg);
+  border: 1px solid transparent;
+  border-radius: 12px;
+
+  color: var(--text-muted);
+  font-size: 22px;
+  line-height: 1;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.address-modal-close-btn:hover {
+  color: #ffffff;
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.address-modal-body {
+  padding: 24px;
+}
+
+.address-temp-warning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 20px;
+  padding: 12px 14px;
+
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 10px;
+
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.address-temp-warning i {
+  color: #3b82f6;
+  font-size: 17px;
+}
+
+.address-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.address-field {
+  width: 100%;
+}
+
+.address-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.address-label.required::after {
+  content: " *";
+  color: #ef4444;
+}
+
+.address-label.optional::after {
+  content: " (اختياري)";
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.address-input,
+.address-select {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 13px 15px;
+
+  direction: rtl;
+  text-align: right;
+  font-family: inherit;
+  font-size: 15px;
+
+  color: var(--text-main);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border, var(--card-border));
+  border-radius: 11px;
+
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.address-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.address-input:focus,
+.address-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(214, 178, 94, 0.14);
+}
+
+.address-select {
+  cursor: pointer;
+}
+
+.address-select option {
+  color: var(--text-main);
+  background: var(--card-bg);
+}
+
+.address-textarea {
+  min-height: 115px;
+  resize: vertical;
+  line-height: 1.7;
+}
+
+.address-character-count {
+  display: block;
+
+  margin-top: 6px;
+
+  color: var(--text-muted);
+  font-size: 11px;
+  text-align: left;
+}
+
+.address-modal-actions {
+  position: sticky;
+  bottom: 0;
+
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+
+  margin-top: 24px;
+  padding-top: 18px;
+
+  direction: rtl;
+  background: var(--card-bg);
+  border-top: 1px solid var(--card-border);
+}
+
+.address-cancel-btn,
+.address-save-btn {
+  min-width: 125px;
+
+  padding: 11px 22px;
+
+  border-radius: 11px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.address-cancel-btn {
+  color: var(--text-main);
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+}
+
+.address-cancel-btn:hover {
+  border-color: var(--text-muted);
+}
+
+.address-save-btn {
+  color: #0f1117;
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-dark) 100%
+  );
+  border: none;
+}
+
+.address-save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 16px rgba(212, 175, 55, 0.28);
+}
+
+.address-modal-box::-webkit-scrollbar {
+  width: 6px;
+}
+
+.address-modal-box::-webkit-scrollbar-track {
+  background: var(--input-bg);
+}
+
+.address-modal-box::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 10px;
+}
+
+[data-theme="light"] .address-modal-box {
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.14);
+}
+
+@media (max-width: 600px) {
+  .address-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .address-modal-container {
+    width: 100%;
+    max-height: 94vh;
+  }
+
+  .address-modal-box {
+    max-height: 94vh;
+
+    border-right: none;
+    border-top: 4px solid var(--primary);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .address-modal-header {
+    padding: 18px 20px;
+  }
+
+  .address-modal-header h3 {
+    font-size: 20px;
+  }
+
+  .address-modal-body {
+    padding: 20px;
+  }
+
+  .address-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .address-cancel-btn,
+  .address-save-btn {
+    width: 100%;
+  }
+}
+
+/*
+============================================================================
+OLD CSS REMOVED FROM THE ACTIVE UI
+============================================================================
+
+The old stylesheet contained rules for:
+- city/district two-column rows
+- neighborhood search/manual modes
+- building, floor and apartment fields
+- coordinate status
+- location warning dialog
+
+Those selectors are no longer used by AddressModal.jsx. The original CSS
+remains available in the previous uploaded file / Git history.
+*/

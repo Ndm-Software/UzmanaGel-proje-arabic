@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <rect width="600" height="400" fill="#2b2b2b" />
+  <g fill="#ffd166" font-family="Arial, Helvetica, sans-serif" font-weight="700">
+    <text x="50%" y="54%" text-anchor="middle" font-size="40">Elektrik</text>
+  </g>
+</svg>

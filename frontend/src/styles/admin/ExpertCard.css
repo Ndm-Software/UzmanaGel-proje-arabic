@@ -1,0 +1,352 @@
+/* ExpertCard.css file code*/
+
+.working-hours-detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  background: var(--input-bg);
+  padding: 16px;
+  border-radius: 16px;
+}
+
+.working-hour-item-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--card-border);
+}
+
+.working-hour-item-detail:last-child {
+  border-bottom: none;
+}
+
+.working-hour-day {
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.working-hour-time {
+  color: var(--text-muted);
+  font-size: 13px;
+  background: var(--card-bg);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.documents-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--card-border);
+}
+
+.documents-section h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.document-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  transition: all 0.2s ease;
+}
+
+.document-group:hover {
+  border-color: var(--primary);
+}
+
+.document-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 110px;
+}
+
+.document-label i {
+  font-size: 16px;
+}
+
+.document-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+}
+
+.document-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 30px;
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.document-link:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.no-document {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.data-card.rejected {
+  border-left: 3px solid var(--error);
+}
+
+.data-card.rejected .card-header:hover {
+  background: rgba(239, 68, 68, 0.03);
+}
+
+.rejection-card {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 16px;
+  margin-top: 8px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.rejection-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.15);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+  font-weight: 600;
+  color: var(--error);
+  font-size: 14px;
+}
+
+.rejection-body {
+  padding: 16px;
+}
+
+.rejection-reason {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed rgba(239, 68, 68, 0.2);
+}
+
+.rejection-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--error);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rejection-text {
+  font-size: 14px;
+  color: var(--text-main);
+  line-height: 1.5;
+  background: var(--input-bg);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.rejection-meta {
+  display: flex;
+  gap: 24px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.rejection-meta i {
+  margin-right: 6px;
+  color: var(--error);
+}
+
+.expert-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--input-bg);
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.expert-avatar {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f1117;
+  flex-shrink: 0;
+}
+
+.expert-info h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.expert-info p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 2px 0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-main);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 14px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.error-text {
+  color: var(--error);
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.char-counter {
+  display: block;
+  text-align: right;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.delete-modal {
+  width: min(520px, 100%);
+  background: #151922;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 24px;
+  color: #fff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.delete-modal h2 {
+  margin: 0 0 14px;
+  font-size: 22px;
+}
+
+.delete-modal-warning {
+  color: #ffb4b4;
+  line-height: 1.6;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.delete-modal-subtext {
+  color: #b8bfcc;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.delete-modal-error {
+  background: rgba(255, 80, 80, 0.12);
+  border: 1px solid rgba(255, 80, 80, 0.35);
+  color: #ff9d9d;
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.delete-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-cancel,
+.btn-confirm-delete {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn-cancel {
+  background: #252b36;
+  color: #fff;
+}
+
+.btn-confirm-delete {
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn-cancel:disabled,
+.btn-confirm-delete:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

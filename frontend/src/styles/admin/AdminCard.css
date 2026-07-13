@@ -1,0 +1,385 @@
+/* AdminCard.css file code */
+
+.data-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.data-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.data-card.expanded {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+}
+
+.card-header {
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: background 0.2s ease;
+}
+
+.card-header:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.card-source {
+  flex-shrink: 0;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--warning);
+}
+
+.status-badge.approved {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--success);
+}
+
+.card-summary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.card-avatar {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f1117;
+  flex-shrink: 0;
+}
+
+.card-basic-info {
+  min-width: 200px;
+  max-width: 100%;
+}
+
+.card-basic-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 6px;
+  overflow-wrap: anywhere;
+}
+
+.card-email {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  direction: ltr;
+  unicode-bidi: plaintext;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.card-business {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.card-quick-stats {
+  display: flex;
+  gap: 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.card-quick-stats span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.card-quick-stats i {
+  color: var(--primary);
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.expand-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.expand-icon:hover {
+  background: var(--input-bg);
+  color: var(--primary);
+}
+
+.card-details {
+  padding: 0 24px 24px 24px;
+  border-top: 1px solid var(--card-border);
+  animation: slideDown 0.25s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px 28px;
+  margin-bottom: 20px;
+  padding-top: 20px;
+  min-width: 0;
+}
+
+.detail-item {
+  display: grid;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.detail-item-wide {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+}
+
+.detail-label {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  padding-top: 2px;
+  min-width: 0;
+}
+
+.detail-value {
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.5;
+}
+
+.detail-value-phone {
+  direction: ltr;
+  unicode-bidi: plaintext;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-value-email {
+  direction: ltr;
+  unicode-bidi: plaintext;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.detail-section {
+  margin-bottom: 20px;
+}
+
+.detail-section .detail-label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  padding: 6px 14px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 30px;
+  font-size: 12px;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+}
+
+.tag:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--card-border);
+}
+
+.btn-approve,
+.btn-reject,
+.btn-delete {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-approve {
+  background: var(--success);
+  color: white;
+}
+
+.btn-approve:hover {
+  background: var(--success-dark);
+  transform: translateY(-2px);
+}
+
+.btn-reject {
+  background: var(--error);
+  color: white;
+}
+
+.btn-reject:hover {
+  background: var(--error-dark);
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+
+.btn-delete:hover {
+  background: var(--error);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.role-badge {
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.role-badge.user {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--info);
+}
+
+@media (max-width: 900px) {
+  .card-header {
+    align-items: flex-start;
+  }
+
+  .card-summary {
+    gap: 14px;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-header {
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .card-source {
+    align-self: flex-start;
+  }
+
+  .card-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    font-size: 20px;
+  }
+
+  .card-basic-info {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .card-quick-stats {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .card-details {
+    padding: 0 18px 20px 18px;
+  }
+
+  .detail-item,
+  .detail-item-wide {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .detail-value-phone {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+.card-stat-phone {
+  direction: ltr;
+  unicode-bidi: plaintext;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}

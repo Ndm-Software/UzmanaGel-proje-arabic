@@ -1,0 +1,515 @@
+/* --- TokenModal.css (Dikeyde Tam Ortalanmış) --- */
+
+.token-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.token-modal {
+  width: 480px;
+  max-width: calc(100% - 32px);
+  max-height: calc(100vh - 140px);
+  background: var(--card-bg, #1a1d26);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: modalSlideIn 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin: auto;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Header */
+.token-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--card-border, #2d3340);
+  background: var(--card-bg, #1a1d26);
+  flex-shrink: 0;
+}
+
+.token-modal-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-main, #e8edf2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.token-modal-header h2 i {
+  color: var(--primary, #d4af37);
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-muted, #8a94a6);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: var(--input-bg, #252a36);
+  color: var(--error, #ef4444);
+}
+
+/* Body - Kaydırılabilir */
+.token-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Scrollbar */
+.token-modal-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.token-modal-body::-webkit-scrollbar-track {
+  background: var(--input-bg, #252a36);
+  border-radius: 10px;
+}
+
+.token-modal-body::-webkit-scrollbar-thumb {
+  background: var(--primary, #d4af37);
+  border-radius: 10px;
+}
+
+/* Info */
+.info-container {
+  margin-bottom: 20px;
+}
+
+.info-trigger {
+  cursor: pointer;
+  color: var(--info, #3b82f6);
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.info-trigger:hover {
+  opacity: 0.8;
+}
+
+.info-content {
+  margin-top: 10px;
+  padding: 12px;
+  background: var(--input-bg, #252a36);
+  border-radius: 12px;
+  border-left: 3px solid var(--info, #3b82f6);
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.75rem;
+  color: var(--text-muted, #8a94a6);
+  line-height: 1.4;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-item i {
+  color: var(--info, #3b82f6);
+  font-size: 11px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* Token Selection */
+.token-selection {
+  margin-bottom: 16px;
+}
+
+.token-selection label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted, #8a94a6);
+}
+
+.preset-amounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.preset-amounts button {
+  padding: 6px 12px;
+  background: var(--input-bg, #252a36);
+  border: 1px solid var(--card-border, #2d3340);
+  border-radius: 8px;
+  color: var(--text-main, #e8edf2);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preset-amounts button:hover {
+  border-color: var(--primary, #d4af37);
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.preset-amounts button.active {
+  background: var(--primary, #d4af37);
+  border-color: var(--primary, #d4af37);
+  color: #0f1117;
+}
+
+.custom-amount {
+  width: 70px;
+  padding: 6px;
+  background: var(--input-bg, #252a36);
+  border: 1px solid var(--card-border, #2d3340);
+  border-radius: 8px;
+  color: var(--text-main, #e8edf2);
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.custom-amount:focus {
+  outline: none;
+  border-color: var(--primary, #d4af37);
+}
+
+/* Price Display */
+.price-display {
+  text-align: center;
+  padding: 8px;
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 0.8rem;
+}
+
+.price-display span {
+  color: var(--text-muted, #8a94a6);
+}
+
+.price-display strong {
+  color: var(--primary, #d4af37);
+}
+
+/* Payment Form */
+.payment-form h3 {
+  font-size: 0.85rem;
+  margin: 0 0 12px 0;
+  color: var(--text-main, #e8edf2);
+}
+
+/* Card Preview */
+.card-preview {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  color: white;
+  position: relative;
+}
+
+.card-preview.mastercard {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.card-preview.visa {
+  background: linear-gradient(135deg, #2563eb, #1e3a8a);
+}
+
+.card-chip {
+  width: 30px;
+  height: 22px;
+  background: #fbbf24;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.card-number-display {
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.55rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+.brand-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  font-size: 1.3rem;
+  opacity: 0.6;
+}
+
+/* Form Inputs */
+.form-input {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--input-bg, #252a36);
+  border: 1px solid var(--card-border, #2d3340);
+  border-radius: 8px;
+  color: var(--text-main, #e8edf2);
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary, #d4af37);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted, #6b7280);
+  font-size: 0.75rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.expiry-input {
+  flex: 2;
+}
+
+.cvv-input {
+  flex: 1;
+}
+
+/* Pay Button */
+.pay-btn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, var(--primary, #d4af37) 0%, var(--primary-dark, #b8942e) 100%);
+  border: none;
+  border-radius: 10px;
+  color: #0f1117;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 12px;
+}
+
+.pay-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.pay-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.token-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: linear-gradient(135deg, var(--success, #10b981) 0%, #059669 100%);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10001;
+  animation: slideInRight 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.token-toast.error {
+  background: linear-gradient(135deg, var(--error, #ef4444) 0%, #dc2626 100%);
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .token-modal {
+    max-width: calc(100% - 24px);
+    max-height: calc(100vh - 60px);
+  }
+  
+  .token-modal-header {
+    padding: 12px 16px;
+  }
+  
+  .token-modal-header h2 {
+    font-size: 1rem;
+  }
+  
+  .token-modal-body {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .token-modal {
+    max-width: calc(100% - 16px);
+    max-height: calc(100vh - 40px);
+    border-radius: 20px;
+  }
+  
+  .token-modal-header {
+    padding: 10px 14px;
+  }
+  
+  .token-modal-header h2 {
+    font-size: 0.9rem;
+  }
+  
+  .close-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+  }
+  
+  .token-modal-body {
+    padding: 14px;
+  }
+  
+  .preset-amounts button {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+  
+  .custom-amount {
+    width: 60px;
+    padding: 5px;
+    font-size: 0.75rem;
+  }
+  
+  .card-preview {
+    padding: 10px;
+  }
+  
+  .card-number-display {
+    font-size: 0.7rem;
+  }
+  
+  .form-input {
+    padding: 7px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .pay-btn {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+  
+  .token-toast {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+  }
+}
+
+.payment-result-box {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 32px 20px;
+}
+
+.payment-result-icon {
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.payment-result-icon.success {
+  background: rgba(34, 197, 94, 0.14);
+  color: #22c55e;
+}
+
+.payment-result-icon.error {
+  background: rgba(239, 68, 68, 0.14);
+  color: #ef4444;
+}
+
+.payment-result-box h3 {
+  margin: 0;
+  color: #f9fafb;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.payment-result-box p {
+  margin: 0;
+  color: #d1d5db;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.payment-auto-close-text {
+  margin-top: 8px;
+  color: #9ca3af;
+  font-size: 13px;
+}

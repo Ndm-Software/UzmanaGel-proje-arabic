@@ -1,0 +1,684 @@
+/* ExpertMyListingPage.css file code  */
+.expert-my-listings-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.expert-my-listings-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 20px 40px;
+}
+
+.expert-my-listings-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.expert-my-listings-kicker {
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 6px;
+  font-size: 12px;
+}
+
+.expert-my-listings-header h1 {
+  margin: 0;
+  font-size: clamp(24px, 3.2vw, 36px);
+}
+
+.expert-my-listings-header p {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+}
+
+.expert-my-listings-create-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-weight: 700;
+  text-decoration: none;
+  background: #d6b25e;
+  color: #0f172a;
+  border: 1px solid #d6b25e;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.expert-my-listings-create-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(214, 178, 94, 0.35);
+}
+
+.expert-my-listings-content {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.expert-my-listings-empty {
+  min-height: 280px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  gap: 10px;
+  color: var(--text-secondary);
+}
+
+.expert-my-listings-empty i {
+  font-size: 34px;
+}
+
+.expert-my-listings-empty h3 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.expert-my-listings-empty p {
+  margin: 0;
+}
+
+.expert-my-listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.expert-my-listings-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.expert-my-listings-card img {
+  display: block;
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.expert-my-listings-card-body {
+  padding: 14px;
+}
+
+.expert-my-listings-category {
+  display: inline-block;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(214, 178, 94, 0.18);
+  color: #d6b25e;
+}
+
+.expert-my-listings-card-body h3 {
+  margin: 10px 0 6px;
+  font-size: 17px;
+}
+
+.expert-my-listings-card-body p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.expert-my-listings-specialty {
+  margin-top: 6px;
+}
+
+.expert-my-listings-specialty-label {
+  color: #d6b25e;
+  font-weight: 800;
+}
+
+.expert-my-listings-card-footer {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.expert-my-listings-card-footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.expert-my-listings-card-footer-top strong {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.expert-my-listings-card-footer button {
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.expert-my-listings-actions-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+.expert-my-listings-delete-btn {
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ef4444;
+}
+
+.expert-my-listings-delete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.expert-my-listings-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: grid;
+  place-items: center;
+  z-index: 3000;
+  padding: 16px;
+}
+
+.expert-my-listings-modal {
+  width: min(520px, 100%);
+  background: #0b1020;
+  background-image: none;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 18px 18px 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.expert-my-listings-modal h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.expert-my-listings-modal p {
+  margin: 0 0 14px;
+  color: var(--text-secondary);
+}
+
+.expert-my-listings-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.expert-my-listings-modal-actions button {
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--text-primary);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.expert-my-listings-edit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 110px 16px 24px;
+  z-index: 2500;
+  overflow-y: auto;
+}
+
+.expert-my-listings-edit-card {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.expert-my-listings-edit-inner {
+  width: min(720px, 100%);
+  background: var(--card-bg);
+  border-radius: 18px;
+  border: 1px solid var(--card-border);
+  padding: 24px 20px 20px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+  max-height: calc(100vh - 140px);
+  overflow: auto;
+}
+
+.expert-my-listings-edit-inner h2 {
+  margin: 0 0 4px;
+  font-size: 20px;
+}
+
+.expert-my-listings-edit-subtitle {
+  margin: 0 0 18px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.expert-my-listings-edit-data-note {
+  margin: 0 0 14px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(214, 178, 94, 0.1);
+  border: 1px solid rgba(214, 178, 94, 0.45);
+  color: #f3d79a;
+  font-size: 12px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.expert-my-listings-edit-image {
+  border: 1px solid rgba(214, 178, 94, 0.35);
+  background: rgba(214, 178, 94, 0.06);
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.expert-my-listings-edit-image-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.expert-my-listings-edit-image-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.expert-my-listings-edit-image-actions button {
+  border-radius: 999px;
+  padding: 7px 10px;
+  border: 1px solid rgba(214, 178, 94, 0.35);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.expert-my-listings-edit-image-actions button.active {
+  background: #d6b25e;
+  border-color: #d6b25e;
+  color: #0f172a;
+}
+
+.expert-my-listings-edit-image-actions button.danger {
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ef4444;
+}
+
+.expert-my-listings-edit-image-actions button.danger.active {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.7);
+  color: #fecaca;
+}
+
+.expert-my-listings-edit-image input[type="file"] {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.expert-my-listings-edit-image-preview {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(214, 178, 94, 0.25);
+  background: var(--bg-secondary);
+  height: 170px;
+  display: grid;
+  place-items: center;
+}
+
+.expert-my-listings-edit-image-preview img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  display: block;
+}
+
+.expert-my-listings-edit-image-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.expert-my-listings-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.expert-my-listings-edit-inner label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.expert-my-listings-edit-inner input,
+.expert-my-listings-edit-inner textarea,
+.expert-my-listings-edit-inner select {
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  border: 1px solid #d6b25e;
+  padding: 8px 10px;
+  color: var(--text-primary);
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.expert-my-listings-edit-inner select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.expert-my-listings-edit-inner input:focus,
+.expert-my-listings-edit-inner textarea:focus,
+.expert-my-listings-edit-inner select:focus {
+  outline: none;
+  border-color: #d6b25e;
+  box-shadow: 0 0 0 2px rgba(214, 178, 94, 0.28);
+}
+
+.expert-my-listings-edit-inner .field-changed {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.expert-my-listings-edit-inner .field-locked {
+  border-color: rgba(214, 178, 94, 0.7);
+  background: rgba(214, 178, 94, 0.08);
+  color: var(--text-primary);
+}
+
+.expert-my-listings-edit-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.expert-my-listings-edit-actions .secondary,
+.expert-my-listings-edit-actions .primary {
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.expert-my-listings-edit-actions .primary {
+  background: #d6b25e;
+  border-color: #d6b25e;
+  color: #0f172a;
+}
+
+.expert-my-listings-edit-error {
+  margin: 0 0 8px;
+  color: #f87171;
+  font-size: 13px;
+}
+
+.expert-my-listings-edit-info {
+  margin: 0 0 8px;
+  color: #93c5fd;
+  font-size: 13px;
+}
+
+.expert-my-listings-edit-success {
+  margin: 0 0 8px;
+  color: #4ade80;
+  font-size: 13px;
+}
+
+.expert-my-listings-edit-helper {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted, #94a3b8);
+}
+
+.expert-my-listings-edit-helper--error {
+  color: #f87171;
+}
+
+.expert-my-listings-edit-helper--warn {
+  color: #fbbf24;
+}
+
+.expert-my-listings-edit-helper--spacer {
+  visibility: hidden;
+}
+
+@media (max-width: 768px) {
+  .expert-my-listings-edit-inner {
+    padding: 18px 14px 16px;
+  }
+
+  .expert-my-listings-edit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .expert-my-listings-main {
+    padding-top: 100px;
+  }
+
+  .expert-my-listings-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .expert-my-listings-create-btn {
+    justify-content: center;
+  }
+}
+
+.expert-my-listings-content-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.expert-my-listings-tabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.expert-my-listings-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--card-border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: 14px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  min-height: 48px;
+}
+
+.expert-my-listings-tab:hover {
+  border-color: rgba(214, 178, 94, 0.55);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.expert-my-listings-tab.active {
+  background: rgba(214, 178, 94, 0.14);
+  border-color: #d6b25e;
+  color: var(--text-primary);
+  box-shadow: 0 8px 20px rgba(214, 178, 94, 0.12);
+}
+
+.expert-my-listings-tab-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: rgba(214, 178, 94, 0.12);
+  color: #d6b25e;
+  flex-shrink: 0;
+}
+
+.expert-my-listings-tab-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.expert-my-listings-tab small {
+  min-width: 24px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f3d79a;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.expert-my-listings-tab-description {
+  margin: 0 0 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.expert-my-listings-limit-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(214, 178, 94, 0.12);
+  border: 1px solid rgba(214, 178, 94, 0.35);
+  color: #f3d79a;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.expert-my-listings-category {
+  margin-right: 8px;
+}
+
+.expert-my-listings-status-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.expert-my-listings-status-badge.status-active {
+  background: rgba(34, 197, 94, 0.14);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.expert-my-listings-status-badge.status-unpublished {
+  background: rgba(245, 158, 11, 0.14);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.expert-my-listings-status-badge.status-deleted {
+  background: rgba(239, 68, 68, 0.14);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.expert-my-listings-unpublish-btn {
+  border-color: rgba(245, 158, 11, 0.65) !important;
+  color: #fbbf24 !important;
+}
+
+.expert-my-listings-republish-btn {
+  border-color: rgba(34, 197, 94, 0.65) !important;
+  color: #4ade80 !important;
+}
+
+.expert-my-listings-deleted-note {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(239, 68, 68, 0.55);
+  color: #fca5a5;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .expert-my-listings-content-top {
+    flex-direction: column;
+  }
+
+  .expert-my-listings-tabs {
+    width: 100%;
+  }
+
+  .expert-my-listings-tab {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .expert-my-listings-limit-pill {
+    align-self: flex-start;
+  }
+}

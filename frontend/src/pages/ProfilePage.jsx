@@ -366,11 +366,11 @@ const PhoneModal = ({ onClose, onSuccess }) => {
 
   const validatePhone = () => {
     const d = normalize(digits);
-    if (d.length !== 10 || !d.startsWith('5')) {
-      setError('يرجى إدخال رقم صالح بصيغة 5xx xxx xx xx.');
+    if (d.length < 9 || d.length > 15) {
+      setError('يرجى إدخال رقم صالح.');
       return null;
     }
-    return `+90${d}`;
+    return `+963${d}`;
   };
 
   const handleSendOtp = async (e) => {
@@ -416,7 +416,7 @@ const PhoneModal = ({ onClose, onSuccess }) => {
 
     try {
       const result = await confirmPhoneLinking(confirmationResult, otpCode);
-      const finalPhone = result?.user?.phoneNumber || `+90${normalize(digits)}`;
+      const finalPhone = result?.user?.phoneNumber || `+963${normalize(digits)}`;
       setSuccess('تم التحقق من رقم الهاتف وحفظه بنجاح.');
       onSuccess(finalPhone);
       setTimeout(() => {
@@ -470,12 +470,12 @@ const PhoneModal = ({ onClose, onSuccess }) => {
         </div>
 
         <div className="modal-field">
-          <label>الهاتف الجديد (+90)</label>
+          <label>الهاتف الجديد (+963)</label>
           <input
             type="tel"
             value={format(digits)}
             onChange={(e) => setDigits(normalize(e.target.value))}
-            placeholder="5xx xxx xx xx"
+            placeholder="9xx xxx xxx"
             required
             disabled={loading || sendingOtp || step === 'otp'}
           />

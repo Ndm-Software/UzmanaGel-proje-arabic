@@ -24,6 +24,7 @@ import {
   finalizeExpertRegistration,
 // Edress added this to solve JWT issue 7 mayis
    logout,
+   registerWithEmailDirect,
 } from "../firebase/authService";
 import { checkRegistrationEligibility } from "../services/registrationGuardService";
 
@@ -286,13 +287,8 @@ export default function RegisterPage() {
       return false;
     }
 
-    if (cleaned.length !== 10) {
-      setPhoneError("يجب أن يتكون رقم الهاتف من 10 أرقام (5xx xxx xx xx).");
-      return false;
-    }
-
-    if (!cleaned.startsWith("5")) {
-      setPhoneError("يجب أن يبدأ رقم الهاتف بالرقم 5.");
+    if (cleaned.length < 9 || cleaned.length > 15) {
+      setPhoneError("يجب أن يتكون رقم الهاتف من 9 إلى 15 رقمًا.");
       return false;
     }
 
@@ -306,6 +302,7 @@ export default function RegisterPage() {
     if (!/[A-Z]/.test(pass)) errors.push("يجب أن تحتوي على حرف كبير واحد على الأقل");
     if (!/[a-z]/.test(pass)) errors.push("يجب أن تحتوي على حرف صغير واحد على الأقل");
     if (!/[0-9]/.test(pass)) errors.push("يجب أن تحتوي على رقم واحد على الأقل");
+    if (!/[^A-Za-z0-9]/.test(pass)) errors.push("يجب أن تحتوي على رمز خاص واحد على الأقل");
     if (hasConsecutiveChars(pass)) errors.push("يجب ألا تحتوي على أحرف متتالية");
     if (hasRepeatedChars(pass)) errors.push("يجب ألا يتكرر نفس الحرف 3 مرات متتالية");
     return errors;
@@ -401,11 +398,9 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
     setEmailError("");
-    setPhoneError("");
     setEmailTouched(true);
-    setPhoneTouched(true);
 
-    if (!fullName || !email || !phone || !password || !password2) {
+    if (!fullName || !email || !password || !password2) {
       return setError(".يرجى إدخال جميع الحقول المطلوبة");
     }
 
@@ -419,10 +414,6 @@ export default function RegisterPage() {
 
     if (!validateEmail(email)) {
       return setError(".يرجى إدخال عنوان بريد إلكتروني صحيح");
-    }
-
-    if (!validatePhone(phone)) {
-      return setError("يجب أن يكون رقم الهاتف بالصيغة التالية: xxx xx xx xx5 ");
     }
 
     const passwordCheck = validatePassword(password);
@@ -460,37 +451,33 @@ export default function RegisterPage() {
 
       await checkRegistrationEligibility({
         email: cleanEmail,
-        phoneNumber: phone,
+        phoneNumber: "",
       });
 
-      const draft = await registerExpertDraft({
-        userData: {
-          fullName: sanitizeText(fullName),
-          email: cleanEmail,
-          password,
-          phone: `+90${phone}`,
+      await registerWithEmailDirect({
+        name: sanitizeText(fullName),
+        email: cleanEmail,
+        password,
+        phone: "",
+        userType: "CLIENT",
+      });
+
+      await logout();
+
+      navigate("/login", {
+        replace: true,
+        state: {
+          prefillEmail: cleanEmail,
+          loginNoticeType: "registration_success",
         },
       });
-
-      setPendingUserData(draft);
-
-      clearRecaptcha();
-      initRecaptcha("recaptcha-container");
-
-      // 7 mayis modified by Edrees
-      const confirmation = await sendPhoneOtp(draft.phone, {
-        blockExistingPhone: true,
-      });
-
-      setConfirmationResult(confirmation);
-      setShowOtpScreen(true);
     } catch (err) {
       if (err?.field === "email") {
         setEmailError("لا يمكن استخدام هذا البريد الإلكتروني.");
       } else if (err?.field === "phoneNumber") {
         setPhoneError("لا يمكن استخدام هذا الرقم.");
       } else {
-        setError("حدث خطأ أثناء إرسال الرسالة القصيرة. يرجى المحاولة لاحقًا.");
+        setError("حدث خطأ أثناء إنشاء الحساب. يرجى المحاولة لاحقًا.");
       }
     } finally {
       setLoading(false);
@@ -654,12 +641,10 @@ export default function RegisterPage() {
   const isFormValid =
     fullName &&
     email &&
-    phone.length === 10 &&
     password &&
     password2 &&
     !emailError &&
-    !phoneError &&
-    passwordStrength === 100 &&
+    passwordErrors.length === 0 &&
     passwordsMatch &&
     agree;
 
@@ -738,47 +723,6 @@ export default function RegisterPage() {
                     )}
                   </div>
 
-                  <div className="lp-register-form-group">
-                    <label className="lp-register-label">
-                      <i className="fas fa-phone lp-register-icon"></i> رقم الهاتف
-                    </label>
-                    <div
-                      className="lp-register-phone-wrapper"
-                      style={{ display: "flex", alignItems: "center", gap: "8px" }}
-                    >
-                      <span
-                        className="lp-register-phone-prefix"
-                        style={{
-                          padding: "0 10px",
-                          background: "var(--bg-secondary)",
-                          borderRadius: "8px",
-                          border: "1px solid var(--border-color)",
-                          height: "45px",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                      963+
-                      </span>
-                      <input
-                        className="lp-register-input lp-register-phone-input"
-                        type="tel"
-                        placeholder="5xx xxx xx xx"
-                        autoComplete="tel"
-                        required
-                        value={formatPhone(phone)}
-                        onChange={handlePhoneChange}
-                        onBlur={handlePhoneBlur}
-                        disabled={loading}
-                        style={{ flex: 1 }}
-                      />
-                    </div>
-                    {phoneError && phoneTouched && (
-                      <small style={{ color: "#ef4444", display: "block", marginTop: "4px" }}>
-                        <i className="fas fa-times-circle"></i> {sanitizeText(phoneError)}
-                      </small>
-                    )}
-                  </div>
 
                   <div className="lp-register-form-group">
                     <label className="lp-register-label">

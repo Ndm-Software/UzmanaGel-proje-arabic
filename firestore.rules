@@ -28,6 +28,7 @@ service cloud.firestore {
     // Not: Projede mevcutta rules dosyası yoktu; uygulamanın çalışmasını bozmamak için
     // şimdilik "açık" bırakıldı. İstersen bunları tek tek sıkılaştırırız.
     match /appointments/{docId} { allow read, write: if true; }
+    match /admin_settings/{docId} { allow read: if true; allow write: if false; }
     match /chat_moderation_logs/{docId} { allow read, write: if true; }
     match /contact_replies/{docId} { allow read, write: if true; }
     match /contacts/{docId} { allow read, write: if true; }
@@ -40,8 +41,12 @@ service cloud.firestore {
     // İlan bildirimleri yalnızca backend (Admin SDK) ile yazılır; istemci doğrudan erişemez.
     match /listing_reports/{docId} { allow read, write: if false; }
     match /user_favorites/{docId} { allow read, write: if true; }
-    match /users/{docId} { allow read, write: if true; }
+    match /users/{docId}/{document=**} { allow read, write: if true; }
     match /wallet_history/{docId} { allow read, write: if true; }
+    match /deleted_reviews/{docId} { allow read, write: if true; }
+    match /address_change_requests/{docId} { allow read, write: if true; }
+    match /wallet_transactions/{docId} { allow read, write: if true; }
+    match /payments/{docId} { allow read, write: if true; }
   }
 }
 

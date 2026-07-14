@@ -38,10 +38,19 @@ export const storage = getStorage(app);
 
 // Sadece local development için: Firebase ID Token almak amacıyla
 if (import.meta.env.DEV) {
-  window.auth = auth;
-}
+  console.log("WEB FIREBASE RUNTIME CONFIG:", {
+    projectId: app.options.projectId,
+    authDomain: app.options.authDomain,
+    storageBucket: app.options.storageBucket,
+    messagingSenderId: app.options.messagingSenderId,
+    appId: app.options.appId,
+    apiKeyPrefix: app.options.apiKey?.slice(0, 12),
+  });
 
-if (import.meta.env.DEV) {
-  console.log("WEB FIREBASE PROJECT:", webFirebaseConfig.projectId);
-  console.log("WEB FIREBASE AUTH DOMAIN:", webFirebaseConfig.authDomain);
+  console.log("MOBILE FIREBASE RUNTIME CONFIG:", {
+    projectId: mobileApp.options.projectId,
+    authDomain: mobileApp.options.authDomain,
+    appId: mobileApp.options.appId,
+    apiKeyPrefix: mobileApp.options.apiKey?.slice(0, 12),
+  });
 }

@@ -244,27 +244,6 @@ export default function ListingDetailPage() {
       return;
     }
 
-    try {
-    const currentUser = auth.currentUser;
-    if (currentUser) {
-      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      if (userDoc.exists()) {
-        const userType = userDoc.data()?.userType;
-        
-        if (userType === "PENDING_PROVIDER") {
-          showToast(
-            "طلب انضمامك كخبير قيد المراجعة حالياً. ستتمكن من إرسال الرسائل بعد الموافقة.",
-            "error"
-          );
-          return;
-        }
-      }
-    }
-  } catch (error) {
-    if (isDevelopment) console.error("Kullanıcı tipi kontrol hatası:", error);
-    showToast("يرجى المحاولة مرة أخرى لاحقاً.", "error");
-    return;
-  }
 
     try {
       const providerUid = String(listing?.providerId || "").trim();

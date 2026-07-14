@@ -1,4 +1,4 @@
-﻿// frontend/src/components/ExpertProtectedRoute.jsx
+// frontend/src/components/ExpertProtectedRoute.jsx
 // Edrees added this file on Wednesday 29/04/2026
 
 import React, { useEffect, useState } from "react";
@@ -54,14 +54,6 @@ const ExpertProtectedRoute = ({ children }) => {
           : {};
 
         const userType = String(userData.userType || "").trim().toUpperCase();
-
-        if (userType === "PENDING_PROVIDER") {
-          finishCheck({
-            isAllowed: false,
-            nextRedirect: "/pending-approval",
-          });
-          return;
-        }
 
         if (userType !== "PROVIDER") {
           finishCheck({

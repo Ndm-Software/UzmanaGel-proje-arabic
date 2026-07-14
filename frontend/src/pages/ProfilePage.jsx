@@ -196,6 +196,47 @@ function mapFirebaseAuthError(error) {
   return 'تعذر تحديث كلمة المرور. يرجى المحاولة لاحقاً.';
 }
 
+function mapPhoneAuthError(error) {
+  const code = error?.code;
+
+  if (code === 'auth/operation-not-allowed') {
+    return (
+      'لا يسمح مشروع Firebase حالياً بإرسال SMS إلى الدولة المحددة. ' +
+      'تحقق من تفعيل Phone Authentication ومن إضافة سوريا وتركيا إلى SMS region policy.'
+    );
+  }
+
+  if (code === 'auth/invalid-phone-number') {
+    return 'رقم الهاتف غير صالح. استخدم رقماً سورياً مثل 933 123 456.';
+  }
+
+  if (code === 'auth/too-many-requests') {
+    return 'تم إجراء محاولات كثيرة. يرجى الانتظار ثم المحاولة مجدداً.';
+  }
+
+  if (code === 'auth/quota-exceeded') {
+    return 'تم تجاوز حصة رسائل SMS أو توجد مشكلة في حساب الفوترة.';
+  }
+
+  if (code === 'auth/captcha-check-failed') {
+    return 'فشل التحقق الأمني reCAPTCHA. أعد تحميل الصفحة ثم حاول مجدداً.';
+  }
+
+  if (code === 'auth/network-request-failed') {
+    return 'تعذر الاتصال بالخادم. تحقق من اتصال الإنترنت.';
+  }
+
+  if (code === 'auth/invalid-verification-code') {
+    return 'رمز التحقق غير صحيح.';
+  }
+
+  if (code === 'auth/code-expired') {
+    return 'انتهت صلاحية رمز التحقق. يرجى إرسال رمز جديد.';
+  }
+
+  return 'تعذر إكمال التحقق عبر الهاتف. يرجى المحاولة لاحقاً.';
+}
+
 const Modal = ({ title, onClose, children }) => (
   <div className="modal-overlay" onClick={onClose}>
     <div className="modal-box" onClick={(e) => e.stopPropagation()}>
@@ -317,6 +358,7 @@ const NameModal = ({ user, currentName, onClose, onSuccess }) => {
 };
 
 const PhoneModal = ({ onClose, onSuccess }) => {
+  const [country, setCountry] = useState('SY');
   const [digits, setDigits] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [step, setStep] = useState('phone');
@@ -326,37 +368,128 @@ const PhoneModal = ({ onClose, onSuccess }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const normalize = (v) => {
-    const d = String(v || '').replace(/\D/g, '');
-    let core = d;
-    if (core.length === 11 && core.startsWith('0')) core = core.slice(1);
-    if (core.length === 12 && core.startsWith('90')) core = core.slice(2);
-    return core.slice(0, 10);
+  const countryConfig = {
+    SY: {
+      name: 'سوريا',
+      callingCode: '+963',
+      placeholder: '933 123 456',
+      example: '933 123 456',
+      maxDigits: 9,
+    },
+    TR: {
+      name: 'تركيا',
+      callingCode: '+90',
+      placeholder: '539 123 12 12',
+      example: '539 123 12 12',
+      maxDigits: 10,
+    },
   };
 
-  const format = (d) => {
-    const c = String(d || '').replace(/\D/g, '').slice(0, 10);
-    let f = '';
-    if (c.slice(0, 3)) f += c.slice(0, 3);
-    if (c.slice(3, 6)) f += ' ' + c.slice(3, 6);
-    if (c.slice(6, 8)) f += ' ' + c.slice(6, 8);
-    if (c.slice(8, 10)) f += ' ' + c.slice(8, 10);
-    return f;
-  };
+  const selectedCountry = countryConfig[country];
 
-  useEffect(() => {
-    if (step !== 'otp') return;
+  const normalizePhoneInput = (value, selected = country) => {
+    let phone = String(value || '').replace(/\D/g, '');
 
-    const timer = setTimeout(() => {
-      try {
-        initRecaptcha('profile-phone-recaptcha', { size: 'invisible' });
-      } catch {
-        /* ignore */
+    if (selected === 'SY') {
+      // Supported inputs:
+      // +963933123456
+      // 00963933123456
+      // 0933123456
+      // 933123456
+      if (phone.startsWith('00963')) {
+        phone = phone.slice(5);
+      } else if (phone.startsWith('963')) {
+        phone = phone.slice(3);
       }
-    }, 0);
 
-    return () => clearTimeout(timer);
-  }, [step]);
+      if (phone.startsWith('0')) {
+        phone = phone.slice(1);
+      }
+
+      return phone.slice(0, 9);
+    }
+
+    // Supported Turkish inputs:
+    // +905391231212
+    // 00905391231212
+    // 05391231212
+    // 5391231212
+    if (phone.startsWith('0090')) {
+      phone = phone.slice(4);
+    } else if (phone.startsWith('90')) {
+      phone = phone.slice(2);
+    }
+
+    if (phone.startsWith('0')) {
+      phone = phone.slice(1);
+    }
+
+    return phone.slice(0, 10);
+  };
+
+  const formatPhoneInput = (value, selected = country) => {
+    const phone = normalizePhoneInput(value, selected);
+
+    if (selected === 'SY') {
+      return [
+        phone.slice(0, 3),
+        phone.slice(3, 6),
+        phone.slice(6, 9),
+      ]
+        .filter(Boolean)
+        .join(' ');
+    }
+
+    return [
+      phone.slice(0, 3),
+      phone.slice(3, 6),
+      phone.slice(6, 8),
+      phone.slice(8, 10),
+    ]
+      .filter(Boolean)
+      .join(' ');
+  };
+
+  const buildE164Phone = () => {
+    const phone = normalizePhoneInput(digits);
+
+    if (country === 'SY') {
+      if (!/^9\d{8}$/.test(phone)) {
+        setError(
+          'يرجى إدخال رقم جوال سوري صحيح مثل 933 123 456.'
+        );
+        return null;
+      }
+
+      return `+963${phone}`;
+    }
+
+    if (!/^5\d{9}$/.test(phone)) {
+      setError(
+        'يرجى إدخال رقم جوال تركي صحيح مثل 539 123 12 12.'
+      );
+      return null;
+    }
+
+    return `+90${phone}`;
+  };
+
+  const resetVerificationState = () => {
+    setOtpCode('');
+    setConfirmationResult(null);
+    setStep('phone');
+    setError('');
+    setSuccess('');
+    clearRecaptcha();
+  };
+
+  const handleCountryChange = (event) => {
+    const nextCountry = event.target.value;
+
+    setCountry(nextCountry);
+    setDigits('');
+    resetVerificationState();
+  };
 
   useEffect(() => {
     return () => {
@@ -364,68 +497,114 @@ const PhoneModal = ({ onClose, onSuccess }) => {
     };
   }, []);
 
-  const validatePhone = () => {
-    const d = normalize(digits);
-    if (d.length < 9 || d.length > 15) {
-      setError('يرجى إدخال رقم صالح.');
-      return null;
-    }
-    return `+963${d}`;
+  const prepareRecaptcha = () => {
+    clearRecaptcha();
+
+    return initRecaptcha(
+      'profile-phone-recaptcha',
+      { size: 'invisible' }
+    );
   };
 
-  const handleSendOtp = async (e) => {
-    e.preventDefault();
+  const handleSendOtp = async (event) => {
+    event.preventDefault();
+
     setError('');
     setSuccess('');
 
-    const phoneNumber = validatePhone();
+    const phoneNumber = buildE164Phone();
     if (!phoneNumber) return;
 
     setSendingOtp(true);
 
     try {
-      initRecaptcha('profile-phone-recaptcha', { size: 'invisible' });
+      prepareRecaptcha();
+
+      if (isDevelopment) {
+        console.log('PHONE OTP DEBUG:', {
+          country,
+          phoneNumber,
+          projectId: auth.app.options.projectId,
+          authDomain: auth.app.options.authDomain,
+        });
+      }
+
+      console.log('PHONE SENT TO FIREBASE:', phoneNumber);
+
       const result = await startPhoneLinking(phoneNumber);
+
       setConfirmationResult(result);
       setStep('otp');
-      setSuccess('تم إرسال رمز SMS. يرجى التحقق من هاتفك.');
+      setSuccess(
+        `تم إرسال رمز التحقق إلى الرقم ${phoneNumber}.`
+      );
     } catch (err) {
-      if (isDevelopment) console.error("Kod gönderme hatası:", err.message);
-      setError('تعذر إرسال الرمز. يرجى المحاولة لاحقاً.');
+      if (isDevelopment) {
+        console.error('Kod gönderme hatası:', err);
+        console.error('Firebase error code:', err?.code);
+        console.error('Firebase error message:', err?.message);
+      }
+
+      setError(mapPhoneAuthError(err));
     } finally {
       setSendingOtp(false);
     }
   };
 
-  const handleVerifyAndSave = async (e) => {
-    e.preventDefault();
+  const handleVerifyAndSave = async (event) => {
+    event.preventDefault();
+
     setError('');
     setSuccess('');
 
     if (!confirmationResult) {
-      setError('لم يتم العثور على جلسة التحقق. يرجى إرسال الرمز مرة أخرى.');
+      setError(
+        'لم يتم العثور على جلسة التحقق. يرجى إرسال الرمز مرة أخرى.'
+      );
       return;
     }
 
-    if (!String(otpCode).trim() || String(otpCode).trim().length < 6) {
-      setError('يرجى إدخال رمز التحقق المكون من 6 أرقام.');
+    const cleanCode = String(otpCode || '').trim();
+
+    if (!/^\d{6}$/.test(cleanCode)) {
+      setError(
+        'يرجى إدخال رمز التحقق المكون من 6 أرقام.'
+      );
       return;
     }
 
     setLoading(true);
 
     try {
-      const result = await confirmPhoneLinking(confirmationResult, otpCode);
-      const finalPhone = result?.user?.phoneNumber || `+963${normalize(digits)}`;
-      setSuccess('تم التحقق من رقم الهاتف وحفظه بنجاح.');
+      const result = await confirmPhoneLinking(
+        confirmationResult,
+        cleanCode
+      );
+
+      const fallbackPhone = buildE164Phone();
+
+      const finalPhone =
+        result?.user?.phoneNumber ||
+        fallbackPhone;
+
+      setSuccess(
+        'تم التحقق من رقم الهاتف وحفظه بنجاح.'
+      );
+
       onSuccess(finalPhone);
+
       setTimeout(() => {
         clearRecaptcha();
         onClose();
       }, 1200);
     } catch (err) {
-      if (isDevelopment) console.error("Doğrulama hatası:", err.message);
-      setError('فشل التحقق. يرجى المحاولة لاحقاً.');
+      if (isDevelopment) {
+        console.error('Doğrulama hatası:', err);
+        console.error('Firebase error code:', err?.code);
+        console.error('Firebase error message:', err?.message);
+      }
+
+      setError(mapPhoneAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -435,71 +614,199 @@ const PhoneModal = ({ onClose, onSuccess }) => {
     setError('');
     setSuccess('');
 
-    const phoneNumber = validatePhone();
+    const phoneNumber = buildE164Phone();
     if (!phoneNumber) return;
 
     setSendingOtp(true);
 
     try {
-      clearRecaptcha();
-      initRecaptcha('profile-phone-recaptcha', { size: 'invisible' });
+      prepareRecaptcha();
+
+      if (isDevelopment) {
+        console.log('PHONE OTP RESEND DEBUG:', {
+          country,
+          phoneNumber,
+          projectId: auth.app.options.projectId,
+        });
+      }
+
       const result = await startPhoneLinking(phoneNumber);
+
       setConfirmationResult(result);
-      setSuccess('تم إرسال رمز SMS جديد.');
+      setSuccess('تم إرسال رمز تحقق جديد.');
     } catch (err) {
-      if (isDevelopment) console.error("Kod gönderme hatası:", err.message);
-      setError('تعذر إرسال الرمز مرة أخرى. يرجى المحاولة لاحقاً.');
+      if (isDevelopment) {
+        console.error('Kod gönderme hatası:', err);
+        console.error('Firebase error code:', err?.code);
+        console.error('Firebase error message:', err?.message);
+      }
+
+      setError(mapPhoneAuthError(err));
     } finally {
       setSendingOtp(false);
     }
   };
 
   return (
-    <Modal title="تحديث رقم الهاتف" onClose={onClose}>
-      <form onSubmit={step === 'phone' ? handleSendOtp : handleVerifyAndSave} className="modal-form">
+    <Modal
+      title="تحديث رقم الهاتف"
+      onClose={onClose}
+    >
+      <form
+        onSubmit={
+          step === 'phone'
+            ? handleSendOtp
+            : handleVerifyAndSave
+        }
+        className="modal-form"
+      >
         <div className="phone-verify-shell">
           <div className="phone-verify-step">
-            <div className={`phone-step-badge ${step === 'phone' ? 'active' : 'done'}`}>1</div>
+            <div
+              className={`phone-step-badge ${
+                step === 'phone' ? 'active' : 'done'
+              }`}
+            >
+              1
+            </div>
             <span>الرقم</span>
           </div>
+
           <div className="phone-step-line"></div>
+
           <div className="phone-verify-step">
-            <div className={`phone-step-badge ${step === 'otp' ? 'active' : ''}`}>2</div>
+            <div
+              className={`phone-step-badge ${
+                step === 'otp' ? 'active' : ''
+              }`}
+            >
+              2
+            </div>
             <span>OTP</span>
           </div>
         </div>
 
         <div className="modal-field">
-          <label>الهاتف الجديد (+963)</label>
-          <input
-            type="tel"
-            value={format(digits)}
-            onChange={(e) => setDigits(normalize(e.target.value))}
-            placeholder="9xx xxx xxx"
-            required
-            disabled={loading || sendingOtp || step === 'otp'}
-          />
+          <label htmlFor="phone-country">
+            الدولة
+          </label>
+
+          <select
+            id="phone-country"
+            value={country}
+            onChange={handleCountryChange}
+            disabled={
+              loading ||
+              sendingOtp ||
+              step === 'otp'
+            }
+          >
+            <option value="SY">
+              سوريا (+963)
+            </option>
+
+            <option value="TR">
+              تركيا (+90)
+            </option>
+          </select>
+        </div>
+
+        <div className="modal-field">
+          <label htmlFor="new-phone-number">
+            الهاتف الجديد ({selectedCountry.callingCode})
+          </label>
+
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center',
+            }}
+          >
+            <span
+              dir="ltr"
+              style={{
+                padding: '12px',
+                border: '1px solid var(--card-border)',
+                borderRadius: '8px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {selectedCountry.callingCode}
+            </span>
+
+            <input
+              id="new-phone-number"
+              type="tel"
+              inputMode="numeric"
+              dir="ltr"
+              value={formatPhoneInput(digits)}
+              onChange={(event) =>
+                setDigits(
+                  normalizePhoneInput(event.target.value)
+                )
+              }
+              placeholder={selectedCountry.placeholder}
+              required
+              disabled={
+                loading ||
+                sendingOtp ||
+                step === 'otp'
+              }
+              autoComplete="tel"
+              style={{ flex: 1 }}
+            />
+          </div>
+
+          <small className="settings-helper-text">
+            مثال: {selectedCountry.callingCode}{' '}
+            {selectedCountry.example}
+          </small>
         </div>
 
         {step === 'otp' && (
           <div className="modal-field">
-            <label>رمز OTP</label>
+            <label htmlFor="phone-otp-code">
+              رمز OTP
+            </label>
+
             <input
+              id="phone-otp-code"
               type="text"
               inputMode="numeric"
+              dir="ltr"
               value={otpCode}
-              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              onChange={(event) =>
+                setOtpCode(
+                  event.target.value
+                    .replace(/\D/g, '')
+                    .slice(0, 6)
+                )
+              }
               placeholder="رمز من 6 أرقام"
               required
               disabled={loading}
+              autoComplete="one-time-code"
             />
           </div>
         )}
 
-        <div id="profile-phone-recaptcha" className="profile-phone-recaptcha"></div>
+        <div
+          id="profile-phone-recaptcha"
+          className="profile-phone-recaptcha"
+        ></div>
 
-        {error && <p className="modal-error">{sanitizeText(error)}</p>}
-        {success && <p className="modal-success">{sanitizeText(success)}</p>}
+        {error && (
+          <p className="modal-error">
+            {sanitizeText(error)}
+          </p>
+        )}
+
+        {success && (
+          <p className="modal-success">
+            {sanitizeText(success)}
+          </p>
+        )}
 
         {step === 'otp' && (
           <button
@@ -509,7 +816,10 @@ const PhoneModal = ({ onClose, onSuccess }) => {
             disabled={sendingOtp || loading}
           >
             <i className="fas fa-rotate-right"></i>
-            {sendingOtp ? 'جاري إرسال الرمز...' : 'إرسال الرمز مرة أخرى'}
+
+            {sendingOtp
+              ? 'جاري إرسال الرمز...'
+              : 'إرسال الرمز مرة أخرى'}
           </button>
         )}
 
@@ -524,12 +834,24 @@ const PhoneModal = ({ onClose, onSuccess }) => {
           </button>
 
           {step === 'phone' ? (
-            <button type="submit" className="settings-primary-button" disabled={sendingOtp || loading}>
-              {sendingOtp ? 'جاري إرسال الرمز...' : 'إرسال الرمز'}
+            <button
+              type="submit"
+              className="settings-primary-button"
+              disabled={sendingOtp || loading}
+            >
+              {sendingOtp
+                ? 'جاري إرسال الرمز...'
+                : 'إرسال الرمز'}
             </button>
           ) : (
-            <button type="submit" className="settings-primary-button" disabled={loading}>
-              {loading ? 'جاري التحقق...' : 'تحقق واحفظ'}
+            <button
+              type="submit"
+              className="settings-primary-button"
+              disabled={loading}
+            >
+              {loading
+                ? 'جاري التحقق...'
+                : 'تحقق واحفظ'}
             </button>
           )}
         </div>
@@ -2076,3 +2398,63 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+
+/*
+===============================================================================
+OLD TURKISH PHONE CODE — KEPT FOR REFERENCE ONLY
+Do not reactivate this block in the Syrian version.
+===============================================================================
+
+const normalize = (v) => {
+  const d = String(v || '').replace(/\D/g, '');
+  let core = d;
+
+  if (core.length === 11 && core.startsWith('0')) {
+    core = core.slice(1);
+  }
+
+  if (core.length === 12 && core.startsWith('90')) {
+    core = core.slice(2);
+  }
+
+  return core.slice(0, 10);
+};
+
+const format = (d) => {
+  const c = String(d || '').replace(/\D/g, '').slice(0, 10);
+  let f = '';
+
+  if (c.slice(0, 3)) f += c.slice(0, 3);
+  if (c.slice(3, 6)) f += ' ' + c.slice(3, 6);
+  if (c.slice(6, 8)) f += ' ' + c.slice(6, 8);
+  if (c.slice(8, 10)) f += ' ' + c.slice(8, 10);
+
+  return f;
+};
+
+const validatePhone = () => {
+  const d = normalize(digits);
+
+  if (d.length !== 10 || !d.startsWith('5')) {
+    setError('يرجى إدخال رقم صالح بصيغة 5xx xxx xx xx.');
+    return null;
+  }
+
+  return `+90${d}`;
+};
+
+// Old final fallback:
+const finalPhone =
+  result?.user?.phoneNumber || `+90${normalize(digits)}`;
+
+// Old input:
+// <label>الهاتف الجديد (+90)</label>
+// value={format(digits)}
+// onChange={(e) => setDigits(normalize(e.target.value))}
+// placeholder="5xx xxx xx xx"
+
+===============================================================================
+END OF OLD TURKISH PHONE CODE
+===============================================================================
+*/
+

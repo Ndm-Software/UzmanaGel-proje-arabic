@@ -416,9 +416,7 @@ export default function LoginPage() {
       if (userData.userType === "PENDING_PROVIDER") {
         return {
           allowed: true,
-          redirect: userData.profileCompleted
-            ? "/ilanlar"
-            : "/expert-complete-profile",
+          redirect: "/expert-complete-profile",
           message: "",
         };
       }

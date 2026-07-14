@@ -1,3 +1,5 @@
+// ExpertCompleteProfilePage.jsx file code
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -138,17 +140,10 @@ const ExpertCompleteProfilePage = () => {
               taxNumber: data.taxNumber || ''
             }));
 
-            // Eğer kullanıcı zaten profilini tamamlamışsa ve PENDING_PROVIDER ise
-            if (data.profileCompleted === true && data.userType === 'PENDING_PROVIDER') {
-              if (isDevelopment) console.log("Profil zaten tamamlanmış, onay bekleniyor. Ana sayfaya yönlendiriliyor...");
-              navigate('/');
-              return;
-            }
-            
-            // Eğer kullanıcı zaten PROVIDER ise (onaylanmış uzman)
-            if (data.userType === 'PROVIDER') {
-              if (isDevelopment) console.log("Kullanıcı zaten onaylı uzman. İlanlar sayfasına yönlendiriliyor...");
-              navigate('/ilanlar');
+            // If profile is already completed and user is PROVIDER, redirect to listings
+            if (data.profileCompleted === true && data.userType === 'PROVIDER') {
+              if (isDevelopment) console.log("User is already an approved provider. Redirecting to listings...");
+              navigate('/ilanlar', { replace: true });
               return;
             }
           }
@@ -605,9 +600,15 @@ const ExpertCompleteProfilePage = () => {
         rejectionReason = 'Kimlik belgesi geçersiz';
       }*/
 
-      // Rejection control for certificates
-      if (mergedResults.certificates && mergedResults.certificates.length > 0) {
-        setError("يرجى تحميل مستندات صالحة والمحاولة مجدداً.");
+      // Reject submission only when a certificate was explicitly marked as rejected
+      const hasRejectedCertificate = mergedResults.certificates?.some(
+        certificate => certificate.verdict === 'rejected'
+      );
+
+      if (hasRejectedCertificate) {
+        setError("يوجد مستند غير صالح. يرجى استبداله والمحاولة مجدداً.");
+        setAnalyzing(false);
+        setShowAnalysisModal(false);
         return;
       }
 
@@ -685,7 +686,9 @@ const ExpertCompleteProfilePage = () => {
 
       setLoading(false);
       setSuccess(true);
-      setTimeout(() => navigate('/ilanlar'), 3000);
+      setTimeout(() => {
+        navigate('/ilanlar', { replace: true });
+      }, 1500);
 
     } catch (err) {
       if (isDevelopment) console.error("Submit error:", err.message);
@@ -896,9 +899,9 @@ const ExpertCompleteProfilePage = () => {
               <div className="success-icon">
                 <i className="fas fa-check-circle"></i>
               </div>
-              <h3>اكتمل الملف الشخصي!</h3>
-              <p>تم إنشاء ملفك الشخصي بنجاح. بعد موافقة المسؤول، ستتمكن من تسجيل الدخول كخبير.</p>
-              <p className="info-text">سيتم إعلامك عبر رسالة SMS عند اكتمال عملية الموافقة.</p>
+              <h3>اكتمل ملف الخبير بنجاح!</h3>
+              <p>تم إنشاء وتفعيل حسابك كخبير بنجاح.</p>
+              <p className="info-text">يمكنك الآن إنشاء الإعلانات وإدارة خدماتك مباشرة.</p>
               <p className="redirect-text">جاري إعادة توجيهك إلى صفحة الإعلانات...</p>
             </div>
           </div>
@@ -1286,3 +1289,105 @@ REMOVED BLOCKS FOR SYRIA LAUNCH:
 3. Tax plate ("taxPlateFile") upload card and validation.
 4. Hourly rate ("saatlik ücret") option (was already not present in Arabic).
 */
+
+/*
+===============================================================================
+ARCHIVED EXPERT APPROVAL FLOW — ExpertCompleteProfilePage.jsx
+Removed because profile completion now activates the expert immediately.
+The Arabic Firebase project sets userType: "PROVIDER", isActive: true, and
+approvalStatus: "APPROVED" atomically when the profile form is submitted.
+No administrator review step exists. Code below is preserved for reference only.
+===============================================================================
+
+// ─── 1. Old redirect: PENDING_PROVIDER + profileCompleted → navigate('/') ───
+//
+// Located in the auth useEffect, inside the onAuthStateChanged callback.
+// This redirected a returning user who had already completed the form (and was
+// waiting for admin approval) away from the profile page to the home page.
+//
+// Original logic (was inside the if (data) block):
+//
+//   // Eğer kullanıcı zaten profilini tamamlamışsa ve PENDING_PROVIDER ise
+//   if (data.profileCompleted === true && data.userType === 'PENDING_PROVIDER') {
+//     if (isDevelopment) console.log("Profil zaten tamamlanmış, onay bekleniyor. Ana sayfaya yönlendiriliyor...");
+//     navigate('/');
+//     return;
+//   }
+//
+//   // Eğer kullanıcı zaten PROVIDER ise (onaylanmış uzman)
+//   if (data.userType === 'PROVIDER') {
+//     if (isDevelopment) console.log("Kullanıcı zaten onaylı uzman. İlanlar sayfasına yönlendiriliyor...");
+//     navigate('/ilanlar');
+//     return;
+//   }
+//
+// Replaced by a single, simpler check:
+//   if (data.profileCompleted === true && data.userType === 'PROVIDER') {
+//     navigate('/ilanlar', { replace: true });
+//     return;
+//   }
+
+// ─── 2. Old certificate rejection check (the bug) ───
+//
+// This code incorrectly rejected the form submission any time at least one
+// certificate's OCR data existed in mergedResults, regardless of whether the
+// certificate was actually flagged as invalid. This blocked experts whose
+// documents were successfully scanned.
+//
+// Original flawed check:
+//   // Rejection control for certificates
+//   if (mergedResults.certificates && mergedResults.certificates.length > 0) {
+//     setError("يرجى تحميل مستندات صالحة والمحاولة مجدداً.");
+//     return;
+//   }
+//
+// Fixed replacement (only rejects when verdict === 'rejected'):
+//   const hasRejectedCertificate = mergedResults.certificates?.some(
+//     certificate => certificate.verdict === 'rejected'
+//   );
+//   if (hasRejectedCertificate) {
+//     setError("يوجد مستند غير صالح. يرجى استبداله والمحاولة مجدداً.");
+//     setAnalyzing(false);
+//     setShowAnalysisModal(false);
+//     return;
+//   }
+
+// ─── 3. Old success screen text mentioning admin approval and SMS ───
+//
+// The old success card told the expert to wait for an administrator to review
+// their profile and that an SMS would be sent upon approval.
+//
+// Old JSX (was the entire content of the success-message div):
+//
+//   <h3>اكتمل الملف الشخصي!</h3>
+//   <p>
+//     تم إنشاء ملفك الشخصي بنجاح. بعد موافقة المسؤول، ستتمكن من
+//     تسجيل الدخول كخبير.
+//   </p>
+//   <p className="info-text">
+//     سيتم إعلامك عبر رسالة SMS عند اكتمال عملية الموافقة.
+//   </p>
+//   <p className="redirect-text">جاري إعادة توجيهك إلى صفحة الإعلانات...</p>
+//
+// Replaced by text that confirms immediate activation:
+//   <h3>اكتمل ملف الخبير بنجاح!</h3>
+//   <p>تم إنشاء وتفعيل حسابك كخبير بنجاح.</p>
+//   <p className="info-text">يمكنك الآن إنشاء الإعلانات وإدارة خدماتك مباشرة.</p>
+//   <p className="redirect-text">جاري إعادة توجيهك إلى صفحة الإعلانات...</p>
+
+// ─── 4. Old 3-second redirect delay (no replace flag) ───
+//
+// The old onSubmit success block navigated after 3 seconds without
+// history.replace, which allowed the user to navigate back to the completed
+// form. Replaced with 1500 ms and replace: true.
+//
+//   setTimeout(() => navigate('/ilanlar'), 3000);
+//
+// Replacement:
+//   setTimeout(() => { navigate('/ilanlar', { replace: true }); }, 1500);
+
+===============================================================================
+END ARCHIVED EXPERT APPROVAL FLOW
+===============================================================================
+*/
+

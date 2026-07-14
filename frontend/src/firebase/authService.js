@@ -706,7 +706,11 @@ export async function completeExpertProfile({ uid, profileData }) {
 
     await updateDoc(userRef, {
       profileCompleted: true,
-      userType: "PENDING_PROVIDER",
+      userType: "PROVIDER",
+      isActive: true,
+      approvalStatus: "APPROVED",
+      approvalMethod: "AUTO",
+      approvedAt: nowIso(),
       mainAddressId: addressId,
       updatedAt: nowIso(),
       lastLoginAt: nowIso(),
@@ -752,7 +756,11 @@ export async function completeExpertProfile({ uid, profileData }) {
       specialties: normalizedSpecialties,
       specialtyNames,
       workingHours: profileData.workingHours || {},
-      isActive: false,
+      isActive: true,
+      profileCompleted: true,
+      approvalStatus: "APPROVED",
+      approvalMethod: "AUTO",
+      approvedAt: nowIso(),
       rating: 0,
       reviewCount: 0,
 
@@ -766,7 +774,7 @@ export async function completeExpertProfile({ uid, profileData }) {
       updatedAt: nowIso(),
     });
 
-    return { success: true, message: "Profil tamamlandı! Admin onayı bekleniyor." };
+    return { success: true, message: "تم إنشاء وتفعيل ملف الخبير بنجاح." };
   } catch (error) {
     if (isDevelopment) {
       console.error("Profil tamamlama hatası:", error);
@@ -1311,7 +1319,7 @@ export function initRecaptcha(
     el.innerHTML = "";
   }
 
-  auth.languageCode = "tr";
+  auth.languageCode = "ar";
 
   const params = {
     size,
@@ -1862,3 +1870,69 @@ export async function assertRegistrationIdentityAvailable({ email, phone }) {
     phone: cleanPhone,
   };
 }
+
+/*
+===============================================================================
+ARCHIVED MANUAL PROVIDER APPROVAL FLOW — authService.js (completeExpertProfile)
+The Arabic Firebase project now activates completed experts automatically.
+When completeExpertProfile() runs successfully, the user is immediately a
+full PROVIDER with isActive: true. No administrator action is required.
+Code below is preserved for reference only and is never executed.
+===============================================================================
+
+// ─── 1. Old users/{uid} update (manual approval state) ───
+//
+// The original updateDoc call wrote PENDING_PROVIDER as the userType, keeping
+// the expert in a limbo state until an administrator promoted them in the
+// admin dashboard. isActive was not set to true here.
+//
+//   await updateDoc(userRef, {
+//     profileCompleted: true,
+//     userType: "PENDING_PROVIDER",   // ← changed to "PROVIDER"
+//     mainAddressId: addressId,
+//     updatedAt: nowIso(),
+//     lastLoginAt: nowIso(),
+//   });
+//
+// Replacement (auto-approval):
+//   await updateDoc(userRef, {
+//     profileCompleted: true,
+//     userType: "PROVIDER",
+//     isActive: true,
+//     approvalStatus: "APPROVED",
+//     approvalMethod: "AUTO",
+//     approvedAt: nowIso(),
+//     mainAddressId: addressId,
+//     updatedAt: nowIso(),
+//     lastLoginAt: nowIso(),
+//   });
+
+// ─── 2. Old service_providers/{uid} isActive field ───
+//
+// The service_providers document was created with isActive: false so that
+// the ExpertProtectedRoute and all provider guards would block the user from
+// accessing expert-only pages until an administrator flipped the flag.
+//
+//   isActive: false,   // ← changed to true
+//
+// Replacement (auto-approval):
+//   isActive: true,
+//   profileCompleted: true,
+//   approvalStatus: "APPROVED",
+//   approvalMethod: "AUTO",
+//   approvedAt: nowIso(),
+
+// ─── 3. Old return message ───
+//
+// The old success message was a Turkish string that explicitly told the caller
+// admin approval was pending. The frontend showed this in a waiting-screen UI.
+//
+//   return { success: true, message: "Profil tamamlandı! Admin onayı bekleniyor." };
+//
+// Replacement:
+//   return { success: true, message: "تم إنشاء وتفعيل ملف الخبير بنجاح." };
+
+===============================================================================
+END ARCHIVED MANUAL PROVIDER APPROVAL FLOW
+===============================================================================
+*/

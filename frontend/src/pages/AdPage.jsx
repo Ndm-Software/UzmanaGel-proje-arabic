@@ -1,3 +1,5 @@
+// AdPage.jsx file code 
+
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
@@ -228,8 +230,7 @@ const AdPage = () => {
 
             setFirestoreDisplayName(finalDisplayName);
             const isCustomerAccount =
-              userData.userType !== "PROVIDER" &&
-              userData.userType !== "PENDING_PROVIDER";
+              userData.userType !== "PROVIDER";
             let nextCustomerCity = String(
               userData.city || userData.mainCity || ""
             ).trim();
@@ -278,13 +279,6 @@ const AdPage = () => {
               setExpertName(finalDisplayName || "خبير");
               setShowProfileWarning(true);
               setWarningType("incomplete");
-            } else if (
-              userData.userType === "PENDING_PROVIDER" &&
-              userData.profileCompleted
-            ) {
-              setExpertName(finalDisplayName || "خبير");
-              setShowProfileWarning(true);
-              setWarningType("pending_approval");
             } else {
               setShowProfileWarning(false);
             }
@@ -685,60 +679,26 @@ const AdPage = () => {
 
       <div className="ad-content">
         <aside className="sidebar-filters">
-          {showProfileWarning && user && (
-            <>
-              {warningType === "incomplete" && (
-                <div className="sidebar-warning sidebar-warning-incomplete">
-                  <div className="sidebar-warning-header">
-                    <i className="fas fa-exclamation-circle"></i>
-                    <h4>طلبك غير مكتمل!</h4>
-                  </div>
+          {showProfileWarning && user && warningType === "incomplete" && (
+            <div className="sidebar-warning sidebar-warning-incomplete">
+              <div className="sidebar-warning-header">
+                <i className="fas fa-exclamation-circle"></i>
+                <h4>طلبك غير مكتمل!</h4>
+              </div>
 
-                  <p>
-                    مرحباً {expertName}، يرجى إكمال ملفك الشخصي لإتمام طلب
-                    انضمامك كخبير.
-                  </p>
+              <p>
+                مرحباً {expertName}، يرجى إكمال ملفك الشخصي لإتمام طلب
+                انضمامك كخبير.
+              </p>
 
-                  <button
-                    type="button"
-                    className="sidebar-warning-button"
-                    onClick={() => navigate("/expert-complete-profile")}
-                  >
-                    أكمل الملف الشخصي <i className="fas fa-arrow-right"></i>
-                  </button>
-                </div>
-              )}
-
-              {warningType === "pending_approval" && (
-                <div className="sidebar-warning sidebar-warning-pending">
-                  <div className="sidebar-warning-header">
-                    <i className="fas fa-hourglass-end"></i>
-                    <h4>بانتظار الموافقة</h4>
-                  </div>
-
-                  <p>
-                    مرحباً {expertName}، تم إكمال ملفك الشخصي بنجاح وبانتظار
-                    موافقة الإدارة.
-                  </p>
-
-                  <p className="sidebar-warning-subtext">
-                    سيتم إبلاغك عبر رسالة SMS فور اكتمال عملية الموافقة.
-                  </p>
-
-                  <div className="pending-info">
-                    <div className="pending-item">
-                      <i className="fas fa-check-circle"></i>
-                      <span>تم إكمال الملف الشخصي</span>
-                    </div>
-
-                    <div className="pending-item">
-                      <i className="fas fa-clock"></i>
-                      <span>بانتظار موافقة الإدارة</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
+              <button
+                type="button"
+                className="sidebar-warning-button"
+                onClick={() => navigate("/expert-complete-profile")}
+              >
+                أكمل الملف الشخصي <i className="fas fa-arrow-right"></i>
+              </button>
+            </div>
           )}
 
           <div className="filter-header">
@@ -1279,3 +1239,82 @@ export default AdPage;
 //     ? `${item.distanceKm.toFixed(1)} كم`
 //     : "المسافة غير معروفة"}
 // </span>
+
+/*
+===============================================================================
+ARCHIVED PENDING APPROVAL UI — AdPage.jsx
+Removed because completed experts are now activated automatically in the Arabic
+project. When an expert finishes the profile form, their userType becomes
+"PROVIDER" and isActive becomes true immediately — no administrator review step
+exists. The code below is preserved for reference only and is never executed.
+===============================================================================
+
+// ─── 1. Removed condition: completed-but-unreviewed expert detection ───
+//
+// This else-if block was inside the onSnapshot() callback in the user-data
+// useEffect, placed after the "incomplete" branch. It set warningType to
+// "pending_approval" when:
+//   • userType === "PENDING_PROVIDER"  (candidate, not yet a provider)
+//   • profileCompleted === true        (profile form already submitted)
+//
+//   } else if (
+//     userData.userType === "PENDING_PROVIDER" &&
+//     userData.profileCompleted
+//   ) {
+//     setExpertName(finalDisplayName || "خبير");
+//     setShowProfileWarning(true);
+//     setWarningType("pending_approval");   // ← this call was removed
+//   }
+
+// ─── 2. Removed isCustomerAccount guard that excluded PENDING_PROVIDER ───
+//
+// Original value:
+//   const isCustomerAccount =
+//     userData.userType !== "PROVIDER" &&
+//     userData.userType !== "PENDING_PROVIDER";  // ← second condition removed
+//
+// PENDING_PROVIDER users with completed profiles were excluded so they would
+// not see city/listing filters as a regular client. With auto-approval they
+// become PROVIDER immediately, making this exclusion unnecessary.
+
+// ─── 3. Removed pending-approval sidebar card JSX ───
+//
+// Rendered in <aside className="sidebar-filters"> when:
+//   showProfileWarning === true && warningType === "pending_approval"
+// Told the expert that their profile was submitted and an SMS would be sent
+// when an administrator approved the account.
+//
+// {warningType === "pending_approval" && (
+//   <div className="sidebar-warning sidebar-warning-pending">
+//     <div className="sidebar-warning-header">
+//       <i className="fas fa-hourglass-end"></i>
+//       <h4>بانتظار الموافقة</h4>
+//     </div>
+//
+//     <p>
+//       مرحباً {expertName}، تم إكمال ملفك الشخصي بنجاح وبانتظار
+//       موافقة الإدارة.
+//     </p>
+//
+//     <p className="sidebar-warning-subtext">
+//       سيتم إبلاغك عبر رسالة SMS فور اكتمال عملية الموافقة.
+//     </p>
+//
+//     <div className="pending-info">
+//       <div className="pending-item">
+//         <i className="fas fa-check-circle"></i>
+//         <span>تم إكمال الملف الشخصي</span>
+//       </div>
+//       <div className="pending-item">
+//         <i className="fas fa-clock"></i>
+//         <span>بانتظار موافقة الإدارة</span>
+//       </div>
+//     </div>
+//   </div>
+// )}
+
+===============================================================================
+END ARCHIVED PENDING APPROVAL UI
+===============================================================================
+*/
+

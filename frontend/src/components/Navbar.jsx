@@ -468,16 +468,10 @@ const Navbar = () => {
               </>
             )}
 
-            {userType === 'PENDING_PROVIDER' && (
-              !profileCompleted ? (
-                <Link to="/expert-complete-profile" className="navbar-badge pending-badge">
-                  <i className="fas fa-hourglass-half"></i> أكمل الملف الشخصي
-                </Link>
-              ) : (
-                <span className="navbar-badge pending-badge" style={{ cursor: 'default', opacity: 0.7 }}>
-                  <i className="fas fa-hourglass-half"></i> بانتظار الموافقة
-                </span>
-              )
+            {userType === 'PENDING_PROVIDER' && !profileCompleted && (
+              <Link to="/expert-complete-profile" className="navbar-badge pending-badge">
+                <i className="fas fa-hourglass-half"></i> أكمل الملف الشخصي
+              </Link>
             )}
           </nav>
 
@@ -506,16 +500,10 @@ const Navbar = () => {
                   </>
                 )}
 
-                {userType === 'PENDING_PROVIDER' && (
-                  !profileCompleted ? (
-                    <Link to="/expert-complete-profile" className="mobile-pending-badge" onClick={closeMobileMenu}>
-                      <i className="fas fa-hourglass-half"></i> أكمل الملف الشخصي
-                    </Link>
-                  ) : (
-                    <span className="mobile-pending-badge" style={{ cursor: 'default', opacity: 0.7 }}>
-                      <i className="fas fa-hourglass-half"></i> بانتظار الموافقة
-                    </span>
-                  )
+                {userType === 'PENDING_PROVIDER' && !profileCompleted && (
+                  <Link to="/expert-complete-profile" className="mobile-pending-badge" onClick={closeMobileMenu}>
+                    <i className="fas fa-hourglass-half"></i> أكمل الملف الشخصي
+                  </Link>
                 )}
 
                 {!user && (

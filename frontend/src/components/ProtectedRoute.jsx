@@ -73,11 +73,7 @@ const ProtectedRoute = ({ children, adminOnly = false, expertOnly = false }) => 
             if (userData.userType === 'PROVIDER') {
               setIsAuthorized(true);
             } 
-            else if (userData.userType === 'PENDING_PROVIDER') {
-              setErrorMessage('طلب انضمامك كخبير بانتظار موافقة المسؤول.');
-              setTimeout(() => navigate('/ilanlar'), 3000);  
-            }
-            else if (userData.userType === 'CLIENT') {
+            else if (userData.userType === 'CLIENT' || userData.userType === 'PENDING_PROVIDER') {
               setErrorMessage('هذه الصفحة مخصصة للخبراء فقط!');
               setTimeout(() => navigate('/ilanlar'), 3000);
             }

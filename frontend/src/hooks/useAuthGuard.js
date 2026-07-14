@@ -99,12 +99,7 @@ export const useProviderOnly = () => {
       if (isProvider) {
         setAuthorized(true);
         setErrorMessage('');
-      } else if (userRole === 'PENDING_PROVIDER') {
-        setErrorMessage('طلب الخبير الخاص بك بانتظار موافقة الإدارة. يمكنك استخدام هذه الصفحة بعد الموافقة.');
-        setTimeout(() => {
-          window.location.href = '/ilanlar';
-        }, 3000);
-      } else if (userRole === 'CLIENT') {
+      } else if (userRole === 'CLIENT' || userRole === 'PENDING_PROVIDER') {
         setErrorMessage('هذه الصفحة مخصصة للخبراء فقط.');
         setTimeout(() => {
           window.location.href = '/ilanlar';

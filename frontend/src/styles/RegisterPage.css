@@ -694,16 +694,31 @@
   font-weight: 600;
 }
 .lp-register-topbrand-text {
-  font-family: 'Georgia', 'Times New Roman', serif !important;
-  font-size: 1.5rem !important; /* Adjust if needed to fit your register header size */
-  font-weight: 700 !important;
+  font-family: "IBM Plex Sans Arabic", "Sora", sans-serif !important;
+  font-size: 22px !important; /* Adjust if needed to fit your register header size */
+  font-weight: 800 !important;
+  color: var(--text-main, #ffffff) !important;
   display: inline-flex !important; 
   align-items: center !important;
-  
-  /* Vertical height scale to match the main navbar look */
-  transform: scaleY(1.5) !important; 
-  transform-origin: center !important;
-  
   line-height: 1 !important;
   white-space: nowrap !important;
+  letter-spacing: normal !important;
+ transform: none ;
+}
+.lp-register-topbrand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.lp-register-topbrand-logo {
+  /* Match the 39px sizing you set everywhere else */
+  width: 39px !important;
+  height: 39px !important;
+  border-radius: 11px !important;
+  object-fit: cover;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  background: var(--card-bg, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--nav-border, rgba(255, 255, 255, 0.12));
 }

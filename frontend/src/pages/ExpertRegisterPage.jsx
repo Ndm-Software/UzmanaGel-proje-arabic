@@ -16,7 +16,7 @@ import {
 import DOMPurify from 'dompurify';
 import "../styles/RegisterPage.css";
 import PageTransition from "../components/PageTransition";
-import brandImage from "../assets/pictures/Logo.png";
+import brandImage from "../assets/pictures/LogoArabicNoWriting.png";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useSystemSettings } from "../hooks/useSystemSettings";
 
@@ -482,7 +482,20 @@ const ExpertRegisterPage = () => {
           <Link to="/" className="lp-register-topbrand-link" aria-label="الصفحة الرئيسية">
             <img className="lp-register-topbrand-logo" src={brandImage} alt="خبير" />
             <span className="lp-register-topbrand-text">
-              Uzmana<span className="highlight">Gel</span>
+                          {/* خ + ب (Plus the long stretch following ب) */}
+              <span className="outer-letter">
+                {"خ\u0640\u0640ب\u0640\u0640\u0640\u200D"}
+              </span>
+
+              {/* ي (Isolated + Its trailing stretch) */}
+              <span className="inner-letters">
+                {"\u200Dي\u0640\u0640\u0640\u0640\u200D"}
+              </span>
+
+              {/* ر (With its leading stretch) */}
+              <span className="outer-letter">
+                {"\u200D\u0640\u0640ر"}
+              </span>
             </span>
           </Link>
         </header>

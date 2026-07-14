@@ -42,9 +42,9 @@
 }
 
 .brand-badge {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
+    width: 39px;
+    height: 39px;
+    border-radius: 12px;
     overflow: hidden;
     display: grid;
     place-items: center;
@@ -783,30 +783,31 @@
         right: -12px;
         padding: 0 4px;
     }
-    .brand-title {
-        font-family: 'Georgia', 'Times New Roman', serif !important;
-        font-size: 2.6rem !important;
-        font-weight: 700 !important;
-        display: inline-flex !important; /* Changed to inline-flex to keep the spans tightly connected */
-        align-items: center !important;
-  
-        /* Vertical height scale */
-        transform: scaleY(1.5) !important; 
-        transform-origin: center !important;
-  
-         line-height: 1 !important;
-        white-space: nowrap !important;
-    }
 
-/* Base style for the outer navy/white letters (خ and ر) */
+}
+ .navbar .brand-title,
+.navbar-brand .brand-title,
+.navbar-brand-link .brand-title,
+.brand-title {
+    /* Use your new IBM Plex Arabic font so characters connect beautifully */
+    font-family: "IBM Plex Sans Arabic", "Sora", sans-serif !important;
+    font-weight: 800 !important;
+    font-size: 22px !important; 
+    letter-spacing: normal !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    
+    /* Remove the vertical distortion scaling */
+    transform: none !important; 
+}
+
+/* Outer letters: خ and ر (White/Light Gray on dark mode, Charcoal on light mode) */
 .outer-letter {
-  color: #1a253c !important; /* Use #ffffff if testing on dark mode */
-  display: inline-block !important;
+    color: var(--text-main, #eaf0ff) !important; 
+    display: inline-block !important;
+    transition: color 0.3s ease;
 }
 
-/* Style for the inner highly-stretched orange section (ب + ي) */
-.inner-letters {
-  color: #ff8c00 !important; /* Your brand orange accent color */
-  display: inline-block !important;
-}
-}
+/* Inner letters: The orange/gold middle accent */

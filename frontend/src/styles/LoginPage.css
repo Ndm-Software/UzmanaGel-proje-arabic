@@ -34,23 +34,23 @@
 }
 
 .lp-login-topbrand-logo{
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
+  width: 39px;
+  height: 39px;
+  border-radius: 12px;
   object-fit: cover;
   box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  background: var(--card-bg, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--nav-border, rgba(255, 255, 255, 0.12));
 }
 
 .lp-login-topbrand-text{
+  font-family: "IBM Plex Sans Arabic", "Sora", sans-serif;
   font-weight: 800;
-  letter-spacing: 0.3px;
-  color: var(--text-main);
-  font-size: 18px;
+  color: var(--text-main, #ffffff);
+  font-size: 22px;
+  line-height: 1;
 }
 
-.lp-login-topbrand-text .highlight {
-  color: var(--brand-gold);
-}
 
 /* The big two-column card */
 .lp-login-card{

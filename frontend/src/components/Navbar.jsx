@@ -417,15 +417,15 @@ const Navbar = () => {
               <div className="brand-badge">
                 <img className="brand-badge-img " src={logo} alt="خبير" />
               </div>
-              <span className="brand-title"style={{ color: '#ff8c00' }}>
+              <span className="brand-title">
                 {/* خ + ب (Plus the long stretch following ب) */}
                 <span className="outer-letter">
-                  {"خ\u0640\u0640ب\u0640\u0640\u0640\u200D"}
+                  {"خ\u0640\u0640ب\u0640\u0640\u0640\u0640\u200D"}
                 </span>
   
                 {/* ي (Isolated in Orange + Its trailing stretch) */}
                 <span className="inner-letters">
-                  {"\u200Dي\u0640\u0640\u0640\u0640\u200D"}
+                  {"\u200Dي\u0640\u0640\u0640\u0640\u0640\u200D"}
                 </span>
   
                 {/* ر (With its leading stretch) */}

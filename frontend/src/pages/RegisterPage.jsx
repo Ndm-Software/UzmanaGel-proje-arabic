@@ -654,21 +654,21 @@ export default function RegisterPage() {
         <header className="lp-register-topbrand"dir="rtl">
           <Link to="/" className="lp-register-topbrand-link" aria-label="خبير Home">
             <img className="lp-register-topbrand-logo" src={brandImage} alt="خبير" />
-            <span className="lp-register-topbrand-text"style={{ color: '#ff8c00' }}>
+            <span className="lp-register-topbrand-text">
               {/* خ + ب (Plus the long stretch following ب) */}
-      <span className="outer-letter">
-        {"خ\u0640\u0640ب\u0640\u0640\u0640\u200D"}
-      </span>
+              <span className="outer-letter">
+                {"خ\u0640\u0640ب\u0640\u0640\u0640\u200D"}
+              </span>
 
-      {/* ي (Isolated + Its trailing stretch) */}
-      <span className="inner-letters">
-        {"\u200Dي\u0640\u0640\u0640\u0640\u200D"}
-      </span>
+              {/* ي (Isolated + Its trailing stretch) */}
+              <span className="inner-letters">
+                {"\u200Dي\u0640\u0640\u0640\u0640\u200D"}
+              </span>
 
-      {/* ر (With its leading stretch) */}
-      <span className="outer-letter">
-        {"\u200D\u0640\u0640ر"}
-      </span>
+              {/* ر (With its leading stretch) */}
+              <span className="outer-letter">
+                {"\u200D\u0640\u0640ر"}
+              </span>
             </span>
           </Link>
         </header>
@@ -793,8 +793,9 @@ export default function RegisterPage() {
                         display: "block",
                       }}
                     >
-                      يجب أن تحتوي على الأقل على 6 خانات, حرف 1 كبير, حرف 1 صغير, رقم 1, رمز 1 
-                    </small>
+                    ✓ 6 أحرف على الأقل ✓ حرف كبير (A-Z) ✓ حرف صغير (a-z)
+                    <br />
+                    ✓ رقم (0-9) ✓ رمز خاص (!@#$%^&*) ✓ بدون تسلسل                    </small>
                   </div>
 
                   <div className="lp-register-form-group">

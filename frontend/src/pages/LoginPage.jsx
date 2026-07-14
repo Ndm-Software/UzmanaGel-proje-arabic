@@ -12,7 +12,7 @@ import { auth, db } from "../firebase/firebaseClient";
 import DOMPurify from 'dompurify';
 import "../styles/LoginPage.css";
 import PageTransition from "../components/PageTransition";
-import brandImage from "../assets/pictures/Logo.png";
+import brandImage from "../assets/pictures/LogoArabicNoWriting.png";
 import googleLogo from "../assets/pictures/google.png";
 import phoneLogo from "../assets/pictures/telephone.png";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -643,7 +643,20 @@ export default function LoginPage() {
               alt="خبير"
             />
             <span className="lp-login-topbrand-text">
-              Uzmana<span className="highlight">Gel</span>
+             {/* خ + ب (Plus the long stretch following ب) */}
+                <span >
+                  {"خ\u0640\u0640ب\u0640\u0640\u0640\u0640\u200D"}
+                </span>
+  
+                {/* ي (Isolated in Orange + Its trailing stretch) */}
+                <span >
+                  {"\u200Dي\u0640\u0640\u0640\u0640\u0640\u200D"}
+                </span>
+  
+                {/* ر (With its leading stretch) */}
+                <span >
+                  {"\u200D\u0640\u0640ر"}
+                </span>
             </span>
           </Link>
         </header>

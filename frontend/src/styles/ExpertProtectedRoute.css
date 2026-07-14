@@ -1,0 +1,74 @@
+﻿.expert-protected-route-loading {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: var(--bg-main);
+  color: var(--text-main);
+
+  direction: rtl;
+  text-align: center;
+}
+
+.expert-protected-route-loading-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  padding: 16px 22px;
+
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+
+  color: var(--text-main);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.expert-protected-route-spinner {
+  width: 20px;
+  height: 20px;
+
+  border: 3px solid var(--card-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+
+  animation: expertRouteSpin 0.8s linear infinite;
+}
+
+@keyframes expertRouteSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* حماية إضافية للوضع الفاتح */
+:root[data-theme="light"] .expert-protected-route-loading {
+  background: var(--bg-main, #f5f7fb);
+  color: var(--text-main, #0f172a);
+}
+
+:root[data-theme="light"] .expert-protected-route-loading-content {
+  background: var(--card-bg, #ffffff);
+  border-color: var(--card-border, #dbe1ea);
+  color: var(--text-main, #0f172a);
+}
+
+/* الوضع الداكن */
+:root[data-theme="dark"] .expert-protected-route-loading {
+  background: var(--bg-main, #070b16);
+  color: var(--text-main, #e5e7eb);
+}
+
+:root[data-theme="dark"] .expert-protected-route-loading-content {
+  background: var(--card-bg, #1a1d26);
+  border-color: var(--card-border, #2d3340);
+  color: var(--text-main, #e5e7eb);
+}

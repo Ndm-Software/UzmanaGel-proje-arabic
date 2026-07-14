@@ -831,8 +831,7 @@ const TokenModal = ({ isOpen, onClose, tokenBalance, onPaymentSuccess }) => {
                 {checkingStatus ? (
                   <span>
                     <i className="fas fa-spinner fa-spin"></i> حالة الدفع
-                    kontrol ediliyor...
-                  </span>
+ يتم فحصها...                  </span>
                 ) : (
                   <span>
                     عند اكتمال الدفع سيتم تحديث رصيدك تلقائياً

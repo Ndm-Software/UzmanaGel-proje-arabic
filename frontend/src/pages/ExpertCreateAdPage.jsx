@@ -56,6 +56,8 @@ const STEP_TITLES = [
   "الصورة الرئيسية",
 ];
 
+const HISTORY_STEP_KEY = "expertCreateAdStep";
+
 // DÜZELTİLDİ - Dosya boyutu kontrolü düzeltildi
 function fileToDataUrl(file, crop = DEFAULT_IMAGE_CROP) {
   if (!file) return Promise.resolve("");
@@ -142,6 +144,57 @@ export default function ExpertCreateAdPage() {
   const [cityOptions, setCityOptions] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
+  useEffect(() => {
+  const currentHistoryState = window.history.state || {};
+  const savedStep = Number(
+    currentHistoryState[HISTORY_STEP_KEY]
+  );
+
+  /*
+   * عندما تُفتح الصفحة لأول مرة، نسجل الخطوة الأولى
+   * داخل History الخاص بالمتصفح.
+   */
+  if (savedStep >= 1 && savedStep <= 3) {
+    setCurrentStep(savedStep);
+  } else {
+    window.history.replaceState(
+      {
+        ...currentHistoryState,
+        [HISTORY_STEP_KEY]: 1,
+      },
+      "",
+      window.location.href
+    );
+  }
+
+  /*
+   * يعمل عند الضغط على زر الرجوع أو التقدم
+   * في المتصفح.
+   */
+  const handleBrowserHistoryChange = (event) => {
+    const targetStep = Number(
+      event.state?.[HISTORY_STEP_KEY]
+    );
+
+    if (targetStep >= 1 && targetStep <= 3) {
+      setErrorMsg("");
+      setCurrentStep(targetStep);
+    }
+  };
+
+  window.addEventListener(
+    "popstate",
+    handleBrowserHistoryChange
+  );
+
+  return () => {
+    window.removeEventListener(
+      "popstate",
+      handleBrowserHistoryChange
+    );
+  };
+}, []);
+
   const selectedSpecialtyMinPrice = useMemo(() => {
     const name = String(formData?.serviceSubcategory || "").trim();
     if (!name) return 0;
@@ -161,19 +214,26 @@ export default function ExpertCreateAdPage() {
     );
   }, [formData]);
 
-  const handleExit = () => {
-    if (saving) return;
-    if (hasUnsavedChanges) {
-      setShowExitConfirm(true);
-      return;
-    }
-    navigate("/uzman/ilanlarim");
-  };
+const handleExit = () => {
+  if (saving) return;
 
-  const confirmExit = () => {
-    setShowExitConfirm(false);
-    navigate("/uzman/ilanlarim");
-  };
+  if (hasUnsavedChanges) {
+    setShowExitConfirm(true);
+    return;
+  }
+
+  navigate("/uzman/ilanlarim", {
+    replace: true,
+  });
+};
+
+const confirmExit = () => {
+  setShowExitConfirm(false);
+
+  navigate("/uzman/ilanlarim", {
+    replace: true,
+  });
+};
 
   useEffect(() => {
     if (!showExitConfirm) return undefined;
@@ -442,19 +502,45 @@ export default function ExpertCreateAdPage() {
   };
 
   const goNextStep = () => {
-    const validationError = validateStep();
-    if (validationError) {
-      setErrorMsg(validationError);
-      return;
-    }
-    setErrorMsg("");
-    setCurrentStep((prev) => Math.min(3, prev + 1));
-  };
+  const validationError = validateStep();
+
+  if (validationError) {
+    setErrorMsg(validationError);
+    return;
+  }
+
+  setErrorMsg("");
+
+  const nextStep = Math.min(3, currentStep + 1);
+
+  /*
+   * نضيف الخطوة الجديدة إلى History.
+   * بذلك يستطيع زر الرجوع في المتصفح
+   * العودة إلى الخطوة السابقة.
+   */
+  window.history.pushState(
+    {
+      ...(window.history.state || {}),
+      [HISTORY_STEP_KEY]: nextStep,
+    },
+    "",
+    window.location.href
+  );
+
+  setCurrentStep(nextStep);
+};
 
   const goPrevStep = () => {
-    setErrorMsg("");
-    setCurrentStep((prev) => Math.max(1, prev - 1));
-  };
+  if (saving || currentStep <= 1) return;
+
+  setErrorMsg("");
+
+  /*
+   * نستخدم زر المتصفح نفسه بدل تعديل الخطوة مباشرة.
+   * popstate سيقوم بتحديث currentStep.
+   */
+  window.history.back();
+};
 
   const handleSubmit = async (event) => {
     event.preventDefault();

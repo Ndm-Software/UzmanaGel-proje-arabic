@@ -212,8 +212,13 @@ function Footer() {
 
                 <div className="footer-contact-row">
                   <span className="footer-contact-icon" aria-hidden="true">☎</span>
-                  <a className="footer-link" href={`tel:${siteSettings.phone.replace(/\s/g, '')}`}>
-                    {formatPhone(siteSettings.phone)}
+
+                  <a
+                    className="footer-link footer-phone-number"
+                    href={`tel:${siteSettings.phone.replace(/\s/g, '')}`}
+                    dir="ltr"
+                  >
+                    <bdi>{formatPhone(siteSettings.phone)}</bdi>
                   </a>
                 </div>
 

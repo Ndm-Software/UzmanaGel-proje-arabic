@@ -722,3 +722,15 @@
   background: var(--card-bg, rgba(255, 255, 255, 0.06));
   border: 1px solid var(--nav-border, rgba(255, 255, 255, 0.12));
 }
+
+/* Email field direction */
+.lp-register-email-input {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Keep the Arabic placeholder on the right */
+.lp-register-email-input:placeholder-shown {
+  direction: rtl;
+  text-align: right;
+}

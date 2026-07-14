@@ -336,7 +336,7 @@ export default function HomePage() {
                         height: "100%",
                         objectFit: "contain",
                         display: "block",
-                        filter: isLightMode ? "none" : "invert(1) brightness(1.15)",
+                        filter: "brightness(0) invert(1)"
                       }}
                     />
                   </span>

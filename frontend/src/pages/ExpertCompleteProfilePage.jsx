@@ -116,6 +116,25 @@ const ExpertCompleteProfilePage = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [availableExpertise, setAvailableExpertise] = useState([]);
 
+    const customSelectedCategory = formData.selectedCategories.find(
+    (category) => category.isCustom
+  );
+
+  const usesCustomCategoryAsExpertise = Boolean(customSelectedCategory);
+
+  const effectiveSelectedExpertise =
+    formData.selectedExpertise.length > 0
+      ? formData.selectedExpertise
+      : customSelectedCategory
+        ? [
+            {
+              name: customSelectedCategory.name,
+              isCustom: true,
+              startingPrice: formData.minPrice,
+            },
+          ]
+        : [];
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       // Kullanıcı giriş yapmamış ve stateUid yoksa login'e yönlendir
@@ -233,16 +252,29 @@ const ExpertCompleteProfilePage = () => {
     });
   };
 
-  const addCustomCategory = () => {
-    if (formData.customCategoryInput.trim()) {
-      const newCategoryName = formData.customCategoryInput.trim().slice(0, 100);
-      setFormData(prev => ({
-        ...prev,
-        selectedCategories: [{ name: newCategoryName, isCustom: true }],
-        customCategoryInput: '',
-        showCustomCategoryInput: false
-      }));
-    }
+    const addCustomCategory = () => {
+    const newCategoryName = formData.customCategoryInput.trim().slice(0, 100);
+
+    if (!newCategoryName) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      selectedCategories: [
+        {
+          name: newCategoryName,
+          isCustom: true,
+        },
+      ],
+
+      // تستخدم الفئة المخصصة نفسها كتخصص تلقائياً،
+      // لذلك نحذف أي تخصصات سابقة.
+      selectedExpertise: [],
+
+      customCategoryInput: '',
+      showCustomCategoryInput: false,
+      customExpertiseInput: '',
+      showCustomExpertiseInput: false,
+    }));
   };
 
   const removeCustomCategory = (categoryName) => {
@@ -455,30 +487,49 @@ const ExpertCompleteProfilePage = () => {
   };
 
   const validateStep3 = () => {
-    if (!formData.experienceYears) { setError('سنوات الخبرة مطلوبة'); return false; }
-    const expYears = parseInt(formData.experienceYears);
-    if (isNaN(expYears) || expYears < 0 || expYears > 50) { setError('يجب أن تكون سنوات الخبرة بين 0 و 50 عاماً'); return false; }
-    if (formData.selectedExpertise.length === 0) { setError('يجب عليك اختيار مجال تخصص واحد على الأقل'); return false; }
-    if (formData.selectedExpertise.some(e => !String(e.startingPrice || '').trim() || Number(e.startingPrice) <= 0)) {
+    if (!formData.experienceYears) {
+      setError('سنوات الخبرة مطلوبة');
+      return false;
+    }
+
+    const expYears = parseInt(formData.experienceYears, 10);
+
+    if (Number.isNaN(expYears) || expYears < 0 || expYears > 50) {
+      setError('يجب أن تكون سنوات الخبرة بين 0 و50 عاماً');
+      return false;
+    }
+
+    if (effectiveSelectedExpertise.length === 0) {
+      setError('يجب عليك اختيار مجال تخصص واحد على الأقل');
+      return false;
+    }
+
+    const hasInvalidStartingPrice = effectiveSelectedExpertise.some(
+      (expertise) =>
+        !String(expertise.startingPrice || '').trim() ||
+        Number(expertise.startingPrice) <= 0
+    );
+
+    if (hasInvalidStartingPrice) {
       setError('يرجى إدخال سعر البداية لكل تخصص اخترته');
       return false;
     }
-    
-    // Uzmanlık fiyatlarının max fiyattan büyük olmaması kontrolü
-    const maxPriceNum = parseInt(formData.maxPrice);
-    if (!isNaN(maxPriceNum) && maxPriceNum > 0) {
-      for (const expertise of formData.selectedExpertise) {
+
+    const maxPriceNum = parseInt(formData.maxPrice, 10);
+
+    if (!Number.isNaN(maxPriceNum) && maxPriceNum > 0) {
+      for (const expertise of effectiveSelectedExpertise) {
         const expertisePrice = Number(expertise.startingPrice);
+
         if (expertisePrice > maxPriceNum) {
-          setError(`سعر البداية لـ "${sanitizeText(expertise.name)}" (${expertisePrice} ل.س) لا يمكن أن يكون أعلى من الحد الأقصى للسعر (${maxPriceNum} ل.س).`);
+          setError(
+            `سعر البداية لـ "${sanitizeText(expertise.name)}" (${expertisePrice} ل.س) لا يمكن أن يكون أعلى من الحد الأقصى للسعر (${maxPriceNum} ل.س).`
+          );
           return false;
         }
       }
     }
-    
-    //if (!formData.identityFile) { setError('Kimlik belgesi yüklemelisiniz'); return false; }
 
-    // Sertifikalar artık zorunlu değil - kontrol kaldırıldı
     return true;
   };
 
@@ -617,9 +668,12 @@ const ExpertCompleteProfilePage = () => {
       setLoading(true);
 
       const categoryNames = formData.selectedCategories.map(c => c.name).join(', ');
-      const specialties = formData.selectedExpertise.map(e => ({
-        name: sanitizeText(e.name).slice(0, 100),
-        startingPrice: Number(String(e.startingPrice || "").replace(/[^\d]/g, "")) || 0,
+      const specialties = effectiveSelectedExpertise.map((expertise) => ({
+        name: sanitizeText(expertise.name).slice(0, 100),
+        startingPrice:
+          Number(
+            String(expertise.startingPrice || '').replace(/[^\d]/g, '')
+          ) || 0,
       }));
       /*const allFiles = [
         formData.identityFile,
@@ -1096,95 +1150,97 @@ const ExpertCompleteProfilePage = () => {
                       placeholder="المدرسة / القسم" disabled={loading || analyzing} maxLength="500" />
                   </div>
 
-                  <div className="form-group full-width">
-                    <label className="form-label">
-                      <i className="fas fa-star"></i> مجالات التخصص <span className="required">*</span>
-                      <span className="selected-count">تم تحديد {formData.selectedExpertise.length}</span>
-                    </label>
-                    {availableExpertise.length > 0 && (
-                      <div className="categories-grid">
-                        {availableExpertise.map((expertise, index) => (
-                          <div key={index}
-                            className={`category-item ${formData.selectedExpertise.some(e => e.name === expertise && !e.isCustom) ? 'selected' : ''}`}
-                            onClick={() => toggleExpertise(expertise)}>
-                            {toArabicServiceLabel(expertise)}
+                  {!usesCustomCategoryAsExpertise && (
+                    <div className="form-group full-width">
+                      <label className="form-label">
+                        <i className="fas fa-star"></i> مجالات التخصص <span className="required">*</span>
+                        <span className="selected-count">تم تحديد {formData.selectedExpertise.length}</span>
+                      </label>
+                      {availableExpertise.length > 0 && (
+                        <div className="categories-grid">
+                          {availableExpertise.map((expertise, index) => (
+                            <div key={index}
+                              className={`category-item ${formData.selectedExpertise.some(e => e.name === expertise && !e.isCustom) ? 'selected' : ''}`}
+                              onClick={() => toggleExpertise(expertise)}>
+                              {toArabicServiceLabel(expertise)}
+                            </div>
+                          ))}
+                          <div className={`category-item other-category ${formData.showCustomExpertiseInput ? 'selected' : ''}`}
+                            onClick={() => setFormData(prev => ({...prev, showCustomExpertiseInput: true}))}>
+                            <i className="fas fa-plus"></i> أخرى
                           </div>
-                        ))}
-                        <div className={`category-item other-category ${formData.showCustomExpertiseInput ? 'selected' : ''}`}
-                          onClick={() => setFormData(prev => ({...prev, showCustomExpertiseInput: true}))}>
-                          <i className="fas fa-plus"></i> أخرى
                         </div>
-                      </div>
-                    )}
-
-                    {formData.showCustomExpertiseInput && (
-                      <div className="custom-category-section">
-                        <div className="expertise-add">
-                          <input type="text" className="form-input" value={formData.customExpertiseInput}
-                            onChange={(e) => setFormData({...formData, customExpertiseInput: e.target.value.slice(0, 100)})}
-                            placeholder="اكتب مجال التخصص..." autoFocus disabled={loading || analyzing} maxLength="100" />
-                          <button type="button" className="btn-add" onClick={addCustomExpertise} disabled={loading || analyzing}>
-                            <i className="fas fa-plus"></i> إضافة
-                          </button>
-                          <button type="button" className="btn-cancel"
-                            onClick={() => setFormData(prev => ({...prev, showCustomExpertiseInput: false, customExpertiseInput: ''}))}
-                            disabled={loading || analyzing}>
-                            <i className="fas fa-times"></i>
-                          </button>
+                      )}
+  
+                      {formData.showCustomExpertiseInput && (
+                        <div className="custom-category-section">
+                          <div className="expertise-add">
+                            <input type="text" className="form-input" value={formData.customExpertiseInput}
+                              onChange={(e) => setFormData({...formData, customExpertiseInput: e.target.value.slice(0, 100)})}
+                              placeholder="اكتب مجال التخصص..." autoFocus disabled={loading || analyzing} maxLength="100" />
+                            <button type="button" className="btn-add" onClick={addCustomExpertise} disabled={loading || analyzing}>
+                              <i className="fas fa-plus"></i> إضافة
+                            </button>
+                            <button type="button" className="btn-cancel"
+                              onClick={() => setFormData(prev => ({...prev, showCustomExpertiseInput: false, customExpertiseInput: ''}))}
+                              disabled={loading || analyzing}>
+                              <i className="fas fa-times"></i>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
-
-                    {formData.selectedExpertise.filter(e => e.isCustom).length > 0 && (
-                      <div className="custom-items-list">
-                        <label className="form-label small">مجالات التخصص التي أضفتها:</label>
-                        <div className="custom-items-tags">
-                          {formData.selectedExpertise.filter(e => e.isCustom).map((expertise, index) => (
-                            <div key={index} className="custom-item-tag">
-                              <span>{toArabicServiceLabel(expertise.name)}</span>
-                              <button type="button" onClick={() => removeCustomExpertise(expertise.name)} disabled={loading || analyzing}>
-                                <i className="fas fa-times"></i>
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {formData.selectedExpertise.length > 0 && (
-                      <div style={{ marginTop: 14 }}>
-                        <label className="form-label small" style={{ marginBottom: 10, display: 'block' }}>
-                          أسعار البداية <span className="required">*</span>
-                        </label>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
-                          {formData.selectedExpertise.map((e, idx) => (
-                            <div key={`${e.name}-${idx}`} className="form-group" style={{ margin: 0 }}>
-                              <label className="form-label small" style={{ opacity: 0.9 }}>
-                                {sanitizeText(e.name)}
-                              </label>
-                              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                                <input
-                                  type="text"
-                                  inputMode="numeric"
-                                  className="form-input"
-                                  value={e.startingPrice || ""}
-                                  onChange={(ev) => setExpertiseStartingPrice(e.name, ev.target.value)}
-                                  placeholder="مثال: 600"
-                                  disabled={loading || analyzing}
-                                  required
-                                  maxLength="10"
-                                />
-                                <span style={{ color: 'var(--text-muted)', fontWeight: 700 }}>ل.س</span>
+                      )}
+  
+                      {formData.selectedExpertise.filter(e => e.isCustom).length > 0 && (
+                        <div className="custom-items-list">
+                          <label className="form-label small">مجالات التخصص التي أضفتها:</label>
+                          <div className="custom-items-tags">
+                            {formData.selectedExpertise.filter(e => e.isCustom).map((expertise, index) => (
+                              <div key={index} className="custom-item-tag">
+                                <span>{toArabicServiceLabel(expertise.name)}</span>
+                                <button type="button" onClick={() => removeCustomExpertise(expertise.name)} disabled={loading || analyzing}>
+                                  <i className="fas fa-times"></i>
+                                </button>
                               </div>
-                              <small style={{ color: 'var(--text-muted)' }}>
-                                سعر البداية لـ “{sanitizeText(e.name)}”
-                              </small>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
+                      )}
+  
+                      {formData.selectedExpertise.length > 0 && (
+                        <div style={{ marginTop: 14 }}>
+                          <label className="form-label small" style={{ marginBottom: 10, display: 'block' }}>
+                            أسعار البداية <span className="required">*</span>
+                          </label>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12 }}>
+                            {formData.selectedExpertise.map((e, idx) => (
+                              <div key={`${e.name}-${idx}`} className="form-group" style={{ margin: 0 }}>
+                                <label className="form-label small" style={{ opacity: 0.9 }}>
+                                  {sanitizeText(e.name)}
+                                </label>
+                                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                                  <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    className="form-input"
+                                    value={e.startingPrice || ""}
+                                    onChange={(ev) => setExpertiseStartingPrice(e.name, ev.target.value)}
+                                    placeholder="مثال: 600"
+                                    disabled={loading || analyzing}
+                                    required
+                                    maxLength="10"
+                                  />
+                                  <span style={{ color: 'var(--text-muted)', fontWeight: 700 }}>ل.س</span>
+                                </div>
+                                <small style={{ color: 'var(--text-muted)' }}>
+                                  سعر البداية لـ “{sanitizeText(e.name)}”
+                                </small>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="form-group full-width">
                     <label className="form-label"><i className="fas fa-file-upload"></i> المستندات</label>
@@ -1242,13 +1298,23 @@ const ExpertCompleteProfilePage = () => {
 
             <div className="form-navigation">
               {currentStep > 1 && (
-                <button className="btn btn-secondary" onClick={prevStep} disabled={loading || analyzing}>
-                  <i className="fas fa-arrow-left"></i> رجوع
+                <button
+                  className="btn btn-secondary btn-back"
+                  onClick={prevStep}
+                  disabled={loading || analyzing}
+                >
+                  <span className="btn-back-text">رجوع</span>
+                  <i className="fas fa-arrow-right" aria-hidden="true"></i>
                 </button>
               )}
               {currentStep < totalSteps ? (
-                <button className="btn btn-primary" onClick={nextStep} disabled={loading || analyzing}>
-                  التالي <i className="fas fa-arrow-right"></i>
+                <button
+                  className="btn btn-primary btn-next"
+                  onClick={nextStep}
+                  disabled={loading || analyzing}
+                >
+                  التالي
+                  <i className="fas fa-arrow-left"></i>
                 </button>
               ) : (
                 <button className="btn btn-primary" onClick={handleSubmit}

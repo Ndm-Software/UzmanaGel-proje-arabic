@@ -846,7 +846,7 @@ export default function LoginPage() {
             </form>
 
             <div className="lp-login-or">
-              <span>veya</span>
+              <span>أو</span>
             </div>
 
             <div className="social-icons">

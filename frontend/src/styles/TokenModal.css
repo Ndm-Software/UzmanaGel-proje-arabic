@@ -496,20 +496,46 @@
 
 .payment-result-box h3 {
   margin: 0;
-  color: #f9fafb;
+  color: var(--text-main, #f9fafb);
   font-size: 20px;
   font-weight: 800;
 }
 
 .payment-result-box p {
   margin: 0;
-  color: #d1d5db;
+  color: var(--text-muted, #d1d5db);
   font-size: 15px;
   line-height: 1.6;
 }
 
 .payment-auto-close-text {
   margin-top: 8px;
-  color: #9ca3af;
+  color: var(--text-muted, #9ca3af);
   font-size: 13px;
+}
+
+/* Token modal — Light mode */
+:root[data-theme="light"] .token-modal-overlay {
+  background: rgba(15, 23, 42, 0.35);
+}
+
+:root[data-theme="light"] .token-modal,
+:root[data-theme="light"] .token-modal-header {
+  background: var(--card-bg, #ffffff);
+}
+
+:root[data-theme="light"] .token-modal {
+  border: 1px solid var(--card-border, #dbe1ea);
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.2);
+}
+
+:root[data-theme="light"] .token-modal-header h2,
+:root[data-theme="light"] .payment-form h3,
+:root[data-theme="light"] .payment-result-box h3 {
+  color: var(--text-main, #0f172a);
+}
+
+:root[data-theme="light"] .payment-result-box p,
+:root[data-theme="light"] .payment-auto-close-text {
+  color: var(--text-muted, #64748b);
 }

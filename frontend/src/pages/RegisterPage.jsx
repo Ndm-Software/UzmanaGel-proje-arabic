@@ -706,7 +706,7 @@ export default function RegisterPage() {
                       <i className="fas fa-envelope lp-register-icon"></i> البريد الإلكتروني
                     </label>
                     <input
-                      className="lp-register-input"
+                      className="lp-register-input lp-register-email-input"
                       type="email"
                       placeholder="البريد الإلكتروني"
                       autoComplete="email"

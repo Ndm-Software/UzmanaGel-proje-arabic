@@ -907,8 +907,15 @@ const AdPage = () => {
                     </div>
 
                     <div className="price">
-                      <strong>{formatLatinNumber(item.price)} ل.س</strong>
                       <span className="price-text">تبدأ من</span>
+
+                      <strong className="price-value">
+                        <span className="price-number" dir="ltr">
+                          {formatLatinNumber(item.price)}
+                        </span>
+
+                        <span className="price-currency">ل.س</span>
+                      </strong>
                     </div>
 
                     <button

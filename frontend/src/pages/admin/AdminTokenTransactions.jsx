@@ -421,7 +421,7 @@ export default function AdminTokenTransactions() {
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   
-  if (authLoading) return <LoadingSpinner text="Yetki kontrol ediliyor..." />;
+  if (authLoading) return <LoadingSpinner text="Yetki  يتم فحصها..." />;
   if (!authorized) {
     return (
       <div className="no-data">

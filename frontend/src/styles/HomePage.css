@@ -875,6 +875,15 @@ button.cta-button {
   display: flex;
   gap: 10px;
   align-items: center;
+  direction: rtl;
+}
+
+.footer-phone-number {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+  margin: 0;
+  text-align: left;
 }
 
 .footer-contact-icon {
@@ -1052,8 +1061,25 @@ button.cta-button {
 }
 
 :root[data-theme="light"] .app-banner {
-  background: #0c0f1a; 
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.15); 
+  background: #eef2f7;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.14);
+}
+
+:root[data-theme="light"] .app-banner-content {
+  color: #0f172a;
+}
+
+:root[data-theme="light"] .app-banner-title {
+  color: #0f172a;
+}
+
+:root[data-theme="light"] .app-banner-text {
+  color: rgba(15, 23, 42, 0.72);
+}
+
+:root[data-theme="light"] .app-banner-coming-soon {
+  color: #b8860b;
 }
 
 :root[data-theme="light"] .how-section {

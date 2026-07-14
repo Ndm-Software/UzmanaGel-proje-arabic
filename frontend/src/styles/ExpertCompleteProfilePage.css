@@ -836,6 +836,10 @@
   gap: 15px;
 }
 
+.form-navigation .btn-next {
+  margin-right: auto;
+}
+
 .btn {
   padding: 14px 30px;
   border-radius: 10px;
@@ -1286,4 +1290,13 @@
 @media print {
   .expert-complete-page { background: white; }
   .btn, .form-navigation, .step-indicator, .modal-overlay { display: none; }
+}
+
+.btn-back {
+  direction: ltr;
+}
+
+.btn-back-text {
+  direction: rtl;
+  unicode-bidi: isolate;
 }

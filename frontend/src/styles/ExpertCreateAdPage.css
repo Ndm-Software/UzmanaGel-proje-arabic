@@ -290,9 +290,13 @@
 }
 
 .expert-create-ad-actions {
+  width: 100%;
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 24px;
+  direction: rtl;
 }
 
 .expert-create-ad-btn {
@@ -441,12 +445,17 @@
   }
 
   .expert-create-ad-actions {
-    flex-direction: column;
+    width: 100%;
+    flex-direction: column-reverse;
+    align-items: stretch;
   }
 
   .expert-create-ad-btn.primary {
     margin-left: 0;
   }
+
+  .expert-create-ad-actions .expert-create-ad-btn {
+    width: 100%;
 
   .expert-create-ad-exit-actions {
     flex-direction: column;

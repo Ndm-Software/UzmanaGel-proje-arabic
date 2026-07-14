@@ -243,8 +243,10 @@ export default function HomePage() {
           <div className="hero-container">
             <section className="hero-content">
               <h1 className="hero-title">
-                بكبسة زر واحدة <span className="hero-highlight">اعثر على خبيرك</span> سريع،
-                آمن، سهل
+                بكبسة زر واحدة <span className="hero-highlight">اعثر على خبيرك...</span>
+                <br></br>
+              سريع، سهل، آمن.
+             
               </h1>
 
               <p className="hero-subtitle">

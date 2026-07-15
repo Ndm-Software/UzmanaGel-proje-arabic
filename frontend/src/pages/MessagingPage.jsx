@@ -30,6 +30,7 @@ import DOMPurify from "dompurify";
 import { showAppToast } from "../utils/showAppToast";
 import { ARABIC_LATIN_LOCALE } from "../utils/localeFormat";
 import ConfirmModal from "../components/ConfirmModal";
+import { toArabicServiceLabel } from "../utils/arabicLabels";
 import "../styles/MessagingPage.css";
 
 const isDevelopment = process.env.NODE_ENV === "development";
@@ -591,7 +592,8 @@ const MessagingPage = () => {
 
   const getConversationServiceTitle = useCallback((conversation) => {
     if (!conversation) return "";
-    return String(conversation.serviceTitle || "").trim();
+    const specialty = conversation.serviceSubcategory || conversation.serviceCategory || conversation.serviceTitle || "";
+    return toArabicServiceLabel(specialty);
   }, []);
 
   const getConversationUnreadCount = useCallback(

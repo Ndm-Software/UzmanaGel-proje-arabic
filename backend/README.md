@@ -92,3 +92,12 @@ Every favorites endpoint requires Firebase ID token:
   "4": true
 }
 ```
+## Managing Administrators
+
+This project uses **Firebase Custom Claims** to securely handle administrator authorization without hitting the Firestore database on every request.
+
+### Promoting a User to Admin
+To promote an existing registered user to a full administrator, run the following command from the `backend` directory:
+
+```bash
+node --env-file=.env scripts/setAdminClaims.js <user-email>

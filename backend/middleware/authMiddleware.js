@@ -46,6 +46,7 @@ async function requireAuth(req, res, next) {
     req.user = decoded;
     req.userId = decoded.uid;
     req.userEmail = decoded.email || null;
+    req.userRole = decoded.userType || null;
 
     next();
   } catch (error) {

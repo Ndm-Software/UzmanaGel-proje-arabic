@@ -618,7 +618,7 @@ export default function HomePage() {
                     <img src={happyFaceImage} alt="" className="stats-icon-img" />
                   </div>
                   <div className="stats-value">{formatCount(platformStats.happyReviewerCount)}</div>
-                  <div className="stats-label">عميل سعيد</div>
+                  <div className="stats-label"> مستخدم</div>
                 </article>
 
                 <article className="stats-card">

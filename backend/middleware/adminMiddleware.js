@@ -68,6 +68,12 @@ async function requireAdmin(req, res, next) {
         .json({ message: "Unauthorized: User not found" });
     }
 
+    const claims = req.user || {};
+    if (claims.admin === true || claims.role === "ADMIN" || claims.userType === "ADMIN") {
+      req.userId = userId;
+      req.userRole = "ADMIN";
+      return next();
+    }
     const userDoc = await db.collection("users").doc(userId).get();
 
     if (!userDoc.exists) {
@@ -76,18 +82,17 @@ async function requireAdmin(req, res, next) {
         .json({ message: "Forbidden: User not found in database" });
     }
 
-    const userType = userDoc.data().userType;
-
-    if (userType !== "ADMIN") {
-      return res.status(403).json({
-        message: "Forbidden: Admin access required",
-        userType,
-      });
+    const userType = userData.userType;
+    if (userType === "ADMIN") {
+      req.userId = userId;
+      req.userRole = "ADMIN";
+      return next();
     }
 
-    req.userId = userId;
-    req.userRole = userType;
-    next();
+    return res.status(403).json({
+      message: "Forbidden: Admin access required",
+      userType,
+    });
   } catch (error) {
     if (isDevelopment) console.error("Admin middleware error:", error.message);
     return res.status(500).json({ message: "Internal server error" });

@@ -7,6 +7,7 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
   sendEmailVerification,
+  getIdTokenResult,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/firebaseClient";
@@ -346,7 +347,7 @@ export default function LoginPage() {
 
     if (loginNoticeType === "registration_success") {
       setWarningMessage(
-        "تم إنشاء حسابك بنجاح. يرجى تسجيل الدخول للمتابعة."
+        "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني وتأكيد حسابك قبل تسجيل الدخول."
       );
       setWarningVariant("success");
       setShowWarning(true);
@@ -364,7 +365,7 @@ export default function LoginPage() {
 
     if (legacyProviderHint === "password") {
       setWarningMessage(
-        "تم إنشاء حسابك بنجاح. يرجى تسجيل الدخول للمتابعة."
+        "تم إنشاء حسابك بنجاح. يرجى التحقق من بريدك الإلكتروني وتأكيد حسابك قبل تسجيل الدخول."
       );
       setWarningVariant("success");
       setShowWarning(true);
@@ -397,9 +398,11 @@ export default function LoginPage() {
       }
 
       const userData = userDoc.data();
-
+      const tokenResult = await getIdTokenResult(user);
+      const claims = tokenResult?.claims || {};
+      const adminFromClaims = claims.admin === true || claims.userType === "ADMIN";
       // BAKIM MODU KONTROLÜ - Admin değilse ve bakım modu açıksa engelle
-      if (maintenanceMode && userData.userType !== "ADMIN") {
+      if (maintenanceMode && userData.userType !== "ADMIN" && !adminFromClaims) {
         return {
           allowed: false,
           redirect: null,
@@ -407,7 +410,7 @@ export default function LoginPage() {
         };
       }
 
-      if (userData.userType === "ADMIN") {
+      if (userData.userType === "ADMIN" || adminFromClaims) {
         return { allowed: true, redirect: "/admin", message: "" };
       }
 
@@ -449,7 +452,18 @@ export default function LoginPage() {
 
       const user = await loginWithEmail({ email, password });
 
-      if (!user.emailVerified) {
+      let isAdminAccount = false;
+      try {
+      // Read the claim directly from the token instead of querying the database!
+        const idTokenResult = await user.getIdTokenResult();
+        const claims = idTokenResult?.claims || {};
+  
+        isAdminAccount = claims.admin === true || claims.userType === "ADMIN";
+      } catch (adminCheckError) {
+        if (isDevelopment) console.error("Admin role check failed:", adminCheckError.message);
+      }
+
+      if (!user.emailVerified && !isAdminAccount) {
         try {
           await sendEmailVerification(user);
         } catch (evErr) {

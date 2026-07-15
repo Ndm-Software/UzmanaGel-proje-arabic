@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/firebaseClient';
 
-import brandImage from '../assets/pictures/Logo.png';
+import brandImage from '../assets/pictures/LogoArabicNowriting.png';
 // Syria Arabic launch: store download buttons are disabled, assets kept for future use.
 // import appleLogo from '../assets/pictures/apple-logo.png';
 // import googlePlayLogo from '../assets/pictures/google-play.png';

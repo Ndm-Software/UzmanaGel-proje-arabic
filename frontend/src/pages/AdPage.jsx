@@ -30,7 +30,25 @@ const isDevelopment = process.env.NODE_ENV === "development";
 
 const ALL_CATEGORIES = "جميع الفئات";
 const ALL_SPECIALTIES = "جميع التخصصات";
+const ALL_CITIES = "جميع المحافظات";
 const DEFAULT_SORT = "السعر: الأعلى أولاً";
+
+const SYRIA_GOVERNORATES = [
+  { label: "دمشق", value: "دمشق" },
+  { label: "ريف دمشق", value: "ريف دمشق" },
+  { label: "حلب", value: "حلب" },
+  { label: "حمص", value: "حمص" },
+  { label: "حماة", value: "حماة" },
+  { label: "اللاذقية", value: "اللاذقية" },
+  { label: "طرطوس", value: "طرطوس" },
+  { label: "إدلب", value: "إدلب" },
+  { label: "دير الزور", value: "دير الزور" },
+  { label: "الرقة", value: "الرقة" },
+  { label: "الحسكة", value: "الحسكة" },
+  { label: "درعا", value: "درعا" },
+  { label: "السويداء", value: "السويداء" },
+  { label: "القنيطرة", value: "القنيطرة" },
+];
 
 const SORT_OPTIONS = [
   { label: DEFAULT_SORT, value: "price_desc" },
@@ -158,12 +176,14 @@ const AdPage = () => {
 
   const [tempCategory, setTempCategory] = useState(ALL_CATEGORIES);
   const [tempSpecialty, setTempSpecialty] = useState(ALL_SPECIALTIES);
+  const [tempCity, setTempCity] = useState(ALL_CITIES);
   const [tempMinPrice, setTempMinPrice] = useState("");
   const [tempMaxPrice, setTempMaxPrice] = useState("");
   const [tempSortBy, setTempSortBy] = useState(DEFAULT_SORT);
 
   const [activeCategory, setActiveCategory] = useState(ALL_CATEGORIES);
   const [activeSpecialty, setActiveSpecialty] = useState(ALL_SPECIALTIES);
+  const [activeCity, setActiveCity] = useState(ALL_CITIES);
   const [activeMinPrice, setActiveMinPrice] = useState("");
   const [activeMaxPrice, setActiveMaxPrice] = useState("");
   const [activeSortBy, setActiveSortBy] = useState(DEFAULT_SORT);
@@ -424,7 +444,7 @@ const AdPage = () => {
         activeSpecialty !== ALL_SPECIALTIES ? activeSpecialty : undefined,
       minPrice: activeMinPrice || undefined,
       maxPrice: activeMaxPrice || undefined,
-      city: customerCity || undefined,
+      city: activeCity !== ALL_CITIES ? activeCity : undefined,
       sort: sortCodeFromLabel(activeSortBy),
     };
 
@@ -501,7 +521,7 @@ const AdPage = () => {
     activeMinPrice,
     activeMaxPrice,
     activeSortBy,
-    customerCity,
+    activeCity,
     updateListingsPageParam,
   ]);
 
@@ -597,6 +617,7 @@ const AdPage = () => {
   const applyFilters = () => {
     setActiveCategory(tempCategory);
     setActiveSpecialty(tempSpecialty);
+    setActiveCity(tempCity);
     setActiveMinPrice(tempMinPrice);
     setActiveMaxPrice(tempMaxPrice);
     setActiveSortBy(tempSortBy);
@@ -607,12 +628,14 @@ const AdPage = () => {
   const resetFilters = () => {
     setTempCategory(ALL_CATEGORIES);
     setTempSpecialty(ALL_SPECIALTIES);
+    setTempCity(ALL_CITIES);
     setTempMinPrice("");
     setTempMaxPrice("");
     setTempSortBy(DEFAULT_SORT);
 
     setActiveCategory(ALL_CATEGORIES);
     setActiveSpecialty(ALL_SPECIALTIES);
+    setActiveCity(ALL_CITIES);
     setActiveMinPrice("");
     setActiveMaxPrice("");
     setActiveSortBy(DEFAULT_SORT);
@@ -745,6 +768,25 @@ const AdPage = () => {
                   </option>
                 );
               })}
+            </select>
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="city-filter">
+              <i className="fa-solid fa-map-marker-alt"></i> المحافظة
+            </label>
+
+            <select
+              id="city-filter"
+              value={tempCity}
+              onChange={(event) => setTempCity(event.target.value)}
+            >
+              <option value={ALL_CITIES}>{ALL_CITIES}</option>
+              {SYRIA_GOVERNORATES.map((gov) => (
+                <option key={gov.value} value={gov.value}>
+                  {gov.label}
+                </option>
+              ))}
             </select>
           </div>
 

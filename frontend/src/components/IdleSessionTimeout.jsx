@@ -1,4 +1,4 @@
-﻿// IdleSessionTimeout.jsx file code
+// IdleSessionTimeout.jsx file code
 
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,8 +10,6 @@ const IDLE_TIMEOUT_MS = 40 * 60 * 1000; // 40 min
 
 const REGISTRATION_PATHS = [
   "/register",
-  "/register-phone",
-  "/register-details",
 ];
 
 export default function IdleSessionTimeout() {
@@ -47,8 +45,7 @@ export default function IdleSessionTimeout() {
       try {
         await logout();
 
-        sessionStorage.removeItem("phoneRegistrationVerified");
-        sessionStorage.removeItem("phoneRegistrationNumber");
+
 
         navigate("/login", {
           replace: true,

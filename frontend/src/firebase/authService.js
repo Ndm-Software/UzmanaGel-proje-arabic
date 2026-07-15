@@ -18,6 +18,7 @@ import {
   PhoneAuthProvider,
   updatePhoneNumber,
   unlink,
+  sendEmailVerification,
 } from "firebase/auth";
 
 
@@ -409,6 +410,8 @@ export async function registerWithEmail({ name, email, password, phone }) {
     const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
     const user = cred.user;
 
+    await sendEmailVerification(user);
+
     if (name) {
       await updateProfile(user, { displayName: name.slice(0, 100) });
     }
@@ -478,6 +481,8 @@ export async function registerWithEmailDirect({ name, email, password, phone, us
 
   const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
   const user = cred.user;
+
+  await sendEmailVerification(user);
 
   if (name) {
     await updateProfile(user, { displayName: name.slice(0, 100) });

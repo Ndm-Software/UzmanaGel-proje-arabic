@@ -6,6 +6,7 @@ import {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
+  sendEmailVerification,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase/firebaseClient";
@@ -446,6 +447,19 @@ export default function LoginPage() {
       }
 
       const user = await loginWithEmail({ email, password });
+
+      if (!user.emailVerified) {
+        try {
+          await sendEmailVerification(user);
+        } catch (evErr) {
+          if (isDevelopment) console.error("Error sending verification email:", evErr.message);
+        }
+        setError("يرجى تأكيد بريدك الإلكتروني أولاً قبل تسجيل الدخول. لقد أرسلنا رابط التأكيد إلى بريدك الإلكتروني.");
+        await auth.signOut();
+        setLoading(false);
+        return;
+      }
+
       const statusCheck = await checkUserStatus(user);
 
       if (!statusCheck.allowed) {

@@ -33,7 +33,6 @@ const ContactPage = () => {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
-    phone: '',
     message: ''
   });
 
@@ -65,7 +64,6 @@ const ContactPage = () => {
               const userData = userDocSnap.data();
               displayName = userData.displayName || displayName;
               email = userData.email || email;
-              phoneNumber = userData.phoneNumber || phoneNumber;
               role = userData.userType || null;
             }
             
@@ -73,8 +71,7 @@ const ContactPage = () => {
             setFormData(prev => ({
               ...prev,
               fullName: displayName,
-              email: email,
-              phone: phoneNumber
+              email: email
             }));
             
           } catch (error) {
@@ -82,8 +79,7 @@ const ContactPage = () => {
             setFormData(prev => ({
               ...prev,
               fullName: user.displayName || '',
-              email: user.email || '',
-              phone: user.phoneNumber || ''
+              email: user.email || ''
             }));
           }
         } else {
@@ -92,8 +88,7 @@ const ContactPage = () => {
           setFormData(prev => ({
             ...prev,
             fullName: '',
-            email: '',
-            phone: ''
+            email: ''
           }));
         }
         
@@ -105,15 +100,6 @@ const ContactPage = () => {
     
     loadUserData();
   }, []);
-
-  const handlePhoneChange = (e) => {
-    if (!isLoggedIn) {
-      let value = e.target.value;
-      value = value.replace(/[^0-9+\-]/g, '');
-      if (value.length > 20) value = value.slice(0, 20);
-      setFormData(prev => ({ ...prev, phone: value }));
-    }
-  };
 
   const handleEmailChange = (e) => {
     if (!isLoggedIn) {
@@ -140,9 +126,7 @@ const ContactPage = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
       }
     } else {
-      if (name === 'phone') {
-        handlePhoneChange(e);
-      } else if (name === 'email') {
+      if (name === 'email') {
         handleEmailChange(e);
       } else if (name === 'fullName') {
         handleNameChange(e);
@@ -150,11 +134,6 @@ const ContactPage = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
       }
     }
-  };
-
-  const validatePhone = (phone) => {
-    const phoneRegex = /^[0-9+\-]{10,15}$/;
-    return phoneRegex.test(phone);
   };
 
   const validateEmail = (email) => {
@@ -184,12 +163,6 @@ const ContactPage = () => {
 
     if (!validateEmail(formData.email)) {
       setError("يرجى إدخال عنوان بريد إلكتروني صالح.");
-      setLoading(false);
-      return;
-    }
-
-    if (!validatePhone(formData.phone)) {
-      setError("يرجى إدخال رقم هاتف صالح. (يمكنك فقط استخدام الأرقام، + و -)");
       setLoading(false);
       return;
     }
@@ -232,7 +205,6 @@ const ContactPage = () => {
       await addDoc(collection(db, "contacts"), {
         fullName: sanitizeText(formData.fullName.trim()),
         email: formData.email.toLowerCase().trim(),
-        phone: sanitizeText(formData.phone.trim()),
         message: sanitizeText(formData.message.trim()),
         createdAt: serverTimestamp(),
         status: "unread",
@@ -326,28 +298,7 @@ const ContactPage = () => {
                     )}
                   </div>
                   
-                  <div className="input-group">
-                    <input 
-                      type="tel" 
-                      name="phone" 
-                      placeholder="الهاتف" 
-                      className={`contact-input ${isLoggedIn ? 'disabled-field' : ''}`}
-                      required 
-                      value={formData.phone} 
-                      onChange={handleChange}
-                      disabled={isLoggedIn || loading}
-                      readOnly={isLoggedIn}
-                      maxLength="20"
-                    />
-                    {isLoggedIn && (
-                      <div className="field-lock-icon">
-                        <i className="fas fa-lock"></i>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <textarea 
-                    name="message" 
+                  <textarea                     name="message" 
                     placeholder="رسالتك" 
                     className="contact-input" 
                     required 

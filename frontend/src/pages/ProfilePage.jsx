@@ -37,8 +37,6 @@ import { deleteClientAccount } from '../services/accountService';
 import {
   initRecaptcha,
   clearRecaptcha,
-  startPhoneLinking,
-  confirmPhoneLinking,
   linkGoogleToCurrentUser,
   getCurrentUserProviderFlags,
 } from '../firebase/authService';
@@ -351,509 +349,6 @@ const NameModal = ({ user, currentName, onClose, onSuccess }) => {
           <button type="submit" className="settings-primary-button" disabled={loading}>
             {loading ? 'جاري الحفظ...' : 'حفظ'}
           </button>
-        </div>
-      </form>
-    </Modal>
-  );
-};
-
-const PhoneModal = ({ onClose, onSuccess }) => {
-  const [country, setCountry] = useState('SY');
-  const [digits, setDigits] = useState('');
-  const [otpCode, setOtpCode] = useState('');
-  const [step, setStep] = useState('phone');
-  const [loading, setLoading] = useState(false);
-  const [sendingOtp, setSendingOtp] = useState(false);
-  const [confirmationResult, setConfirmationResult] = useState(null);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-
-  const countryConfig = {
-    SY: {
-      name: 'سوريا',
-      callingCode: '+963',
-      placeholder: '933 123 456',
-      example: '933 123 456',
-      maxDigits: 9,
-    },
-    TR: {
-      name: 'تركيا',
-      callingCode: '+90',
-      placeholder: '539 123 12 12',
-      example: '539 123 12 12',
-      maxDigits: 10,
-    },
-  };
-
-  const selectedCountry = countryConfig[country];
-
-  const normalizePhoneInput = (value, selected = country) => {
-    let phone = String(value || '').replace(/\D/g, '');
-
-    if (selected === 'SY') {
-      // Supported inputs:
-      // +963933123456
-      // 00963933123456
-      // 0933123456
-      // 933123456
-      if (phone.startsWith('00963')) {
-        phone = phone.slice(5);
-      } else if (phone.startsWith('963')) {
-        phone = phone.slice(3);
-      }
-
-      if (phone.startsWith('0')) {
-        phone = phone.slice(1);
-      }
-
-      return phone.slice(0, 9);
-    }
-
-    // Supported Turkish inputs:
-    // +905391231212
-    // 00905391231212
-    // 05391231212
-    // 5391231212
-    if (phone.startsWith('0090')) {
-      phone = phone.slice(4);
-    } else if (phone.startsWith('90')) {
-      phone = phone.slice(2);
-    }
-
-    if (phone.startsWith('0')) {
-      phone = phone.slice(1);
-    }
-
-    return phone.slice(0, 10);
-  };
-
-  const formatPhoneInput = (value, selected = country) => {
-    const phone = normalizePhoneInput(value, selected);
-
-    if (selected === 'SY') {
-      return [
-        phone.slice(0, 3),
-        phone.slice(3, 6),
-        phone.slice(6, 9),
-      ]
-        .filter(Boolean)
-        .join(' ');
-    }
-
-    return [
-      phone.slice(0, 3),
-      phone.slice(3, 6),
-      phone.slice(6, 8),
-      phone.slice(8, 10),
-    ]
-      .filter(Boolean)
-      .join(' ');
-  };
-
-  const buildE164Phone = () => {
-    const phone = normalizePhoneInput(digits);
-
-    if (country === 'SY') {
-      if (!/^9\d{8}$/.test(phone)) {
-        setError(
-          'يرجى إدخال رقم جوال سوري صحيح مثل 933 123 456.'
-        );
-        return null;
-      }
-
-      return `+963${phone}`;
-    }
-
-    if (!/^5\d{9}$/.test(phone)) {
-      setError(
-        'يرجى إدخال رقم جوال تركي صحيح مثل 539 123 12 12.'
-      );
-      return null;
-    }
-
-    return `+90${phone}`;
-  };
-
-  const resetVerificationState = () => {
-    setOtpCode('');
-    setConfirmationResult(null);
-    setStep('phone');
-    setError('');
-    setSuccess('');
-    clearRecaptcha();
-  };
-
-  const handleCountryChange = (event) => {
-    const nextCountry = event.target.value;
-
-    setCountry(nextCountry);
-    setDigits('');
-    resetVerificationState();
-  };
-
-  useEffect(() => {
-    return () => {
-      clearRecaptcha();
-    };
-  }, []);
-
-  const prepareRecaptcha = () => {
-    clearRecaptcha();
-
-    return initRecaptcha(
-      'profile-phone-recaptcha',
-      { size: 'invisible' }
-    );
-  };
-
-  const handleSendOtp = async (event) => {
-    event.preventDefault();
-
-    setError('');
-    setSuccess('');
-
-    const phoneNumber = buildE164Phone();
-    if (!phoneNumber) return;
-
-    setSendingOtp(true);
-
-    try {
-      prepareRecaptcha();
-
-      if (isDevelopment) {
-        console.log('PHONE OTP DEBUG:', {
-          country,
-          phoneNumber,
-          projectId: auth.app.options.projectId,
-          authDomain: auth.app.options.authDomain,
-        });
-      }
-
-      console.log('PHONE SENT TO FIREBASE:', phoneNumber);
-
-      const result = await startPhoneLinking(phoneNumber);
-
-      setConfirmationResult(result);
-      setStep('otp');
-      setSuccess(
-        `تم إرسال رمز التحقق إلى الرقم ${phoneNumber}.`
-      );
-    } catch (err) {
-      if (isDevelopment) {
-        console.error('Kod gönderme hatası:', err);
-        console.error('Firebase error code:', err?.code);
-        console.error('Firebase error message:', err?.message);
-      }
-
-      setError(mapPhoneAuthError(err));
-    } finally {
-      setSendingOtp(false);
-    }
-  };
-
-  const handleVerifyAndSave = async (event) => {
-    event.preventDefault();
-
-    setError('');
-    setSuccess('');
-
-    if (!confirmationResult) {
-      setError(
-        'لم يتم العثور على جلسة التحقق. يرجى إرسال الرمز مرة أخرى.'
-      );
-      return;
-    }
-
-    const cleanCode = String(otpCode || '').trim();
-
-    if (!/^\d{6}$/.test(cleanCode)) {
-      setError(
-        'يرجى إدخال رمز التحقق المكون من 6 أرقام.'
-      );
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const result = await confirmPhoneLinking(
-        confirmationResult,
-        cleanCode
-      );
-
-      const fallbackPhone = buildE164Phone();
-
-      const finalPhone =
-        result?.user?.phoneNumber ||
-        fallbackPhone;
-
-      setSuccess(
-        'تم التحقق من رقم الهاتف وحفظه بنجاح.'
-      );
-
-      onSuccess(finalPhone);
-
-      setTimeout(() => {
-        clearRecaptcha();
-        onClose();
-      }, 1200);
-    } catch (err) {
-      if (isDevelopment) {
-        console.error('Doğrulama hatası:', err);
-        console.error('Firebase error code:', err?.code);
-        console.error('Firebase error message:', err?.message);
-      }
-
-      setError(mapPhoneAuthError(err));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    setError('');
-    setSuccess('');
-
-    const phoneNumber = buildE164Phone();
-    if (!phoneNumber) return;
-
-    setSendingOtp(true);
-
-    try {
-      prepareRecaptcha();
-
-      if (isDevelopment) {
-        console.log('PHONE OTP RESEND DEBUG:', {
-          country,
-          phoneNumber,
-          projectId: auth.app.options.projectId,
-        });
-      }
-
-      const result = await startPhoneLinking(phoneNumber);
-
-      setConfirmationResult(result);
-      setSuccess('تم إرسال رمز تحقق جديد.');
-    } catch (err) {
-      if (isDevelopment) {
-        console.error('Kod gönderme hatası:', err);
-        console.error('Firebase error code:', err?.code);
-        console.error('Firebase error message:', err?.message);
-      }
-
-      setError(mapPhoneAuthError(err));
-    } finally {
-      setSendingOtp(false);
-    }
-  };
-
-  return (
-    <Modal
-      title="تحديث رقم الهاتف"
-      onClose={onClose}
-    >
-      <form
-        onSubmit={
-          step === 'phone'
-            ? handleSendOtp
-            : handleVerifyAndSave
-        }
-        className="modal-form"
-      >
-        <div className="phone-verify-shell">
-          <div className="phone-verify-step">
-            <div
-              className={`phone-step-badge ${
-                step === 'phone' ? 'active' : 'done'
-              }`}
-            >
-              1
-            </div>
-            <span>الرقم</span>
-          </div>
-
-          <div className="phone-step-line"></div>
-
-          <div className="phone-verify-step">
-            <div
-              className={`phone-step-badge ${
-                step === 'otp' ? 'active' : ''
-              }`}
-            >
-              2
-            </div>
-            <span>OTP</span>
-          </div>
-        </div>
-
-        <div className="modal-field">
-          <label htmlFor="phone-country">
-            الدولة
-          </label>
-
-          <select
-            id="phone-country"
-            value={country}
-            onChange={handleCountryChange}
-            disabled={
-              loading ||
-              sendingOtp ||
-              step === 'otp'
-            }
-          >
-            <option value="SY">
-              سوريا (+963)
-            </option>
-
-            <option value="TR">
-              تركيا (+90)
-            </option>
-          </select>
-        </div>
-
-        <div className="modal-field">
-          <label htmlFor="new-phone-number">
-            الهاتف الجديد ({selectedCountry.callingCode})
-          </label>
-
-          <div
-            style={{
-              display: 'flex',
-              gap: '8px',
-              alignItems: 'center',
-            }}
-          >
-            <span
-              dir="ltr"
-              style={{
-                padding: '12px',
-                border: '1px solid var(--card-border)',
-                borderRadius: '8px',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {selectedCountry.callingCode}
-            </span>
-
-            <input
-              id="new-phone-number"
-              type="tel"
-              inputMode="numeric"
-              dir="ltr"
-              value={formatPhoneInput(digits)}
-              onChange={(event) =>
-                setDigits(
-                  normalizePhoneInput(event.target.value)
-                )
-              }
-              placeholder={selectedCountry.placeholder}
-              required
-              disabled={
-                loading ||
-                sendingOtp ||
-                step === 'otp'
-              }
-              autoComplete="tel"
-              style={{ flex: 1 }}
-            />
-          </div>
-
-          <small className="settings-helper-text">
-            مثال: {selectedCountry.callingCode}{' '}
-            {selectedCountry.example}
-          </small>
-        </div>
-
-        {step === 'otp' && (
-          <div className="modal-field">
-            <label htmlFor="phone-otp-code">
-              رمز OTP
-            </label>
-
-            <input
-              id="phone-otp-code"
-              type="text"
-              inputMode="numeric"
-              dir="ltr"
-              value={otpCode}
-              onChange={(event) =>
-                setOtpCode(
-                  event.target.value
-                    .replace(/\D/g, '')
-                    .slice(0, 6)
-                )
-              }
-              placeholder="رمز من 6 أرقام"
-              required
-              disabled={loading}
-              autoComplete="one-time-code"
-            />
-          </div>
-        )}
-
-        <div
-          id="profile-phone-recaptcha"
-          className="profile-phone-recaptcha"
-        ></div>
-
-        {error && (
-          <p className="modal-error">
-            {sanitizeText(error)}
-          </p>
-        )}
-
-        {success && (
-          <p className="modal-success">
-            {sanitizeText(success)}
-          </p>
-        )}
-
-        {step === 'otp' && (
-          <button
-            type="button"
-            className="phone-resend-btn"
-            onClick={handleResendOtp}
-            disabled={sendingOtp || loading}
-          >
-            <i className="fas fa-rotate-right"></i>
-
-            {sendingOtp
-              ? 'جاري إرسال الرمز...'
-              : 'إرسال الرمز مرة أخرى'}
-          </button>
-        )}
-
-        <div className="modal-actions">
-          <button
-            type="button"
-            className="settings-secondary-button"
-            onClick={onClose}
-            disabled={loading || sendingOtp}
-          >
-            إلغاء
-          </button>
-
-          {step === 'phone' ? (
-            <button
-              type="submit"
-              className="settings-primary-button"
-              disabled={sendingOtp || loading}
-            >
-              {sendingOtp
-                ? 'جاري إرسال الرمز...'
-                : 'إرسال الرمز'}
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="settings-primary-button"
-              disabled={loading}
-            >
-              {loading
-                ? 'جاري التحقق...'
-                : 'تحقق واحفظ'}
-            </button>
-          )}
         </div>
       </form>
     </Modal>
@@ -1223,7 +718,6 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [profileDisplayName, setProfileDisplayName] = useState('');
-  const [profilePhoneNumber, setProfilePhoneNumber] = useState('');
   const [loading, setLoading] = useState(true);
   const [activeSetting, setActiveSetting] = useState('user');
   const [activeModal, setActiveModal] = useState(null);
@@ -1323,12 +817,10 @@ const ProfilePage = () => {
               currentUser.email?.split('@')[0] ||
               'مستخدم'
           );
-          setProfilePhoneNumber(data?.phoneNumber || currentUser.phoneNumber || '');
         }
       } catch {
         if (!cancelled) {
           setProfileDisplayName(currentUser.email?.split('@')[0] || 'مستخدم');
-          setProfilePhoneNumber(currentUser.phoneNumber || '');
         }
       }
 
@@ -1833,13 +1325,6 @@ const ProfilePage = () => {
         />
       )}
 
-      {activeModal === 'phone' && (
-        <PhoneModal
-          user={user}
-          onClose={() => setActiveModal(null)}
-          onSuccess={(v) => setProfilePhoneNumber(v)}
-        />
-      )}
 
       {activeModal === 'password' && (
         <PasswordModal
@@ -1928,9 +1413,6 @@ const ProfilePage = () => {
                 <span>
                   <i className="fas fa-envelope"></i> {sanitizeText(user.email || 'لا يوجد بريد إلكتروني')}
                 </span>
-                <span>
-                  <i className="fas fa-phone"></i> {sanitizeText(profilePhoneNumber || 'لا يوجد رقم هاتف')}
-                </span>
               </div>
             </div>
           </div>
@@ -1988,10 +1470,6 @@ const ProfilePage = () => {
                   </div>
 
                   <span className="settings-field-value">{sanitizeText(user.email || 'غير محدد')}</span>
-                </div>
-                <div className="settings-field-group">
-                  <span className="settings-field-label">الهاتف</span>
-                  <span className="settings-field-value">{sanitizeText(profilePhoneNumber || 'غير محدد')}</span>
                 </div>
                 <div className="settings-field-group">
                   <span className="settings-field-label">الموقع</span>
@@ -2161,17 +1639,6 @@ const ProfilePage = () => {
                   </button>
                 </div>
 
-                <div className="settings-security-item">
-                  <div>
-                    <div className="settings-security-title">تعديل رقم الهاتف</div>
-                    <div className="settings-security-subtitle">
-                      ربط رقمك الجديد بحسابك عبر التحقق من رمز SMS.
-                    </div>
-                  </div>
-                  <button className="settings-secondary-button" onClick={() => setActiveModal('phone')}>
-                    تعديل الهاتف
-                  </button>
-                </div>
 
                 <div className="settings-security-item">
                   <div>

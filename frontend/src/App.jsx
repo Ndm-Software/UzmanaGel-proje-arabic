@@ -13,9 +13,7 @@ import AdPage from "./pages/AdPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import ListingDetailPage from "./pages/ListingDetailPage";
 import ContactPage from "./pages/ContactPage";
-import RegisterPhonePage from "./pages/RegisterPhonePage";
-import RegisterDetailsPage from "./pages/RegisterDetailsPage";
-import LoginPhonePage from "./pages/LoginPhonePage";
+
 
 import ExpertBlankPage from "./pages/ExpertBlankPage";
 import ExpertCreateAdPage from "./pages/ExpertCreateAdPage";
@@ -145,10 +143,7 @@ function AppRoutes() {
           />
           */}
 
-          {/* Telefon ile Giriş/Kayıt */}
-          <Route path="/register-phone" element={<RegisterPhonePage />} />
-          <Route path="/register-details" element={<RegisterDetailsPage />} />
-          <Route path="/login-phone" element={<LoginPhonePage />} />
+
 
           {/* Uzman Panel */}
           <Route

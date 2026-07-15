@@ -24,6 +24,7 @@
   display: flex;
   justify-content: center;
   padding: 20px 0;
+  position: relative;
 }
 
 .lp-login-topbrand-link{
@@ -450,6 +451,15 @@
 }
 
 @media (max-width: 768px) {
+  .lp-login-eye {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .lp-login-left {
     padding: 40px 30px;
   }

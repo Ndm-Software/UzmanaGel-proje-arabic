@@ -5,6 +5,7 @@ import { doc, getDoc, collection, query, where, onSnapshot } from 'firebase/fire
 import TokenModal from './TokenModal'; 
 import { auth, db } from '../firebase/firebaseClient';
 import ThemeSwitch from './ThemeSwitch';
+import MobilePageActions from './MobilePageActions';
 import DOMPurify from 'dompurify';
 import '../styles/Navbar.css';
 import logo from '../assets/pictures/LogoArabicNoWriting.png';
@@ -45,6 +46,28 @@ const Navbar = () => {
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
   };
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setDropdownOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') closeMobileMenu();
+    };
+
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [mobileMenuOpen]);
 
   const getUnreadTotalFromConversations = (conversations, currentUid) => {
     return conversations.reduce((sum, conversation) => {
@@ -436,15 +459,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <button 
-            className={`mobile-menu-btn ${mobileMenuOpen ? 'active' : ''}`}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Menü"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
+          <MobilePageActions showHome={false} />
 
           <nav className="navbar-links">
             <Link to="/" className="navbar-link">الرئيسية</Link>
@@ -478,8 +493,17 @@ const Navbar = () => {
           {mobileMenuOpen && (
             <>
               <div className="mobile-menu-overlay" onClick={closeMobileMenu}></div>
-              <div className="mobile-menu">
-                <Link to="/" onClick={closeMobileMenu}>الرئيسية</Link>
+              <div
+                id="mobile-navigation-menu"
+                className="mobile-menu"
+                role="dialog"
+                aria-modal="true"
+                aria-label="القائمة الرئيسية"
+              >
+                <Link to="/" onClick={closeMobileMenu}>
+                  <i className="fas fa-house" aria-hidden="true"></i>
+                  الرئيسية
+                </Link>
                 <Link to="/iletisim" onClick={closeMobileMenu}>اتصل بنا</Link>
 
                 {!user && (
@@ -506,6 +530,44 @@ const Navbar = () => {
                   </Link>
                 )}
 
+                {user && (
+                  <>
+                    <div className="mobile-menu-divider" aria-hidden="true"></div>
+
+                    <Link to="/mesajlar" onClick={closeMobileMenu}>
+                      <i className="fas fa-envelope" aria-hidden="true"></i>
+                      <span>الرسائل</span>
+                      {unreadCount > 0 && (
+                        <span className="mobile-count-badge">
+                          {unreadCount > 99 ? '99+' : unreadCount}
+                        </span>
+                      )}
+                    </Link>
+
+                    <Link
+                      to={userType === 'PROVIDER' ? '/uzman-profil' : '/profile'}
+                      onClick={closeMobileMenu}
+                    >
+                      <i className="fas fa-user" aria-hidden="true"></i>
+                      الملف الشخصي
+                    </Link>
+
+                    <Link to="/favoriler" onClick={closeMobileMenu}>
+                      <i className="fas fa-heart" aria-hidden="true"></i>
+                      مفضلتي
+                    </Link>
+
+                    <button
+                      type="button"
+                      className="mobile-menu-logout"
+                      onClick={handleLogout}
+                    >
+                      <i className="fas fa-power-off" aria-hidden="true"></i>
+                      تسجيل الخروج
+                    </button>
+                  </>
+                )}
+
                 {!user && (
                   <div className="mobile-menu-auth">
                     <Link to="/register" className="mobile-register-btn" onClick={closeMobileMenu}>إنشاء حساب</Link>
@@ -520,6 +582,18 @@ const Navbar = () => {
             <ThemeSwitch />
             {renderRightContent()}
           </div>
+
+          <button
+            className={`mobile-menu-btn ${mobileMenuOpen ? 'active' : ''}`}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation-menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
         </div>
       </header>
 

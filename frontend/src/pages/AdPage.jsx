@@ -168,6 +168,7 @@ const AdPage = () => {
   const [searchText, setSearchText] = useState("");
   const [showVoiceModal, setShowVoiceModal] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("جاري الاستماع...");
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const [filteredListings, setFilteredListings] = useState([]);
   const [totalListings, setTotalListings] = useState(0);
@@ -229,6 +230,28 @@ const AdPage = () => {
       previousPage === page ? previousPage : page
     );
   }, [searchParams]);
+
+  useEffect(() => {
+    if (!mobileFiltersOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setMobileFiltersOpen(false);
+    };
+    const closeOnDesktop = () => {
+      if (window.innerWidth > 768) setMobileFiltersOpen(false);
+    };
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", closeOnEscape);
+    window.addEventListener("resize", closeOnDesktop);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", closeOnEscape);
+      window.removeEventListener("resize", closeOnDesktop);
+    };
+  }, [mobileFiltersOpen]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -623,6 +646,7 @@ const AdPage = () => {
     setActiveSortBy(tempSortBy);
     setCurrentPage(1);
     updateListingsPageParam(1);
+    setMobileFiltersOpen(false);
   };
 
   const resetFilters = () => {
@@ -643,6 +667,7 @@ const AdPage = () => {
     setSearchText("");
     setCurrentPage(1);
     updateListingsPageParam(1);
+    setMobileFiltersOpen(false);
   };
 
   const goToListingsPage = (page) => {
@@ -700,8 +725,34 @@ const AdPage = () => {
         </div>
       </div>
 
+      <button
+        type="button"
+        className="mobile-filter-trigger"
+        onClick={() => setMobileFiltersOpen(true)}
+        aria-expanded={mobileFiltersOpen}
+        aria-controls="listing-filters"
+      >
+        <i className="fas fa-sliders" aria-hidden="true"></i>
+        تصفية وترتيب
+      </button>
+
+      {mobileFiltersOpen && (
+        <button
+          type="button"
+          className="mobile-filter-overlay"
+          onClick={() => setMobileFiltersOpen(false)}
+          aria-label="إغلاق نافذة التصفية"
+        ></button>
+      )}
+
       <div className="ad-content">
-        <aside className="sidebar-filters">
+        <aside
+          id="listing-filters"
+          className={`sidebar-filters ${
+            mobileFiltersOpen ? "is-mobile-open" : ""
+          }`}
+          aria-hidden={!mobileFiltersOpen ? undefined : false}
+        >
           {showProfileWarning && user && warningType === "incomplete" && (
             <div className="sidebar-warning sidebar-warning-incomplete">
               <div className="sidebar-warning-header">
@@ -726,6 +777,14 @@ const AdPage = () => {
 
           <div className="filter-header">
             <h3>تصفية وترتيب</h3>
+            <button
+              type="button"
+              className="mobile-filter-close"
+              onClick={() => setMobileFiltersOpen(false)}
+              aria-label="إغلاق نافذة التصفية"
+            >
+              <i className="fas fa-xmark" aria-hidden="true"></i>
+            </button>
           </div>
 
           <div className="filter-group">

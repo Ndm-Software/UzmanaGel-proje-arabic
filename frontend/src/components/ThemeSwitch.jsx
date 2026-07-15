@@ -25,10 +25,12 @@ const ThemeSwitch = () => {
     <button 
       className="theme-toggle" 
       onClick={toggleTheme}
-      aria-label="Tema değiştir"
+      aria-label="تغيير المظهر"
     >
-      <span className="toggle-icon">☀️</span>
-      <span className="toggle-icon">🌙</span>
+      <span className="theme-toggle-track" aria-hidden="true">
+        <span className="toggle-icon">☀️</span>
+        <span className="toggle-icon">🌙</span>
+      </span>
     </button>
   );
 };

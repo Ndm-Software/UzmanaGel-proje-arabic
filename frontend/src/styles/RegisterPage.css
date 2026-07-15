@@ -23,6 +23,7 @@
   display: flex;
   justify-content: center;
   padding: 20px 0;
+  position: relative;
 }
 
 .lp-register-topbrand-link{
@@ -487,6 +488,20 @@
 }
 
 @media (max-width: 768px) {
+  .lp-register-eye {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lp-register-agree input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+  }
+
   .lp-register-left {
     padding: 40px 30px;
   }

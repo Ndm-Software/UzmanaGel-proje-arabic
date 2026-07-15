@@ -9,7 +9,21 @@
   padding: 0;
   cursor: pointer;
 
-  /* Smaller, sleeker dimensions */
+  /* Masaüstü görünümü korunurken iç parça mobilde daha geniş bir dokunma alanı kazanır. */
+  width: 50px;
+  height: 26px;
+  border-radius: 999px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  position: relative;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.theme-toggle-track {
   width: 50px;
   height: 26px;
   border-radius: 999px;
@@ -20,12 +34,10 @@
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(12px);
 
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-
-  transition: transform 0.2s ease, filter 0.2s ease;
+  position: relative;
 }
 
 .theme-toggle:hover {
@@ -34,7 +46,7 @@
 }
 
 /* Scaled down icons to fit the new track */
-.theme-toggle .toggle-icon {
+.theme-toggle-track .toggle-icon {
   width: 25px;
   height: 26px;
   display: grid;
@@ -46,7 +58,7 @@
 }
 
 /* The moving knob */
-.theme-toggle::after {
+.theme-toggle-track::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -67,17 +79,23 @@
 }
 
 /* Knob position depends on theme */
-:root[data-theme="dark"] .theme-toggle::after {
+:root[data-theme="dark"] .theme-toggle-track::after {
   /* Math: 50px (track) - 20px (knob) - 2px (left) - 2px (right padding) = 26px */
   transform: translateX(26px);
 }
 
-:root[data-theme="light"] .theme-toggle::after {
+:root[data-theme="light"] .theme-toggle-track::after {
   transform: translateX(0px); 
 }
 
 /* Track adapts on light theme */
-:root[data-theme="light"] .theme-toggle {
+:root[data-theme="light"] .theme-toggle-track {
   background: linear-gradient(180deg, rgba(11, 16, 32, 0.08), rgba(11, 16, 32, 0.03));
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 980px) {
+  .theme-toggle {
+    height: 44px;
+  }
 }

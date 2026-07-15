@@ -17,6 +17,7 @@ import brandImage from "../assets/pictures/LogoArabicNoWriting.png";
 import googleLogo from "../assets/pictures/google.png";
 import phoneLogo from "../assets/pictures/telephone.png";
 import LoadingSpinner from "../components/LoadingSpinner";
+import MobilePageActions from "../components/MobilePageActions";
 import { useSystemSettings } from "../hooks/useSystemSettings";
 
 import {
@@ -644,6 +645,7 @@ export default function LoginPage() {
     <PageTransition>
       <div className="lp-login">
         <header className="lp-login-topbrand">
+          <MobilePageActions className="mobile-page-actions--auth" />
           <Link
             to="/"
             className="lp-login-topbrand-link"

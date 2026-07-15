@@ -8,6 +8,7 @@ import brandImage from "../assets/pictures/LogoArabicNoWriting.png";
 import PolicyModal from "../components/PolicyModal";
 import DOMPurify from 'dompurify';
 import LoadingSpinner from "../components/LoadingSpinner";
+import MobilePageActions from "../components/MobilePageActions";
 import { useSystemSettings } from "../hooks/useSystemSettings";
 
 import googleLogo from "../assets/pictures/google.png";
@@ -651,7 +652,8 @@ export default function RegisterPage() {
   return (
     <PageTransition>
       <div className="lp-register" >
-        <header className="lp-register-topbrand"dir="rtl">
+        <header className="lp-register-topbrand" dir="rtl">
+          <MobilePageActions className="mobile-page-actions--auth" />
           <Link to="/" className="lp-register-topbrand-link" aria-label="خبير Home">
             <img className="lp-register-topbrand-logo" src={brandImage} alt="خبير" />
             <span className="lp-register-topbrand-text">

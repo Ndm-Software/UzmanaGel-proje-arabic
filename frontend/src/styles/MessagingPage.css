@@ -1315,7 +1315,8 @@
 .chat-header-dropdown {
   position: absolute;
   top: calc(100% + 10px);
-  right: 0;
+  left: 0;
+  right: auto;
   min-width: 220px;
   background: #1a1e2f;
   border: 1px solid rgba(214, 178, 94, 0.3);

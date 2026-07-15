@@ -1,4 +1,4 @@
-﻿// chatService.js file code 
+// chatService.js file code 
 
 const { admin, db } = require("../config/firebaseAdmin");
 const { moderateMessage } = require("./chatModeration");
@@ -370,6 +370,7 @@ async function getOrCreateConversation({
     serviceId,
     serviceTitle: resolvedServiceTitle,
     serviceCategory: serviceData.category || "",
+    serviceSubcategory: serviceData.serviceSubcategory || "",
 
     createdAt: now,
     updatedAt: now,
@@ -405,6 +406,24 @@ async function getUserConversations(uid) {
     conversations.map(async (conv) => {
       if (String(conv?.status || "").trim() === "inactive") {
         return null;
+      }
+
+      if (conv.serviceId && !conv.serviceSubcategory) {
+        try {
+          const serviceDoc = await db.collection("services").doc(conv.serviceId).get();
+          if (serviceDoc.exists) {
+            const serviceData = serviceDoc.data() || {};
+            const subcat = serviceData.serviceSubcategory || serviceData.category || "";
+            if (subcat) {
+              conv.serviceSubcategory = subcat;
+              db.collection("conversations").doc(conv.conversationId).update({
+                serviceSubcategory: subcat
+              }).catch(() => {});
+            }
+          }
+        } catch (err) {
+          if (isDevelopment) console.error("Lazy heal serviceSubcategory error:", err.message);
+        }
       }
 
       // Syria Arabic launch: appointment-based chat expiry/archive checks disabled.

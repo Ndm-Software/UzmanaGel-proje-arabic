@@ -1,3 +1,5 @@
+// listing.js file code 
+
 import { auth } from "../firebase/firebaseClient";
 import { db } from "../firebase/firebaseClient";
 import { collection, query, where, getDocs, writeBatch, doc } from "firebase/firestore";

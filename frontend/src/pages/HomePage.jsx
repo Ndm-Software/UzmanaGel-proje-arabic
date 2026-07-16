@@ -217,11 +217,11 @@ export default function HomePage() {
   }, []);
 
   const handleUzmanBulClick = () => {
-    navigate("/إعلان");
+    navigate("/login");
   };
 
   const handleUzmanOlClick = () => {
-    navigate("/ملف-الخبير");
+    navigate("/تسجيل-خبير");
   };
 
   const formatPrice = (value) => {

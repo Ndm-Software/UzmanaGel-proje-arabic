@@ -1,3 +1,5 @@
+// FavoritesPage.jsx file code 
+
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
@@ -83,11 +85,23 @@ export default function FavoritesPage() {
 
     let cancelled = false;
     fetchListingsByIds(favoriteIds)
-      .then((payload) => {
-        if (!cancelled) {
-          setFavoriteItems(payload?.items || []);
-        }
-      })
+  .then((payload) => {
+    if (cancelled) return;
+
+    const items = Array.isArray(payload?.items)
+      ? payload.items
+      : [];
+
+    const activeItems = items.filter((item) => {
+      const status = String(item?.status || "ACTIVE")
+        .trim()
+        .toUpperCase();
+
+      return status === "ACTIVE";
+    });
+
+    setFavoriteItems(activeItems);
+  })
       .catch((error) => {
         if (isDevelopment) console.error("Failed to load favorite listing cards:", error.message);
         if (!cancelled) {

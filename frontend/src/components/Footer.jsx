@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/firebaseClient';
@@ -11,6 +11,10 @@ import LegalPolicyContent from './LegalPolicyContent';
 // import googlePlayLogo from '../assets/pictures/google-play.png';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
+
+const closePolicyModal = useCallback(() => {
+  setPolicyType(null);
+}, []);
 
 function Footer() {
   const navigate = useNavigate();
@@ -230,12 +234,16 @@ function Footer() {
       </footer>
     </section>
     <PolicyModal
-      open={Boolean(policyType)}
-      title={policyType === 'privacy' ? 'سياسة الخصوصية' : 'شروط الاستخدام'}
-      onClose={() => setPolicyType(null)}
-    >
-      <LegalPolicyContent type={policyType || 'terms'} />
-    </PolicyModal>
+        open={Boolean(policyType)}
+        title={
+          policyType === "privacy"
+            ? "سياسة الخصوصية"
+            : "شروط الاستخدام"
+        }
+        onClose={closePolicyModal}
+      >
+        <LegalPolicyContent type={policyType || "terms"} />
+      </PolicyModal>
     </>
   );
 }

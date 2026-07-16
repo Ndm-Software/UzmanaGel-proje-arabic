@@ -219,11 +219,11 @@ export default function HomePage() {
   }, []);
 
   const handleUzmanBulClick = () => {
-    navigate("/ilanlar");
+    navigate("/إعلان");
   };
 
   const handleUzmanOlClick = () => {
-    navigate("/uzman-basvuru");
+    navigate("/ملف-الخبير");
   };
 
   const formatPrice = (value) => {
@@ -545,13 +545,13 @@ export default function HomePage() {
                       <div
                         key={listing.id}
                         className="listing-card armut-card vertical"
-                        onClick={() => navigate(`/ilan/${listing.id}`)}
+                        onClick={() => navigate(`/إعلان/${listing.id}`)}
                         role="button"
                         tabIndex={0}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
                             e.preventDefault();
-                            navigate(`/ilan/${listing.id}`);
+                            navigate(`/إعلان/${listing.id}`);
                           }
                         }}
                       >
@@ -571,7 +571,7 @@ export default function HomePage() {
                             className="reserve-btn"
                             onClick={(e) => {
                               e.stopPropagation();
-                              navigate(`/ilan/${listing.id}`);
+                              navigate(`/إعلان/${listing.id}`);
                             }}
                           >
                             عرض الإعلان

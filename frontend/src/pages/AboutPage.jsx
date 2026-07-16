@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 import PageTransition from "../components/PageTransition";
 import { db } from "../firebase/firebaseClient";
 import "../styles/AboutPage.css";
-import logo from "../assets/pictures/logo.png";
+import logo from "../assets/pictures/logoArabicNoWriting.png";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -23,7 +23,7 @@ const stagger = {
 };
 
 const stats = [
-  { value: "81", label: "خدمة نشطة في المدينة" },
+  { value: "14", label: "خدمة نشطة في المدينة" },
   { valueKey: "providerCount", label: "خبير موثق" },
   { valueKey: "completedAppointmentsCount", label: "عمل مكتمل" },
   { value: 5, label: "خدمة 5 نجوم", type: "stars" },

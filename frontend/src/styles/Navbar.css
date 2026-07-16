@@ -475,11 +475,23 @@
 }
 
 .user-profile-trigger {
+    /* إلغاء تصميم button الافتراضي من المتصفح */
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+
+    /* التصميم الأصلي */
     display: flex;
     align-items: center;
     gap: 8px;
     cursor: pointer;
     padding: 5px 10px;
+    margin: 0;
     border-radius: 30px;
     transition: background 0.3s;
 }

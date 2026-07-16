@@ -1,7 +1,21 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { onAuthStateChanged, updateProfile } from 'firebase/auth';
-import { doc, getDoc, collection, getDocs, addDoc, deleteDoc, updateDoc, onSnapshot, query, where, writeBatch } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  onSnapshot,
+  query,
+  where,
+  orderBy,
+  serverTimestamp,
+  writeBatch,
+} from 'firebase/firestore';
 import { auth, db, storage } from '../firebase/firebaseClient';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { deleteProviderAccount } from '../services/accountService';
@@ -1047,211 +1061,6 @@ const DeleteAccountModal = ({ onClose, onDeleted, hasPasswordProvider = false, h
   );
 };
 
-const AddressRequestModal = ({ user, onClose, onSuccess }) => {
-  const [reason, setReason] = useState('');
-  const [taxPlate, setTaxPlate] = useState(null);
-  const [inspectionReport, setInspectionReport] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleFileChange = (e, setter) => {
-    const file = e.target.files[0];
-    if (file && file.size > 5 * 1024 * 1024) {
-      showAppToast("يجب أن يكون حجم الملف أقل من 5MB.", "error");
-      e.target.value = null;
-      return;
-    }
-    setter(file);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!taxPlate && !inspectionReport) {
-      setError('يرجى رفع مستند مطلوب واحد على الأقل (اللوحة الضريبية أو إيصال التحقق).');
-      return;
-    }
-    if (!reason.trim()) {
-      setError('يرجى كتابة سبب تغيير العنوان.');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      let taxPlateUrl = null;
-      let inspectionReportUrl = null;
-
-      if (taxPlate) {
-        const taxRef = ref(storage, `address_requests/${user.uid}/tax_plate_${Date.now()}`);
-        await uploadBytes(taxRef, taxPlate);
-        taxPlateUrl = await getDownloadURL(taxRef);
-      }
-
-      if (inspectionReport) {
-        const inspRef = ref(storage, `address_requests/${user.uid}/inspection_report_${Date.now()}`);
-        await uploadBytes(inspRef, inspectionReport);
-        inspectionReportUrl = await getDownloadURL(inspRef);
-      }
-
-      const userDisplayName = user.displayName || userData?.displayName || expertData?.businessName || "غير محدد";
-      const userEmail = user.email || userData?.email;
-
-      await addDoc(collection(db, "address_change_requests"), {
-        expertId: user.uid,
-        userDisplayName: userDisplayName,  
-        userEmail: userEmail,              
-        reason: reason.trim(),
-        taxPlateUrl,
-        inspectionReportUrl,
-        status: 'PENDING',
-        rejectionReason: null,
-        createdAt: new Date().toISOString()
-      });
-
-      showAppToast('تم إرسال طلبك بنجاح. يمكنك متابعة مرحلة المراجعة من هذا القسم.', 'success');
-      onSuccess();
-    } catch (err) {
-      if (isDevelopment) console.error("Talep gönderme hatası:", err);
-      setError('حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <Modal title="طلب تغيير العنوان" onClose={onClose}>
-      <form onSubmit={handleSubmit} className="modal-form">
-        <p className="modal-info-text" style={{ color: '#ffcc00', fontWeight: 'bold', marginBottom: '15px' }}>
-          <i className="fas fa-info-circle"></i> يرجى رفع مستند مطلوب واحد على الأقل
-        </p>
-
-        <div className="modal-field">
-          <label>اللوحة الضريبية (اختياري)</label>
-          <input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, setTaxPlate)} disabled={loading} />
-        </div>
-
-        <div className="modal-field">
-          <label>إيصال التحقق (اختياري)</label>
-          <input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, setInspectionReport)} disabled={loading} />
-        </div>
-
-        <div className="modal-field">
-          <label>اكتب سبب تغيير العنوان:</label>
-          <textarea 
-            className="modal-textarea"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="مثال: نقلت مكان عملي إلى مساحة أوسع..."
-            rows="4"
-            disabled={loading}
-          />
-        </div>
-
-        {error && <p className="modal-error">{sanitizeText(error)}</p>}
-
-        <div className="modal-actions">
-          <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>إلغاء</button>
-          <button type="submit" className="settings-primary-button" disabled={loading}>
-            {loading ? <><i className="fas fa-spinner fa-spin"></i> جاري الإرسال...</> : 'إرسال الطلب'}
-          </button>
-        </div>
-      </form>
-    </Modal>
-  );
-};
-
-const FinalAddressUpdateFlow = ({ user, requestId, mainAddressId, onClose, onSuccess }) => {
-  const [step, setStep] = useState('warning'); 
-  const [loading, setLoading] = useState(false);
-  const [initialAddress, setInitialAddress] = useState(null);
-
-  useEffect(() => {
-    const fetchCurrent = async () => {
-      if (!mainAddressId) return; 
-
-      try {
-        const docRef = doc(db, "users", user.uid, "addresses", mainAddressId);
-        const snap = await getDoc(docRef);
-        if (snap.exists()) setInitialAddress(snap.data());
-      } catch (err) {
-        console.error("Adres çekilemedi:", err);
-      }
-    };
-    fetchCurrent();
-  }, [user.uid, mainAddressId]);
-
-  const handleFinalSave = async (newData) => {
-    setLoading(true);
-    try {
-      const batch = writeBatch(db);
-      let addrRef;
-
-      if (mainAddressId) {
-        addrRef = doc(db, "users", user.uid, "addresses", mainAddressId);
-        batch.update(addrRef, { ...newData, updatedAt: new Date().toISOString() });
-      } else {
-        addrRef = doc(collection(db, "users", user.uid, "addresses"));
-        batch.set(addrRef, { ...newData, createdAt: new Date().toISOString() });
-        
-        const userRef = doc(db, "users", user.uid);
-        batch.update(userRef, { mainAddressId: addrRef.id });
-      }
-
-      const providerRef = doc(db, "service_providers", user.uid);
-        batch.update(providerRef, {
-          lat: newData.lat || null,
-          lng: newData.lng || null,
-          city: newData.city || null,
-          district: newData.district || null,
-          mainAddressId: addrRef.id,
-          updatedAt: new Date().toISOString()
-        });
-
-      const reqRef = doc(db, "address_change_requests", requestId);
-      batch.update(reqRef, { status: 'COMPLETED' });
-
-      await batch.commit();
-      showAppToast('تم حفظ عنوان مكان العمل بنجاح.', 'success');
-      onSuccess();
-    } catch (err) {
-      console.error("Kaydetme hatası:", err);
-      showAppToast('حدث خطأ أثناء التحديث.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (step === 'warning') {
-    return (
-      <Modal title="⚠️ تنبيه مهم" onClose={onClose}>
-        <div className="modal-form">
-          <div className="rejection-alert-box" style={{ background: 'rgba(255, 204, 0, 0.1)', border: '1px solid #ffcc00' }}>
-            <p style={{ color: '#ffcc00', fontSize: '15px', lineHeight: '1.6' }}>
-              <strong>يرجى التأكد من إدخال عنوان مكان العمل بشكل صحيح.</strong> لا يمكن التراجع عن هذا الإجراء.
-              إذا أدخلت معلومات خاطئة فستحتاج إلى إنشاء طلب جديد.
-            </p>
-          </div>
-          <div className="modal-actions" style={{ marginTop: '20px' }}>
-            <button className="settings-secondary-button" onClick={onClose}>رجوع</button>
-            <button className="settings-primary-button" onClick={() => setStep('form')}>قرأت وأوافق</button>
-          </div>
-        </div>
-      </Modal>
-    );
-  }
-
-  return (
-    <AddressModal 
-      isOpen={true}
-      onClose={onClose}
-      onSave={handleFinalSave}
-      initialData={initialAddress}
-      isEditing={true}
-    />
-  );
-};
-
 const ExpertProfilePage = () => {
   const navigate = useNavigate();
   const SPECIALTIES_PRICE_LIMIT = 5;
@@ -1301,8 +1110,12 @@ const ExpertProfilePage = () => {
   const [canLinkGoogle, setCanLinkGoogle] = useState(false);
   const [hasPasswordProvider, setHasPasswordProvider] = useState(false);
 
-  const [addressRequest, setAddressRequest] = useState(null);
-  const [mainAddressData, setMainAddressData] = useState(null);
+  // Simple direct work-address management. No admin approval is required.
+  const [addresses, setAddresses] = useState([]);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [editingAddressId, setEditingAddressId] = useState(null);
+  const [showDeleteAddressConfirm, setShowDeleteAddressConfirm] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState(null);
 
   const [showPortfolioDeleteConfirm, setShowPortfolioDeleteConfirm] = useState(false);
   const [portfolioUrlToDelete, setPortfolioUrlToDelete] = useState(null);
@@ -1310,35 +1123,36 @@ const ExpertProfilePage = () => {
   const [baIdToDelete, setBaIdToDelete] = useState(null);
 
   useEffect(() => {
-    if (!user?.uid) return;
-    
-    const q = query(collection(db, "address_change_requests"), where("expertId", "==", user.uid));
-    const unsubscribe = onSnapshot(q, (snap) => {
-      try {
-        if (!snap.empty) {
-          const sorted = snap.docs.map(d => ({ id: d.id, ...d.data() }))
-                          .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-          setAddressRequest(sorted[0]);
-        } else {
-          setAddressRequest(null);
+    if (!user?.uid) {
+      setAddresses([]);
+      return undefined;
+    }
+
+    const addressesRef = collection(db, 'users', user.uid, 'addresses');
+    const addressesQuery = query(addressesRef, orderBy('createdAt', 'desc'));
+
+    const unsubscribe = onSnapshot(
+      addressesQuery,
+      (snapshot) => {
+        const nextAddresses = snapshot.docs.map((addressDoc) => ({
+          id: addressDoc.id,
+          ...addressDoc.data(),
+        }));
+
+        // The expert profile uses one work address. Older extra records remain
+        // visible temporarily so the expert can choose which one to keep/delete.
+        setAddresses(nextAddresses);
+      },
+      (error) => {
+        if (isDevelopment) {
+          console.error('حدث خطأ أثناء قراءة عنوان الخبير:', error);
         }
-      } catch (err) {
-        console.error("Ajan veri okuyamadı:", err);
+        setAddresses([]);
       }
-    }, (error) => {
-      console.warn("Firebase Kuralları henüz aktif olmayabilir:", error.message);
-    });
+    );
+
     return () => unsubscribe();
   }, [user?.uid]);
-
-  useEffect(() => {
-    if (!user?.uid || !userData?.mainAddressId) return;
-    const fetchAddr = async () => {
-      const addrDoc = await getDoc(doc(db, "users", user.uid, "addresses", userData.mainAddressId));
-      if (addrDoc.exists()) setMainAddressData(addrDoc.data());
-    };
-    fetchAddr();
-  }, [user?.uid, userData?.mainAddressId]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -1732,6 +1546,219 @@ const ExpertProfilePage = () => {
     }
   };
 
+  const handleSaveAddress = async (addressData) => {
+    const governorate = sanitizeText(
+      addressData.governorate || addressData.city || ''
+    )
+      .trim()
+      .slice(0, 100);
+
+    const area = sanitizeText(
+      addressData.area ||
+        addressData.district ||
+        addressData.neighborhood ||
+        ''
+    )
+      .trim()
+      .slice(0, 100);
+
+    const additionalInfo = sanitizeText(
+      addressData.additionalInfo || addressData.street || ''
+    )
+      .trim()
+      .slice(0, 300);
+
+    if (!governorate) {
+      showAppToast('يرجى اختيار المحافظة.', 'error');
+      return;
+    }
+
+    if (!area) {
+      showAppToast('يرجى إدخال المنطقة.', 'error');
+      return;
+    }
+
+    if (!user?.uid) {
+      showAppToast('تعذر تحديد حساب الخبير. يرجى تسجيل الدخول مجدداً.', 'error');
+      return;
+    }
+
+    try {
+      const finalAddressData = {
+        // New Arabic fields.
+        governorate,
+        area,
+        additionalInfo,
+
+        // Legacy-compatible fields used elsewhere in the project.
+        addressName: sanitizeText(addressData.addressName || 'عنوان العمل')
+          .trim()
+          .slice(0, 200),
+        city: governorate,
+        district: area,
+        neighborhood: area,
+        street: additionalInfo,
+
+        // Hidden legacy fields are retained for data compatibility.
+        siteName: sanitizeText(addressData.siteName || '').trim().slice(0, 200),
+        apartmentName: sanitizeText(addressData.apartmentName || '')
+          .trim()
+          .slice(0, 200),
+        blockName: sanitizeText(addressData.blockName || '').trim().slice(0, 100),
+        buildingNo: sanitizeText(addressData.buildingNo || '').trim().slice(0, 50),
+        floor: sanitizeText(addressData.floor || '').trim().slice(0, 50),
+        doorNo: sanitizeText(addressData.doorNo || '').trim().slice(0, 50),
+
+        lat: addressData.lat ?? null,
+        lng: addressData.lng ?? null,
+        coordSource: addressData.coordSource || 'Manual',
+        updatedAt: serverTimestamp(),
+      };
+
+      const batch = writeBatch(db);
+      let addressRef;
+
+      if (editingAddressId) {
+        addressRef = doc(db, 'users', user.uid, 'addresses', editingAddressId);
+        batch.update(addressRef, finalAddressData);
+      } else {
+        addressRef = doc(collection(db, 'users', user.uid, 'addresses'));
+        batch.set(addressRef, {
+          ...finalAddressData,
+          createdAt: serverTimestamp(),
+        });
+      }
+
+      // Keep the user document and provider search document synchronized.
+      batch.update(doc(db, 'users', user.uid), {
+        mainAddressId: addressRef.id,
+        updatedAt: serverTimestamp(),
+      });
+
+      batch.update(doc(db, 'service_providers', user.uid), {
+        mainAddressId: addressRef.id,
+        governorate,
+        area,
+        additionalInfo,
+        city: governorate,
+        district: area,
+        lat: addressData.lat ?? null,
+        lng: addressData.lng ?? null,
+        updatedAt: serverTimestamp(),
+      });
+
+      await batch.commit();
+
+      setUserData((previous) => ({
+        ...(previous || {}),
+        mainAddressId: addressRef.id,
+      }));
+
+      setExpertData((previous) => ({
+        ...(previous || {}),
+        mainAddressId: addressRef.id,
+        governorate,
+        area,
+        additionalInfo,
+        city: governorate,
+        district: area,
+        lat: addressData.lat ?? null,
+        lng: addressData.lng ?? null,
+      }));
+
+      showAppToast(
+        editingAddressId
+          ? 'تم تحديث عنوان العمل بنجاح.'
+          : 'تم حفظ عنوان العمل بنجاح.',
+        'success'
+      );
+
+      setShowAddressModal(false);
+      setEditingAddressId(null);
+    } catch (error) {
+      if (isDevelopment) {
+        console.error('حدث خطأ أثناء حفظ عنوان الخبير:', error);
+      }
+      showAppToast('حدث خطأ أثناء حفظ عنوان العمل.', 'error');
+    }
+  };
+
+  const handleEditAddress = (addressId) => {
+    setEditingAddressId(addressId);
+    setShowAddressModal(true);
+  };
+
+  const handleDeleteAddress = (addressId) => {
+    setAddressToDelete(addressId);
+    setShowDeleteAddressConfirm(true);
+  };
+
+  const confirmDeleteAddress = async () => {
+    if (!addressToDelete || !user?.uid) return;
+
+    try {
+      const remainingAddresses = addresses.filter(
+        (address) => address.id !== addressToDelete
+      );
+      const nextMainAddress = remainingAddresses[0] || null;
+      const batch = writeBatch(db);
+
+      batch.delete(
+        doc(db, 'users', user.uid, 'addresses', String(addressToDelete))
+      );
+
+      batch.update(doc(db, 'users', user.uid), {
+        mainAddressId: nextMainAddress?.id || null,
+        updatedAt: serverTimestamp(),
+      });
+
+      batch.update(doc(db, 'service_providers', user.uid), {
+        mainAddressId: nextMainAddress?.id || null,
+        governorate:
+          nextMainAddress?.governorate || nextMainAddress?.city || null,
+        area: nextMainAddress?.area || nextMainAddress?.district || null,
+        additionalInfo:
+          nextMainAddress?.additionalInfo || nextMainAddress?.street || null,
+        city: nextMainAddress?.city || nextMainAddress?.governorate || null,
+        district: nextMainAddress?.district || nextMainAddress?.area || null,
+        lat: nextMainAddress?.lat ?? null,
+        lng: nextMainAddress?.lng ?? null,
+        updatedAt: serverTimestamp(),
+      });
+
+      await batch.commit();
+
+      setUserData((previous) => ({
+        ...(previous || {}),
+        mainAddressId: nextMainAddress?.id || null,
+      }));
+
+      setExpertData((previous) => ({
+        ...(previous || {}),
+        mainAddressId: nextMainAddress?.id || null,
+        governorate:
+          nextMainAddress?.governorate || nextMainAddress?.city || null,
+        area: nextMainAddress?.area || nextMainAddress?.district || null,
+        additionalInfo:
+          nextMainAddress?.additionalInfo || nextMainAddress?.street || null,
+        city: nextMainAddress?.city || nextMainAddress?.governorate || null,
+        district: nextMainAddress?.district || nextMainAddress?.area || null,
+        lat: nextMainAddress?.lat ?? null,
+        lng: nextMainAddress?.lng ?? null,
+      }));
+
+      showAppToast('تم حذف عنوان العمل بنجاح.', 'success');
+    } catch (error) {
+      if (isDevelopment) {
+        console.error('حدث خطأ أثناء حذف عنوان الخبير:', error);
+      }
+      showAppToast('حدث خطأ أثناء حذف عنوان العمل.', 'error');
+    } finally {
+      setShowDeleteAddressConfirm(false);
+      setAddressToDelete(null);
+    }
+  };
+
   const handlePortfolioUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
@@ -2082,31 +2109,9 @@ const ExpertProfilePage = () => {
         />
       )}
 
-      {activeModal === 'addressRequestModal' && (
-        <AddressRequestModal
-          user={user}
-          onClose={() => setActiveModal(null)}
-          onSuccess={() => {
-            setActiveModal(null);
-          }}
-        />
-      )}
-
-      {activeModal === 'finalAddressUpdate' && (
-        <FinalAddressUpdateFlow
-          user={user}
-          requestId={addressRequest?.id}
-          mainAddressId={userData?.mainAddressId}
-          onClose={() => setActiveModal(null)}
-          onSuccess={() => {
-            setActiveModal(null);
-            window.location.reload();
-          }}
-        />
-      )}
 
       <main className="profile-main">
-        <div className="profile-header-card">
+        <div className="profile-header-card" dir="rtl">
           <div className="profile-header-left">
             <div className="profile-avatar-large">
               {profilePhotoUrl ? (
@@ -2124,29 +2129,55 @@ const ExpertProfilePage = () => {
               </label>
             </div>
 
-            <div className="profile-header-info">
-              <div className="profile-header-meta">
-                <h1 className="profile-header-name">{sanitizeText(expertData?.businessName || 'غير محدد')}</h1>
+            <div className="profile-header-info expert-header-info" dir="rtl">
+              <div className="profile-header-meta expert-header-main-row">
+                <h1 className="profile-header-name">
+                  {sanitizeText(expertData?.businessName || 'غير محدد')}
+                </h1>
+
                 {String(expertData?.profession || '').trim() ? (
                   <span className="profile-header-sub profile-header-sub--profession">
                     {sanitizeText(String(expertData.profession).trim())}
                   </span>
                 ) : String(expertData?.category || '').trim() ? (
                   <span className="profile-header-sub profile-header-sub--profession">
-                    {sanitizeText(toArabicServiceLabel(String(expertData.category).split(',')[0].trim()))}
+                    {sanitizeText(
+                      toArabicServiceLabel(
+                        String(expertData.category).split(',')[0].trim()
+                      )
+                    )}
                   </span>
                 ) : null}
-                <span className="profile-header-sub">{sanitizeText(getUserDisplayName())}</span>
+
+                <span className="profile-header-sub">
+                  {sanitizeText(getUserDisplayName())}
+                </span>
               </div>
-              <div className="profile-header-contact">
-                <span><i className="fas fa-envelope"></i> {sanitizeText(userData?.email || 'غير محدد')}</span>
-                <span><i className="fas fa-phone"></i> {sanitizeText(userData?.phoneNumber || 'غير محدد')}</span>
+
+              <div className="profile-header-contact expert-header-contact">
+                <span className="expert-header-email">
+                  <i className="fas fa-envelope" aria-hidden="true"></i>
+                  <bdi>
+                    {sanitizeText(
+                      userData?.email || user?.email || 'غير محدد'
+                    )}
+                  </bdi>
+                </span>
               </div>
-              <div className="profile-header-meta">
-                <span className="profile-badge-approved"><i className="fas fa-check-circle"></i> خبير معتمد</span>
+
+              <div className="profile-header-meta expert-header-badges">
+                <span className="profile-badge-approved">
+                  <i className="fas fa-check-circle" aria-hidden="true"></i>
+                  خبير معتمد
+                </span>
+
                 <span className="profile-badge-since">
-                  <i className="fas fa-calendar-alt"></i>
-                  {userData?.createdAt ? `عضو منذ عام ${new Date(userData.createdAt).getFullYear()}` : 'غير محدد'}
+                  <i className="fas fa-calendar-alt" aria-hidden="true"></i>
+                  {userData?.createdAt
+                    ? `عضو منذ عام ${new Date(
+                        userData.createdAt
+                      ).getFullYear()}`
+                    : 'غير محدد'}
                 </span>
               </div>
             </div>
@@ -2468,68 +2499,201 @@ const ExpertProfilePage = () => {
           )}
 
           {activeSetting === 'address' && (
-            <div className="settings-combined-container">
-              <h4 className="settings-section-title">عنوان العمل الحالي</h4>
-              
-              {mainAddressData ? (
-                <div className="address-display-card">
-                  <div className="address-info-row">
-                    <i className="fas fa-location-dot"></i>
-                    <div>
-                      <p className="address-full-text">{mainAddressData.addressName}</p>
-                      <p className="address-sub-text">
-                        {mainAddressData.neighborhood} {mainAddressData.street} No:{mainAddressData.buildingNo} 
-                        Kat:{mainAddressData.floor} Daire:{mainAddressData.doorNo}
-                      </p>
-                      <p className="address-city-text">{mainAddressData.district} / {mainAddressData.city}</p>
-                    </div>
-                  </div>
+            <div className="settings-combined-container saved-addresses-section">
+              <div className="saved-addresses-section__head">
+                
+
+                {addresses.length === 0 && (
+                  <button
+                    type="button"
+                    className="settings-primary-button saved-addresses-add-btn"
+                    onClick={() => {
+                      setEditingAddressId(null);
+                      setShowAddressModal(true);
+                    }}
+                  >
+                    <i className="fas fa-plus" aria-hidden="true"></i>{' '}
+                    إضافة عنوان العمل
+                  </button>
+                )}
+              </div>
+
+              {addresses.length === 0 ? (
+                <div className="saved-addresses-empty">
+                  <i className="fas fa-map-marker-alt" aria-hidden="true"></i>
+                  <p>لم يتم إضافة عنوان العمل بعد.</p>
+                  <button
+                    type="button"
+                    className="settings-primary-button"
+                    onClick={() => {
+                      setEditingAddressId(null);
+                      setShowAddressModal(true);
+                    }}
+                  >
+                    <i className="fas fa-plus" aria-hidden="true"></i>{' '}
+                    أضف عنوان العمل
+                  </button>
                 </div>
               ) : (
-                <p className="settings-helper-text">لم يتم العثور على عنوان عمل مسجل بعد.</p>
-              )}
+                <div className="saved-addresses-list">
+                  {activeSetting === 'address' && (
+  <div
+    className="settings-combined-container saved-addresses-section expert-address-readonly"
+    dir="rtl"
+  >
+    <div className="saved-addresses-section__head expert-address-readonly__head">
+      <div className="expert-address-readonly__heading">
+        <div className="expert-address-readonly__title-row">
+          <span
+            className="expert-address-readonly__title-icon"
+            aria-hidden="true"
+          >
+            <i className="fas fa-map-marker-alt"></i>
+          </span>
 
-              <div className="address-request-section" style={{ marginTop: '30px' }}>
-                
-                {addressRequest?.status === 'REJECTED' && (
-                  <div className="rejection-alert-box">
-                    <div className="rejection-alert-title">
-                      <i className="fas fa-exclamation-triangle"></i> تم رفض طلب تغيير العنوان
-                    </div>
-                    <p className="rejection-alert-reason">
-                      <strong>سبب الرفض:</strong> {addressRequest.rejectionReason || "غير محدد."}
-                    </p>
+          <h4 className="settings-section-title expert-address-readonly__title">
+            عنوان العمل
+          </h4>
+        </div>
+
+        <div className="expert-address-readonly__notice">
+          <i
+            className="fas fa-circle-info"
+            aria-hidden="true"
+          ></i>
+
+          <p>
+            لا يمكنك تغيير عنوان العمل مباشرة من ملفك الشخصي.
+            لتغيير العنوان، يرجى التواصل معنا وإرسال طلب تغيير
+            عنوان العمل.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {addresses.length === 0 ? (
+      <div className="saved-addresses-empty expert-address-readonly__empty">
+        <i
+          className="fas fa-map-marker-alt"
+          aria-hidden="true"
+        ></i>
+
+        <p>لم يتم العثور على عنوان عمل مسجل في حسابك.</p>
+      </div>
+    ) : (
+      <div className="saved-addresses-list">
+        {addresses.slice(0, 1).map((address, index) => {
+          const governorate =
+            address.governorate ||
+            address.city ||
+            '';
+
+          const area =
+            address.area ||
+            address.district ||
+            address.neighborhood ||
+            '';
+
+          const additionalInfo =
+            address.additionalInfo ||
+            address.street ||
+            '';
+
+          const isPrimary =
+            userData?.mainAddressId === address.id ||
+            (!userData?.mainAddressId && index === 0);
+
+          return (
+            <article
+              key={address.id}
+              className="saved-address-card expert-address-readonly__card"
+            >
+              <div className="saved-address-card__top expert-address-readonly__card-head">
+                <div className="saved-address-card__title-row expert-address-readonly__card-title">
+                  <span
+                    className="saved-address-card__icon-badge"
+                    aria-hidden="true"
+                  >
+                    <i className="fas fa-map-marker-alt"></i>
+                  </span>
+
+                  <div>
+                    <h5 className="saved-address-card__name">
+                      {sanitizeText(
+                        address.addressName ||
+                          'عنوان العمل'
+                      )}
+                    </h5>
+
+                    {isPrimary && (
+                      <span className="settings-status-badge expert-address-readonly__primary-badge">
+                        <i
+                          className="fas fa-check-circle"
+                          aria-hidden="true"
+                        ></i>
+                        العنوان الأساسي
+                      </span>
+                    )}
                   </div>
-                )}
-
-                <button 
-                  className={`address-status-btn ${(!addressRequest || addressRequest.status === 'COMPLETED') ? 'primary' : addressRequest.status.toLowerCase()}`}
-                  disabled={addressRequest?.status === 'PENDING'}
-                  onClick={() => {
-                    if (!addressRequest || addressRequest.status === 'REJECTED' || addressRequest.status === 'COMPLETED') {
-                      setActiveModal('addressRequestModal');
-                    } else if (addressRequest.status === 'APPROVED') {
-                      setActiveModal('finalAddressUpdate');
-                    }
-                  }}
-                >
-                  {(!addressRequest || addressRequest?.status === 'COMPLETED') && (
-                    <><i className="fas fa-file-signature"></i> طلب تغيير عنوان العمل</>
-                  )}
-                  
-                  {addressRequest?.status === 'PENDING' && (
-                    <><i className="fas fa-hourglass-half"></i> الطلب قيد المراجعة</>
-                  )}
-                  
-                  {addressRequest?.status === 'APPROVED' && (
-                    <><i className="fas fa-check-circle"></i> تم القبول! انقر للتحديث</>
-                  )}
-                  
-                  {addressRequest?.status === 'REJECTED' && (
-                    <><i className="fas fa-redo"></i> تم الرفض. أعد تقديم الطلب</>
-                  )}
-                </button>
+                </div>
               </div>
+
+              <div className="saved-address-card__lines">
+                <div className="saved-address-card__line expert-address-readonly__details">
+                  <div className="saved-address-detail">
+                    <span className="saved-address-detail__label">
+                      المحافظة
+                    </span>
+
+                    <span className="saved-address-detail__value">
+                      {sanitizeText(
+                        governorate || 'غير محدد'
+                      )}
+                    </span>
+                  </div>
+
+                  <div className="saved-address-detail">
+                    <span className="saved-address-detail__label">
+                      المنطقة
+                    </span>
+
+                    <span className="saved-address-detail__value">
+                      {sanitizeText(
+                        area || 'غير محدد'
+                      )}
+                    </span>
+                  </div>
+
+                  <div className="saved-address-detail">
+                    <span className="saved-address-detail__label">
+                      معلومات إضافية
+                    </span>
+
+                    <span className="saved-address-detail__value">
+                      {sanitizeText(
+                        additionalInfo ||
+                          'لا توجد معلومات إضافية'
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    )}
+  </div>
+)}
+
+                  {addresses.length > 1 && (
+                    <div className="security-inline-error" style={{ marginTop: 12 }}>
+                      <i className="fas fa-circle-info"></i>{' '}
+                      يوجد أكثر من عنوان قديم في الحساب. احتفظ بعنوان عمل واحد واحذف البقية.
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </section>
@@ -2586,7 +2750,7 @@ const ExpertProfilePage = () => {
             <button
               className="settings-secondary-button"
               style={{ width: '100%', marginTop: 12, padding: '12px', fontWeight: 'bold' }}
-              onClick={() => navigate(`/uzman/${user.uid}?tab=reviews`)}
+              onClick={() => navigate(`/خبير/${user.uid}?tab=reviews`)}
             >
               مشاهدة الكل (الملف الشخصي العام) →
             </button>
@@ -2757,6 +2921,35 @@ const ExpertProfilePage = () => {
         </div>
       )}
 
+      <AddressModal
+        isOpen={showAddressModal}
+        onClose={() => {
+          setShowAddressModal(false);
+          setEditingAddressId(null);
+        }}
+        onSave={handleSaveAddress}
+        initialData={
+          editingAddressId
+            ? addresses.find((address) => address.id === editingAddressId) || null
+            : null
+        }
+        isEditing={Boolean(editingAddressId)}
+      />
+
+      <ConfirmModal
+        isOpen={showDeleteAddressConfirm}
+        onClose={() => {
+          setShowDeleteAddressConfirm(false);
+          setAddressToDelete(null);
+        }}
+        onConfirm={confirmDeleteAddress}
+        title="حذف عنوان العمل"
+        message="هل أنت متأكد من حذف عنوان العمل؟ لا يمكن التراجع عن هذا الإجراء."
+        confirmText="نعم، حذف"
+        cancelText="إلغاء"
+        type="danger"
+      />
+
       <ConfirmModal
         isOpen={showPortfolioDeleteConfirm}
         onClose={() => {
@@ -2795,3 +2988,342 @@ REMOVED BLOCKS FOR SYRIA LAUNCH:
 1. Recent Jobs ("Son İşlerim") section.
 2. ID Document ("kimlik belgesi") display / "Yasal Belgeler" section was simplified to only show certificates.
 */
+
+
+// ============================================================================
+// OLD / UNUSED ADDRESS APPROVAL CODE — KEPT FOR REFERENCE ONLY
+// Do not reactivate this code in the simplified Syrian version.
+// ============================================================================
+// ---- OLD ADMIN-APPROVAL ADDRESS COMPONENTS — UNUSED ----
+// const AddressRequestModal = ({ user, onClose, onSuccess }) => {
+//   const [reason, setReason] = useState('');
+//   const [taxPlate, setTaxPlate] = useState(null);
+//   const [inspectionReport, setInspectionReport] = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState('');
+// 
+//   const handleFileChange = (e, setter) => {
+//     const file = e.target.files[0];
+//     if (file && file.size > 5 * 1024 * 1024) {
+//       showAppToast("يجب أن يكون حجم الملف أقل من 5MB.", "error");
+//       e.target.value = null;
+//       return;
+//     }
+//     setter(file);
+//   };
+// 
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     if (!taxPlate && !inspectionReport) {
+//       setError('يرجى رفع مستند مطلوب واحد على الأقل (اللوحة الضريبية أو إيصال التحقق).');
+//       return;
+//     }
+//     if (!reason.trim()) {
+//       setError('يرجى كتابة سبب تغيير العنوان.');
+//       return;
+//     }
+// 
+//     setLoading(true);
+//     setError('');
+// 
+//     try {
+//       let taxPlateUrl = null;
+//       let inspectionReportUrl = null;
+// 
+//       if (taxPlate) {
+//         const taxRef = ref(storage, `address_requests/${user.uid}/tax_plate_${Date.now()}`);
+//         await uploadBytes(taxRef, taxPlate);
+//         taxPlateUrl = await getDownloadURL(taxRef);
+//       }
+// 
+//       if (inspectionReport) {
+//         const inspRef = ref(storage, `address_requests/${user.uid}/inspection_report_${Date.now()}`);
+//         await uploadBytes(inspRef, inspectionReport);
+//         inspectionReportUrl = await getDownloadURL(inspRef);
+//       }
+// 
+//       const userDisplayName = user.displayName || userData?.displayName || expertData?.businessName || "غير محدد";
+//       const userEmail = user.email || userData?.email;
+// 
+//       await addDoc(collection(db, "address_change_requests"), {
+//         expertId: user.uid,
+//         userDisplayName: userDisplayName,  
+//         userEmail: userEmail,              
+//         reason: reason.trim(),
+//         taxPlateUrl,
+//         inspectionReportUrl,
+//         status: 'PENDING',
+//         rejectionReason: null,
+//         createdAt: new Date().toISOString()
+//       });
+// 
+//       showAppToast('تم إرسال طلبك بنجاح. يمكنك متابعة مرحلة المراجعة من هذا القسم.', 'success');
+//       onSuccess();
+//     } catch (err) {
+//       if (isDevelopment) console.error("Talep gönderme hatası:", err);
+//       setError('حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+// 
+//   return (
+//     <Modal title="طلب تغيير العنوان" onClose={onClose}>
+//       <form onSubmit={handleSubmit} className="modal-form">
+//         <p className="modal-info-text" style={{ color: '#ffcc00', fontWeight: 'bold', marginBottom: '15px' }}>
+//           <i className="fas fa-info-circle"></i> يرجى رفع مستند مطلوب واحد على الأقل
+//         </p>
+// 
+//         <div className="modal-field">
+//           <label>اللوحة الضريبية (اختياري)</label>
+//           <input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, setTaxPlate)} disabled={loading} />
+//         </div>
+// 
+//         <div className="modal-field">
+//           <label>إيصال التحقق (اختياري)</label>
+//           <input type="file" accept="image/*,application/pdf" onChange={(e) => handleFileChange(e, setInspectionReport)} disabled={loading} />
+//         </div>
+// 
+//         <div className="modal-field">
+//           <label>اكتب سبب تغيير العنوان:</label>
+//           <textarea 
+//             className="modal-textarea"
+//             value={reason}
+//             onChange={(e) => setReason(e.target.value)}
+//             placeholder="مثال: نقلت مكان عملي إلى مساحة أوسع..."
+//             rows="4"
+//             disabled={loading}
+//           />
+//         </div>
+// 
+//         {error && <p className="modal-error">{sanitizeText(error)}</p>}
+// 
+//         <div className="modal-actions">
+//           <button type="button" className="settings-secondary-button" onClick={onClose} disabled={loading}>إلغاء</button>
+//           <button type="submit" className="settings-primary-button" disabled={loading}>
+//             {loading ? <><i className="fas fa-spinner fa-spin"></i> جاري الإرسال...</> : 'إرسال الطلب'}
+//           </button>
+//         </div>
+//       </form>
+//     </Modal>
+//   );
+// };
+// 
+// const FinalAddressUpdateFlow = ({ user, requestId, mainAddressId, onClose, onSuccess }) => {
+//   const [step, setStep] = useState('warning'); 
+//   const [loading, setLoading] = useState(false);
+//   const [initialAddress, setInitialAddress] = useState(null);
+// 
+//   useEffect(() => {
+//     const fetchCurrent = async () => {
+//       if (!mainAddressId) return; 
+// 
+//       try {
+//         const docRef = doc(db, "users", user.uid, "addresses", mainAddressId);
+//         const snap = await getDoc(docRef);
+//         if (snap.exists()) setInitialAddress(snap.data());
+//       } catch (err) {
+//         console.error("Adres çekilemedi:", err);
+//       }
+//     };
+//     fetchCurrent();
+//   }, [user.uid, mainAddressId]);
+// 
+//   const handleFinalSave = async (newData) => {
+//     setLoading(true);
+//     try {
+//       const batch = writeBatch(db);
+//       let addrRef;
+// 
+//       if (mainAddressId) {
+//         addrRef = doc(db, "users", user.uid, "addresses", mainAddressId);
+//         batch.update(addrRef, { ...newData, updatedAt: new Date().toISOString() });
+//       } else {
+//         addrRef = doc(collection(db, "users", user.uid, "addresses"));
+//         batch.set(addrRef, { ...newData, createdAt: new Date().toISOString() });
+//         
+//         const userRef = doc(db, "users", user.uid);
+//         batch.update(userRef, { mainAddressId: addrRef.id });
+//       }
+// 
+//       const providerRef = doc(db, "service_providers", user.uid);
+//         batch.update(providerRef, {
+//           lat: newData.lat || null,
+//           lng: newData.lng || null,
+//           city: newData.city || null,
+//           district: newData.district || null,
+//           mainAddressId: addrRef.id,
+//           updatedAt: new Date().toISOString()
+//         });
+// 
+//       const reqRef = doc(db, "address_change_requests", requestId);
+//       batch.update(reqRef, { status: 'COMPLETED' });
+// 
+//       await batch.commit();
+//       showAppToast('تم حفظ عنوان مكان العمل بنجاح.', 'success');
+//       onSuccess();
+//     } catch (err) {
+//       console.error("Kaydetme hatası:", err);
+//       showAppToast('حدث خطأ أثناء التحديث.', 'error');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+// 
+//   if (step === 'warning') {
+//     return (
+//       <Modal title="⚠️ تنبيه مهم" onClose={onClose}>
+//         <div className="modal-form">
+//           <div className="rejection-alert-box" style={{ background: 'rgba(255, 204, 0, 0.1)', border: '1px solid #ffcc00' }}>
+//             <p style={{ color: '#ffcc00', fontSize: '15px', lineHeight: '1.6' }}>
+//               <strong>يرجى التأكد من إدخال عنوان مكان العمل بشكل صحيح.</strong> لا يمكن التراجع عن هذا الإجراء.
+//               إذا أدخلت معلومات خاطئة فستحتاج إلى إنشاء طلب جديد.
+//             </p>
+//           </div>
+//           <div className="modal-actions" style={{ marginTop: '20px' }}>
+//             <button className="settings-secondary-button" onClick={onClose}>رجوع</button>
+//             <button className="settings-primary-button" onClick={() => setStep('form')}>قرأت وأوافق</button>
+//           </div>
+//         </div>
+//       </Modal>
+//     );
+//   }
+// 
+//   return (
+//     <AddressModal 
+//       isOpen={true}
+//       onClose={onClose}
+//       onSave={handleFinalSave}
+//       initialData={initialAddress}
+//       isEditing={true}
+//     />
+//   );
+// };
+// ---- END ----
+
+// ---- OLD ADDRESS REQUEST LISTENERS — UNUSED ----
+//   useEffect(() => {
+//     if (!user?.uid) return;
+//     
+//     const q = query(collection(db, "address_change_requests"), where("expertId", "==", user.uid));
+//     const unsubscribe = onSnapshot(q, (snap) => {
+//       try {
+//         if (!snap.empty) {
+//           const sorted = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+//                           .sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+//           setAddressRequest(sorted[0]);
+//         } else {
+//           setAddressRequest(null);
+//         }
+//       } catch (err) {
+//         console.error("Ajan veri okuyamadı:", err);
+//       }
+//     }, (error) => {
+//       console.warn("Firebase Kuralları henüz aktif olmayabilir:", error.message);
+//     });
+//     return () => unsubscribe();
+//   }, [user?.uid]);
+// 
+//   useEffect(() => {
+//     if (!user?.uid || !userData?.mainAddressId) return;
+//     const fetchAddr = async () => {
+//       const addrDoc = await getDoc(doc(db, "users", user.uid, "addresses", userData.mainAddressId));
+//       if (addrDoc.exists()) setMainAddressData(addrDoc.data());
+//     };
+//     fetchAddr();
+//   }, [user?.uid, userData?.mainAddressId]);
+// ---- END ----
+
+// ---- OLD ADDRESS MODAL RENDERING — UNUSED ----
+//       {activeModal === 'addressRequestModal' && (
+//         <AddressRequestModal
+//           user={user}
+//           onClose={() => setActiveModal(null)}
+//           onSuccess={() => {
+//             setActiveModal(null);
+//           }}
+//         />
+//       )}
+// 
+//       {activeModal === 'finalAddressUpdate' && (
+//         <FinalAddressUpdateFlow
+//           user={user}
+//           requestId={addressRequest?.id}
+//           mainAddressId={userData?.mainAddressId}
+//           onClose={() => setActiveModal(null)}
+//           onSuccess={() => {
+//             setActiveModal(null);
+//             window.location.reload();
+//           }}
+//         />
+//       )}
+// ---- END ----
+
+// ---- OLD ADMIN-APPROVAL ADDRESS TAB UI — UNUSED ----
+//           {activeSetting === 'address' && (
+//             <div className="settings-combined-container">
+//               <h4 className="settings-section-title">عنوان العمل الحالي</h4>
+//               
+//               {mainAddressData ? (
+//                 <div className="address-display-card">
+//                   <div className="address-info-row">
+//                     <i className="fas fa-location-dot"></i>
+//                     <div>
+//                       <p className="address-full-text">{mainAddressData.addressName}</p>
+//                       <p className="address-sub-text">
+//                         {mainAddressData.neighborhood} {mainAddressData.street} No:{mainAddressData.buildingNo} 
+//                         Kat:{mainAddressData.floor} Daire:{mainAddressData.doorNo}
+//                       </p>
+//                       <p className="address-city-text">{mainAddressData.district} / {mainAddressData.city}</p>
+//                     </div>
+//                   </div>
+//                 </div>
+//               ) : (
+//                 <p className="settings-helper-text">لم يتم العثور على عنوان عمل مسجل بعد.</p>
+//               )}
+// 
+//               <div className="address-request-section" style={{ marginTop: '30px' }}>
+//                 
+//                 {addressRequest?.status === 'REJECTED' && (
+//                   <div className="rejection-alert-box">
+//                     <div className="rejection-alert-title">
+//                       <i className="fas fa-exclamation-triangle"></i> تم رفض طلب تغيير العنوان
+//                     </div>
+//                     <p className="rejection-alert-reason">
+//                       <strong>سبب الرفض:</strong> {addressRequest.rejectionReason || "غير محدد."}
+//                     </p>
+//                   </div>
+//                 )}
+// 
+//                 <button 
+//                   className={`address-status-btn ${(!addressRequest || addressRequest.status === 'COMPLETED') ? 'primary' : addressRequest.status.toLowerCase()}`}
+//                   disabled={addressRequest?.status === 'PENDING'}
+//                   onClick={() => {
+//                     if (!addressRequest || addressRequest.status === 'REJECTED' || addressRequest.status === 'COMPLETED') {
+//                       setActiveModal('addressRequestModal');
+//                     } else if (addressRequest.status === 'APPROVED') {
+//                       setActiveModal('finalAddressUpdate');
+//                     }
+//                   }}
+//                 >
+//                   {(!addressRequest || addressRequest?.status === 'COMPLETED') && (
+//                     <><i className="fas fa-file-signature"></i> طلب تغيير عنوان العمل</>
+//                   )}
+//                   
+//                   {addressRequest?.status === 'PENDING' && (
+//                     <><i className="fas fa-hourglass-half"></i> الطلب قيد المراجعة</>
+//                   )}
+//                   
+//                   {addressRequest?.status === 'APPROVED' && (
+//                     <><i className="fas fa-check-circle"></i> تم القبول! انقر للتحديث</>
+//                   )}
+//                   
+//                   {addressRequest?.status === 'REJECTED' && (
+//                     <><i className="fas fa-redo"></i> تم الرفض. أعد تقديم الطلب</>
+//                   )}
+//                 </button>
+//               </div>
+//             </div>
+//           )}
+// ---- END ----
+

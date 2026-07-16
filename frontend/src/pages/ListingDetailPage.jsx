@@ -377,9 +377,7 @@ export default function ListingDetailPage() {
 
       <div className="ld-container">
         <div className="ld-topbar">
-          <button className="ld-back-btn" onClick={() => navigate(-1)}>
-            <i className="fas fa-arrow-left"></i> رجوع
-          </button>
+          
         </div>
 
         <div className="ld-profile-header">

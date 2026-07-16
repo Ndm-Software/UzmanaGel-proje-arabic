@@ -42,7 +42,7 @@ const INITIAL_FORM = {
   serviceSubcategoryDetails: "",
   price: "",
   city: "",
-  pricingType: "Proje Bazlı",
+  pricingType: "حسب المشروع",
   description: "",
   coverImage: null,
   expertEmail: "",

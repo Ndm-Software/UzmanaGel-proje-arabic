@@ -1,6 +1,13 @@
 // frontend/src/App.jsx
 
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+
 import { AnimatePresence } from "framer-motion";
 
 import HomePage from "./pages/HomePage";
@@ -14,7 +21,6 @@ import FavoritesPage from "./pages/FavoritesPage";
 import ListingDetailPage from "./pages/ListingDetailPage";
 import ContactPage from "./pages/ContactPage";
 
-
 import ExpertBlankPage from "./pages/ExpertBlankPage";
 import ExpertCreateAdPage from "./pages/ExpertCreateAdPage";
 import ExpertRegisterPage from "./pages/ExpertRegisterPage";
@@ -24,16 +30,20 @@ import ExpertMyListingsPage from "./pages/ExpertMyListingsPage";
 import PublicExpertProfilePage from "./pages/PublicExpertProfilePage";
 
 import MessagingPage from "./pages/MessagingPage";
+
 // Syria Arabic launch: appointment system routes disabled.
 // import AppointmentPage from "./pages/AppointmentPage";
+
 import NotificationsPage from "./pages/NotificationsPage";
+
 // import MyAppointments from "./pages/MyAppointments";
 // import CustomerAppointmentPage from "./pages/CustomerAppointmentPage";
 // import CustomerRequests from "./pages/CustomerRequests";
 // import RequestDetailPage from "./pages/RequestDetailPage";
 // import RequestForecastPage from "./pages/RequestForecastPage";
 
-// Syria Arabic launch: live operation pages are appointment-based, so they are disabled.
+// Syria Arabic launch: live operation pages are appointment-based,
+// so they are disabled.
 // import LiveOperationCenter from "./pages/LiveOperationCenter";
 // import LiveServiceTracking from "./pages/LiveServiceTracking";
 
@@ -44,124 +54,253 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ExpertProtectedRoute from "./components/ExpertProtectedRoute";
 
-// 7 mayis added / Edrees
 import IdleSessionTimeout from "./components/IdleSessionTimeout";
 
 function AppRoutes() {
   const location = useLocation();
 
   const expertOnly = (page) => (
-    <ExpertProtectedRoute>
-      {page}
-    </ExpertProtectedRoute>
+    <ExpertProtectedRoute>{page}</ExpertProtectedRoute>
   );
 
   return (
     <div className="route-shell">
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
-          {/* Ana Sayfalar */}
+          {/* =========================
+              الصفحات الأساسية
+          ========================== */}
+
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/ملفي" element={<ProfilePage />} />
           <Route path="/kvkk" element={<KvkkPage />} />
-          <Route path="/hakkımızda" element={<AboutPage />} />
-          <Route path="/hakkimizda" element={<AboutPage />} />
 
-          {/* İlanlar */}
-          <Route path="/ilanlar" element={<AdPage />} />
-          <Route path="/ilan/:listingId" element={<ListingDetailPage />} />
-          <Route path="/favoriler" element={<FavoritesPage />} />
+          {/* من نحن */}
+          <Route path="/من-نحن" element={<AboutPage />} />
 
-          {/* İletişim */}
-          <Route path="/iletisim" element={<ContactPage />} />
-
-          {/* Uzman Başvuru - başvuru akışı olduğu için PROVIDER guard yok */}
-          <Route path="/uzman-basvuru" element={<ExpertRegisterPage />} />
+          {/* تحويل الروابط التركية القديمة */}
           <Route
-            path="/expert-complete-profile"
+            path="/hakkimizda"
+            element={<Navigate to="/من-نحن" replace />}
+          />
+
+          <Route
+            path="/hakkımızda"
+            element={<Navigate to="/من-نحن" replace />}
+          />
+
+          {/* =========================
+              الإعلانات
+          ========================== */}
+
+          <Route path="/الإعلانات" element={<AdPage />} />
+
+          <Route
+            path="/إعلان/:listingId"
+            element={<ListingDetailPage />}
+          />
+
+          <Route path="/المفضلة" element={<FavoritesPage />} />
+
+          {/* تحويل الروابط التركية القديمة */}
+
+          <Route
+            path="/ilanlar"
+            element={<Navigate to="/الإعلانات" replace />}
+          />
+
+          <Route
+            path="/ilan/:listingId"
+            element={<LegacyListingRedirect />}
+          />
+
+          <Route
+            path="/favoriler"
+            element={<Navigate to="/المفضلة" replace />}
+          />
+
+          {/* =========================
+              التواصل
+          ========================== */}
+
+          <Route path="/اتصل-بنا" element={<ContactPage />} />
+
+          <Route
+            path="/iletisim"
+            element={<Navigate to="/اتصل-بنا" replace />}
+          />
+
+          {/* =========================
+              تسجيل الخبير
+          ========================== */}
+
+          <Route
+            path="/تسجيل-خبير"
+            element={<ExpertRegisterPage />}
+          />
+
+          <Route
+            path="/إكمال-ملف-الخبير"
             element={<ExpertCompleteProfilePage />}
           />
 
-          {/* Mesajlaşma */}
-          <Route path="/mesajlar" element={<MessagingPage />} />
+          {/* تحويل الروابط القديمة */}
 
-          {/* Uzman Profil */}
           <Route
-            path="/uzman-profil"
+            path="/uzman-basvuru"
+            element={<Navigate to="/تسجيل-خبير" replace />}
+          />
+
+          <Route
+            path="/expert-complete-profile"
+            element={<Navigate to="/إكمال-ملف-الخبير" replace />}
+          />
+
+          {/* =========================
+              الرسائل
+          ========================== */}
+
+          <Route path="/الرسائل" element={<MessagingPage />} />
+
+          <Route
+            path="/mesajlar"
+            element={<Navigate to="/الرسائل" replace />}
+          />
+
+          {/* =========================
+              الملف الشخصي للخبير
+          ========================== */}
+
+          <Route
+            path="/ملف-الخبير"
             element={expertOnly(<ExpertProfilePage />)}
           />
 
-          {/* Public uzman profili - herkes görebilir */}
           <Route
-            path="/uzman/:providerId"
+            path="/uzman-profil"
+            element={<Navigate to="/ملف-الخبير" replace />}
+          />
+
+          {/* الملف العام للخبير */}
+
+          <Route
+            path="/خبير/:providerId"
             element={<PublicExpertProfilePage />}
           />
 
-          {/* Syria Arabic launch: appointment system routes disabled.
           <Route
-            path="/randevu-takvimi"
+            path="/uzman/:providerId"
+            element={<LegacyExpertRedirect />}
+          />
+
+          {/* =========================
+              نظام المواعيد معطّل
+          ========================== */}
+
+          {/*
+          <Route
+            path="/تقويم-المواعيد"
             element={expertOnly(<AppointmentPage />)}
           />
 
-          <Route path="/customer-appointments" element={<MyAppointments />} />
+          <Route
+            path="/مواعيدي"
+            element={<MyAppointments />}
+          />
 
           <Route
-            path="/customer-requests"
+            path="/طلبات-العملاء"
             element={expertOnly(<CustomerRequests />)}
           />
 
           <Route
-            path="/request-detail/:date/:id"
+            path="/تفاصيل-الطلب/:date/:id"
             element={expertOnly(<RequestDetailPage />)}
           />
 
           <Route
-            path="/request-detail/:date/:id/forecast"
+            path="/تفاصيل-الطلب/:date/:id/التوقعات"
             element={expertOnly(<RequestForecastPage />)}
           />
 
           <Route
-            path="/customer-appointment/:expertId"
+            path="/حجز-موعد/:expertId"
             element={<CustomerAppointmentPage />}
           />
           */}
 
-          {/* Bildirimler */}
-          <Route path="/bildirimler" element={<NotificationsPage />} />
+          {/* =========================
+              الإشعارات
+          ========================== */}
 
-          {/* Syria Arabic launch: live service tracking routes disabled with appointment system.
           <Route
-            path="/canli-isbasi-merkezi"
+            path="/الإشعارات"
+            element={<NotificationsPage />}
+          />
+
+          <Route
+            path="/bildirimler"
+            element={<Navigate to="/الإشعارات" replace />}
+          />
+
+          {/* =========================
+              نظام المتابعة المباشرة معطّل
+          ========================== */}
+
+          {/*
+          <Route
+            path="/مركز-العمليات-المباشر"
             element={expertOnly(<LiveOperationCenter />)}
           />
 
           <Route
-            path="/canli-hizmet-takibi"
+            path="/تتبع-الخدمة-المباشر"
             element={<LiveServiceTracking />}
           />
           */}
 
+          {/* =========================
+              لوحة الخبير
+          ========================== */}
 
-
-          {/* Uzman Panel */}
           <Route
-            path="/uzman/ilan-ekle"
+            path="/خبير/إضافة-إعلان"
             element={expertOnly(<ExpertCreateAdPage />)}
           />
 
           <Route
-            path="/uzman/ilanlarim"
+            path="/خبير/إعلاناتي"
             element={expertOnly(<ExpertMyListingsPage />)}
           />
 
           <Route
-            path="/uzman-bos"
+            path="/صفحة-الخبير"
             element={expertOnly(<ExpertBlankPage />)}
           />
 
-          {/* Admin */}
+          {/* تحويل روابط لوحة الخبير القديمة */}
+
+          <Route
+            path="/uzman/ilan-ekle"
+            element={<Navigate to="/خبير/إضافة-إعلان" replace />}
+          />
+
+          <Route
+            path="/uzman/ilanlarim"
+            element={<Navigate to="/خبير/إعلاناتي" replace />}
+          />
+
+          <Route
+            path="/uzman-bos"
+            element={<Navigate to="/صفحة-الخبير" replace />}
+          />
+
+          {/* =========================
+              الإدارة
+          ========================== */}
+
           <Route
             path="/admin"
             element={
@@ -179,6 +318,9 @@ function AppRoutes() {
               </ProtectedRoute>
             }
           />
+
+          {/* أي رابط غير موجود يعيد المستخدم للرئيسية */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AnimatePresence>
 
@@ -187,11 +329,38 @@ function AppRoutes() {
   );
 }
 
+/*
+  تحويل رابط الإعلان القديم:
+  /ilan/123
+  إلى:
+  /إعلان/123
+*/
+function LegacyListingRedirect() {
+  const location = useLocation();
+  const listingId = location.pathname.split("/").filter(Boolean).pop();
+
+  return <Navigate to={`/إعلان/${listingId}`} replace />;
+}
+
+/*
+  تحويل رابط الخبير القديم:
+  /uzman/USER_ID
+  إلى:
+  /خبير/USER_ID
+*/
+function LegacyExpertRedirect() {
+  const location = useLocation();
+  const providerId = location.pathname.split("/").filter(Boolean).pop();
+
+  return <Navigate to={`/خبير/${providerId}`} replace />;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      {/* 7 mayis added / Edrees - 5 minutes idle session timeout */}
+      {/* 5 minutes idle session timeout */}
       <IdleSessionTimeout />
+
       <AppRoutes />
     </BrowserRouter>
   );

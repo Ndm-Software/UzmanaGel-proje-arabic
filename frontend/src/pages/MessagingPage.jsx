@@ -934,7 +934,7 @@ const MessagingPage = () => {
       messagesSignatureRef.current = "";
 
       setSelectedConversationId(conversationId);
-      navigate(`/mesajlar?conversation=${conversationId}&open=true`, {
+      navigate(`/الرسائل?conversation=${conversationId}&open=true`, {
         replace: true,
       });
     },

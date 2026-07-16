@@ -1406,9 +1406,6 @@ const ProfilePage = () => {
 
             <div className="profile-header-info">
               <h1 className="profile-header-name">{getUserDisplayName()}</h1>
-              <p className="profile-header-username">
-                @{getUserDisplayName().toLowerCase().replace(/\s/g, '')}
-              </p>
               <div className="profile-header-contact">
                 <span>
                   <i className="fas fa-envelope"></i> {sanitizeText(user.email || 'لا يوجد بريد إلكتروني')}

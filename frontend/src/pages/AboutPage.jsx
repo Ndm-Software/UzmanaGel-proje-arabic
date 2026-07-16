@@ -25,27 +25,8 @@ const stagger = {
 const stats = [
   { value: "14", label: "خدمة نشطة في المدينة" },
   { valueKey: "providerCount", label: "خبير موثق" },
-  { valueKey: "completedAppointmentsCount", label: "عمل مكتمل" },
+  { valueKey: "completedAppointmentsCount", label: "مستخدم" },
   { value: 5, label: "خدمة 5 نجوم", type: "stars" },
-];
-
-const journey = [
-  {
-    title: "نسخة المنتج الأولى",
-    text: "بناءً على أبحاث السوق التي أجريناها، قررنا أن هناك حاجة لمثل هذا التطبيق وقمنا بتطوير نسخة المنتج الأولى.",
-  },
-  {
-    title: "فترة النمو",
-    text: "انطلقنا في فئات مختلفة وقمنا بتعميق نظام توثيق الخبراء والتعليقات.",
-  },
-  {
-    title: "المطابقة الذكية",
-    text: "قمنا بتفعيل نموذج المطابقة المعتمد على البيانات لتوجيه طلب الخدمة إلى الخبير المناسب بشكل أسرع.",
-  },
-  {
-    title: "تجربة 2.0",
-    text: "نتقدم بواجهة جديدة تركز على الهاتف المحمول، وتدفقات أسرع، وتطويرات للمنتج تركز على الثقة.",
-  },
 ];
 
 const values = [
@@ -63,24 +44,6 @@ const values = [
   },
 ];
 
-const team = [
-  {
-    name: "Ali",
-    role: "قائد المنتج",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
-  },
-  {
-    name: "Ayşe",
-    role: "القائد التقني",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
-  },
-  {
-    name: "Ahmet",
-    role: "المجتمع والأمان",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=300&q=80",
-  },
-];
-
 export default function AboutPage() {
   const [counts, setCounts] = useState({
     providerCount: 0,
@@ -91,20 +54,44 @@ export default function AboutPage() {
     let isMounted = true;
 
     async function loadCounts() {
+      const CACHE_KEY = "about_page_counts";
+      const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+
       try {
-        const [providerCountSnap, completedAppointmentsCountSnap] = await Promise.all([
+        // 1. Check if we have a valid cache in browser
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          try {
+            const { counts: cachedCounts, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_DURATION) {
+              if (isMounted) {
+                setCounts(cachedCounts);
+              }
+              return;
+            }
+          } catch (e) {
+            // If cache parsing fails, ignore and fetch fresh
+          }
+        }
+
+        // 2. Fetch fresh counts
+        const [providerCountSnap, userCountSnap] = await Promise.all([
           getCountFromServer(query(collection(db, "users"), where("userType", "==", "PROVIDER"))),
-          getCountFromServer(
-            query(collection(db, "appointments"), where("status", "==", "completed"))
-          ),
+          getCountFromServer(collection(db, "users")),
         ]);
+
+        const newCounts = {
+          providerCount: Number(providerCountSnap.data().count || 0),
+          completedAppointmentsCount: Number(userCountSnap.data().count || 0),
+        };
 
         if (!isMounted) return;
 
-        setCounts({
-          providerCount: Number(providerCountSnap.data().count || 0),
-          completedAppointmentsCount: Number(completedAppointmentsCountSnap.data().count || 0),
-        });
+        setCounts(newCounts);
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({ counts: newCounts, timestamp: Date.now() })
+        );
       } catch (error) {
         console.error("About page stats could not be loaded:", error);
       }
@@ -241,59 +228,6 @@ export default function AboutPage() {
                 <motion.article key={item.title} className="value-card" variants={fadeUp}>
                   <h3>{item.title}</h3>
                   <p>{item.text}</p>
-                </motion.article>
-              ))}
-            </motion.div>
-          </section>
-
-          <section className="about-timeline-wrap">
-            <motion.h2
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.6 }}
-            >
-              مسيرة تطورنا
-            </motion.h2>
-            <motion.div
-              className="about-timeline"
-              variants={stagger}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-            >
-              {journey.map((item) => (
-                <motion.article key={item.title} className="timeline-item" variants={fadeUp}>
-                  <h3>{item.title}</h3>
-                  <p>{item.text}</p>
-                </motion.article>
-              ))}
-            </motion.div>
-          </section>
-
-          <section className="about-team">
-            <motion.h2
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.5 }}
-            >
-              فريقنا
-            </motion.h2>
-            <motion.div
-              className="about-team-grid"
-              variants={stagger}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-            >
-              {team.map((member) => (
-                <motion.article key={member.name} className="team-card" variants={fadeUp}>
-                  <div className="team-avatar" aria-hidden="true">
-                    <img src={member.image} alt={member.name} loading="lazy" />
-                  </div>
-                  <h3>{member.name}</h3>
-                  <p>{member.role}</p>
                 </motion.article>
               ))}
             </motion.div>

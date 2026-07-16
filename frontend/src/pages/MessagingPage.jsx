@@ -1330,7 +1330,7 @@ const MessagingPage = () => {
     <div className="messaging-page" onClick={closeContextMenu}>
       <Navbar />
       <div className="messaging-container">
-        <div className="messaging-wrapper">
+        <div className={`messaging-wrapper ${selectedConversationId ? "conversation-active" : ""}`}>
           <div className="chats-panel">
             <div className="chats-header">
               <div className="chats-title-wrap">
@@ -1459,6 +1459,13 @@ const MessagingPage = () => {
                 <div className="messages-header">
                   <div className="chat-header-bar">
                     <div className="chat-header-left">
+                      <button
+                        type="button"
+                        className="chat-back-btn"
+                        onClick={() => navigate("/mesajlar")}
+                      >
+                        <i className="fas fa-arrow-right"></i>
+                      </button>
                       <div className="msg-header-avatar">
                         <img src={selectedChatAvatar} alt="avatar" />
                       </div>

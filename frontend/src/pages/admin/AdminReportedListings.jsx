@@ -210,9 +210,9 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
         adminActionAt: r.adminActionAt ? new Date(r.adminActionAt) : null,
         listing: r.listing
           ? {
-              ...r.listing,
-              createdAt: r.listing.createdAt ? new Date(r.listing.createdAt) : null,
-            }
+            ...r.listing,
+            createdAt: r.listing.createdAt ? new Date(r.listing.createdAt) : null,
+          }
           : null,
       }));
 
@@ -273,12 +273,12 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
 
   const handleHide = async () => {
     if (isActionRateLimited()) {
-      setError("Çok fazla işlem. Lütfen 1 dakika bekleyin.");
+      setError("عمليات كثيرة جداً. يرجى الانتظار دقيقة واحدة.");
       return;
     }
     const serviceId = String(selectedListing?.id || "").trim();
     if (!serviceId) {
-      setError("İlan kimliği bulunamadı.");
+      setError("تعذر العثور على معرف الإعلان.");
       closeModal(false);
       return;
     }
@@ -289,17 +289,17 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
       providerId = (await fetchServiceProviderId(serviceId)) || "";
     }
     if (!providerId) {
-      setError("Yayından kaldırma için uzman bilgisi bulunamadı (providerId).");
+      setError("تعذر العثور على معلومات الخبير لإلغاء النشر.");
       closeModal(false);
       return;
     }
     if (!reasonText.trim()) {
-      setError("Lütfen yayından kaldırma sebebini belirtin.");
+      setError("يرجى تحديد سبب إلغاء النشر.");
       recordActionAttempt();
       return;
     }
     if (reasonText.trim().length < 3) {
-      setError("Sebep en az 3 karakter olmalıdır.");
+      setError("يجب أن يكون السبب 3 أحرف على الأقل.");
       recordActionAttempt();
       return;
     }
@@ -315,8 +315,8 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
 
       await addDoc(collection(db, "notifications"), {
         userId: providerId,
-        title: "📢 İlanınız Yayından Kaldırıldı",
-        message: `"${sanitizeText(selectedListing.title, 100)}" adlı ilanınız admin tarafından yayından kaldırıldı.\n\nSebep: ${sanitizeText(reasonText, 200)}\n\nİlanınızı düzenleyip tekrar yayınlayabilirsiniz.`,
+        title: " تم إلغاء نشر إعلانك",
+        message: `تم إلغاء نشر إعلانك المسمى "${sanitizeText(selectedListing.title, 100)}" من قبل المسؤول.\n\nالسبب: ${sanitizeText(reasonText, 200)}\n\nيمكنك تعديل إعلانك ونشره مرة أخرى.`,
         type: "listing_hidden",
         read: false,
         listingId: serviceId,
@@ -341,7 +341,7 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
       closeModal();
     } catch (err) {
       if (isDevelopment) console.error("Yayından kaldırma hatası:", err);
-      setError("İlan yayından kaldırılırken bir hata oluştu");
+      setError("حدث خطأ أثناء إلغاء نشر الإعلان.");
     } finally {
       setIsProcessing(false);
     }
@@ -349,12 +349,12 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
 
   const handleDelete = async () => {
     if (isActionRateLimited()) {
-      setError("Çok fazla işlem. Lütfen 1 dakika bekleyin.");
+      setError("عمليات كثيرة جداً. يرجى الانتظار دقيقة واحدة.");
       return;
     }
     const serviceId = String(selectedListing?.id || "").trim();
     if (!serviceId) {
-      setError("İlan kimliği bulunamadı.");
+      setError("تعذر العثور على معرف الإعلان.");
       closeModal(false);
       return;
     }
@@ -365,17 +365,17 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
       providerId = (await fetchServiceProviderId(serviceId)) || "";
     }
     if (!providerId) {
-      setError("Silme için uzman bilgisi bulunamadı (providerId).");
+      setError("تعذر العثور على معلومات الخبير لعملية الحذف.");
       closeModal(false);
       return;
     }
     if (!reasonText.trim()) {
-      setError("Lütfen silme sebebini belirtin.");
+      setError("يرجى تحديد سبب الحذف.");
       recordActionAttempt();
       return;
     }
     if (reasonText.trim().length < 3) {
-      setError("Sebep en az 3 karakter olmalıdır.");
+      setError("يجب أن يكون السبب 3 أحرف على الأقل.");
       recordActionAttempt();
       return;
     }
@@ -391,8 +391,8 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
 
       await addDoc(collection(db, "notifications"), {
         userId: providerId,
-        title: "🗑️ İlanınız Kalıcı Olarak Silindi",
-        message: `"${sanitizeText(selectedListing.title, 100)}" adlı ilanınız admin tarafından kalıcı olarak silindi.\n\nSebep: ${sanitizeText(reasonText, 200)}\n\nBu işlem geri alınamaz.`,
+        title: "تم حذف إعلانك نهائياً",
+        message: `تم حذف إعلانك المسمى "${sanitizeText(selectedListing.title, 100)}" نهائياً من قبل المسؤول.\n\nالسبب: ${sanitizeText(reasonText, 200)}\n\nلا يمكن التراجع عن هذا الإجراء.`,
         type: "listing_deleted",
         read: false,
         listingId: serviceId,
@@ -417,7 +417,7 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
       closeModal();
     } catch (err) {
       if (isDevelopment) console.error("Silme hatası:", err);
-      setError("İlan silinirken bir hata oluştu");
+      setError("حدث خطأ أثناء حذف الإعلان.");
     } finally {
       setIsProcessing(false);
     }
@@ -425,12 +425,12 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
 
   const handleRestore = async () => {
     if (isActionRateLimited()) {
-      setError("Çok fazla işlem. Lütfen 1 dakika bekleyin.");
+      setError("عمليات كثيرة جداً. يرجى الانتظار دقيقة واحدة.");
       return;
     }
     const serviceId = String(selectedListing?.id || "").trim();
     if (!serviceId) {
-      setError("İlan kimliği bulunamadı.");
+      setError("تعذر العثور على معرف الإعلان.");
       closeModal(false);
       return;
     }
@@ -441,7 +441,7 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
       providerId = (await fetchServiceProviderId(serviceId)) || "";
     }
     if (!providerId) {
-      setError("Geri alma için uzman bilgisi bulunamadı (providerId).");
+      setError("تعذر العثور على معلومات الخبير لإعادة النشر.");
       closeModal(false);
       return;
     }
@@ -457,8 +457,8 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
 
       await addDoc(collection(db, "notifications"), {
         userId: providerId,
-        title: "✅ İlanınız Tekrar Yayına Alındı",
-        message: `"${sanitizeText(selectedListing.title, 100)}" adlı ilanınız admin tarafından tekrar yayına alındı. İlanınız artık aktif ve görünür durumda.`,
+        title: "✅ تم إعادة نشر إعلانك",
+        message: `تم إعادة نشر إعلانك المسمى "${sanitizeText(selectedListing.title, 100)}" من قبل المسؤول. إعلانك الآن نشط ومرئي للجميع.`,
         type: "listing_restored",
         read: false,
         listingId: serviceId,
@@ -481,7 +481,7 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
       closeModal();
     } catch (err) {
       if (isDevelopment) console.error("Geri alma hatası:", err);
-      setError("İlan geri alınırken bir hata oluştu");
+      setError("حدث خطأ أثناء استعادة الإعلان.");
     } finally {
       setIsProcessing(false);
     }
@@ -594,444 +594,444 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
 
   return (
     <>
-    <div className="admin-listings">
-      <div className="filter-bar">
-        <div className="search-wrapper">
-          <input
-            type="text"
-            placeholder="İlan veya uzman adı ile ara..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value.replace(/[<>]/g, "").slice(0, 100))}
-            onKeyPress={(e) => e.key === "Enter" && setCurrentPage(1)}
-            maxLength={100}
-          />
-          <button
-            type="button"
-            className="search-btn"
-            onClick={() => setCurrentPage(1)}
-          >
-            🔍 Ara
-          </button>
-        </div>
-        <div className="filter-group">
-          <select
-            value={viewFilter}
-            onChange={(e) => setViewFilter(e.target.value)}
-            aria-label="Görülme filtresi"
-          >
-            <option value="all">📋 Tüm bildirimler</option>
-            <option value="unseen">👁️ Görülmemiş</option>
-            <option value="seen">✅ Görüldü</option>
-          </select>
-          <select
-            value={actionFilter}
-            onChange={(e) => setActionFilter(e.target.value)}
-            aria-label="İşlem filtresi"
-          >
-            <option value="all">⚙️ Tüm işlemler</option>
-            <option value="none">⏳ İşlem yok</option>
-            <option value="done">✔️ İşlem yapıldı</option>
-          </select>
-          <div className="sort-buttons">
+      <div className="admin-listings">
+        <div className="filter-bar">
+          <div className="search-wrapper">
+            <input
+              type="text"
+              placeholder="İlan veya uzman adı ile ara..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value.replace(/[<>]/g, "").slice(0, 100))}
+              onKeyPress={(e) => e.key === "Enter" && setCurrentPage(1)}
+              maxLength={100}
+            />
             <button
               type="button"
-              className={sortOrder === "newest" ? "active" : ""}
-              onClick={() => setSortOrder("newest")}
+              className="search-btn"
+              onClick={() => setCurrentPage(1)}
             >
-              🕒 En Yeni
-            </button>
-            <button
-              type="button"
-              className={sortOrder === "oldest" ? "active" : ""}
-              onClick={() => setSortOrder("oldest")}
-            >
-              📅 En Eski
+              🔍 Ara
             </button>
           </div>
-          <button type="button" className="reset-btn" onClick={resetReportFilters}>
-            Sıfırla
-          </button>
-        </div>
-      </div>
-
-      <div className="stats-info stats-info--reported-listings">
-        <div
-          className="stat-item"
-          title={`Filtre ve arama sonrası: ${formatFullNumber(filteredRows.length)} kayıt`}
-        >
-          <i className="fas fa-filter" aria-hidden="true" />
-          <span>Filtreli: {formatLargeNumber(filteredRows.length)}</span>
-        </div>
-        <div
-          className="stat-item"
-          title={`Kenar çubuğu rozeti: ${formatFullNumber(unseenCount)} görülmemiş`}
-        >
-          <i className="fas fa-eye-slash" aria-hidden="true" />
-          <span>Görülmemiş: {formatLargeNumber(unseenCount)}</span>
-        </div>
-        <div
-          className="stat-item"
-          title={`İşlem yapılmış bildirim: ${formatFullNumber(actionDoneCount)}`}
-        >
-          <i className="fas fa-check-double" aria-hidden="true" />
-          <span>İşlem yapılmış: {formatLargeNumber(actionDoneCount)}</span>
-        </div>
-        <div className="stat-item" title={`Tam değer: ${formatFullNumber(rows.length)} toplam bildirim`}>
-          <i className="fas fa-chart-line" aria-hidden="true" />
-          <span>Toplam: {formatLargeNumber(rows.length)}</span>
-        </div>
-      </div>
-
-      <div className="cards-list">
-        {paginated.length === 0 ? (
-          <div className="no-data">
-            <i className="fas fa-box-open" aria-hidden="true" />
-            <p>
-              {rows.length === 0
-                ? "Henüz bildirim yok."
-                : "Seçili filtrelere uygun bildirim yok. Filtreleri sıfırlayın veya sıralamayı değiştirin."}
-            </p>
-          </div>
-        ) : (
-          paginated.map((row) => {
-            const listing = row.listing;
-            const imageUrl = listing ? getImageUrl(listing.image) : null;
-            const title = listing
-              ? sanitizeText(listing.title, 100)
-              : `İlan ID: ${sanitizeText(row.listingId, 40)}`;
-            const providerName = listing
-              ? sanitizeText(listing.providerName, 50)
-              : "İlan bulunamadı";
-            const category = listing ? sanitizeText(listing.category, 50) : "-";
-            const city = listing ? sanitizeText(listing.city, 50) : "-";
-            const description = listing
-              ? sanitizeText(listing.description, 300)
-              : "-";
-            const pricingType = listing ? sanitizeText(listing.pricingType, 30) : "-";
-            const serviceSubcategory = listing
-              ? sanitizeText(listing.serviceSubcategory, 50)
-              : "-";
-            const rating = listing ? safeNumber(listing.rating) : 0;
-            const status = listing?.status || "UNKNOWN";
-            const reasonLabels = formatReasonLabelsList(row);
-
-            return (
-              <div
-                key={row.id}
-                className={`data-card ${expandedId === row.id ? "expanded" : ""} status-${String(status).toLowerCase()}`}
+          <div className="filter-group">
+            <select
+              value={viewFilter}
+              onChange={(e) => setViewFilter(e.target.value)}
+              aria-label="Görülme filtresi"
+            >
+              <option value="all">📋 Tüm bildirimler</option>
+              <option value="unseen">👁️ Görülmemiş</option>
+              <option value="seen">✅ Görüldü</option>
+            </select>
+            <select
+              value={actionFilter}
+              onChange={(e) => setActionFilter(e.target.value)}
+              aria-label="İşlem filtresi"
+            >
+              <option value="all">⚙️ Tüm işlemler</option>
+              <option value="none">⏳ İşlem yok</option>
+              <option value="done">✔️ İşlem yapıldı</option>
+            </select>
+            <div className="sort-buttons">
+              <button
+                type="button"
+                className={sortOrder === "newest" ? "active" : ""}
+                onClick={() => setSortOrder("newest")}
               >
+                🕒 En Yeni
+              </button>
+              <button
+                type="button"
+                className={sortOrder === "oldest" ? "active" : ""}
+                onClick={() => setSortOrder("oldest")}
+              >
+                📅 En Eski
+              </button>
+            </div>
+            <button type="button" className="reset-btn" onClick={resetReportFilters}>
+              Sıfırla
+            </button>
+          </div>
+        </div>
+
+        <div className="stats-info stats-info--reported-listings">
+          <div
+            className="stat-item"
+            title={`Filtre ve arama sonrası: ${formatFullNumber(filteredRows.length)} kayıt`}
+          >
+            <i className="fas fa-filter" aria-hidden="true" />
+            <span>Filtreli: {formatLargeNumber(filteredRows.length)}</span>
+          </div>
+          <div
+            className="stat-item"
+            title={`Kenar çubuğu rozeti: ${formatFullNumber(unseenCount)} görülmemiş`}
+          >
+            <i className="fas fa-eye-slash" aria-hidden="true" />
+            <span>Görülmemiş: {formatLargeNumber(unseenCount)}</span>
+          </div>
+          <div
+            className="stat-item"
+            title={`İşlem yapılmış bildirim: ${formatFullNumber(actionDoneCount)}`}
+          >
+            <i className="fas fa-check-double" aria-hidden="true" />
+            <span>İşlem yapılmış: {formatLargeNumber(actionDoneCount)}</span>
+          </div>
+          <div className="stat-item" title={`Tam değer: ${formatFullNumber(rows.length)} toplam bildirim`}>
+            <i className="fas fa-chart-line" aria-hidden="true" />
+            <span>Toplam: {formatLargeNumber(rows.length)}</span>
+          </div>
+        </div>
+
+        <div className="cards-list">
+          {paginated.length === 0 ? (
+            <div className="no-data">
+              <i className="fas fa-box-open" aria-hidden="true" />
+              <p>
+                {rows.length === 0
+                  ? "Henüz bildirim yok."
+                  : "Seçili filtrelere uygun bildirim yok. Filtreleri sıfırlayın veya sıralamayı değiştirin."}
+              </p>
+            </div>
+          ) : (
+            paginated.map((row) => {
+              const listing = row.listing;
+              const imageUrl = listing ? getImageUrl(listing.image) : null;
+              const title = listing
+                ? sanitizeText(listing.title, 100)
+                : `İlan ID: ${sanitizeText(row.listingId, 40)}`;
+              const providerName = listing
+                ? sanitizeText(listing.providerName, 50)
+                : "İlan bulunamadı";
+              const category = listing ? sanitizeText(listing.category, 50) : "-";
+              const city = listing ? sanitizeText(listing.city, 50) : "-";
+              const description = listing
+                ? sanitizeText(listing.description, 300)
+                : "-";
+              const pricingType = listing ? sanitizeText(listing.pricingType, 30) : "-";
+              const serviceSubcategory = listing
+                ? sanitizeText(listing.serviceSubcategory, 50)
+                : "-";
+              const rating = listing ? safeNumber(listing.rating) : 0;
+              const status = listing?.status || "UNKNOWN";
+              const reasonLabels = formatReasonLabelsList(row);
+
+              return (
                 <div
-                  className="card-header"
-                  onClick={() => handleCardHeaderActivate(row)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      handleCardHeaderActivate(row);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
+                  key={row.id}
+                  className={`data-card ${expandedId === row.id ? "expanded" : ""} status-${String(status).toLowerCase()}`}
                 >
-                  <div className="card-summary">
-                    <div className="card-image">
-                      {imageUrl ? (
-                        <img
-                          src={imageUrl}
-                          alt=""
-                          className="admin-reported-listing-thumb"
-                          tabIndex={0}
-                          role="button"
-                          aria-label="Görseli büyüt"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const cap = String(listing?.title || row.listingId || "").trim();
-                            setImagePreview({
-                              src: imageUrl,
-                              caption: cap ? sanitizeText(cap, 200) : "İlan görseli",
-                            });
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
+                  <div
+                    className="card-header"
+                    onClick={() => handleCardHeaderActivate(row)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleCardHeaderActivate(row);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    <div className="card-summary">
+                      <div className="card-image">
+                        {imageUrl ? (
+                          <img
+                            src={imageUrl}
+                            alt=""
+                            className="admin-reported-listing-thumb"
+                            tabIndex={0}
+                            role="button"
+                            aria-label="Görseli büyüt"
+                            onClick={(e) => {
                               e.stopPropagation();
                               const cap = String(listing?.title || row.listingId || "").trim();
                               setImagePreview({
                                 src: imageUrl,
                                 caption: cap ? sanitizeText(cap, 200) : "İlan görseli",
                               });
-                            }
-                          }}
-                          onError={(e) => {
-                            e.target.style.display = "none";
-                          }}
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="image-placeholder">
-                          <i className="fas fa-image"></i>
-                        </div>
-                      )}
-                    </div>
-                    <div className="card-info">
-                      <div className="card-title-row">
-                        <h3>{title}</h3>
-                        {!row.adminSeen && (
-                          <span className="status-badge unpublished admin-report-unseen-pill" title="Henüz açılmadı">
-                            <i className="fas fa-eye-slash" aria-hidden="true" /> Yeni
-                          </span>
-                        )}
-                        {listing ? getStatusBadge(listing.status) : (
-                          <span className="status-badge deleted">
-                            <i className="fas fa-question-circle"></i> Kayıt yok
-                          </span>
-                        )}
-                      </div>
-                      <div className="card-meta">
-                        <span>
-                          <i className="fas fa-user"></i> {providerName}
-                        </span>
-                        <span>
-                          <i className="fas fa-tag"></i> {category}
-                        </span>
-                        <span>
-                          <i className="fas fa-map-marker-alt"></i> {city}
-                        </span>
-                        {listing && (
-                          <span className="price">{formatPrice(listing.price)}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="card-actions">
-                    {listing && listing.status === "ACTIVE" && (
-                      <>
-                        <button
-                          type="button"
-                          className="hide"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openModal(listingForModal(listing, row.listingId), "hide", row.id);
-                          }}
-                          title="Yayından Kaldır"
-                          disabled={isProcessing}
-                        >
-                          <i className="fas fa-eye-slash" aria-hidden="true" />
-                        </button>
-                        <button
-                          type="button"
-                          className="delete"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openModal(listingForModal(listing, row.listingId), "delete", row.id);
-                          }}
-                          title="Kalıcı Sil"
-                          disabled={isProcessing}
-                        >
-                          <i className="fas fa-trash-alt" aria-hidden="true" />
-                        </button>
-                      </>
-                    )}
-                    {listing && listing.status === "UNPUBLISHED" && (
-                      <>
-                        <button
-                          type="button"
-                          className="restore"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openModal(listingForModal(listing, row.listingId), "restore", row.id);
-                          }}
-                          title="Tekrar Yayına Al"
-                          disabled={isProcessing}
-                        >
-                          <i className="fas fa-undo-alt" aria-hidden="true" />
-                        </button>
-                        <button
-                          type="button"
-                          className="delete"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openModal(listingForModal(listing, row.listingId), "delete", row.id);
-                          }}
-                          title="Kalıcı Sil"
-                          disabled={isProcessing}
-                        >
-                          <i className="fas fa-trash-alt" aria-hidden="true" />
-                        </button>
-                      </>
-                    )}
-                    {listing && listing.status === "DELETED" && (
-                      <button
-                        type="button"
-                        className="delete-permanent"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
-                        title="Kalıcı Olarak Silinmiş"
-                        disabled
-                      >
-                        <i className="fas fa-ban" aria-hidden="true" />
-                      </button>
-                    )}
-                    <div className="expand-icon">
-                      <i
-                        className={`fas fa-chevron-${expandedId === row.id ? "up" : "down"}`}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {expandedId === row.id && (
-                  <div className="card-details card-details--reported-expand">
-                    <div className="detail-row warning">
-                      <div className="detail-label">Bildirilme nedeni</div>
-                      <div className="detail-value">
-                        {reasonLabels.length ? (
-                          <ul className="admin-listing-report-reasons">
-                            {reasonLabels.map((text, i) => (
-                              <li key={`${row.id}-r-${i}`}>{text}</li>
-                            ))}
-                          </ul>
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const cap = String(listing?.title || row.listingId || "").trim();
+                                setImagePreview({
+                                  src: imageUrl,
+                                  caption: cap ? sanitizeText(cap, 200) : "İlan görseli",
+                                });
+                              }
+                            }}
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                            }}
+                            loading="lazy"
+                          />
                         ) : (
-                          "Belirtilmemiş"
+                          <div className="image-placeholder">
+                            <i className="fas fa-image"></i>
+                          </div>
+                        )}
+                      </div>
+                      <div className="card-info">
+                        <div className="card-title-row">
+                          <h3>{title}</h3>
+                          {!row.adminSeen && (
+                            <span className="status-badge unpublished admin-report-unseen-pill" title="Henüz açılmadı">
+                              <i className="fas fa-eye-slash" aria-hidden="true" /> Yeni
+                            </span>
+                          )}
+                          {listing ? getStatusBadge(listing.status) : (
+                            <span className="status-badge deleted">
+                              <i className="fas fa-question-circle"></i> Kayıt yok
+                            </span>
+                          )}
+                        </div>
+                        <div className="card-meta">
+                          <span>
+                            <i className="fas fa-user"></i> {providerName}
+                          </span>
+                          <span>
+                            <i className="fas fa-tag"></i> {category}
+                          </span>
+                          <span>
+                            <i className="fas fa-map-marker-alt"></i> {city}
+                          </span>
+                          {listing && (
+                            <span className="price">{formatPrice(listing.price)}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="card-actions">
+                      {listing && listing.status === "ACTIVE" && (
+                        <>
+                          <button
+                            type="button"
+                            className="hide"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openModal(listingForModal(listing, row.listingId), "hide", row.id);
+                            }}
+                            title="Yayından Kaldır"
+                            disabled={isProcessing}
+                          >
+                            <i className="fas fa-eye-slash" aria-hidden="true" />
+                          </button>
+                          <button
+                            type="button"
+                            className="delete"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openModal(listingForModal(listing, row.listingId), "delete", row.id);
+                            }}
+                            title="Kalıcı Sil"
+                            disabled={isProcessing}
+                          >
+                            <i className="fas fa-trash-alt" aria-hidden="true" />
+                          </button>
+                        </>
+                      )}
+                      {listing && listing.status === "UNPUBLISHED" && (
+                        <>
+                          <button
+                            type="button"
+                            className="restore"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openModal(listingForModal(listing, row.listingId), "restore", row.id);
+                            }}
+                            title="Tekrar Yayına Al"
+                            disabled={isProcessing}
+                          >
+                            <i className="fas fa-undo-alt" aria-hidden="true" />
+                          </button>
+                          <button
+                            type="button"
+                            className="delete"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openModal(listingForModal(listing, row.listingId), "delete", row.id);
+                            }}
+                            title="Kalıcı Sil"
+                            disabled={isProcessing}
+                          >
+                            <i className="fas fa-trash-alt" aria-hidden="true" />
+                          </button>
+                        </>
+                      )}
+                      {listing && listing.status === "DELETED" && (
+                        <button
+                          type="button"
+                          className="delete-permanent"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                          title="Kalıcı Olarak Silinmiş"
+                          disabled
+                        >
+                          <i className="fas fa-ban" aria-hidden="true" />
+                        </button>
+                      )}
+                      <div className="expand-icon">
+                        <i
+                          className={`fas fa-chevron-${expandedId === row.id ? "up" : "down"}`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {expandedId === row.id && (
+                    <div className="card-details card-details--reported-expand">
+                      <div className="detail-row warning">
+                        <div className="detail-label">Bildirilme nedeni</div>
+                        <div className="detail-value">
+                          {reasonLabels.length ? (
+                            <ul className="admin-listing-report-reasons">
+                              {reasonLabels.map((text, i) => (
+                                <li key={`${row.id}-r-${i}`}>{text}</li>
+                              ))}
+                            </ul>
+                          ) : (
+                            "Belirtilmemiş"
+                          )}
+                        </div>
+                      </div>
+                      <div className="detail-row warning">
+                        <div className="detail-label">Bildiren açıklaması</div>
+                        <div className="detail-value">
+                          {row.description?.trim()
+                            ? sanitizeText(row.description, 2000)
+                            : "Açıklama girilmemiş."}
+                        </div>
+                      </div>
+
+                      <div className="reported-detail-meta-grid">
+                        <div className="detail-row">
+                          <div className="detail-label">Bildirim tarihi</div>
+                          <div className="detail-value">{formatDate(row.createdAt)}</div>
+                        </div>
+                        <div className="detail-row">
+                          <div className="detail-label">İlan ID</div>
+                          <div className="detail-value">{sanitizeText(row.listingId, 120)}</div>
+                        </div>
+
+                        {(row.reporterId || row.reporterEmail || row.reporterDisplayName) && (
+                          <>
+                            <div className="detail-row">
+                              <div className="detail-label">Bildiren (ad)</div>
+                              <div className="detail-value">
+                                {row.reporterDisplayName
+                                  ? sanitizeText(row.reporterDisplayName, 120)
+                                  : "—"}
+                              </div>
+                            </div>
+                            <div className="detail-row">
+                              <div className="detail-label">Bildiren (e-posta)</div>
+                              <div className="detail-value">
+                                {row.reporterEmail ? sanitizeText(row.reporterEmail, 120) : "—"}
+                              </div>
+                            </div>
+                            <div className="detail-row reported-detail-span-2">
+                              <div className="detail-label">Bildiren (kullanıcı ID)</div>
+                              <div className="detail-value">
+                                {row.reporterId ? sanitizeText(row.reporterId, 120) : "—"}
+                              </div>
+                            </div>
+                          </>
+                        )}
+
+                        {listing ? (
+                          <>
+                            <div className="detail-row reported-detail-span-2">
+                              <div className="detail-label">İlan açıklaması</div>
+                              <div className="detail-value">{description}</div>
+                            </div>
+                            <div className="detail-row">
+                              <div className="detail-label">Fiyat tipi</div>
+                              <div className="detail-value">{pricingType}</div>
+                            </div>
+                            <div className="detail-row">
+                              <div className="detail-label">Alt kategori</div>
+                              <div className="detail-value">{serviceSubcategory}</div>
+                            </div>
+                            <div className="detail-row">
+                              <div className="detail-label">Puan</div>
+                              <div className="detail-value">{rating} / 5</div>
+                            </div>
+                            <div className="detail-row">
+                              <div className="detail-label">İlan oluşturulma</div>
+                              <div className="detail-value">{formatDate(listing.createdAt)}</div>
+                            </div>
+                            {listing.status === "UNPUBLISHED" && listing.hiddenReason && (
+                              <div className="detail-row warning reported-detail-span-2">
+                                <div className="detail-label">Yayından kaldırılma sebebi</div>
+                                <div className="detail-value">
+                                  {sanitizeText(listing.hiddenReason, 200)}
+                                </div>
+                              </div>
+                            )}
+                            {listing.status === "DELETED" && listing.deletedReason && (
+                              <div className="detail-row error reported-detail-span-2">
+                                <div className="detail-label">Silinme sebebi</div>
+                                <div className="detail-value">
+                                  {sanitizeText(listing.deletedReason, 200)}
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="detail-row error reported-detail-span-2">
+                            <div className="detail-label">İlan</div>
+                            <div className="detail-value">
+                              Bu ID ile eşleşen ilan bulunamadı (silinmiş veya taşınmış olabilir).
+                            </div>
+                          </div>
                         )}
                       </div>
                     </div>
-                    <div className="detail-row warning">
-                      <div className="detail-label">Bildiren açıklaması</div>
-                      <div className="detail-value">
-                        {row.description?.trim()
-                          ? sanitizeText(row.description, 2000)
-                          : "Açıklama girilmemiş."}
-                      </div>
-                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
 
-                    <div className="reported-detail-meta-grid">
-                      <div className="detail-row">
-                        <div className="detail-label">Bildirim tarihi</div>
-                        <div className="detail-value">{formatDate(row.createdAt)}</div>
-                      </div>
-                      <div className="detail-row">
-                        <div className="detail-label">İlan ID</div>
-                        <div className="detail-value">{sanitizeText(row.listingId, 120)}</div>
-                      </div>
-
-                      {(row.reporterId || row.reporterEmail || row.reporterDisplayName) && (
-                        <>
-                          <div className="detail-row">
-                            <div className="detail-label">Bildiren (ad)</div>
-                            <div className="detail-value">
-                              {row.reporterDisplayName
-                                ? sanitizeText(row.reporterDisplayName, 120)
-                                : "—"}
-                            </div>
-                          </div>
-                          <div className="detail-row">
-                            <div className="detail-label">Bildiren (e-posta)</div>
-                            <div className="detail-value">
-                              {row.reporterEmail ? sanitizeText(row.reporterEmail, 120) : "—"}
-                            </div>
-                          </div>
-                          <div className="detail-row reported-detail-span-2">
-                            <div className="detail-label">Bildiren (kullanıcı ID)</div>
-                            <div className="detail-value">
-                              {row.reporterId ? sanitizeText(row.reporterId, 120) : "—"}
-                            </div>
-                          </div>
-                        </>
-                      )}
-
-                      {listing ? (
-                        <>
-                          <div className="detail-row reported-detail-span-2">
-                            <div className="detail-label">İlan açıklaması</div>
-                            <div className="detail-value">{description}</div>
-                          </div>
-                          <div className="detail-row">
-                            <div className="detail-label">Fiyat tipi</div>
-                            <div className="detail-value">{pricingType}</div>
-                          </div>
-                          <div className="detail-row">
-                            <div className="detail-label">Alt kategori</div>
-                            <div className="detail-value">{serviceSubcategory}</div>
-                          </div>
-                          <div className="detail-row">
-                            <div className="detail-label">Puan</div>
-                            <div className="detail-value">{rating} / 5</div>
-                          </div>
-                          <div className="detail-row">
-                            <div className="detail-label">İlan oluşturulma</div>
-                            <div className="detail-value">{formatDate(listing.createdAt)}</div>
-                          </div>
-                          {listing.status === "UNPUBLISHED" && listing.hiddenReason && (
-                            <div className="detail-row warning reported-detail-span-2">
-                              <div className="detail-label">Yayından kaldırılma sebebi</div>
-                              <div className="detail-value">
-                                {sanitizeText(listing.hiddenReason, 200)}
-                              </div>
-                            </div>
-                          )}
-                          {listing.status === "DELETED" && listing.deletedReason && (
-                            <div className="detail-row error reported-detail-span-2">
-                              <div className="detail-label">Silinme sebebi</div>
-                              <div className="detail-value">
-                                {sanitizeText(listing.deletedReason, 200)}
-                              </div>
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <div className="detail-row error reported-detail-span-2">
-                          <div className="detail-label">İlan</div>
-                          <div className="detail-value">
-                            Bu ID ile eşleşen ilan bulunamadı (silinmiş veya taşınmış olabilir).
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button
+              type="button"
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1 || isProcessing}
+            >
+              «
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1 || isProcessing}
+            >
+              ‹
+            </button>
+            <span>
+              Sayfa {currentPage} / {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages || isProcessing}
+            >
+              ›
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages || isProcessing}
+            >
+              »
+            </button>
+          </div>
         )}
       </div>
-
-      {totalPages > 1 && (
-        <div className="pagination">
-          <button
-            type="button"
-            onClick={() => setCurrentPage(1)}
-            disabled={currentPage === 1 || isProcessing}
-          >
-            «
-          </button>
-          <button
-            type="button"
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1 || isProcessing}
-          >
-            ‹
-          </button>
-          <span>
-            Sayfa {currentPage} / {totalPages}
-          </span>
-          <button
-            type="button"
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages || isProcessing}
-          >
-            ›
-          </button>
-          <button
-            type="button"
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages || isProcessing}
-          >
-            »
-          </button>
-        </div>
-      )}
-    </div>
 
       {showModal &&
         selectedListing &&
@@ -1136,36 +1136,36 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
           document.body
         )}
 
-    {imagePreview &&
-      createPortal(
-        <div
-          className="admin-image-lightbox-overlay"
-          onClick={() => setImagePreview(null)}
-          role="presentation"
-        >
+      {imagePreview &&
+        createPortal(
           <div
-            className="admin-image-lightbox-dialog"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Büyük görsel"
+            className="admin-image-lightbox-overlay"
+            onClick={() => setImagePreview(null)}
+            role="presentation"
           >
-            <button
-              type="button"
-              className="admin-image-lightbox-close"
-              onClick={() => setImagePreview(null)}
-              aria-label="Kapat"
+            <div
+              className="admin-image-lightbox-dialog"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Büyük görsel"
             >
-              <i className="fas fa-times" aria-hidden="true" />
-            </button>
-            {imagePreview.caption ? (
-              <p className="admin-image-lightbox-caption">{imagePreview.caption}</p>
-            ) : null}
-            <img src={imagePreview.src} alt="" className="admin-image-lightbox-img" />
-          </div>
-        </div>,
-        document.body
-      )}
+              <button
+                type="button"
+                className="admin-image-lightbox-close"
+                onClick={() => setImagePreview(null)}
+                aria-label="Kapat"
+              >
+                <i className="fas fa-times" aria-hidden="true" />
+              </button>
+              {imagePreview.caption ? (
+                <p className="admin-image-lightbox-caption">{imagePreview.caption}</p>
+              ) : null}
+              <img src={imagePreview.src} alt="" className="admin-image-lightbox-img" />
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 }

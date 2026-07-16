@@ -2203,7 +2203,7 @@ const ExpertProfilePage = () => {
           {['user', 'portfolio', 'security', 'address'].map((tab) => (
             <button key={tab} className={`tab-btn ${activeSetting === tab ? 'active' : ''}`} onClick={() => setActiveSetting(tab)}>
               {tab === 'user' && <><i className="fas fa-user-circle"></i> معلومات المستخدم</>}
-              {tab === 'portfolio' && <><i className="fas fa-images"></i> معرض الأعمال والشهادات</>}
+              {tab === 'portfolio' && <><i className="fas fa-file-contract"></i> الشهادات المرفوعة</>}
               {tab === 'security' && <><i className="fas fa-shield-alt"></i> الأمان</>}
               {tab === 'address' && <><i className="fas fa-map-marker-alt"></i> عنوان العمل</>}
             </button>
@@ -2317,76 +2317,6 @@ const ExpertProfilePage = () => {
                     : <span className="portfolio-empty">لم يتم رفع أي شهادات بعد.</span>}
                 </div>
               </div>
-
-              <div className="settings-security-item portfolio-section">
-                <div className="portfolio-section-header">
-                  <div>
-                    <div className="settings-security-title">معرض الأعمال (الصور)</div>
-                    <div className="settings-security-subtitle">يتم عرض صور المتجر والأعمال المنجزة للعملاء.</div>
-                  </div>
-                  <label className={`portfolio-upload-label ${portfolioUploading ? 'portfolio-upload-label--disabled' : ''}`}>
-                    <input type="file" accept="image/*" multiple style={{ display: 'none' }} disabled={portfolioUploading} onChange={handlePortfolioUpload} />
-                    <span className={`settings-secondary-button portfolio-upload-btn ${portfolioUploading ? 'portfolio-upload-btn--loading' : ''}`}>
-                      {portfolioUploading ? <><i className="fas fa-spinner fa-spin"></i> جاري الرفع...</> : 'إضافة جديد +'}
-                    </span>
-                  </label>
-                </div>
-                {portfolioLoading ? (
-                  <span className="settings-helper-text"><i className="fas fa-spinner fa-spin"></i> جاري تحميل الصور...</span>
-                ) : (
-                  <div className="portfolio-thumbs">
-                    {portfolioUrls.length > 0
-                      ? portfolioUrls.map((url, i) => <PhotoThumb key={i} url={url} index={i} allUrls={portfolioUrls} onDelete={handlePortfolioDelete} size={120} height={120} />)
-                      : <span className="portfolio-empty">لم يتم إضافة صور معرض الأعمال بعد.</span>}
-                  </div>
-                )}
-              </div>
-
-              <div className="settings-security-item portfolio-section ba-section-wrapper">
-                <div className="portfolio-section-header">
-                  <div>
-                    <div className="settings-security-title">معرض قبل وبعد</div>
-                    <div
-                      className={`settings-security-subtitle ${
-                        baGallery.length >= 5 ? "ba-subtitle-warning" : ""
-                      }`}
-                    >
-                      {baGallery.length >= 5
-                        ? `المعرض ممتلئ. احذف أحدها أو قم بتحديثه. (5 / 5 مجموعات) لا يمكن تحميل أكثر من 5 مجموعات.`
-                        : `اعرض التغيير في أعمالك (${baGallery.length} / 5 مجموعات)`}
-                    </div>
-                  </div>
-                  {baGallery.length < 5 && (
-                    <button
-                      className="settings-secondary-button portfolio-upload-btn"
-                      onClick={() => setShowBaAddModal(true)}
-                    >
-                      إضافة جديد +
-                    </button>
-                  )}
-                </div>
-
-                {baLoading ? (
-                  <span className="settings-helper-text"><i className="fas fa-spinner fa-spin"></i> جاري الرفع...</span>
-                ) : (
-                  <div className="ba-grid-container">
-                    {baGallery.map((pair) => (
-                      <div key={pair.id} className="ba-main-card" onClick={() => { setSelectedBaPair(pair); setShowBaViewModal(true); }}>
-                        <div className="ba-card-header-title">{sanitizeText(pair.title)}</div>
-                        <div className="ba-card-media">
-                          <img src={pair.beforeUrl} className="ba-img-before" alt="Eski" />
-                          <img src={pair.afterUrl} className="ba-img-after" alt="Yeni" />
-                        </div>
-                        <div className="ba-card-footer-labels">
-                          <span className="label-eski">قبل</span>
-                          <span className="label-yeni">بعد</span>
-                        </div>
-                      </div>
-                    ))}
-                    {baGallery.length === 0 && <span className="portfolio-empty">لم يتم إضافة أي أعمال بعد.</span>}
-                  </div>
-                )}
-              </div>
             </div>
           )}
 
@@ -2422,16 +2352,6 @@ const ExpertProfilePage = () => {
                   </div>
                   <button className="settings-primary-button" onClick={() => setActiveModal('name')}>
                     تعديل
-                  </button>
-                </div>
-
-                <div className="settings-security-item">
-                  <div>
-                    <div className="settings-security-title">تحديث رقم الهاتف</div>
-                    <div className="settings-security-subtitle">اربط رقمك الجديد بالحساب بعد التحقق منه عبر رمز SMS.</div>
-                  </div>
-                  <button className="settings-secondary-button" onClick={() => setActiveModal('phone')}>
-                    تعديل الهاتف
                   </button>
                 </div>
 

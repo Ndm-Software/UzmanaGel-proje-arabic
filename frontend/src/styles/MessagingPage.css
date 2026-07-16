@@ -1563,3 +1563,48 @@
 [data-theme="light"] .no-chat-content small {
   color: #4a5568;
 }
+
+/* Back button and responsive conversation focus */
+.chat-back-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 6px;
+  margin-left: 8px;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+.chat-back-btn:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .chat-back-btn {
+    display: inline-flex;
+  }
+
+  .messaging-wrapper.conversation-active .chats-panel {
+    display: none !important;
+  }
+  
+  .messaging-wrapper.conversation-active .messages-panel {
+    display: flex !important;
+    width: 100% !important;
+    flex: 1 !important;
+    height: 100% !important;
+  }
+  
+  .messaging-wrapper:not(.conversation-active) .messages-panel {
+    display: none !important;
+  }
+
+  .messaging-wrapper:not(.conversation-active) .chats-panel {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+  }
+}

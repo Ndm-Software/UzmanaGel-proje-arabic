@@ -559,7 +559,19 @@ const Navbar = () => {
         <>
           {/* Token balance badge removed for Syria launch. */}
 
-          {/* Notification bell removed for Syria launch. */}
+          <Link
+            to="/الإشعارات"
+            className="navbar-icon-link"
+            title="الإشعارات"
+          >
+            <i className="fas fa-bell"></i>
+
+            {unreadNotificationsCount > 0 && (
+              <span className="notification-badge">
+                {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+              </span>
+            )}
+          </Link>
 
           <Link
             to="/الرسائل"
@@ -657,6 +669,15 @@ const Navbar = () => {
                   <i className="fa-solid fa-heart"></i>
 
                   <span>مفضلتي</span>
+                </Link>
+
+                <Link
+                  to="/الإشعارات"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  <i className="fa-solid fa-bell"></i>
+
+                  <span>الإشعارات</span>
                 </Link>
 
                 <Link
@@ -937,6 +958,26 @@ const Navbar = () => {
                           {unreadCount > 99
                             ? '99+'
                             : unreadCount}
+                        </span>
+                      )}
+                    </Link>
+
+                    <Link
+                      to="/الإشعارات"
+                      onClick={closeMobileMenu}
+                    >
+                      <i
+                        className="fas fa-bell"
+                        aria-hidden="true"
+                      ></i>
+
+                      <span>الإشعارات</span>
+
+                      {unreadNotificationsCount > 0 && (
+                        <span className="mobile-count-badge">
+                          {unreadNotificationsCount > 99
+                            ? '99+'
+                            : unreadNotificationsCount}
                         </span>
                       )}
                     </Link>

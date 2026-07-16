@@ -25,7 +25,7 @@ const stagger = {
 const stats = [
   { value: "14", label: "خدمة نشطة في المدينة" },
   { valueKey: "providerCount", label: "خبير موثق" },
-  { valueKey: "userCount", label: "مستخدم" },
+  { valueKey: "completedAppointmentsCount", label: "مستخدم" },
   { value: 5, label: "خدمة 5 نجوم", type: "stars" },
 ];
 
@@ -47,25 +47,51 @@ const values = [
 export default function AboutPage() {
   const [counts, setCounts] = useState({
     providerCount: 0,
-    userCount: 0,
+    completedAppointmentsCount: 0,
   });
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadCounts() {
+      const CACHE_KEY = "about_page_counts";
+      const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+
       try {
+        // 1. Check if we have a valid cache in browser
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          try {
+            const { counts: cachedCounts, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_DURATION) {
+              if (isMounted) {
+                setCounts(cachedCounts);
+              }
+              return;
+            }
+          } catch (e) {
+            // If cache parsing fails, ignore and fetch fresh
+          }
+        }
+
+        // 2. Fetch fresh counts
         const [providerCountSnap, userCountSnap] = await Promise.all([
           getCountFromServer(query(collection(db, "users"), where("userType", "==", "PROVIDER"))),
           getCountFromServer(collection(db, "users")),
         ]);
 
+        const newCounts = {
+          providerCount: Number(providerCountSnap.data().count || 0),
+          completedAppointmentsCount: Number(userCountSnap.data().count || 0),
+        };
+
         if (!isMounted) return;
 
-        setCounts({
-          providerCount: Number(providerCountSnap.data().count || 0),
-          userCount: Number(userCountSnap.data().count || 0),
-        });
+        setCounts(newCounts);
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({ counts: newCounts, timestamp: Date.now() })
+        );
       } catch (error) {
         console.error("About page stats could not be loaded:", error);
       }

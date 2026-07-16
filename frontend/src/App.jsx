@@ -15,6 +15,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import KvkkPage from "./pages/KvkkPage";
 import AboutPage from "./pages/AboutPage";
+import FAQPage from "./pages/FAQPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdPage from "./pages/AdPage";
 import FavoritesPage from "./pages/FavoritesPage";
@@ -79,6 +80,12 @@ function AppRoutes() {
 
           {/* من نحن */}
           <Route path="/من-نحن" element={<AboutPage />} />
+
+          {/* الأسئلة الشائعة */}
+          <Route path="/الأسئلة-الشائعة" element={<FAQPage />} />
+
+          {/* تحويل روابط قديمة */}
+          <Route path="/faq" element={<Navigate to="/الأسئلة-الشائعة" replace />} />
 
           {/* تحويل الروابط التركية القديمة */}
           <Route

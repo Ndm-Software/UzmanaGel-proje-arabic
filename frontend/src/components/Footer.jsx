@@ -166,13 +166,12 @@ function Footer() {
               <Link className="footer-link" to="/">الرئيسية</Link>
               <button
                 className="footer-link"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left', color: 'inherit', font: 'inherit' , fontSize: '13px' }}
                 onClick={() => scrollToSection('how-it-works')}
               >
                 كيف يعمل؟
               </button>
-              <span className="footer-link" style={{ opacity: 0.4, cursor: 'not-allowed' }}>الأسئلة الشائعة</span>
-              <span className="footer-link" style={{ opacity: 0.4, cursor: 'not-allowed' }}>المدونة</span>
+              <Link className="footer-link" to="/faq">الأسئلة الشائعة</Link>
             </div>
 
             <div className="footer-column">

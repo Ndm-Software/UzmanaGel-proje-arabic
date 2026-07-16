@@ -25,7 +25,7 @@ const stagger = {
 const stats = [
   { value: "14", label: "خدمة نشطة في المدينة" },
   { valueKey: "providerCount", label: "خبير موثق" },
-  { valueKey: "completedAppointmentsCount", label: "عمل مكتمل" },
+  { valueKey: "completedAppointmentsCount", label: "مستخدم" },
   { value: 5, label: "خدمة 5 نجوم", type: "stars" },
 ];
 
@@ -91,20 +91,44 @@ export default function AboutPage() {
     let isMounted = true;
 
     async function loadCounts() {
+      const CACHE_KEY = "about_page_counts";
+      const CACHE_DURATION = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+
       try {
-        const [providerCountSnap, completedAppointmentsCountSnap] = await Promise.all([
+        // 1. Check if we have a valid cache in browser
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          try {
+            const { counts: cachedCounts, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_DURATION) {
+              if (isMounted) {
+                setCounts(cachedCounts);
+              }
+              return;
+            }
+          } catch (e) {
+            // If cache parsing fails, ignore and fetch fresh
+          }
+        }
+
+        // 2. Fetch fresh counts
+        const [providerCountSnap, userCountSnap] = await Promise.all([
           getCountFromServer(query(collection(db, "users"), where("userType", "==", "PROVIDER"))),
-          getCountFromServer(
-            query(collection(db, "appointments"), where("status", "==", "completed"))
-          ),
+          getCountFromServer(collection(db, "users")),
         ]);
+
+        const newCounts = {
+          providerCount: Number(providerCountSnap.data().count || 0),
+          completedAppointmentsCount: Number(userCountSnap.data().count || 0),
+        };
 
         if (!isMounted) return;
 
-        setCounts({
-          providerCount: Number(providerCountSnap.data().count || 0),
-          completedAppointmentsCount: Number(completedAppointmentsCountSnap.data().count || 0),
-        });
+        setCounts(newCounts);
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({ counts: newCounts, timestamp: Date.now() })
+        );
       } catch (error) {
         console.error("About page stats could not be loaded:", error);
       }
@@ -246,7 +270,8 @@ export default function AboutPage() {
             </motion.div>
           </section>
 
-          <section className="about-timeline-wrap">
+          {/* delete the timeline wrap section */}
+          {/* <section className="about-timeline-wrap">
             <motion.h2
               variants={fadeUp}
               initial="hidden"
@@ -269,9 +294,10 @@ export default function AboutPage() {
                 </motion.article>
               ))}
             </motion.div>
-          </section>
+          </section> */}
 
-          <section className="about-team">
+          {/* delete about team section */}
+          {/* <section className="about-team">
             <motion.h2
               variants={fadeUp}
               initial="hidden"
@@ -297,7 +323,7 @@ export default function AboutPage() {
                 </motion.article>
               ))}
             </motion.div>
-          </section>
+          </section> */}
 
           <motion.section
             className="about-cta"

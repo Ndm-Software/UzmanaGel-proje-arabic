@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, onSnapshot, query, where, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, db } from "../firebase/firebaseClient";
 import "../styles/HomePage.css";
 import PageTransition from "../components/PageTransition";
@@ -66,8 +66,9 @@ export default function HomePage() {
   const [latestListingsError, setLatestListingsError] = useState("");
   const [isLightMode, setIsLightMode] = useState(false);
   const [platformStats, setPlatformStats] = useState({
-    happyReviewerCount: 0,
+    clientCount: 0,
     providerCount: 0,
+    listingCount: 0,
     // Syria Arabic launch: completed jobs stat is disabled with its listener.
     // completedAppointmentsCount: 0,
   });
@@ -111,6 +112,13 @@ export default function HomePage() {
         const payload = await fetchListings({ page: 1, limit: 20 });
         const items = Array.isArray(payload?.items) ? payload.items : [];
 
+        if (!cancelled) {
+          setPlatformStats((prev) => ({
+            ...prev,
+            listingCount: Number(payload?.total) || 0,
+          }));
+        }
+
         const expertOnly = items.filter((item) => {
           const id = String(item?.id ?? "").trim();
           return id && !/^\d+$/.test(id);
@@ -131,6 +139,7 @@ export default function HomePage() {
         if (!cancelled) {
           setLatestListings([]);
           setLatestListingsError("تعذر تحميل الإعلانات.");
+          setPlatformStats((prev) => ({ ...prev, listingCount: 0 }));
         }
       } finally {
         if (!cancelled) {
@@ -147,27 +156,16 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    const unsubHappyReviewers = onSnapshot(
-      query(collection(db, "reviews"), where("rating", ">=", 3)),
+    const unsubClients = onSnapshot(
+      query(collection(db, "users"), where("userType", "==", "CLIENT")),
       (snapshot) => {
-        const uniqueReviewerIds = new Set();
-
-        snapshot.docs.forEach((docSnap) => {
-          const data = docSnap.data() || {};
-          const clientId = String(data.clientId || "").trim();
-          const comment = String(data.comment || "").trim();
-
-          if (!clientId || !comment) return;
-          uniqueReviewerIds.add(clientId);
-        });
-
         setPlatformStats((prev) => ({
           ...prev,
-          happyReviewerCount: uniqueReviewerIds.size,
+          clientCount: snapshot.size,
         }));
       },
       (error) => {
-        if (isDevelopment) console.error("Happy reviewer count listener failed:", error);
+        if (isDevelopment) console.error("Client count listener failed:", error);
       }
     );
 
@@ -211,7 +209,7 @@ export default function HomePage() {
     */
 
     return () => {
-      unsubHappyReviewers();
+      unsubClients();
       unsubProviders();
       // Syria Arabic launch: completed jobs stat listener is disabled.
       // if (unsubCompletedAppointments) unsubCompletedAppointments();
@@ -228,7 +226,7 @@ export default function HomePage() {
 
   const formatPrice = (value) => {
     const numeric = Number(value) || 0;
-    return `${formatLatinNumber(numeric)} ل.س`;
+    return `${formatLatinNumber(numeric)} ليرة سورية جديدة`;
   };
 
   const formatCount = (value) =>
@@ -617,8 +615,8 @@ export default function HomePage() {
                   <div className="stats-icon" aria-hidden="true">
                     <img src={happyFaceImage} alt="" className="stats-icon-img" />
                   </div>
-                  <div className="stats-value">{formatCount(platformStats.happyReviewerCount)}</div>
-                  <div className="stats-label"> مستخدم</div>
+                  <div className="stats-value">{formatCount(platformStats.clientCount)}</div>
+                  <div className="stats-label">عدد المستخدمين</div>
                 </article>
 
                 <article className="stats-card">
@@ -643,8 +641,8 @@ export default function HomePage() {
                   <div className="stats-icon" aria-hidden="true">
                     <img src={syriaImage} alt="" className="stats-icon-img" />
                   </div>
-                  <div className="stats-value">14</div>
-                  <div className="stats-label">خدمة في المدن</div>
+                  <div className="stats-value">{formatCount(platformStats.listingCount)}</div>
+                  <div className="stats-label">خدمة في المحافظات</div>
                 </article>
               </div>
             </div>

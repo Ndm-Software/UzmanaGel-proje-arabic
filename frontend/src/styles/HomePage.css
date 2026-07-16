@@ -521,10 +521,9 @@ button.cta-button {
 
 .listings-grid {
   display: grid;
-  /* Sabit 4 sütun: az ilan olsa da kart genişliği değişmez */
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 270px));
   gap: 18px;
-  justify-content: start;
+  justify-content: center;
 }
 
 /* Yükleniyor / hata / boş mesaj kartları tam satır */
@@ -675,7 +674,7 @@ button.cta-button {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
 
@@ -865,6 +864,16 @@ button.cta-button {
   text-decoration: underline;
 }
 
+.footer-link-button {
+  width: fit-content;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
 .footer-contact {
   display: grid;
   gap: 10px;
@@ -931,6 +940,10 @@ button.cta-button {
   color: var(--text-muted);
   font-weight: 600;
   font-size: 13px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
 }
 
 /* =========================

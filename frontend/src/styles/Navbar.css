@@ -698,6 +698,7 @@
         height: 44px;
         padding: 11px 8px;
         flex-shrink: 0;
+        order: -2;
     }
 
     .mobile-menu-btn span {
@@ -722,11 +723,13 @@
     
     .navbar-brand {
         flex: 0 0 auto;
+        order: 2;
     }
 
     .navbar-right {
         margin-inline-start: auto;
         gap: 8px;
+        order: -1;
     }
 
     .navbar-right .nav-button,

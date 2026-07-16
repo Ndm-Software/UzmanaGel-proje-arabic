@@ -4,6 +4,8 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/firebaseClient';
 
 import brandImage from '../assets/pictures/LogoArabicNowriting.png';
+import PolicyModal from './PolicyModal';
+import LegalPolicyContent from './LegalPolicyContent';
 // Syria Arabic launch: store download buttons are disabled, assets kept for future use.
 // import appleLogo from '../assets/pictures/apple-logo.png';
 // import googlePlayLogo from '../assets/pictures/google-play.png';
@@ -12,33 +14,13 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 
 function Footer() {
   const navigate = useNavigate();
-  const [isLightMode, setIsLightMode] = useState(false);
+  const [policyType, setPolicyType] = useState(null);
   
   const [siteSettings, setSiteSettings] = useState({
     contactEmail: 'info@uzmanagel.com',
     phone: '+90 555 123 4567',
     address: 'سوريا',
   });
-
-  useEffect(() => {
-    const updateThemeState = () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-      setIsLightMode(currentTheme === 'light');
-    };
-
-    updateThemeState();
-
-    const observer = new MutationObserver(() => {
-      updateThemeState();
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    });
-
-    return () => observer.disconnect();
-  }, []);
 
   // Site ayarlarını Firestore'dan gerçek zamanlı dinle
   useEffect(() => {
@@ -99,6 +81,7 @@ function Footer() {
     : siteSettings.address;
 
   return (
+    <>
     <section className="section-band section-band--gradient" id="footer">
       <footer className="footer">
         <div className="footer-container">
@@ -193,10 +176,13 @@ function Footer() {
             </div>
 
             <div className="footer-column">
-              <h4 className="footer-title">القوانين</h4>
-              <a className="footer-link" href="#" rel="noopener noreferrer">شروط الاستخدام</a>
-              <a className="footer-link" href="#" rel="noopener noreferrer">سياسة الخصوصية</a>
-              <a className="footer-link" href="#" rel="noopener noreferrer">سياسة ملفات الارتباط</a>
+              <h4 className="footer-title">شروط الاستخدام وسياسة الخصوصية</h4>
+              <button className="footer-link footer-link-button" type="button" onClick={() => setPolicyType('terms')}>
+                شروط الاستخدام
+              </button>
+              <button className="footer-link footer-link-button" type="button" onClick={() => setPolicyType('privacy')}>
+                سياسة الخصوصية
+              </button>
             </div>
 
             <div className="footer-column">
@@ -239,10 +225,19 @@ function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} خبير. جميع الحقوق محفوظة.</span>
+          <span>Developed By NDM Software</span>
+          <span>© 2026 Khabiir, all rights reserved.</span>
         </div>
       </footer>
     </section>
+    <PolicyModal
+      open={Boolean(policyType)}
+      title={policyType === 'privacy' ? 'سياسة الخصوصية' : 'شروط الاستخدام'}
+      onClose={() => setPolicyType(null)}
+    >
+      <LegalPolicyContent type={policyType || 'terms'} />
+    </PolicyModal>
+    </>
   );
 }
 

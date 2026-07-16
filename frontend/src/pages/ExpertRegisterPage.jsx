@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PolicyModal from "../components/PolicyModal";
+import LegalPolicyContent from "../components/LegalPolicyContent";
 import { checkRegistrationEligibility } from "../services/registrationGuardService";
 import {
   initRecaptcha,
@@ -734,14 +735,15 @@ const ExpertRegisterPage = () => {
                       style={{ marginTop: "4px" }}
                     />
                     <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-                      <a href="#" className="terms-link" onClick={openTerms}>
+                      أقرّ بأنني قرأت{" "}
+                      <button type="button" className="terms-link terms-link-button" onClick={openTerms}>
                         شروط الاستخدام
-                      </a>
+                      </button>
                       {" "}و{" "}
-                      <a href="#" className="terms-link" onClick={openPrivacy}>
+                      <button type="button" className="terms-link terms-link-button" onClick={openPrivacy}>
                         سياسة الخصوصية
-                      </a>
-                      {" "}قرأتهما وأوافق عليهما.
+                      </button>
+                      {" "}وأوافق عليهما.
                       <span className="required">*</span>
                     </span>
                   </label>
@@ -875,13 +877,7 @@ const ExpertRegisterPage = () => {
           title={policyType === "terms" ? "شروط الاستخدام" : "سياسة الخصوصية"}
           onClose={() => setPolicyOpen(false)}
         >
-          <div className="policy-placeholder">
-            <p style={{ color: "var(--text-muted)" }}>
-              {policyType === "terms"
-                ? "سيتم عرض محتوى شروط الاستخدام هنا."
-                : "سيتم عرض محتوى سياسة الخصوصية هنا."}
-            </p>
-          </div>
+          <LegalPolicyContent type={policyType} />
         </PolicyModal>
       </div>
     </PageTransition>

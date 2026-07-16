@@ -32,6 +32,38 @@ const ALL_CATEGORIES = "جميع الفئات";
 const ALL_SPECIALTIES = "جميع التخصصات";
 const ALL_CITIES = "جميع المحافظات";
 const DEFAULT_SORT = "السعر: الأعلى أولاً";
+const FILTER_STORAGE_KEY = "khabiir:ads:filters";
+
+const DEFAULT_FILTER_STATE = {
+  searchText: "",
+  category: ALL_CATEGORIES,
+  specialty: ALL_SPECIALTIES,
+  city: ALL_CITIES,
+  minPrice: "",
+  maxPrice: "",
+  sortBy: DEFAULT_SORT,
+};
+
+function readSavedFilters() {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(FILTER_STORAGE_KEY) || "null");
+    if (!saved || typeof saved !== "object") return DEFAULT_FILTER_STATE;
+
+    return {
+      searchText: typeof saved.searchText === "string" ? saved.searchText : "",
+      category: typeof saved.category === "string" ? saved.category : ALL_CATEGORIES,
+      specialty: typeof saved.specialty === "string" ? saved.specialty : ALL_SPECIALTIES,
+      city: typeof saved.city === "string" ? saved.city : ALL_CITIES,
+      minPrice: typeof saved.minPrice === "string" ? saved.minPrice : "",
+      maxPrice: typeof saved.maxPrice === "string" ? saved.maxPrice : "",
+      sortBy: SORT_OPTIONS.some((option) => option.label === saved.sortBy)
+        ? saved.sortBy
+        : DEFAULT_SORT,
+    };
+  } catch {
+    return DEFAULT_FILTER_STATE;
+  }
+}
 
 const SYRIA_GOVERNORATES = [
   { label: "دمشق", value: "دمشق" },
@@ -160,12 +192,13 @@ function readListingsPageFromUrl() {
 const AdPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [initialFilters] = useState(readSavedFilters);
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [listingsLoading, setListingsLoading] = useState(false);
 
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState(initialFilters.searchText);
   const [showVoiceModal, setShowVoiceModal] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("جاري الاستماع...");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -175,19 +208,19 @@ const AdPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(readListingsPageFromUrl);
 
-  const [tempCategory, setTempCategory] = useState(ALL_CATEGORIES);
-  const [tempSpecialty, setTempSpecialty] = useState(ALL_SPECIALTIES);
-  const [tempCity, setTempCity] = useState(ALL_CITIES);
-  const [tempMinPrice, setTempMinPrice] = useState("");
-  const [tempMaxPrice, setTempMaxPrice] = useState("");
-  const [tempSortBy, setTempSortBy] = useState(DEFAULT_SORT);
+  const [tempCategory, setTempCategory] = useState(initialFilters.category);
+  const [tempSpecialty, setTempSpecialty] = useState(initialFilters.specialty);
+  const [tempCity, setTempCity] = useState(initialFilters.city);
+  const [tempMinPrice, setTempMinPrice] = useState(initialFilters.minPrice);
+  const [tempMaxPrice, setTempMaxPrice] = useState(initialFilters.maxPrice);
+  const [tempSortBy, setTempSortBy] = useState(initialFilters.sortBy);
 
-  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORIES);
-  const [activeSpecialty, setActiveSpecialty] = useState(ALL_SPECIALTIES);
-  const [activeCity, setActiveCity] = useState(ALL_CITIES);
-  const [activeMinPrice, setActiveMinPrice] = useState("");
-  const [activeMaxPrice, setActiveMaxPrice] = useState("");
-  const [activeSortBy, setActiveSortBy] = useState(DEFAULT_SORT);
+  const [activeCategory, setActiveCategory] = useState(initialFilters.category);
+  const [activeSpecialty, setActiveSpecialty] = useState(initialFilters.specialty);
+  const [activeCity, setActiveCity] = useState(initialFilters.city);
+  const [activeMinPrice, setActiveMinPrice] = useState(initialFilters.minPrice);
+  const [activeMaxPrice, setActiveMaxPrice] = useState(initialFilters.maxPrice);
+  const [activeSortBy, setActiveSortBy] = useState(initialFilters.sortBy);
 
   const [categoryOptions, setCategoryOptions] = useState([ALL_CATEGORIES]);
   const [specialtyOptions, setSpecialtyOptions] = useState([
@@ -201,6 +234,33 @@ const AdPage = () => {
   const [favorites, setFavorites] = useState({});
   const [firestoreDisplayName, setFirestoreDisplayName] = useState("");
   const [customerCity, setCustomerCity] = useState("");
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(
+        FILTER_STORAGE_KEY,
+        JSON.stringify({
+          searchText,
+          category: activeCategory,
+          specialty: activeSpecialty,
+          city: activeCity,
+          minPrice: activeMinPrice,
+          maxPrice: activeMaxPrice,
+          sortBy: activeSortBy,
+        })
+      );
+    } catch {
+      // Oturum depolaması kapalıysa filtreler yalnızca açık sayfada tutulur.
+    }
+  }, [
+    searchText,
+    activeCategory,
+    activeSpecialty,
+    activeCity,
+    activeMinPrice,
+    activeMaxPrice,
+    activeSortBy,
+  ]);
 
   const updateListingsPageParam = useCallback(
     (page) => {
@@ -857,7 +917,7 @@ const AdPage = () => {
             <div className="price-inputs">
               <input
                 type="number"
-                placeholder="الحد الأدنى ل.س"
+                placeholder="الحد الأدنى بالليرة السورية الجديدة"
                 value={tempMinPrice}
                 onChange={(event) => setTempMinPrice(event.target.value)}
                 min="0"
@@ -868,7 +928,7 @@ const AdPage = () => {
 
               <input
                 type="number"
-                placeholder="الحد الأقصى ل.س"
+                placeholder="الحد الأقصى بالليرة السورية الجديدة"
                 value={tempMaxPrice}
                 onChange={(event) => setTempMaxPrice(event.target.value)}
                 min="0"
@@ -1015,7 +1075,7 @@ const AdPage = () => {
                           {formatLatinNumber(item.price)}
                         </span>
 
-                        <span className="price-currency">ل.س</span>
+                        <span className="price-currency">ليرة سورية جديدة</span>
                       </strong>
                     </div>
 

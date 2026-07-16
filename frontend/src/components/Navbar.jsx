@@ -14,8 +14,6 @@ import {
 import TokenModal from './TokenModal';
 import { auth, db } from '../firebase/firebaseClient';
 import ThemeSwitch from './ThemeSwitch';
-import MobilePageActions from './MobilePageActions';
-
 import DOMPurify from 'dompurify';
 
 import '../styles/Navbar.css';
@@ -765,8 +763,6 @@ const Navbar = () => {
               </span>
             </Link>
           </div>
-
-          <MobilePageActions showHome={false} />
 
           <nav className="navbar-links">
             <Link

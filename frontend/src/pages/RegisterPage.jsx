@@ -6,6 +6,7 @@ import "../styles/RegisterPage.css";
 import PageTransition from "../components/PageTransition";
 import brandImage from "../assets/pictures/LogoArabicNoWriting.png";
 import PolicyModal from "../components/PolicyModal";
+import LegalPolicyContent from "../components/LegalPolicyContent";
 import DOMPurify from 'dompurify';
 import LoadingSpinner from "../components/LoadingSpinner";
 import MobilePageActions from "../components/MobilePageActions";
@@ -856,14 +857,16 @@ export default function RegisterPage() {
                         style={{ marginTop: "4px" }}
                       />
                       <span style={{ fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-                        <a href="#" className="terms-link" onClick={openTerms}>
-                          شروط الإستخدام
-                        </a>
+                        أقرّ بأنني قرأت{" "}
+                        <button type="button" className="terms-link terms-link-button" onClick={openTerms}>
+                          شروط الاستخدام
+                        </button>
                         {" "}و{" "}
-                        <a href="#" className="terms-link" onClick={openPrivacy}>
+                        <button type="button" className="terms-link terms-link-button" onClick={openPrivacy}>
                           سياسة الخصوصية
-                        </a>
-                        {" "}لقد قرأت ووافقت 
+                        </button>
+                        {" "}وأوافق عليهما.
+                        <span className="required">*</span>
                       </span>
                     </label>
                   </div>
@@ -987,13 +990,7 @@ export default function RegisterPage() {
           title={policyType === "terms" ? "الشروط والأحكام" : "سياسة الخصوصية"}
           onClose={() => setPolicyOpen(false)}
         >
-          <div className="policy-placeholder">
-            <p style={{ color: "var(--text-muted)" }}>
-              {policyType === "terms"
-                ? "ستظهر شروط والأحكام هنا."
-                : "ستظهر سياسة الخصوصية هنا."}
-            </p>
-          </div>
+          <LegalPolicyContent type={policyType} />
         </PolicyModal>
 
         {mergeOpen && (

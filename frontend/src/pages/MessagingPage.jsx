@@ -155,6 +155,40 @@ function buildMessagesSignature(list) {
     .join("|");
 }
 
+function getMessageSortTimestamp(message) {
+  const createdAt = message?.createdAt;
+
+  if (!createdAt) return 0;
+
+  const seconds = createdAt?._seconds ?? createdAt?.seconds;
+  const nanoseconds =
+    createdAt?._nanoseconds ?? createdAt?.nanoseconds ?? 0;
+
+  if (typeof seconds === "number") {
+    return seconds * 1000 + nanoseconds / 1000000;
+  }
+
+  const parsedTimestamp = new Date(createdAt).getTime();
+  return Number.isNaN(parsedTimestamp) ? 0 : parsedTimestamp;
+}
+
+function compareMessagesChronologically(firstMessage, secondMessage) {
+  const timestampDifference =
+    getMessageSortTimestamp(firstMessage) -
+    getMessageSortTimestamp(secondMessage);
+
+  if (timestampDifference !== 0) return timestampDifference;
+
+  const firstId = String(
+    firstMessage?.serverMessageId || firstMessage?.messageId || ""
+  );
+  const secondId = String(
+    secondMessage?.serverMessageId || secondMessage?.messageId || ""
+  );
+
+  return firstId.localeCompare(secondId);
+}
+
 const MessageComposer = memo(function MessageComposer({
   conversationId,
   storageKey,
@@ -418,6 +452,8 @@ const MessagingPage = () => {
   const [replyingTo, setReplyingTo] = useState(null);
   const [isComposerFocused, setIsComposerFocused] = useState(false);
   const [sendError, setSendError] = useState("");
+  const [latestDeliveredMessageId, setLatestDeliveredMessageId] =
+    useState(null);
   const [chatDeadline, setChatDeadline] = useState(null);
 
   const [avatars, setAvatars] = useState({});
@@ -447,9 +483,59 @@ const MessagingPage = () => {
   const shouldAutoScrollRef = useRef(false);
   const messagesSignatureRef = useRef("");
   const conversationsSignatureRef = useRef("");
+  const optimisticMessagesRef = useRef(new Map());
+  const selectedConversationIdRef = useRef(null);
+  const latestQueuedMessageIdRef = useRef(null);
+  const deliveryStatusTimerRef = useRef(null);
 
   const currentUid = firebaseUser?.uid || null;
   const conversationCount = conversations.length;
+
+  useEffect(() => {
+    selectedConversationIdRef.current = selectedConversationId;
+    latestQueuedMessageIdRef.current = null;
+    setLatestDeliveredMessageId(null);
+
+    if (deliveryStatusTimerRef.current) {
+      window.clearTimeout(deliveryStatusTimerRef.current);
+      deliveryStatusTimerRef.current = null;
+    }
+  }, [selectedConversationId]);
+
+  useEffect(
+    () => () => {
+      if (deliveryStatusTimerRef.current) {
+        window.clearTimeout(deliveryStatusTimerRef.current);
+      }
+    },
+    []
+  );
+
+  const mergeOptimisticMessages = useCallback(
+    (serverMessages, conversationId) => {
+      const nextMessages = [...(serverMessages || [])];
+      const serverMessageIds = new Set(
+        nextMessages.map((message) => message?.messageId).filter(Boolean)
+      );
+
+      optimisticMessagesRef.current.forEach((message, clientMessageId) => {
+        if (message.conversationId !== conversationId) return;
+
+        if (
+          message.serverMessageId &&
+          serverMessageIds.has(message.serverMessageId)
+        ) {
+          optimisticMessagesRef.current.delete(clientMessageId);
+          return;
+        }
+
+        nextMessages.push(message);
+      });
+
+      return nextMessages.sort(compareMessagesChronologically);
+    },
+    []
+  );
 
   const scrollToBottom = useCallback((behavior = "smooth") => {
     if (messagesEndRef.current) {
@@ -681,14 +767,28 @@ const MessagingPage = () => {
 
   const canDeleteMessage = useCallback(
     (message) => {
-      if (!message || message.isDeleted || message.type === "deleted") return false;
+      if (
+        !message ||
+        message.optimisticStatus ||
+        message.isDeleted ||
+        message.type === "deleted"
+      ) {
+        return false;
+      }
       return message.senderUid === currentUid;
     },
     [currentUid]
   );
 
   const canReplyToMessage = useCallback((message) => {
-    if (!message || message.isDeleted || message.type === "deleted") return false;
+    if (
+      !message ||
+      message.optimisticStatus ||
+      message.isDeleted ||
+      message.type === "deleted"
+    ) {
+      return false;
+    }
     return true;
   }, []);
 
@@ -805,7 +905,11 @@ const MessagingPage = () => {
       fetchMyConversations(),
     ]);
 
-    const nextMessages = updatedMessages || [];
+    const serverMessages = updatedMessages || [];
+    const nextMessages = mergeOptimisticMessages(
+      serverMessages,
+      selectedConversationId
+    );
     const nextConversations = await filterConversationsByAppointments(
       updatedConversations || []
     );
@@ -821,6 +925,7 @@ const MessagingPage = () => {
     currentUid,
     buildConversationsSignature,
     filterConversationsByAppointments,
+    mergeOptimisticMessages,
   ]);
 
   const handleMessageContextMenu = useCallback(
@@ -877,9 +982,155 @@ const MessagingPage = () => {
     [selectedConversationId, canDeleteMessage, closeContextMenu]
   );
 
+  const deliverOptimisticMessage = useCallback(
+    (clientMessageId) => {
+      const queuedMessage =
+        optimisticMessagesRef.current.get(clientMessageId);
+
+      if (!queuedMessage || queuedMessage.optimisticStatus === "pending") {
+        return;
+      }
+
+      const pendingMessage = {
+        ...queuedMessage,
+        optimisticStatus: "pending",
+        sendError: "",
+      };
+
+      optimisticMessagesRef.current.set(
+        clientMessageId,
+        pendingMessage
+      );
+
+      if (
+        selectedConversationIdRef.current ===
+        pendingMessage.conversationId
+      ) {
+        setMessages((previousMessages) =>
+          previousMessages.map((message) =>
+            message.clientMessageId === clientMessageId
+              ? pendingMessage
+              : message
+          )
+        );
+      }
+
+      void sendConversationMessage(
+        pendingMessage.conversationId,
+        pendingMessage.text,
+        pendingMessage.replyToMessageId
+      )
+        .then((serverMessage) => {
+          const currentMessage =
+            optimisticMessagesRef.current.get(clientMessageId);
+
+          if (!currentMessage) return;
+
+          const deliveredMessage = {
+            ...currentMessage,
+            text: serverMessage?.text || currentMessage.text,
+            serverMessageId:
+              serverMessage?.messageId || currentMessage.serverMessageId,
+            optimisticStatus: "sent",
+            sendError: "",
+          };
+
+          optimisticMessagesRef.current.set(
+            clientMessageId,
+            deliveredMessage
+          );
+
+          if (
+            selectedConversationIdRef.current ===
+            deliveredMessage.conversationId
+          ) {
+            setSendError("");
+            setMessages((previousMessages) =>
+              previousMessages.map((message) =>
+                message.clientMessageId === clientMessageId
+                  ? deliveredMessage
+                  : message
+              )
+            );
+
+            if (latestQueuedMessageIdRef.current === clientMessageId) {
+              setLatestDeliveredMessageId(clientMessageId);
+
+              if (deliveryStatusTimerRef.current) {
+                window.clearTimeout(deliveryStatusTimerRef.current);
+              }
+
+              deliveryStatusTimerRef.current = window.setTimeout(() => {
+                setLatestDeliveredMessageId((currentMessageId) =>
+                  currentMessageId === clientMessageId
+                    ? null
+                    : currentMessageId
+                );
+                deliveryStatusTimerRef.current = null;
+              }, 1500);
+            }
+          }
+        })
+        .catch((error) => {
+          if (isDevelopment) {
+            console.error("Failed to send message:", error.message);
+          }
+
+          const currentMessage =
+            optimisticMessagesRef.current.get(clientMessageId);
+
+          if (!currentMessage) return;
+
+          const errorMessage =
+            error?.message ||
+            "حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة لاحقاً.";
+          const failedMessage = {
+            ...currentMessage,
+            optimisticStatus: "failed",
+            sendError: errorMessage,
+          };
+
+          optimisticMessagesRef.current.set(
+            clientMessageId,
+            failedMessage
+          );
+
+          if (
+            selectedConversationIdRef.current ===
+            failedMessage.conversationId
+          ) {
+            setSendError(errorMessage);
+            setMessages((previousMessages) =>
+              previousMessages.map((message) =>
+                message.clientMessageId === clientMessageId
+                  ? failedMessage
+                  : message
+              )
+            );
+          }
+        });
+    },
+    []
+  );
+
+  const handleRetryMessage = useCallback(
+    (clientMessageId) => {
+      const failedMessage =
+        optimisticMessagesRef.current.get(clientMessageId);
+
+      if (!failedMessage || failedMessage.optimisticStatus !== "failed") {
+        return;
+      }
+
+      setSendError("");
+      deliverOptimisticMessage(clientMessageId);
+    },
+    [deliverOptimisticMessage]
+  );
+
   const handleSendMessage = useCallback(
     async (customText = "") => {
-      if (!selectedConversationId) return false;
+      if (!selectedConversationId || !currentUid) return false;
       const finalText = removeEmojis(String(customText || "")).trim();
 
       if (!finalText) return false;
@@ -888,31 +1139,66 @@ const MessagingPage = () => {
         return false;
       }
 
-      try {
-        await sendConversationMessage(
-          selectedConversationId,
-          finalText,
-          replyingTo?.messageId || null
-        );
-        setSendError("");
-        setReplyingTo(null);
-        shouldAutoScrollRef.current = true;
-        await refreshConversationData();
-        return true;
-      } catch (error) {
-        if (isDevelopment) console.error("Failed to send message:", error.message);
-        setSendError(
-          error?.message ||
-            "حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة لاحقاً."
-        );
+      const clientMessageId = `optimistic-${
+        globalThis.crypto?.randomUUID?.() ||
+        `${Date.now()}-${Math.random().toString(16).slice(2)}`
+      }`;
+      const replySnapshot = replyingTo
+        ? {
+            messageId: replyingTo.messageId,
+            senderUid: replyingTo.senderUid || null,
+            text: getReplyPreviewText(replyingTo),
+            createdAt: replyingTo.createdAt || null,
+            type: replyingTo.type || "text",
+            isDeleted: false,
+          }
+        : null;
+      const optimisticMessage = {
+        clientMessageId,
+        messageId: clientMessageId,
+        conversationId: selectedConversationId,
+        senderUid: currentUid,
+        text: finalText,
+        createdAt: new Date().toISOString(),
+        readBy: [currentUid],
+        type: "text",
+        replyTo: replySnapshot,
+        replyToMessageId: replySnapshot?.messageId || null,
+        isDeleted: false,
+        optimisticStatus: "queued",
+        sendError: "",
+      };
 
-        try {
-          await refreshConversationData();
-        } catch {}
-        return false;
+      latestQueuedMessageIdRef.current = clientMessageId;
+      setLatestDeliveredMessageId(null);
+
+      if (deliveryStatusTimerRef.current) {
+        window.clearTimeout(deliveryStatusTimerRef.current);
+        deliveryStatusTimerRef.current = null;
       }
+
+      optimisticMessagesRef.current.set(
+        clientMessageId,
+        optimisticMessage
+      );
+      setMessages((previousMessages) => [
+        ...previousMessages,
+        optimisticMessage,
+      ]);
+      setSendError("");
+      setReplyingTo(null);
+      shouldAutoScrollRef.current = true;
+
+      deliverOptimisticMessage(clientMessageId);
+      return true;
     },
-    [selectedConversationId, replyingTo, refreshConversationData]
+    [
+      selectedConversationId,
+      currentUid,
+      replyingTo,
+      getReplyPreviewText,
+      deliverOptimisticMessage,
+    ]
   );
 
   const handleComposerFocusChange = useCallback((isFocused) => {
@@ -1217,7 +1503,11 @@ const MessagingPage = () => {
 
         if (cancelled) return;
 
-        const nextMessages = data || [];
+        const serverMessages = data || [];
+        const nextMessages = mergeOptimisticMessages(
+          serverMessages,
+          selectedConversationId
+        );
         const currentLength = nextMessages.length;
         const hasNewMessage = currentLength > previousLength;
         const lastMessage = nextMessages[currentLength - 1];
@@ -1260,6 +1550,7 @@ const MessagingPage = () => {
     authLoading,
     isComposerFocused,
     isUserNearBottom,
+    mergeOptimisticMessages,
   ]);
 
   useLayoutEffect(() => {
@@ -1625,6 +1916,10 @@ const MessagingPage = () => {
                               <div
                                 className={`message-bubble ${
                                   isDeleted ? "deleted-message-bubble" : ""
+                                } ${
+                                  msg.optimisticStatus
+                                    ? `optimistic-message optimistic-${msg.optimisticStatus}`
+                                    : ""
                                 }`}
                                 onContextMenu={(e) =>
                                   handleMessageContextMenu(e, msg)
@@ -1657,6 +1952,46 @@ const MessagingPage = () => {
                                   {formatMessageTime(msg.createdAt)}
                                 </span>
                               </div>
+
+                              {msg.optimisticStatus &&
+                                (msg.optimisticStatus !== "sent" ||
+                                  msg.clientMessageId ===
+                                    latestDeliveredMessageId) && (
+                                <div
+                                  className={`message-delivery-status ${msg.optimisticStatus}`}
+                                  aria-live="polite"
+                                >
+                                  {msg.optimisticStatus === "pending" && (
+                                    <>
+                                      <i className="fas fa-circle-notch fa-spin"></i>
+                                      <span>جارٍ الإرسال...</span>
+                                    </>
+                                  )}
+
+                                  {msg.optimisticStatus === "sent" && (
+                                    <>
+                                      <i className="fas fa-check"></i>
+                                      <span>تم الإرسال</span>
+                                    </>
+                                  )}
+
+                                  {msg.optimisticStatus === "failed" && (
+                                    <button
+                                      type="button"
+                                      className="message-retry-button"
+                                      onClick={() =>
+                                        handleRetryMessage(
+                                          msg.clientMessageId
+                                        )
+                                      }
+                                      title="إعادة محاولة إرسال الرسالة"
+                                    >
+                                      <i className="fas fa-rotate-right"></i>
+                                      <span>تعذر الإرسال، حاول مرة أخرى</span>
+                                    </button>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>

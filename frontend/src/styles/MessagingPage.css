@@ -649,6 +649,62 @@
   color: rgba(11, 16, 32, 0.72);
 }
 
+.optimistic-message {
+  transition: opacity 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.optimistic-message.optimistic-pending,
+.optimistic-message.optimistic-queued {
+  opacity: 0.82;
+}
+
+.optimistic-message.optimistic-failed {
+  background: rgba(239, 68, 68, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.55);
+}
+
+.message-delivery-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.message-delivery-status.sent {
+  color: #8bbf8b;
+}
+
+.message-delivery-status.failed {
+  color: #f87171;
+}
+
+.message-retry-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.message-retry-button:hover {
+  color: #fca5a5;
+  text-decoration: underline;
+}
+
+.message-retry-button:focus-visible {
+  outline: 2px solid rgba(248, 113, 113, 0.65);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* ================= REPLY SNIPPET ================= */
 .reply-snippet {
   display: flex;

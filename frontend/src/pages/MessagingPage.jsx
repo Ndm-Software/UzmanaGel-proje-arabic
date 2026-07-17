@@ -43,18 +43,18 @@ const sanitizeText = (text) => {
 const QUICK_MESSAGES_CUSTOMER = [
   {
     id: 1,
-    text: "مرحباً، شكراً لك على تأكيد الموعد. هل يمكننا تحديد وقت الخدمة؟",
-    type: "saat",
+    text: "مرحباً، هل يمكنك تنفيذ هذه الخدمة؟",
+    type: "service",
   },
   {
     id: 2,
-    text: "هل عنوان الخدمة ومعلومات الوصول صحيحة، هل يمكننا التحقق معاً؟",
-    type: "adres",
+    text: "كم تستغرق هذه الخدمة؟",
+    type: "duration",
   },
   {
     id: 3,
-    text: "هل هناك أي شيء يجب علي تحضيره قبل الخدمة؟",
-    type: "hazirlik",
+    text: "متى يمكنك البدء؟",
+    type: "time",
   },
 ];
 
@@ -1193,7 +1193,7 @@ const MessagingPage = () => {
     shouldAutoScrollRef.current = false;
     previousMessagesLengthRef.current = 0;
     messagesSignatureRef.current = "";
-    navigate("/mesajlar", { replace: true });
+    navigate("/الرسائل", { replace: true });
   }, [
     selectedConversationId,
     conversations,

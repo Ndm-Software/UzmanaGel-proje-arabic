@@ -13,12 +13,11 @@ import { getListingImageStyle } from "../utils/listingImagePresentation";
 import { toArabicServiceLabel } from "../utils/arabicLabels";
 import { formatLatinNumber } from "../utils/localeFormat";
 import { doc, getDoc } from "firebase/firestore";
-import { db, auth } from "../firebase/firebaseClient";
+import { db } from "../firebase/firebaseClient";
 import DOMPurify from 'dompurify';
 import "../styles/ListingDetailPage.css";
 
 const isDevelopment = process.env.NODE_ENV === 'development';
-const FIRST_CONTACT_REDIRECT_PREFIX = "khabiir:first-contact-redirect";
 
 const sanitizeText = (text) => {
   if (!text) return '';
@@ -251,25 +250,11 @@ export default function ListingDetailPage() {
       const serviceTitle = String(listing?.title || "").trim();
 
       if (!providerUid || !serviceId) {
-        navigate("/mesajlar?firstContact=true");
+        showToast("تعذر العثور على معلومات الخبير أو الإعلان.", "error");
         return;
       }
 
       setChatLoading(true);
-
-      const firstRedirectKey = `${FIRST_CONTACT_REDIRECT_PREFIX}:${auth.currentUser?.uid || "guest"}:${serviceId}`;
-      let shouldRedirectToMessages = true;
-      try {
-        shouldRedirectToMessages = localStorage.getItem(firstRedirectKey) !== "done";
-      } catch {
-        shouldRedirectToMessages = true;
-      }
-
-      if (!shouldRedirectToMessages) {
-        navigate("/mesajlar");
-        setChatLoading(false);
-        return;
-      }
 
       /* Syria Arabic launch: appointment creation/validation disabled for direct chat.
       let approvedAppointmentId = await getApprovedAppointmentIdForListing();
@@ -319,16 +304,18 @@ export default function ListingDetailPage() {
       */
 
       const result = await getOrCreateConversation(providerUid, serviceId, serviceTitle);
-      try {
-        localStorage.setItem(firstRedirectKey, "done");
-      } catch {
-        // Tarayıcı depolaması kapalıysa akış normal devam eder.
-      }
-      navigate(`/mesajlar?conversation=${result.conversationId}&open=true&firstContact=true`);
+      const conversationParams = new URLSearchParams({
+        conversation: String(result.conversationId),
+        open: "true",
+        firstContact: "true",
+      });
+      navigate(`/الرسائل?${conversationParams.toString()}`);
     } catch (error) {
       if (isDevelopment) console.error("Chat baslatma hatasi:", error.message);
-      // Syria Arabic launch: contact button should always take the customer to messages, not show appointment warnings.
-      navigate("/mesajlar?firstContact=true");
+      showToast(
+        error?.message || "تعذر بدء المحادثة. يرجى المحاولة مرة أخرى لاحقاً.",
+        "error"
+      );
     } finally {
       setChatLoading(false);
     }
@@ -415,7 +402,8 @@ export default function ListingDetailPage() {
               disabled={chatLoading}
               style={chatLoading ? { opacity: 0.7, cursor: "not-allowed" } : {}}
             >
-              <i className="fas fa-comments"></i> تواصل مع الخبير
+              <i className="fas fa-comments"></i>{" "}
+              {chatLoading ? "جاري فتح المحادثة..." : "تواصل مع الخبير"}
             </button>
           </div>
         </div>

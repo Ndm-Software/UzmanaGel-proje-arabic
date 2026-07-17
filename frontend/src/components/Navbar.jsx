@@ -1010,6 +1010,18 @@ const Navbar = () => {
                       <span>مفضلتي</span>
                     </Link>
 
+                    <Link
+                      to="/من-نحن"
+                      onClick={closeMobileMenu}
+                    >
+                      <i
+                        className="fas fa-circle-info"
+                        aria-hidden="true"
+                      ></i>
+
+                      <span>من نحن</span>
+                    </Link>
+
                     <button
                       type="button"
                       className="mobile-menu-logout"

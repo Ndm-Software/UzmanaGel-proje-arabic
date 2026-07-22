@@ -130,13 +130,13 @@ app.get("/health", async (_req, res) => {
 
     res.json({ ok: true, storage: "firestore" });
   } catch (error) {
-    if (isDevelopment) {
-      console.error("Health check firestore write failed:", error.message);
-    }
+    console.error("Health check error:", error);
 
     res.status(500).json({
       ok: false,
       storage: "firestore",
+      error: error.message,
+      code: error.code,
     });
   }
 });

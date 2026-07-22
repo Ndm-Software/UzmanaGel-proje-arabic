@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/RegisterPage.css";
 import PageTransition from "../components/PageTransition";
-import brandImage from "../assets/pictures/LogoArabicNoWriting.png";
+import brandImage from "../assets/pictures/logoArabicNoWriting.png";
 import PolicyModal from "../components/PolicyModal";
 import LegalPolicyContent from "../components/LegalPolicyContent";
 import DOMPurify from 'dompurify';

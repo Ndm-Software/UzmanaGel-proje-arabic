@@ -17,7 +17,7 @@ import {
 import DOMPurify from 'dompurify';
 import "../styles/RegisterPage.css";
 import PageTransition from "../components/PageTransition";
-import brandImage from "../assets/pictures/LogoArabicNoWriting.png";
+import brandImage from "../assets/pictures/logoArabicNoWriting.png";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useSystemSettings } from "../hooks/useSystemSettings";
 

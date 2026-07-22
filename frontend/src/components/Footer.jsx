@@ -4,7 +4,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 
 import { db } from '../firebase/firebaseClient';
 
-import brandImage from '../assets/pictures/LogoArabicNowriting.png';
+import brandImage from '../assets/pictures/logoArabicNoWriting.png';
 import PolicyModal from './PolicyModal';
 import LegalPolicyContent from './LegalPolicyContent';
 

@@ -18,8 +18,8 @@ import DOMPurify from 'dompurify';
 
 import '../styles/Navbar.css';
 
-import logo from '../assets/pictures/LogoArabicNoWriting.png';
-import defaultAvatar from '../assets/pictures/LogoArabicNobackground.png';
+import logo from '../assets/pictures/logoArabicNoWriting.png';
+import defaultAvatar from '../assets/pictures/logoArabicNoBackground.png';
 
 import { fetchMyConversations } from '../services/chatApi';
 

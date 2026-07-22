@@ -14,7 +14,7 @@ import { auth, db } from "../firebase/firebaseClient";
 import DOMPurify from 'dompurify';
 import "../styles/LoginPage.css";
 import PageTransition from "../components/PageTransition";
-import brandImage from "../assets/pictures/LogoArabicNoWriting.png";
+import brandImage from "../assets/pictures/logoArabicNoWriting.png";
 import googleLogo from "../assets/pictures/google.png";
 import phoneLogo from "../assets/pictures/telephone.png";
 import LoadingSpinner from "../components/LoadingSpinner";

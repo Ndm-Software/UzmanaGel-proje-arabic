@@ -523,7 +523,7 @@ const ExpertCompleteProfilePage = () => {
 
         if (expertisePrice > maxPriceNum) {
           setError(
-            `سعر البداية لـ "${sanitizeText(expertise.name)}" (${expertisePrice} ل.س) لا يمكن أن يكون أعلى من الحد الأقصى للسعر (${maxPriceNum} ل.س).`
+            `سعر البداية لـ "${sanitizeText(toArabicServiceLabel(expertise.name))}" (${expertisePrice} ل.س) لا يمكن أن يكون أعلى من الحد الأقصى للسعر (${maxPriceNum} ل.س).`
           );
           return false;
         }
@@ -1215,7 +1215,7 @@ const ExpertCompleteProfilePage = () => {
                             {formData.selectedExpertise.map((e, idx) => (
                               <div key={`${e.name}-${idx}`} className="form-group" style={{ margin: 0 }}>
                                 <label className="form-label small" style={{ opacity: 0.9 }}>
-                                  {sanitizeText(e.name)}
+                                  {sanitizeText(toArabicServiceLabel(e.name))}
                                 </label>
                                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                                   <input
@@ -1232,7 +1232,7 @@ const ExpertCompleteProfilePage = () => {
                                   <span style={{ color: 'var(--text-muted)', fontWeight: 700 }}>ل.س</span>
                                 </div>
                                 <small style={{ color: 'var(--text-muted)' }}>
-                                  سعر البداية لـ “{sanitizeText(e.name)}”
+                                  سعر البداية لـ “{sanitizeText(toArabicServiceLabel(e.name))}”
                                 </small>
                               </div>
                             ))}

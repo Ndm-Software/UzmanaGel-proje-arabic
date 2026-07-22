@@ -18,6 +18,7 @@ import DOMPurify from "dompurify";
 import { useAdminOnly } from "../../hooks/useAuthGuard";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import "../../styles/admin/AdminListings.css";
+import { toArabicServiceLabel } from "../../utils/arabicLabels";
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -702,14 +703,14 @@ export default function AdminReportedListings({ onSidebarCountsRefresh }) {
               const providerName = listing
                 ? sanitizeText(listing.providerName, 50)
                 : "İlan bulunamadı";
-              const category = listing ? sanitizeText(listing.category, 50) : "-";
+              const category = listing ? sanitizeText(toArabicServiceLabel(listing.category), 50) : "-";
               const city = listing ? sanitizeText(listing.city, 50) : "-";
               const description = listing
                 ? sanitizeText(listing.description, 300)
                 : "-";
               const pricingType = listing ? sanitizeText(listing.pricingType, 30) : "-";
               const serviceSubcategory = listing
-                ? sanitizeText(listing.serviceSubcategory, 50)
+                ? sanitizeText(toArabicServiceLabel(listing.serviceSubcategory), 50)
                 : "-";
               const rating = listing ? safeNumber(listing.rating) : 0;
               const status = listing?.status || "UNKNOWN";

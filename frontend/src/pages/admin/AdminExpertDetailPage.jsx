@@ -9,6 +9,7 @@ import DOMPurify from "dompurify";
 import { useAdminOnly } from "../../hooks/useAuthGuard";
 import "../../styles/admin/AdminExpertDetailPage.css";
 import { deleteExpertByAdmin } from "../../services/adminExpertService";
+import { toArabicServiceLabel } from "../../utils/arabicLabels";
 
 function toDate(value) {
   if (!value) return null;
@@ -437,9 +438,9 @@ export default function AdminExpertDetailPage() {
                 <span className="aed-value">
                   {Array.isArray(expert.category)
                     ? expert.category
-                        .map((c) => sanitizeText(c, 50))
+                        .map((c) => sanitizeText(toArabicServiceLabel(c), 50))
                         .join(", ")
-                    : sanitizeText(expert.category, 100)}
+                    : sanitizeText(toArabicServiceLabel(expert.category), 100)}
                 </span>
               </div>
 
@@ -482,7 +483,7 @@ export default function AdminExpertDetailPage() {
                     ? expert.specialties
                         .map((s) =>
                           sanitizeText(
-                            typeof s === "string" ? s : s?.name,
+                            toArabicServiceLabel(typeof s === "string" ? s : s?.name),
                             50
                           )
                         )
@@ -569,7 +570,7 @@ export default function AdminExpertDetailPage() {
                       </div>
 
                       <div className="aed-item-details">
-                        <span>📂 {sanitizeText(item.category, 50) || "-"}</span>
+                        <span>📂 {sanitizeText(toArabicServiceLabel(item.category), 50) || "-"}</span>
                         <span>📍 {sanitizeText(item.city, 50) || "-"}</span>
                         <span>💰 {price} ل.س</span>
                         <span

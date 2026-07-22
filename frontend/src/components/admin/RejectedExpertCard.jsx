@@ -1,5 +1,6 @@
 import React from "react";
 import DOMPurify from "dompurify";
+import { toArabicServiceLabel } from "../../utils/arabicLabels";
 
 const sanitizeText = (text) => {
   if (!text) return "-";
@@ -75,8 +76,8 @@ export default function RejectedExpertCard({ expert, isExpanded, onToggle }) {
   
   const categoryRaw = expert.category || providerData.category || "";
   const category = Array.isArray(categoryRaw)
-    ? categoryRaw.map((c) => sanitizeText(c)).join(", ")
-    : sanitizeText(categoryRaw);
+    ? categoryRaw.map((c) => sanitizeText(toArabicServiceLabel(c))).join(", ")
+    : sanitizeText(toArabicServiceLabel(categoryRaw));
   
   const city = sanitizeText(expert.city || providerData.city || expert.address?.city || "-");
   const businessName = sanitizeText(expert.businessName || providerData.businessName || "لا يوجد اسم عمل");
@@ -210,7 +211,7 @@ export default function RejectedExpertCard({ expert, isExpanded, onToggle }) {
               <div className="tags" style={{ marginTop: 8 }}>
                 {specialties.map((spec, i) => (
                   <span key={i} className="tag">
-                    {sanitizeText(typeof spec === "string" ? spec : spec?.name || "-")}
+                    {sanitizeText(toArabicServiceLabel(typeof spec === "string" ? spec : spec?.name || "-"))}
                   </span>
                 ))}
               </div>

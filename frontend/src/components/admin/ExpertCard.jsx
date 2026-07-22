@@ -1,6 +1,7 @@
 // ExpertCard.jsx file code 
 import React from "react";
 import DOMPurify from "dompurify";
+import { toArabicServiceLabel } from "../../utils/arabicLabels";
 
 const sanitizeText = (text) => {
   if (!text) return "-";
@@ -77,8 +78,8 @@ export default function ExpertCard({
   const phoneNumber = sanitizeText(expert.phoneNumber || "-");
   const city = sanitizeText(expert.city || "-");
   const category = Array.isArray(expert.category)
-    ? expert.category.map((c) => sanitizeText(c)).join(", ")
-    : sanitizeText(expert.category || "-");
+    ? expert.category.map((c) => sanitizeText(toArabicServiceLabel(c))).join(", ")
+    : sanitizeText(toArabicServiceLabel(expert.category) || "-");
   const educationInfo = sanitizeText(expert.educationInfo || "-");
   const pricingType = sanitizeText(expert.pricingType || "غير محدد");
   const minPrice = safeNumber(expert.minPrice);
@@ -189,7 +190,7 @@ export default function ExpertCard({
               <div className="tags">
                 {specialties.map((spec, i) => (
                   <span key={i} className="tag">
-                    {sanitizeText(typeof spec === "string" ? spec : spec?.name || "-")}
+                    {sanitizeText(toArabicServiceLabel(typeof spec === "string" ? spec : spec?.name || "-"))}
                   </span>
                 ))}
               </div>

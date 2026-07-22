@@ -6,6 +6,7 @@ import DOMPurify from 'dompurify';
 import { useAdminOnly } from '../../hooks/useAuthGuard';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import '../../styles/admin/AdminListings.css';
+import { toArabicServiceLabel } from '../../utils/arabicLabels';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
@@ -583,11 +584,11 @@ const AdminListings = () => {
             const imageUrl = getImageUrl(listing.image);
             const title = sanitizeText(listing.title, 100);
             const providerName = sanitizeText(listing.providerName, 50);
-            const category = sanitizeText(listing.category, 50);
+            const category = sanitizeText(toArabicServiceLabel(listing.category), 50);
             const city = sanitizeText(listing.city, 50);
             const description = sanitizeText(listing.description, 300);
             const pricingType = sanitizeText(listing.pricingType, 30);
-            const serviceSubcategory = sanitizeText(listing.serviceSubcategory, 50);
+            const serviceSubcategory = sanitizeText(toArabicServiceLabel(listing.serviceSubcategory), 50);
             const rating = safeNumber(listing.rating);
             
             return (

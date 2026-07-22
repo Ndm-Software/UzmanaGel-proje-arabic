@@ -2,6 +2,7 @@
 
 import React from "react";
 import DOMPurify from "dompurify";
+import { toArabicServiceLabel } from "../../utils/arabicLabels";
 
 const sanitizeText = (text, maxLength = 200) => {
   if (text === null || text === undefined || text === "") return "-";
@@ -184,10 +185,12 @@ export default function DeletedProviderCard({
   );
 
   const category = sanitizeText(
-    getFirstValue(
-      providerData.category,
-      provider?.category,
-      "-"
+    toArabicServiceLabel(
+      getFirstValue(
+        providerData.category,
+        provider?.category,
+        "-"
+      )
     ),
     100
   );

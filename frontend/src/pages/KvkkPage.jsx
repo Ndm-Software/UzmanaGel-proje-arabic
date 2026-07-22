@@ -3,7 +3,7 @@ import PageTransition from "../components/PageTransition";
 import Navbar from "../components/Navbar"; // Navbar bileşenini import et
 import "../styles/HomePage.css";
 import "../styles/KvkkPage.css";
-import brandImage from "../assets/pictures/Logo.png";
+import brandImage from "../assets/pictures/logo.png";
 
 export default function KvkkPage() {
   return (

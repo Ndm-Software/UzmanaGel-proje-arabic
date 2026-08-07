@@ -1,4 +1,4 @@
-// ExpertRegisterPage.jsx file code 
+// ExpertRegisterPage.jsx
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -192,9 +192,24 @@ const ExpertRegisterPage = () => {
       return false;
     }
 
-    const domain = normalizedValue.split("@")[1]?.toLowerCase();
+    const [localPart, domain] = normalizedValue.split("@");
+
+    // 1. Check if the domain is allowed
     if (!validEmailDomains.includes(domain)) {
       setEmailError("نطاق البريد الإلكتروني غير مدعوم.");
+      return false;
+    }
+
+    // 2. Block excessive dots (The Gmail "dot trick")
+    const dotCount = (localPart.match(/\./g) || []).length;
+    if (dotCount > 2) { 
+      setEmailError("يحتوي البريد الإلكتروني على عدد غير طبيعي من النقاط.");
+      return false;
+    }
+
+    // 3. Block plus addressing (The "plus trick")
+    if (localPart.includes('+')) {
+      setEmailError("غير مسموح باستخدام علامة الزائد (+) في البريد الإلكتروني.");
       return false;
     }
 

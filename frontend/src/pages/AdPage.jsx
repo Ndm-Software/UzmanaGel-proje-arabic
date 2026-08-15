@@ -141,43 +141,7 @@ function normalizeSpecialtiesByCategory(map) {
   );
 }
 
-const VoiceModal = ({ isOpen, onClose, status, onStop }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="voice-modal active">
-      <div className="voice-modal-content">
-        <div className="voice-header">
-          <h3>البحث الصوتي</h3>
-          <button
-            type="button"
-            className="close-btn"
-            onClick={onClose}
-            aria-label="إغلاق نافذة البحث الصوتي"
-          >
-            &times;
-          </button>
-        </div>
-
-        <div className="voice-body">
-          <div className="wave-animation" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-
-          <p className="voice-text">{status}</p>
-
-          <button type="button" className="stop-voice-btn" onClick={onStop}>
-            <i className="fas fa-stop"></i> إيقاف
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+// Voice search removed for this build.
 
 function readListingsPageFromUrl() {
   try {
@@ -199,8 +163,6 @@ const AdPage = () => {
   const [listingsLoading, setListingsLoading] = useState(false);
 
   const [searchText, setSearchText] = useState(initialFilters.searchText);
-  const [showVoiceModal, setShowVoiceModal] = useState(false);
-  const [voiceStatus, setVoiceStatus] = useState("جاري الاستماع...");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const [filteredListings, setFilteredListings] = useState([]);
@@ -619,50 +581,7 @@ const AdPage = () => {
     setCurrentPage(1);
     updateListingsPageParam(1);
   };
-
-  const closeVoiceSearch = () => {
-    setShowVoiceModal(false);
-  };
-
-  const startVoiceSearch = () => {
-    setShowVoiceModal(true);
-    setVoiceStatus("جاري الاستماع...");
-
-    if (
-      "webkitSpeechRecognition" in window ||
-      "SpeechRecognition" in window
-    ) {
-      const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-
-      recognition.lang = "ar-SY";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.start();
-
-      recognition.onresult = (event) => {
-        let transcript = event.results[0][0].transcript;
-        transcript = transcript.replace(/[.,!?،؟]/g, "").trim();
-
-        setVoiceStatus(`"${transcript}"`);
-        handleSearch(transcript);
-        setTimeout(closeVoiceSearch, 1500);
-      };
-
-      recognition.onerror = () => {
-        setVoiceStatus("لم يتم الفهم، يرجى المحاولة مرة أخرى");
-        setTimeout(closeVoiceSearch, 1500);
-      };
-
-      recognition.onend = () => {
-        setTimeout(closeVoiceSearch, 1500);
-      };
-    } else {
-      setVoiceStatus("متصفحك لا يدعم البحث الصوتي");
-      setTimeout(closeVoiceSearch, 2000);
-    }
-  };
+  // Voice search handlers removed.
 
   const toggleFavorite = async (listingId) => {
     if (!user) {
@@ -772,15 +691,7 @@ const AdPage = () => {
               onChange={(event) => handleSearch(event.target.value)}
               placeholder="ابحث عن خدمة، خبير، أو فئة..."
             />
-
-            <button
-              type="button"
-              className="voice-btn"
-              onClick={startVoiceSearch}
-              aria-label="البحث الصوتي"
-            >
-              <i className="fas fa-microphone"></i>
-            </button>
+            
           </div>
         </div>
       </div>
@@ -1124,12 +1035,7 @@ const AdPage = () => {
         </main>
       </div>
 
-      <VoiceModal
-        isOpen={showVoiceModal}
-        onClose={closeVoiceSearch}
-        status={voiceStatus}
-        onStop={closeVoiceSearch}
-      />
+      
     </div>
   );
 };

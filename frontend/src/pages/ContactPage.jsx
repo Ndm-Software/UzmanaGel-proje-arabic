@@ -175,24 +175,9 @@ const ContactPage = () => {
 
     try {
       const now = Date.now();
-      const fortyEightHoursAgo = now - (2 * 24 * 60 * 60 * 1000);
+      const twentyFourHoursAgo = now - (24 * 60 * 60 * 1000);
       let localSentTimes = [];
       
-      try {
-        const stored = localStorage.getItem('contact_sent_timestamps');
-        if (stored) {
-          localSentTimes = JSON.parse(stored).filter(t => t >= fortyEightHoursAgo);
-        }
-      } catch (e) {
-        localSentTimes = [];
-      }
-
-      if (localSentTimes.length >= 2) {
-        setError("لقد وصلت إلى الحد الأقصى لإرسال الرسائل. يرجى المحاولة مرة أخرى بعد يومين.");
-        setLoading(false);
-        return;
-      }
-
       let userType = 'REGISTERED_USER';
       let userId = null;
       let finalUserRole = null;
@@ -200,6 +185,25 @@ const ContactPage = () => {
       if (isLoggedIn && auth.currentUser) {
         userId = auth.currentUser.uid;
         finalUserRole = userRole;
+      }
+
+      const storageKey = userId 
+        ? `contact_sent_timestamps_${userId}`
+        : (formData.email ? `contact_sent_timestamps_${formData.email.toLowerCase().trim()}` : 'contact_sent_timestamps_guest');
+
+      try {
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          localSentTimes = JSON.parse(stored).filter(t => t >= twentyFourHoursAgo);
+        }
+      } catch (e) {
+        localSentTimes = [];
+      }
+
+      if (localSentTimes.length >= 5) {
+        setError("لقد وصلت إلى الحد الأقصى لإرسال الرسائل (5 رسائل في اليوم). يرجى المحاولة مرة أخرى غداً.");
+        setLoading(false);
+        return;
       }
 
       await addDoc(collection(db, "contacts"), {
@@ -215,7 +219,7 @@ const ContactPage = () => {
       });
 
       localSentTimes.push(now);
-      localStorage.setItem('contact_sent_timestamps', JSON.stringify(localSentTimes));
+      localStorage.setItem(storageKey, JSON.stringify(localSentTimes));
 
       setIsSent(true);
       setFormData(prev => ({ ...prev, message: '' }));

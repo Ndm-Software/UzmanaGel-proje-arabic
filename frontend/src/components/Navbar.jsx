@@ -14,6 +14,7 @@ import {
 import TokenModal from './TokenModal';
 import { auth, db } from '../firebase/firebaseClient';
 import ThemeSwitch from './ThemeSwitch';
+import PwaInstallButton from './PwaInstallButton';
 import DOMPurify from 'dompurify';
 
 import '../styles/Navbar.css';
@@ -1061,6 +1062,7 @@ const Navbar = () => {
           )}
 
           <div className="navbar-right">
+            <PwaInstallButton />
             <ThemeSwitch />
 
             {renderRightContent()}

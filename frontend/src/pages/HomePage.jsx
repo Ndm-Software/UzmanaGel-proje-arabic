@@ -30,15 +30,6 @@ import { fetchReviewCountsForListings } from "../services/reviewsApi";
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-// Lansman doneminde ana sayfada guven veren sabit demo degerleri gosterilir.
-// Gercek sayaclara donmek icin bu degeri false yapmak yeterlidir.
-const USE_STATIC_PLATFORM_STATS = true;
-const STATIC_PLATFORM_STATS = {
-  clientCount: 1250,
-  providerCount: 320,
-  listingCount: 1800,
-};
-
 const categoryImageMap = {
   Tesisat: "https://images.pexels.com/photos/221027/pexels-photo-221027.jpeg?auto=compress&cs=tinysrgb&w=800",
   Temizlik: "https://images.pexels.com/photos/4239033/pexels-photo-4239033.jpeg?auto=compress&cs=tinysrgb&w=800",
@@ -75,7 +66,9 @@ export default function HomePage() {
   const [latestListingsError, setLatestListingsError] = useState("");
   const [isLightMode, setIsLightMode] = useState(false);
   const [platformStats, setPlatformStats] = useState({
-    ...STATIC_PLATFORM_STATS,
+    clientCount: 0,
+    providerCount: 0,
+    listingCount: 0,
     // Syria Arabic launch: completed jobs stat is disabled with its listener.
     // completedAppointmentsCount: 0,
   });
@@ -119,7 +112,7 @@ export default function HomePage() {
         const payload = await fetchListings({ page: 1, limit: 20 });
         const items = Array.isArray(payload?.items) ? payload.items : [];
 
-        if (!cancelled && !USE_STATIC_PLATFORM_STATS) {
+        if (!cancelled) {
           setPlatformStats((prev) => ({
             ...prev,
             listingCount: Number(payload?.total) || 0,
@@ -146,9 +139,7 @@ export default function HomePage() {
         if (!cancelled) {
           setLatestListings([]);
           setLatestListingsError("تعذر تحميل الإعلانات.");
-          if (!USE_STATIC_PLATFORM_STATS) {
-            setPlatformStats((prev) => ({ ...prev, listingCount: 0 }));
-          }
+          setPlatformStats((prev) => ({ ...prev, listingCount: 0 }));
         }
       } finally {
         if (!cancelled) {
@@ -165,10 +156,6 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    if (USE_STATIC_PLATFORM_STATS) {
-      return undefined;
-    }
-
     const unsubClients = onSnapshot(
       query(collection(db, "users"), where("userType", "==", "CLIENT")),
       (snapshot) => {

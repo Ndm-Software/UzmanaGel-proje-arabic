@@ -13,7 +13,7 @@ import { toArabicServiceLabel } from "../utils/arabicLabels";
 import { formatLatinNumber } from "../utils/localeFormat";
 
 import HomePageLogo from "../assets/pictures/HomePageLogoArabic.png";
-import AppBannerImage from "../assets/pictures/AppBanner1Arabic.png";
+import AppBannerImage from "../assets/pictures/AppBanner1ArabicWhiteBrand.png";
 import handshakeImage from "../assets/pictures/handshake.png";
 import costumerImage from "../assets/pictures/costumer.png";
 import checkImage from "../assets/pictures/check.png";

@@ -2,11 +2,28 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import '../styles/PwaInstallButton.css';
 
+const checkIfStandalone = () => {
+  if (typeof window === 'undefined') return false;
+  const isStandaloneMedia = window.matchMedia('(display-mode: standalone)').matches;
+  const isIOSStandalone = window.navigator?.standalone === true;
+  const isAndroidApp = document.referrer && document.referrer.startsWith('android-app://');
+  const isMinimalUI = window.matchMedia('(display-mode: minimal-ui)').matches;
+  const isFullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
+  
+  return isStandaloneMedia || isIOSStandalone || isAndroidApp || isMinimalUI || isFullscreen;
+};
+
 const PwaInstallButton = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(() => checkIfStandalone());
 
   useEffect(() => {
+    // Re-verify standalone mode
+    if (checkIfStandalone()) {
+      setIsInstalled(true);
+    }
+
     // Listen for Chrome / Android beforeinstallprompt event
     const handleBeforeInstallPrompt = (e) => {
       // Prevent standard mini-infobar from appearing on mobile
@@ -18,12 +35,31 @@ const PwaInstallButton = () => {
     // Listen for app installed event
     const handleAppInstalled = () => {
       setDeferredPrompt(null);
+      setIsInstalled(true);
     };
+
+    const mediaQuery = window.matchMedia('(display-mode: standalone)');
+    const handleMediaChange = (e) => {
+      if (e.matches) {
+        setIsInstalled(true);
+      }
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleMediaChange);
+    } else if (mediaQuery.addListener) {
+      mediaQuery.addListener(handleMediaChange);
+    }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleMediaChange);
+      } else if (mediaQuery.removeListener) {
+        mediaQuery.removeListener(handleMediaChange);
+      }
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       window.removeEventListener('appinstalled', handleAppInstalled);
     };
@@ -32,17 +68,28 @@ const PwaInstallButton = () => {
   const handleInstallClick = async () => {
     if (deferredPrompt) {
       // Show the browser install prompt
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('User accepted the PWA install prompt');
-        setDeferredPrompt(null);
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          console.log('User accepted the PWA install prompt');
+          setDeferredPrompt(null);
+          setIsInstalled(true);
+        }
+      } catch (err) {
+        console.error('Error in install prompt:', err);
+        setShowModal(true);
       }
     } else {
       // Show custom styled modal instead of standard browser alert
       setShowModal(true);
     }
   };
+
+  // If application is running inside installed standalone mode, hide button completely
+  if (isInstalled) {
+    return null;
+  }
 
   const modalElement = showModal ? (
     <div className="pwa-modal-overlay" onClick={() => setShowModal(false)}>

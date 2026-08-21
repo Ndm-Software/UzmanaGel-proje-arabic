@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import "../styles/LegalPolicyContent.css";
 
 const POLICY_VERSION = "1.0";
@@ -264,11 +265,41 @@ const privacyPolicy = {
   ],
 };
 
-export default function LegalPolicyContent({ type = "terms" }) {
-  const policy = type === "privacy" ? privacyPolicy : termsPolicy;
+export default function LegalPolicyContent({ type = "terms", onTypeChange }) {
+  const [activeType, setActiveType] = useState(type);
+
+  useEffect(() => {
+    setActiveType(type);
+  }, [type]);
+
+  const handleTabClick = (newType) => {
+    setActiveType(newType);
+    if (onTypeChange) {
+      onTypeChange(newType);
+    }
+  };
+
+  const policy = activeType === "privacy" ? privacyPolicy : termsPolicy;
 
   return (
     <article className="legal-policy" dir="rtl" lang="ar">
+      <div className="legal-policy-tabs">
+        <button
+          type="button"
+          className={`legal-policy-tab ${activeType === "terms" ? "active" : ""}`}
+          onClick={() => handleTabClick("terms")}
+        >
+          الشروط والأحكام
+        </button>
+        <button
+          type="button"
+          className={`legal-policy-tab ${activeType === "privacy" ? "active" : ""}`}
+          onClick={() => handleTabClick("privacy")}
+        >
+          سياسة الخصوصية
+        </button>
+      </div>
+
       <div className="legal-policy-meta" aria-label="معلومات الوثيقة">
         <span>الإصدار {POLICY_VERSION}</span>
         <span>آخر تحديث: {POLICY_UPDATED_AT}</span>

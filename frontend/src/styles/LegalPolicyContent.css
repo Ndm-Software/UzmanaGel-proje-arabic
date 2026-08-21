@@ -1,7 +1,41 @@
 .legal-policy {
-  color: var(--text-main, #172033);
+  color: var(--text-main, #eaf0ff);
   font-family: "IBM Plex Sans Arabic", "Segoe UI", Arial, sans-serif;
   text-align: right;
+}
+
+.legal-policy-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--card-border, rgba(255, 255, 255, 0.12));
+  padding-bottom: 12px;
+}
+
+.legal-policy-tab {
+  padding: 8px 18px;
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.15));
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted, rgba(234, 240, 255, 0.75));
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.legal-policy-tab:hover {
+  color: var(--text-main, #eaf0ff);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.legal-policy-tab.active {
+  background: var(--brand-gold, #d6b25e);
+  color: #0b1020;
+  border-color: var(--brand-gold, #d6b25e);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(214, 178, 94, 0.25);
 }
 
 .legal-policy-meta {
@@ -10,25 +44,26 @@
   justify-content: space-between;
   gap: 8px 20px;
   margin-bottom: 16px;
-  color: var(--text-muted, #667085);
+  color: var(--text-muted, rgba(234, 240, 255, 0.7));
   font-size: 13px;
 }
 
 .legal-policy-lead {
   margin: 0 0 22px;
   padding: 14px 16px;
-  border-inline-start: 4px solid var(--primary-color, #d6b25e);
-  background: rgba(214, 178, 94, 0.1);
-  color: var(--text-main, #172033);
+  border-inline-start: 4px solid var(--brand-gold, #d6b25e);
+  background: rgba(214, 178, 94, 0.12);
+  color: var(--text-main, #eaf0ff);
   font-size: 15px;
   font-weight: 600;
   line-height: 1.9;
+  border-radius: 8px;
 }
 
 .legal-policy-section {
   padding: 0 0 22px;
   margin: 0 0 22px;
-  border-bottom: 1px solid var(--card-border, rgba(15, 23, 42, 0.12));
+  border-bottom: 1px solid var(--card-border, rgba(255, 255, 255, 0.12));
   scroll-margin-top: 16px;
 }
 
@@ -41,7 +76,7 @@
   align-items: center;
   gap: 10px;
   margin: 0 0 10px;
-  color: var(--text-main, #172033);
+  color: var(--text-main, #eaf0ff);
   font-size: 17px;
   font-weight: 800;
   line-height: 1.5;
@@ -56,14 +91,14 @@
   justify-content: center;
   border: 1px solid rgba(214, 178, 94, 0.55);
   border-radius: 50%;
-  color: var(--primary-color, #b18a25);
+  color: var(--brand-gold, #d6b25e);
   font-family: "Segoe UI", Arial, sans-serif;
   font-size: 13px;
 }
 
 .legal-policy-section p {
   margin: 0 0 9px;
-  color: var(--text-secondary, #475467);
+  color: var(--text-muted, rgba(234, 240, 255, 0.85));
   line-height: 1.9;
 }
 
@@ -75,12 +110,12 @@
 .legal-policy-section li {
   margin-bottom: 8px;
   padding-inline-start: 6px;
-  color: var(--text-secondary, #475467);
+  color: var(--text-muted, rgba(234, 240, 255, 0.85));
   line-height: 1.85;
 }
 
 .legal-policy-section li::marker {
-  color: var(--primary-color, #b18a25);
+  color: var(--brand-gold, #d6b25e);
 }
 
 .legal-policy-contact {
@@ -92,23 +127,83 @@
 .legal-policy-contact strong {
   display: block;
   margin-bottom: 6px;
-  color: var(--text-main, #172033);
+  color: var(--text-main, #eaf0ff);
 }
 
 .legal-policy-contact p {
   margin: 0;
-  color: var(--text-secondary, #475467);
+  color: var(--text-muted, rgba(234, 240, 255, 0.85));
 }
 
 .legal-policy-contact a {
-  color: var(--primary-color, #b18a25);
+  color: var(--brand-gold, #d6b25e);
   font-weight: 700;
   direction: ltr;
   unicode-bidi: isolate;
+  text-decoration: underline;
+  transition: color 0.2s ease;
 }
 
-:root[data-theme="dark"] .legal-policy-lead {
-  background: rgba(214, 178, 94, 0.08);
+.legal-policy-contact a:hover {
+  color: #ffffff;
+}
+
+/* Light tema için özel düzenlemeler */
+:root[data-theme="light"] .legal-policy {
+  color: #172033;
+}
+
+:root[data-theme="light"] .legal-policy-tab {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475467;
+}
+
+:root[data-theme="light"] .legal-policy-tab:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+:root[data-theme="light"] .legal-policy-tab.active {
+  background: #b18a25;
+  color: #ffffff;
+  border-color: #b18a25;
+}
+
+:root[data-theme="light"] .legal-policy-meta {
+  color: #64748b;
+}
+
+:root[data-theme="light"] .legal-policy-lead {
+  background: rgba(214, 178, 94, 0.14);
+  color: #1e293b;
+}
+
+:root[data-theme="light"] .legal-policy-section h4 {
+  color: #0f172a;
+}
+
+:root[data-theme="light"] .legal-policy-section-number {
+  color: #b18a25;
+  border-color: rgba(177, 138, 37, 0.5);
+}
+
+:root[data-theme="light"] .legal-policy-section p,
+:root[data-theme="light"] .legal-policy-section li,
+:root[data-theme="light"] .legal-policy-contact p {
+  color: #334155;
+}
+
+:root[data-theme="light"] .legal-policy-contact strong {
+  color: #0f172a;
+}
+
+:root[data-theme="light"] .legal-policy-contact a {
+  color: #b18a25;
+}
+
+:root[data-theme="light"] .legal-policy-contact a:hover {
+  color: #836214;
 }
 
 @media (max-width: 640px) {

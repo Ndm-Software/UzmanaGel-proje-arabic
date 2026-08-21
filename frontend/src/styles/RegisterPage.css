@@ -294,13 +294,23 @@
 }
 
 .terms-link {
-  color: var(--primary-color);
-  text-decoration: none;
+  color: var(--brand-gold, #d6b25e);
+  text-decoration: underline;
   font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+:root[data-theme="light"] .terms-link {
+  color: #b18a25;
 }
 
 .terms-link:hover {
+  color: #ffffff;
   text-decoration: underline;
+}
+
+:root[data-theme="light"] .terms-link:hover {
+  color: #836214;
 }
 
 .terms-link-button {

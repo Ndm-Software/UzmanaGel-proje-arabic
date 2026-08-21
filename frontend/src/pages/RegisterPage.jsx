@@ -851,7 +851,14 @@ export default function RegisterPage() {
                       <input
                         type="checkbox"
                         checked={agree}
-                        onChange={(e) => setAgree(e.target.checked)}
+                        onChange={(e) => {
+                          const isChecked = e.target.checked;
+                          setAgree(isChecked);
+                          if (isChecked) {
+                            setPolicyType("terms");
+                            setPolicyOpen(true);
+                          }
+                        }}
                         required
                         disabled={loading}
                         style={{ marginTop: "4px" }}
@@ -990,7 +997,10 @@ export default function RegisterPage() {
           title={policyType === "terms" ? "الشروط والأحكام" : "سياسة الخصوصية"}
           onClose={() => setPolicyOpen(false)}
         >
-          <LegalPolicyContent type={policyType} />
+          <LegalPolicyContent
+            type={policyType}
+            onTypeChange={(newType) => setPolicyType(newType)}
+          />
         </PolicyModal>
 
         {mergeOpen && (

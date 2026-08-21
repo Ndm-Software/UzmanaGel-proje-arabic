@@ -744,7 +744,14 @@ const ExpertRegisterPage = () => {
                     <input
                       type="checkbox"
                       checked={agree}
-                      onChange={(e) => setAgree(e.target.checked)}
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setAgree(isChecked);
+                        if (isChecked) {
+                          setPolicyType("terms");
+                          setPolicyOpen(true);
+                        }
+                      }}
                       required
                       disabled={loading}
                       style={{ marginTop: "4px" }}
@@ -892,7 +899,10 @@ const ExpertRegisterPage = () => {
           title={policyType === "terms" ? "شروط الاستخدام" : "سياسة الخصوصية"}
           onClose={() => setPolicyOpen(false)}
         >
-          <LegalPolicyContent type={policyType} />
+          <LegalPolicyContent
+            type={policyType}
+            onTypeChange={(newType) => setPolicyType(newType)}
+          />
         </PolicyModal>
       </div>
     </PageTransition>

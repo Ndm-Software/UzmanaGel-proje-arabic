@@ -17,6 +17,9 @@ import AppBannerImage from "../assets/pictures/AppBanner1ArabicWhiteBrand.png";
 import handshakeImage from "../assets/pictures/handshake.png";
 import costumerImage from "../assets/pictures/costumer.png";
 import checkImage from "../assets/pictures/check.png";
+import howStep1Image from "../assets/pictures/how_step1_3d.jpg";
+import howStep2Image from "../assets/pictures/how_step2_3d.jpg";
+import howStep3Image from "../assets/pictures/how_step3_3d.jpg";
 import appleLogo from "../assets/pictures/apple-logo.png";
 import googlePlayLogo from "../assets/pictures/google-play.png";
 import happyFaceImage from "../assets/pictures/happy-face.png";
@@ -58,6 +61,171 @@ const categoryImageMap = {
   "Yemek & Catering": "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=800&q=80"
 };
 
+const clientHowSteps = [
+  {
+    num: "01",
+    title: "1. تصفح أو ابحث عن الخبير",
+    desc: "اختر نوع الخدمة المطلوب تنفيذها، تصفح المهن المتاحة وابحث عن الخبير المناسب بكل سهولة.",
+    pill: "سهولة وسرعة الوصول",
+    iconClass: "fas fa-search-location",
+    img: howStep1Image,
+    details: {
+      headline: "كيف تعثر على الخدمة والخبير؟",
+      points: [
+        "اختر من بين عشرات الخدمات والتخصصات (صيانة، نظافة، ديكور، تعليم...).",
+        "حدد منطقتك والخدمة التي تحتاج إليها في سوريا.",
+        "استعرض قائمة الخبراء المتاحين والمناسبين لاحتياجك المباشر."
+      ],
+      tip: "💡 نصيحة: استخدم تصفية المناطق والخدمات للوصول الفوري لأقرب خبير."
+    }
+  },
+  {
+    num: "02",
+    title: "2. قارن الملفات والتقييمات",
+    desc: "تصفح ملفات الخبراء المعتمدين، قارن التقييمات ومعرض الأعمال السابقة بكل شفافية.",
+    pill: "شفافية وموثوقية 100%",
+    iconClass: "fas fa-user-check",
+    img: howStep2Image,
+    details: {
+      headline: "كيف تختار الخبير الأنسب لك؟",
+      points: [
+        "استعرض شارة التوثيق الذهبية والمعلومات الشخصية المؤكدة.",
+        "اقرأ تقييمات وآراء العملاء الحقيقيين الذين تعاملوا مع الخبير.",
+        "اطلع على التخصصات والخدمات المنشورة لاختيار الأفضل لك."
+      ],
+      tip: "🛡️ أمان: جميع الخبراء المعتمدين يخضعون لفحص البيانات والتأكد من التوثيق."
+    }
+  },
+  {
+    num: "03",
+    title: "3. تواصل وتفاوض مباشرة",
+    desc: "تحدث فورياً مع الخبير عبر الدردشة المباشرة في المنصة، اتفق على السعر وموعد تنفيذ الخدمة.",
+    pill: "دردشة فورية ومباشرة",
+    iconClass: "fas fa-comments",
+    img: howStep3Image,
+    details: {
+      headline: "التواصل والتفاوض المباشر",
+      points: [
+        "محادثات فورية وآمنة داخل المنصة للحفاظ على خصوصيتك.",
+        "مناقشة متطلبات العمل والتكلفة والاتفاق المباشر بكل سهولة.",
+        "التنسيق المباشر حول الزيارة دون تعقيدات أو الوساطات."
+      ],
+      tip: "🔒 خصوصية: دردش بأمان داخل المنصة وتفق على التكلفة والخدمة مباشرة."
+    }
+  },
+  {
+    num: "04",
+    title: "4. استلم الخدمة وشارك تقييمك",
+    desc: "استلم عملك بجودة عالية، وبعد إتمام الخدمة شارك تقييمك لمساعدة بقية العملاء.",
+    pill: "رضا وجودة مضمونة",
+    iconClass: "fas fa-star-half-alt",
+    img: howStep1Image,
+    details: {
+      headline: "استلام الخدمة والتقييم النهائي",
+      points: [
+        "معاينة جودة الخدمة المقدمة من قبل الخبير عند الزيارة.",
+        "إتمام التسليم وفق الاتفاق المباشر الذي تم بينكما.",
+        "شارك تقييمك لمساعدة باقي العملاء وتطوير جودة الخدمات."
+      ],
+      tip: "✨ جودة: فريق المنصة متاح دائماً لدعمكم ومساعدتكم عند الحاجة."
+    }
+  }
+];
+
+const providerHowSteps = [
+  {
+    num: "01",
+    title: "1. أنشئ ملفك وتأكد من التوثيق",
+    desc: "سجل حسابك كخبير، أضف مهاراتك وتخصصك المهني واحصل على شارة التوثيق.",
+    pill: "توثيق مهني سريع",
+    iconClass: "fas fa-id-card",
+    img: howStep1Image,
+    details: {
+      headline: "كيف تبدأ رحلتك كخبير معتمد؟",
+      points: [
+        "إنشاء ملف مهني جذاب يعرض تخصصك وسنوات خبرتك.",
+        "رفع الوثائق المطلوبة للحصول على شارة الخبير الموثوق.",
+        "تحديد المناطق والخدمات التي تقدمها في مدينتك."
+      ],
+      tip: "🚀 نصيحة: إضافة تفاصيل دقيقة في ملفك يرفع نسبة تواصل العملاء معك."
+    }
+  },
+  {
+    num: "02",
+    title: "2. أنشئ إعلانات خدماتك",
+    desc: "أضف إعلانات تفصيلية لخدماتك مع تحديد الأسعار والوصف ليعثر عليك العملاء بسهولة.",
+    pill: "إعلانات مستهدفة",
+    iconClass: "fas fa-bullhorn",
+    img: howStep2Image,
+    details: {
+      headline: "عرض خدماتك على المنصة",
+      points: [
+        "إضافة إعلانات تصف المهن والخدمات التي تتقنها بوضوح.",
+        "تحديد التكلفة التقديرية والشروط الخاصة بخدماتك.",
+        "ظهور إعلاناتك لآلاف العملاء الباحثين عن خبراء في منطقتك."
+      ],
+      tip: "📍 ميزة: تحديث إعلاناتك بانتظام يزيد من ظهورك في نتائج البحث."
+    }
+  },
+  {
+    num: "03",
+    title: "3. استقبل المحادثات ودردش فورياً",
+    desc: "تلقَّ استفسارات وطلبات العملاء عبر المحادثة المباشرة، اتفق على التفاصيل والتكلفة المناسبة.",
+    pill: "تفاوض شفاف ومباشر",
+    iconClass: "fas fa-comments-dollar",
+    img: howStep3Image,
+    details: {
+      headline: "التواصل وتقديم العروض المباشرة",
+      points: [
+        "تنبيهات فورية عند وصول رسائل ومحادثات جديدة من العملاء.",
+        "الرد على استفسارات العميل وتوضيح طريقة الحل والمدة التقديرية.",
+        "الاتفاق الشفاف على موعد الزيارة والتكلفة المطلوبة."
+      ],
+      tip: "💬 نصيحة: الاستجابة السريعة للرسائل تضاعف فرص كسبك للعملاء."
+    }
+  },
+  {
+    num: "04",
+    title: "4. نفّذ الخدمة واكسب تقييمات ممتازة",
+    desc: "انتقل لموقع العميل، نفّذ الخدمة بأعلى جودة، واستلم مستحقاتك واكسب تقييمات ممتازة.",
+    pill: "أرباح وتقييمات متواصلة",
+    iconClass: "fas fa-trophy",
+    img: howStep2Image,
+    details: {
+      headline: "إتمام الخدمة وبناء السمعة",
+      points: [
+        "تنفيذ العمل ودقته وفق الاتفاق المباشر مع العميل.",
+        "استلام مستحقاتك مباشرة بكل شفافية وسهولة.",
+        "التقييمات الإيجابية والـ 5 نجوم ترفع ترتيب ملفك وتزيد طلباتك."
+      ],
+      tip: "💎 تميّز: تقديم خدمة ممتازة يضمن لك تقييمات عالية وعملاء مستمرين."
+    }
+  }
+];
+
+const platformGuarantees = [
+  {
+    icon: "fas fa-user-check",
+    title: "خبراء موثوقون ومعتمدون",
+    text: "نراجع المهارات والتخصصات المعروضة للفنيين والخبراء لضمان تقديم أعلى درجات الجودة والشفافية."
+  },
+  {
+    icon: "fas fa-comments",
+    title: "تواصل مباشر وآمن",
+    text: "محادثات فورية ومباشرة داخل المنصة تتيح لك التفاوض والاتفاق بسهولة دون تعقيد."
+  },
+  {
+    icon: "fas fa-star",
+    title: "تقييمات حقيقية 100%",
+    text: "شفافية كاملة في عرض تقييمات وآراء العملاء الحقيقيين لمساعدتك في اختيار الأفضل."
+  },
+  {
+    icon: "fas fa-headset",
+    title: "دعم فني ومساندة متواصلة",
+    text: "فريق دعم مخصص للإجابة على جميع استفساراتكم ومساعدتكم في استخدام المنصة."
+  }
+];
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -65,6 +233,8 @@ export default function HomePage() {
   const [latestListingsLoading, setLatestListingsLoading] = useState(true);
   const [latestListingsError, setLatestListingsError] = useState("");
   const [isLightMode, setIsLightMode] = useState(false);
+  const [activeRole, setActiveRole] = useState("CLIENT");
+  const [selectedStepModal, setSelectedStepModal] = useState(null);
   const [platformStats, setPlatformStats] = useState({
     clientCount: 0,
     providerCount: 0,
@@ -243,8 +413,8 @@ export default function HomePage() {
               <h1 className="hero-title">
                 بكبسة زر واحدة <span className="hero-highlight">اعثر على خبيرك...</span>
                 <br></br>
-              سريع، سهل، آمن.
-             
+                سريع، سهل، آمن.
+
               </h1>
 
               <p className="hero-subtitle">
@@ -370,75 +540,203 @@ export default function HomePage() {
           <section className="how-section">
             <div className="how-container">
               <header className="how-header">
+                <span className="how-badge-pill">
+                  <i className="fas fa-magic"></i> خطوة بخطوة للخدمة المثالية
+                </span>
                 <h2 className="how-title">
-                  كيف <span className="how-accent">يعمل؟</span>
+                  كيف <span className="how-accent">تعمل المنصة؟</span>
                 </h2>
                 <p className="how-subtitle">
-                  احصل على الخبير الذي تحتاجه في 3 خطوات بسيطة.
+                  سواء كنت بصدد البحث عن معلم صيانة احترافي، أو كنت خبيراً ترغب بتنمية عملك وزيادة أرباحك، إليك الخطوات البسيطة:
                 </p>
+
+                {/* Role Switcher Tabs */}
+                <div className="how-role-switcher" role="tablist">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeRole === "CLIENT"}
+                    className={`how-role-tab ${activeRole === "CLIENT" ? "how-role-tab--active" : ""}`}
+                    onClick={() => setActiveRole("CLIENT")}
+                  >
+                    <i className="fas fa-user-check"></i>
+                    <span>أنا عميل (أبحث عن خدمة)</span>
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeRole === "PROVIDER"}
+                    className={`how-role-tab ${activeRole === "PROVIDER" ? "how-role-tab--active" : ""}`}
+                    onClick={() => setActiveRole("PROVIDER")}
+                  >
+                    <i className="fas fa-briefcase"></i>
+                    <span>أنا خبير (أقدم خدمات)</span>
+                  </button>
+                </div>
               </header>
 
-              <div className="how-grid">
-                <article className="how-card">
-                  <div className="how-icon" aria-hidden="true">
-                    <img
-                      src={checkImage}
-                      alt=""
-                      style={{
-                        width: "48px",
-                        height: "48px",
-                        objectFit: "contain",
-                        display: "block",
-                      }}
-                    />
-                  </div>
-                  <h3 className="how-card-title">1. حدد احتياجك</h3>
-                  <p className="how-card-text">
-                    قرر ما تريد القيام به، وما هي الميزانية التي خصصتها، ومتى يجب إنجاز العمل.
-                  </p>
-                </article>
+              <div className="how-grid-wrapper">
+                <div className="how-connector-line" aria-hidden="true">
+                  <div className="how-connector-glow"></div>
+                </div>
 
-                <article className="how-card">
-                  <div className="how-icon" aria-hidden="true">
-                    <img
-                      src={costumerImage}
-                      alt=""
-                      style={{
-                        width: "48px",
-                        height: "48px",
-                        objectFit: "contain",
-                        display: "block",
-                      }}
-                    />
-                  </div>
-                  <h3 className="how-card-title">2. اختر الخبير</h3>
-                  <p className="how-card-text">
-                    تصفح الإعلانات المخصصة لك. اقرأ التعليقات، شاهد التقييمات، واطلع على الأعمال السابقة ثم اختر الخبير الأنسب لك.
-                  </p>
-                </article>
-
-                <article className="how-card">
-                  <div className="how-icon" aria-hidden="true">
-                    <img
-                      src={handshakeImage}
-                      alt=""
-                      style={{
-                        width: "48px",
-                        height: "48px",
-                        objectFit: "contain",
-                        display: "block",
-                      }}
-                    />
-                  </div>
-                  <h3 className="how-card-title">3. اتفق بأمان</h3>
-                  <p className="how-card-text">
-                    اتفق من خلال المنصة، وسيتم حفظ المدفوعات في الأمانة. بعد اكتمال العمل، يتم تحويل المبلغ للخبير.
-                  </p>
-                </article>
+                <div className="how-grid how-grid--4col">
+                  {(activeRole === "CLIENT" ? clientHowSteps : providerHowSteps).map((step) => (
+                    <article
+                      key={step.num}
+                      className="how-card"
+                      tabIndex={0}
+                      onClick={() => setSelectedStepModal(step)}
+                    >
+                      <div className="how-step-badge">
+                        <span className="step-num">{step.num}</span>
+                      </div>
+                      <div className="how-icon-wrapper">
+                        <div className="how-icon-glow"></div>
+                        <div className="how-icon-box">
+                          <i className={`${step.iconClass} how-step-icon`}></i>
+                        </div>
+                      </div>
+                      <div className="how-card-content">
+                        <h3 className="how-card-title">{step.title}</h3>
+                        <p className="how-card-text">{step.desc}</p>
+                      </div>
+                      <div className="how-card-footer">
+                        <div className="how-card-pill">
+                          <i className={step.iconClass}></i> {step.pill}
+                        </div>
+                        <button
+                          type="button"
+                          className="how-card-details-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedStepModal(step);
+                          }}
+                        >
+                          التفاصيل <i className="fas fa-arrow-left"></i>
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
               </div>
+
+              {/* Guarantees & Features Grid */}
+              <div className="how-guarantees-section">
+                <div className="how-guarantees-header">
+                  <h3 className="how-guarantees-title">
+                    <i className="fas fa-shield-alt"></i> لماذا منصة خبير هي خيارك الأول والأكثر أماناً؟
+                  </h3>
+                  <p className="how-guarantees-sub">معايير أمان وجودة صارمة تضمن راحة بالك في كل خطوة</p>
+                </div>
+                <div className="how-guarantees-grid">
+                  {platformGuarantees.map((item, idx) => (
+                    <div className="how-guarantee-card" key={idx}>
+                      <div className="how-guarantee-icon">
+                        <i className={item.icon}></i>
+                      </div>
+                      <div className="how-guarantee-body">
+                        <h4 className="how-guarantee-card-title">{item.title}</h4>
+                        <p className="how-guarantee-card-text">{item.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Banner - Hidden when user is logged in */}
+              {!user && (
+                <div className="how-action-cta">
+                  <div className="how-action-content">
+                    <h3>جاهز لبدء تجربتك المميزة مع خبير؟</h3>
+                    <p>انضم إلى آلاف العملاء والخبراء واحصل على أفضل خدمة صيانة موثوقة في سوريا.</p>
+                  </div>
+                  <div className="how-action-buttons">
+                    <button
+                      type="button"
+                      className="cta-button cta-button--primary"
+                      onClick={handleUzmanBulClick}
+                    >
+                      <i className="fas fa-search"></i> ابدأ الآن كعميل
+                    </button>
+                    <button
+                      type="button"
+                      className="cta-button cta-button--accent"
+                      onClick={handleUzmanOlClick}
+                    >
+                      <i className="fas fa-user-plus"></i> انضم كخبير معتمد
+                    </button>
+                  </div>
+                </div>
+              )}
+
             </div>
           </section>
         </section>
+
+        {/* Step Interactive Details Modal */}
+        {selectedStepModal && (
+          <div
+            className="how-modal-overlay"
+            onClick={() => setSelectedStepModal(null)}
+          >
+            <div
+              className="how-modal-content"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="how-modal-close"
+                onClick={() => setSelectedStepModal(null)}
+                aria-label="إغلاق"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+
+              <div className="how-modal-header">
+                <span className="how-modal-num">{selectedStepModal.num}</span>
+                <div>
+                  <h3 className="how-modal-title">{selectedStepModal.title}</h3>
+                  <span className="how-modal-pill">
+                    <i className={selectedStepModal.iconClass}></i> {selectedStepModal.pill}
+                  </span>
+                </div>
+              </div>
+
+              <div className="how-modal-body">
+                <h4 className="how-modal-subhead">{selectedStepModal.details.headline}</h4>
+                <ul className="how-modal-list">
+                  {selectedStepModal.details.points.map((pt, i) => (
+                    <li key={i}>
+                      <i className="fas fa-check-circle"></i>
+                      <span>{pt}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="how-modal-tip">
+                  <span>{selectedStepModal.details.tip}</span>
+                </div>
+              </div>
+
+              {!user && (
+                <div className="how-modal-footer">
+                  <button
+                    type="button"
+                    className="cta-button cta-button--primary"
+                    onClick={() => {
+                      setSelectedStepModal(null);
+                      if (activeRole === "CLIENT") handleUzmanBulClick();
+                      else handleUzmanOlClick();
+                    }}
+                  >
+                    {activeRole === "CLIENT" ? "ابحث عن خبير الآن" : "سجل كخبير الآن"}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Syria Arabic launch: homepage videos disabled by request, original block kept for later.
         <section className="section-band section-band--plain" id="video-showcase">

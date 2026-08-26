@@ -43,9 +43,9 @@ const listingReportRoutes = require("./routes/listingReportRoutes");
 const listingRoutes = require("./routes/listingRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
-const providerRoutes = require("./routes/providerRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
 const ocrRoutes = require("./routes/ocrRoutes");
+const emailVerificationRoutes = require("./routes/emailVerificationRoutes");
 
 // ── Listings store (Step 5 extracted to repositories)
 
@@ -114,6 +114,7 @@ app.use("/api/users", userRoutes);
 
 if (isDevelopment) console.log("Mounting /api/auth routes...");
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", emailVerificationRoutes);
 
 if (isDevelopment) console.log("Mounting /api/providers routes...");
 app.use("/api/providers", providerRoutes);

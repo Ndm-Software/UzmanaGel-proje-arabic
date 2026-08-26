@@ -15,9 +15,10 @@ export function registerServiceWorker() {
         })
         .catch((error) => {
           if (process.env.NODE_ENV === 'development') {
-            console.error('Service Worker registration failed:', error);
+            console.warn('Service Worker registration skipped/failed in dev:', error?.message || error);
           }
         });
     });
   }
 }
+

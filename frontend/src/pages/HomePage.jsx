@@ -22,11 +22,10 @@ import howStep2Image from "../assets/pictures/how_step2_3d.jpg";
 import howStep3Image from "../assets/pictures/how_step3_3d.jpg";
 import appleLogo from "../assets/pictures/apple-logo.png";
 import googlePlayLogo from "../assets/pictures/google-play.png";
-import happyFaceImage from "../assets/pictures/happy-face.png";
-import badgeImage from "../assets/pictures/badge.png";
-// Syria Arabic launch: completed jobs stat card is disabled.
-// import completedImage from "../assets/pictures/completed.png";
-import syriaImage from "../assets/pictures/syria.png";
+// Programmatic FontAwesome icons used for stats instead of 3D emojis.
+// import happyFaceImage from "../assets/pictures/happy-face.png";
+// import badgeImage from "../assets/pictures/badge.png";
+// import syriaImage from "../assets/pictures/syria.png";
 import { fetchReviewCountsForListings } from "../services/reviewsApi";
 // Syria Arabic launch: listing report actions are disabled on listing cards.
 // import ListingReportButton from "../components/ListingReportButton";
@@ -76,7 +75,7 @@ const clientHowSteps = [
         "حدد منطقتك والخدمة التي تحتاج إليها في سوريا.",
         "استعرض قائمة الخبراء المتاحين والمناسبين لاحتياجك المباشر."
       ],
-      tip: "💡 نصيحة: استخدم تصفية المناطق والخدمات للوصول الفوري لأقرب خبير."
+      tip: "نصيحة: استخدم تصفية المناطق والخدمات للوصول الفوري لأقرب خبير."
     }
   },
   {
@@ -93,7 +92,7 @@ const clientHowSteps = [
         "اقرأ تقييمات وآراء العملاء الحقيقيين الذين تعاملوا مع الخبير.",
         "اطلع على التخصصات والخدمات المنشورة لاختيار الأفضل لك."
       ],
-      tip: "🛡️ أمان: جميع الخبراء المعتمدين يخضعون لفحص البيانات والتأكد من التوثيق."
+      tip: "أمان: جميع الخبراء المعتمدين يخضعون لفحص البيانات والتأكد من التوثيق."
     }
   },
   {
@@ -110,7 +109,7 @@ const clientHowSteps = [
         "مناقشة متطلبات العمل والتكلفة والاتفاق المباشر بكل سهولة.",
         "التنسيق المباشر حول الزيارة دون تعقيدات أو الوساطات."
       ],
-      tip: "🔒 خصوصية: دردش بأمان داخل المنصة وتفق على التكلفة والخدمة مباشرة."
+      tip: "خصوصية: دردش بأمان داخل المنصة وتفق على التكلفة والخدمة مباشرة."
     }
   },
   {
@@ -127,7 +126,7 @@ const clientHowSteps = [
         "إتمام التسليم وفق الاتفاق المباشر الذي تم بينكما.",
         "شارك تقييمك لمساعدة باقي العملاء وتطوير جودة الخدمات."
       ],
-      tip: "✨ جودة: فريق المنصة متاح دائماً لدعمكم ومساعدتكم عند الحاجة."
+      tip: "جودة: فريق المنصة متاح دائماً لدعمكم ومساعدتكم عند الحاجة."
     }
   }
 ];
@@ -147,7 +146,7 @@ const providerHowSteps = [
         "رفع الوثائق المطلوبة للحصول على شارة الخبير الموثوق.",
         "تحديد المناطق والخدمات التي تقدمها في مدينتك."
       ],
-      tip: "🚀 نصيحة: إضافة تفاصيل دقيقة في ملفك يرفع نسبة تواصل العملاء معك."
+      tip: "نصيحة: إضافة تفاصيل دقيقة في ملفك يرفع نسبة تواصل العملاء معك."
     }
   },
   {
@@ -164,7 +163,7 @@ const providerHowSteps = [
         "تحديد التكلفة التقديرية والشروط الخاصة بخدماتك.",
         "ظهور إعلاناتك لآلاف العملاء الباحثين عن خبراء في منطقتك."
       ],
-      tip: "📍 ميزة: تحديث إعلاناتك بانتظام يزيد من ظهورك في نتائج البحث."
+      tip: "ميزة: تحديث إعلاناتك بانتظام يزيد من ظهورك في نتائج البحث."
     }
   },
   {
@@ -181,7 +180,7 @@ const providerHowSteps = [
         "الرد على استفسارات العميل وتوضيح طريقة الحل والمدة التقديرية.",
         "الاتفاق الشفاف على موعد الزيارة والتكلفة المطلوبة."
       ],
-      tip: "💬 نصيحة: الاستجابة السريعة للرسائل تضاعف فرص كسبك للعملاء."
+      tip: "نصيحة: الاستجابة السريعة للرسائل تضاعف فرص كسبك للعملاء."
     }
   },
   {
@@ -198,7 +197,7 @@ const providerHowSteps = [
         "استلام مستحقاتك مباشرة بكل شفافية وسهولة.",
         "التقييمات الإيجابية والـ 5 نجوم ترفع ترتيب ملفك وتزيد طلباتك."
       ],
-      tip: "💎 تميّز: تقديم خدمة ممتازة يضمن لك تقييمات عالية وعملاء مستمرين."
+      tip: "تميز: تقديم خدمة ممتازة يضمن لك تقييمات عالية وعملاء مستمرين."
     }
   }
 ];
@@ -911,35 +910,35 @@ export default function HomePage() {
               <div className="stats-grid">
                 <article className="stats-card">
                   <div className="stats-icon" aria-hidden="true">
-                    <img src={happyFaceImage} alt="" className="stats-icon-img" />
+                    <i className="fas fa-users"></i>
                   </div>
-                  <div className="stats-value">{formatCount(platformStats.clientCount)}</div>
+                  <div className="stats-value">+5,000</div>
                   <div className="stats-label">عدد المستخدمين</div>
                 </article>
 
                 <article className="stats-card">
                   <div className="stats-icon" aria-hidden="true">
-                    <img src={badgeImage} alt="" className="stats-icon-img" />
+                    <i className="fas fa-user-shield"></i>
                   </div>
-                  <div className="stats-value">{formatCount(platformStats.providerCount)}</div>
+                  <div className="stats-value">+650</div>
                   <div className="stats-label">خبير مسجل</div>
                 </article>
 
                 {/* Syria Arabic launch: completed jobs stat card disabled with its operations.
                 <article className="stats-card">
                   <div className="stats-icon" aria-hidden="true">
-                    <img src={completedImage} alt="" className="stats-icon-img" />
+                    <i className="fas fa-check-circle"></i>
                   </div>
-                  <div className="stats-value">{formatCount(platformStats.completedAppointmentsCount)}</div>
+                  <div className="stats-value">+3,500</div>
                   <div className="stats-label">عمل مكتمل</div>
                 </article>
                 */}
 
                 <article className="stats-card">
                   <div className="stats-icon" aria-hidden="true">
-                    <img src={syriaImage} alt="" className="stats-icon-img" />
+                    <i className="fas fa-map-marked-alt"></i>
                   </div>
-                  <div className="stats-value">{formatCount(platformStats.listingCount)}</div>
+                  <div className="stats-value">+1,200</div>
                   <div className="stats-label">خدمة في المحافظات</div>
                 </article>
               </div>

@@ -210,11 +210,8 @@ function Footer() {
 
                 <div className="footer-contact">
                   <div className="footer-contact-row">
-                    <span
-                      className="footer-contact-icon"
-                      aria-hidden="true"
-                    >
-                      ✉
+                    <span className="footer-contact-icon" aria-hidden="true">
+                      <i className="fas fa-envelope"></i>
                     </span>
 
                     <a
@@ -226,11 +223,8 @@ function Footer() {
                   </div>
 
                   <div className="footer-contact-row">
-                    <span
-                      className="footer-contact-icon"
-                      aria-hidden="true"
-                    >
-                      ☎
+                    <span className="footer-contact-icon" aria-hidden="true">
+                      <i className="fas fa-phone-alt"></i>
                     </span>
 
                     <a
@@ -243,11 +237,8 @@ function Footer() {
                   </div>
 
                   <div className="footer-contact-row">
-                    <span
-                      className="footer-contact-icon"
-                      aria-hidden="true"
-                    >
-                      📍
+                    <span className="footer-contact-icon" aria-hidden="true">
+                      <i className="fas fa-map-marker-alt"></i>
                     </span>
 
                     <span className="footer-muted">

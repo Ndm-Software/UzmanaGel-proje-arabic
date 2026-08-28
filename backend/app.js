@@ -45,6 +45,7 @@ const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
 const ocrRoutes = require("./routes/ocrRoutes");
+const providerRoutes = require("./routes/providerRoutes");
 const emailVerificationRoutes = require("./routes/emailVerificationRoutes");
 
 // ── Listings store (Step 5 extracted to repositories)

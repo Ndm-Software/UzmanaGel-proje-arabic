@@ -507,19 +507,6 @@ const ReviewSystem = ({
             type="button"
             className="review-write-btn"
             onClick={handleWriteReviewClick}
-            style={{
-              background: 'linear-gradient(135deg, #f59e0b, #f97316)',
-              border: 'none',
-              color: 'white',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              marginRight: '12px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
           >
             <i className="fas fa-star"></i> التقييم وكتابة تعليق
           </button>
@@ -537,7 +524,7 @@ const ReviewSystem = ({
             </select>
           )}
           <div className="ld-reviews-summary-badge">
-            إجمالي {isActiveListingFilterReady ? totalSummaryCount : totalAllCount} تقييم
+            <i className="fas fa-comments"></i> إجمالي {isActiveListingFilterReady ? totalSummaryCount : totalAllCount} تقييم
           </div>
         </div>
       </div>

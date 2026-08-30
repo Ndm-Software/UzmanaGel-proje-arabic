@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { onAuthStateChanged } from "firebase/auth";
@@ -58,6 +58,50 @@ const categoryImageMap = {
   "Pazarlama": "https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&w=800&q=80",
   "Çeviri": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=800&q=80",
   "Yemek & Catering": "https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=800&q=80"
+};
+
+const AnimatedCounter = ({ target, prefix = "+", duration = 2000 }) => {
+  const [count, setCount] = useState(0);
+  const elementRef = useRef(null);
+  const hasAnimatedRef = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasAnimatedRef.current) {
+          hasAnimatedRef.current = true;
+          let startTimestamp = null;
+          const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeOutProgress = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.floor(easeOutProgress * target));
+            if (progress < 1) {
+              window.requestAnimationFrame(step);
+            } else {
+              setCount(target);
+            }
+          };
+          window.requestAnimationFrame(step);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const el = elementRef.current;
+    if (el) observer.observe(el);
+
+    return () => {
+      if (el) observer.unobserve(el);
+      observer.disconnect();
+    };
+  }, [target, duration]);
+
+  return (
+    <span ref={elementRef}>
+      {prefix}{formatLatinNumber(count)}
+    </span>
+  );
 };
 
 const clientHowSteps = [
@@ -912,7 +956,9 @@ export default function HomePage() {
                   <div className="stats-icon" aria-hidden="true">
                     <i className="fas fa-users"></i>
                   </div>
-                  <div className="stats-value">+5,000</div>
+                  <div className="stats-value">
+                    <AnimatedCounter target={5000} prefix="+" />
+                  </div>
                   <div className="stats-label">عدد المستخدمين</div>
                 </article>
 
@@ -920,7 +966,9 @@ export default function HomePage() {
                   <div className="stats-icon" aria-hidden="true">
                     <i className="fas fa-user-shield"></i>
                   </div>
-                  <div className="stats-value">+650</div>
+                  <div className="stats-value">
+                    <AnimatedCounter target={650} prefix="+" />
+                  </div>
                   <div className="stats-label">خبير مسجل</div>
                 </article>
 
@@ -938,7 +986,9 @@ export default function HomePage() {
                   <div className="stats-icon" aria-hidden="true">
                     <i className="fas fa-map-marked-alt"></i>
                   </div>
-                  <div className="stats-value">+1,200</div>
+                  <div className="stats-value">
+                    <AnimatedCounter target={1200} prefix="+" />
+                  </div>
                   <div className="stats-label">خدمة في المحافظات</div>
                 </article>
               </div>

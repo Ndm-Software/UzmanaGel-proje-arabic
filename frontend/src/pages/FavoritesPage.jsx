@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import Navbar from "../components/Navbar";
 import LoadingSpinner from "../components/LoadingSpinner";
+import PageTransition from "../components/PageTransition";
 import { auth } from "../firebase/firebaseClient";
 import categoryImages from "../data/categoryImages";
 import { fetchFavorites, addFavorite, removeFavorite } from "../services/favoritesApi";
@@ -137,17 +138,20 @@ export default function FavoritesPage() {
   };
 
   if (loading) {
-    return (
+  return (
+    <PageTransition>
       <div className="favorites-page">
         <Navbar />
         <LoadingSpinner text="جاري تحميل المفضلة..." />
       </div>
+    </PageTransition>
     );
   }
 
   if (!user) return null;
 
   return (
+     <PageTransition>
     <div className="favorites-page">
       <Navbar />
       <div className="welcome-banner">
@@ -230,5 +234,6 @@ export default function FavoritesPage() {
         </main>
       </div>
     </div>
+    </PageTransition>
   );
 }

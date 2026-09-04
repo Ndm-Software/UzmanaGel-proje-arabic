@@ -517,9 +517,39 @@
 .user-avatar-small {
     width: 32px;
     height: 32px;
+    min-width: 32px;
+    flex-shrink: 0;
+
     border-radius: 50%;
-    object-fit: cover;
     border: 2px solid var(--brand-gold, #d6b25e);
+
+    object-fit: cover;
+    display: block;
+}
+
+.user-avatar-small--initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary, #d6b25e),
+            var(--primary-dark, #c19b3c)
+        );
+
+    color: #0b1020;
+
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.02em;
+
+    text-align: center;
+    user-select: none;
+
+    object-fit: initial;
 }
 
 .user-name-text {
@@ -841,8 +871,13 @@
     }
     
     .user-avatar-small {
-        width: 28px;
-        height: 28px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    }
+
+    .user-avatar-small--initials {
+        font-size: 10px;
     }
 }
 

@@ -20,7 +20,7 @@ import DOMPurify from 'dompurify';
 import '../styles/Navbar.css';
 
 import logo from '../assets/pictures/logoArabicNoWriting.png';
-import defaultAvatar from '../assets/pictures/logoArabicNoBackground.png';
+
 
 import { fetchMyConversations } from '../services/chatApi';
 
@@ -58,6 +58,8 @@ const Navbar = () => {
   const [userType, setUserType] = useState(null);
   const [profilePhotoUrl, setProfilePhotoUrl] = useState(null);
 
+  const [profilePhotoError, setProfilePhotoError] = useState(false);
+
   const [tokenBalance, setTokenBalance] = useState(0);
 
   const [isTokenPanelOpen, setIsTokenPanelOpen] = useState(false);
@@ -73,6 +75,10 @@ const Navbar = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+  setProfilePhotoError(false);
+  }, [profilePhotoUrl]);
 
   const closeMobileMenu = () => {
     setMobileMenuOpen(false);
@@ -544,13 +550,28 @@ const Navbar = () => {
     return sanitizeText(name);
   };
 
-  const getUserAvatar = () => {
-    if (profilePhotoUrl) {
-      return profilePhotoUrl;
-    }
+  const getUserInitials = () => {
+  const name = getUserDisplayName()
+    .replace(/\s+/g, ' ')
+    .trim();
 
-    return defaultAvatar;
+  if (!name) {
+    return 'م';
+  }
+
+  const parts = name.split(' ').filter(Boolean);
+
+  if (parts.length >= 2) {
+    return (
+      parts[0].charAt(0) +
+      parts[1].charAt(0)
+    ).toUpperCase();
+  }
+
+  return name.substring(0, 2).toUpperCase();
   };
+
+  
 
   const renderRightContent = () => {
     if (loading) return null;
@@ -600,14 +621,24 @@ const Navbar = () => {
               aria-expanded={dropdownOpen}
               aria-haspopup="menu"
             >
-              <img
-                src={getUserAvatar()}
-                alt={getUserDisplayName()}
-                className="user-avatar-small"
-                onError={(event) => {
-                  event.currentTarget.src = defaultAvatar;
-                }}
-              />
+              {profilePhotoUrl && !profilePhotoError ? (
+                <img
+                  src={profilePhotoUrl}
+                  alt={getUserDisplayName()}
+                  className="user-avatar-small"
+                  onError={() => {
+                    setProfilePhotoError(true);
+                  }}
+                />
+              ) : (
+                <div
+                  className="user-avatar-small user-avatar-small--initials"
+                  title={getUserDisplayName()}
+                  aria-label={`الصورة الشخصية لـ ${getUserDisplayName()}`}
+                >
+                  {getUserInitials()}
+                </div>
+              )}
 
               <span className="user-name-text">
                 {getUserDisplayName()}

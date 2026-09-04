@@ -10,6 +10,8 @@ import {
 
 import { AnimatePresence } from "framer-motion";
 
+import AuthActionPage from "./pages/AuthActionPage";
+
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -59,6 +61,12 @@ import IdleSessionTimeout from "./components/IdleSessionTimeout";
 
 function AppRoutes() {
   const location = useLocation();
+
+  console.log(
+  "[ROUTER]",
+  location.pathname,
+  location.search
+  );
 
   const expertOnly = (page) => (
     <ExpertProtectedRoute>{page}</ExpertProtectedRoute>
@@ -326,6 +334,11 @@ function AppRoutes() {
             }
           />
 
+          <Route
+            path="/auth/action"
+            element={<AuthActionPage />}
+          />
+
           {/* أي رابط غير موجود يعيد المستخدم للرئيسية */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -362,13 +375,30 @@ function LegacyExpertRedirect() {
   return <Navigate to={`/خبير/${providerId}`} replace />;
 }
 
+function AppContent() {
+  const location = useLocation();
+
+  const isAuthActionPage =
+    location.pathname === "/auth/action";
+
+    console.log(
+      "[AuthActionPage] mounted:",
+      window.location.href
+    );
+
+  return (
+    <>
+      {!isAuthActionPage && <IdleSessionTimeout />}
+
+      <AppRoutes />
+    </>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      {/* 5 minutes idle session timeout */}
-      <IdleSessionTimeout />
-
-      <AppRoutes />
+      <AppContent />
     </BrowserRouter>
   );
 }

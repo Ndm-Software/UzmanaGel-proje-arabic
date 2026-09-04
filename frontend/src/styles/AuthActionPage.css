@@ -1,0 +1,136 @@
+﻿.auth-action-card {
+  min-height: 520px;
+}
+
+.auth-action-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-action-content {
+  width: 100%;
+  text-align: center;
+}
+
+.auth-action-status-icon {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 2rem;
+}
+
+.auth-action-status-loading {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+}
+
+.auth-action-status-success {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+}
+
+.auth-action-status-error {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.auth-action-processing,
+.auth-action-success-box,
+.auth-action-error-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 14px 16px;
+  margin: 24px 0;
+
+  border-radius: 12px;
+
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.auth-action-processing {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #3b82f6;
+}
+
+.auth-action-success-box {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  color: #22c55e;
+}
+
+.auth-action-error-box {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+}
+
+.auth-action-countdown {
+  margin: 28px 0 24px;
+  text-align: center;
+}
+
+.auth-action-countdown p {
+  margin: 0 0 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.auth-action-countdown-number {
+  width: 58px;
+  height: 58px;
+
+  margin: 0 auto 7px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.65rem;
+  font-weight: 700;
+
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.auth-action-countdown span {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.auth-action-login-btn {
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .auth-action-card {
+    min-height: auto;
+  }
+
+  .auth-action-status-icon {
+    width: 66px;
+    height: 66px;
+    font-size: 1.65rem;
+  }
+
+  .auth-action-countdown-number {
+    width: 52px;
+    height: 52px;
+    font-size: 1.45rem;
+  }
+}

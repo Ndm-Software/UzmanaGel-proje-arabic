@@ -338,6 +338,15 @@ export default function LoginPage() {
     const loginNoticeType = location.state?.loginNoticeType;
     const legacyProviderHint = location.state?.providerHint;
 
+    if (loginNoticeType === "email_verified") {
+        setWarningMessage(
+          "تم تأكيد بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول إلى حسابك."
+        );
+        setWarningVariant("success");
+        setShowWarning(true);
+        return;
+      }
+
     if (loginNoticeType === "session_expired") {
       setWarningMessage("انتهت مدة الجلسة. يرجى تسجيل الدخول مرة أخرى.");
       setWarningVariant("warning");
